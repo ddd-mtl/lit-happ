@@ -99,7 +99,7 @@ export class DnaClient {
         continue;
       }
       const startDate = new Date(request.timestamp);
-      const startTime = "" + startDate.getHours() + ":" + startDate.getMinutes() + "." + startDate.getMilliseconds();
+      const startTime = "" + startDate.getHours() + ":" + startDate.getMinutes() + ":" + startDate.getSeconds() + "." + startDate.getMilliseconds();
       const input = request.payload instanceof Uint8Array? serializeHash(request.payload) : request.payload;
       const output = response.failure? response.failure: response.success;
       const log = zomeName? {startTime,fnName: request.fnName, input, output}
