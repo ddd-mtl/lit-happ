@@ -90,6 +90,15 @@ export class DnaClient {
   }
 
 
+  // /** */
+  // dumpAllZomes() {
+  //   // FIXME get DNA DEF
+  //   for (const zomeName of dnaDef) {
+  //     this.dumpLogs(zomeName)
+  //   }
+  // }
+
+
   /**  */
   dumpLogs(zomeName?: string) {
     let result = [];
