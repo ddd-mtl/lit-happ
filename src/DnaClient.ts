@@ -107,14 +107,21 @@ export class DnaClient {
       if (zomeName && request.zomeName != zomeName) {
         continue;
       }
+
+      const zeroPad = (num:number, places:number) => String(num).padStart(places, '0')
+
       const startDate = new Date(request.timestamp);
-      const startTime = "" + startDate.getHours() + ":" + startDate.getMinutes() + ":" + startDate.getSeconds() + "." + startDate.getMilliseconds();
-      const duration = new Date(response.timestamp - response.timestamp);
-      const durationText = duration.getSeconds() + "." + duration.getMilliseconds()
+      const startTime = ""
+        + zeroPad(startDate.getHours(), 2)
+        + ":" + zeroPad(startDate.getMinutes(), 2)
+        + ":" + zeroPad(startDate.getSeconds(), 2)
+        + "." + zeroPad(startDate.getMilliseconds(), 3);
+      const durationDate = new Date(response.timestamp - request.timestamp);
+      const duration = durationDate.getSeconds() + "." + zeroPad(durationDate.getMilliseconds(),3)
       const input = request.payload instanceof Uint8Array? serializeHash(request.payload) : request.payload;
       const output = response.failure? response.failure: response.success;
-      const log = zomeName? {startTime,fnName: request.fnName, input, output, durationText}
-        : {startTime, zomeName: request.zomeName, fnName: request.fnName, input, output, durationText}
+      const log = zomeName? {startTime,fnName: request.fnName, input, output, duration}
+        : {startTime, zomeName: request.zomeName, fnName: request.fnName, input, output, duration}
       result.push(log)
     }
     if(zomeName) console.log("Call log for zome " + zomeName)
