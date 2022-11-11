@@ -32,8 +32,8 @@ export class DnaClient {
 
   /** -- Fields -- */
 
-  myAgentPubKey: AgentPubKeyB64;
-  dnaHash: DnaHashB64;
+  readonly myAgentPubKey: AgentPubKeyB64;
+  readonly dnaHash: DnaHashB64;
   defaultTimeout: number;
 
   private _requestLog: ZomeCallRequest[] = []
@@ -109,10 +109,12 @@ export class DnaClient {
       }
       const startDate = new Date(request.timestamp);
       const startTime = "" + startDate.getHours() + ":" + startDate.getMinutes() + ":" + startDate.getSeconds() + "." + startDate.getMilliseconds();
+      const duration = new Date(response.timestamp - response.timestamp);
+      const durationText = duration.getSeconds() + "." + duration.getMilliseconds()
       const input = request.payload instanceof Uint8Array? serializeHash(request.payload) : request.payload;
       const output = response.failure? response.failure: response.success;
-      const log = zomeName? {startTime,fnName: request.fnName, input, output}
-        : {startTime, zomeName: request.zomeName, fnName: request.fnName, input, output}
+      const log = zomeName? {startTime,fnName: request.fnName, input, output, durationText}
+        : {startTime, zomeName: request.zomeName, fnName: request.fnName, input, output, durationText}
       result.push(log)
     }
     if(zomeName) console.log("Call log for zome " + zomeName)

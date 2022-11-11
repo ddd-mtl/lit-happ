@@ -1,1 +1,2 @@
-export * from "./dnaClient";
+export * from "./DnaClient";
+export * from "./ZomeViewModel";
