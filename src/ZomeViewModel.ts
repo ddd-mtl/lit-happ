@@ -1,38 +1,39 @@
 
-
-
-// export interface ZomeViewModelInterface<T extends {}> {
-//     hasChanged(): boolean;
-//     get perspective(): T | {};
-//     probeDht(): Promise<void>;
-// }
-
-
 /**
  * Represents the ViewModel of a zome.
- * It is an Observable meant to be a singleton passed around with a LitContext.
+ * It is an Observable meant to be a singleton passed around by a Context.
  * It queries a cell's zome to get the agent's perspective (by callind a Zome Bridge).
  * LitElement hosts can subscribe to it in order to get updated when the perspective changes.
- * Hosts can also trigger probing in order to get an updated perspective.
- * It is expected from child classes to implement the ZomeViewModelInterface.
+ * Hosts could also be allowed to trigger probing in order to get an updated perspective.
  */
-export class ZomeViewModel<T extends {}> /*implements ZomeViewModelInterface<T>*/ {
+export abstract class ZomeViewModel<T> {
 
-    /** Dummy implementation ZomeViewModelInterface */
-    get perspective(): T { return {} as T }
-    protected hasChanged(): boolean { return true }
-    async probeDht(): Promise<void> {}
+    /** -- Fields -- */
 
-    protected _previousPerspective?: any;
+    protected _previousPerspective?: T;
     protected _hosts: [any, PropertyKey][] = [];
 
+
+    /** -- Methods that children must implement  --*/
+    /**
+     *Return true if the perspective has changed. This will trigger an update on the observers
+     * Child classes are expected to compare their latest constructed perspective (the one returned by this.perspective())
+     * with this._previousPerspective.
+     */
+    abstract hasChanged(): boolean;
+    /* Returns the latest perspective */
+    abstract get perspective(): T;
+    /* (optional) Lets the observer trigger probing of the DHT in order to get an updated perspective */
+    async probeDht(): Promise<void> {}
+
+
+    /** -- Final methods (Observer pattern) -- */
 
     /** */
     subscribe(host: any, propName: PropertyKey) {
         host[propName] = this.perspective;
         this._hosts.push([host, propName])
     }
-
 
     /** */
     unsubscribe(candidat: any) {
@@ -45,7 +46,6 @@ export class ZomeViewModel<T extends {}> /*implements ZomeViewModelInterface<T>*
             this._hosts.splice(index, 1);
         }
     }
-
 
     /** */
     protected notify() {
