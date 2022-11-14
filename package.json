@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/dna-client",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Temporary wrapper around @holochain-open-dev/cell-client",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -9,6 +9,9 @@
     "dist"
   ],
   "scripts": {
+    "tsc": "tsc",
+    "tsc:test": "cd test && npm run build",
+    "tsc:all": "tsc && npm run tsc:test",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "publish-to-branch": "npm run build && rm -rf node_modules && gh-pages -d ./ -b build && npm i"
   },

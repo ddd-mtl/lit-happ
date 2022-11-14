@@ -18,9 +18,13 @@ export interface ZomeCallResponse {
   requestIndex: number;
 }
 
+export const delay = (ms:number) => new Promise(r => setTimeout(r, ms))
+
 
 /**
- *
+ * Handles the connection to a Cell.
+ * Logs ZomeCalls and dispatch Signals.
+ * This class is expected to be used by Zome Bridges.
  */
 export class DnaClient {
   /** Ctor */
@@ -39,8 +43,11 @@ export class DnaClient {
   private _requestLog: ZomeCallRequest[] = []
   private _responseLog: ZomeCallResponse[] = []
 
+  private _write_mutex_locked: boolean = false;
 
-
+  /** Checks if obj is a Hash or list of hashes
+   * and tries to convert it a B64 or list of B64
+   */
   private anyToB64(obj: any): any {
     /** Check if its a hash */
     if (obj instanceof Uint8Array) {
@@ -67,8 +74,26 @@ export class DnaClient {
 
   /** -- Methods -- */
 
+  /**
+   * callZome() with "Mutex" (for calls that writes to source-chain)
+   */
+  async callZomeBlocking(zomeName: string, fnName: string, payload: any): Promise<any> {
+    const startTime = Date.now()
+    if (this._write_mutex_locked && Date.now() - startTime < this.defaultTimeout) {
+      await delay(1);
+    }
+    if (Date.now() - startTime >= this.defaultTimeout) {
+      return Promise.reject("callZome failed: Blocked by other zome calls (timedout");
+    }
+    this._write_mutex_locked = true;
+    const result = await this.callZome(zomeName, fnName, payload);
+    this._write_mutex_locked = false;
+    return result;
+  }
+
+
   /** */
-  async callZome(zomeName: string, fnName: string, payload: any): Promise<any> {
+  async callZome(zomeName: string, fnName: string, payload: any, timeout?: number): Promise<any> {
     //console.log("callZome: agent_directory." + fn_name + "() ", payload)
     //console.info({payload})
     const requestIndex = this._requestLog.length;

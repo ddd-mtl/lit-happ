@@ -1,3 +1,5 @@
+import {ZomeBridge} from "./ZomeBridge";
+
 
 /**
  * Represents the ViewModel of a zome.
@@ -6,23 +8,25 @@
  * LitElement hosts can subscribe to it in order to get updated when the perspective changes.
  * Hosts could also be allowed to trigger probing in order to get an updated perspective.
  */
-export abstract class ZomeViewModel<T> {
+export abstract class ZomeViewModel<P> {
+
+    constructor(protected _bridge: ZomeBridge) {}
 
     /** -- Fields -- */
 
-    protected _previousPerspective?: T;
+    protected _previousPerspective?: P;
     protected _hosts: [any, PropertyKey][] = [];
 
 
     /** -- Methods that children must implement  --*/
     /**
-     *Return true if the perspective has changed. This will trigger an update on the observers
+     * Return true if the perspective has changed. This will trigger an update on the observers
      * Child classes are expected to compare their latest constructed perspective (the one returned by this.perspective())
      * with this._previousPerspective.
      */
-    abstract hasChanged(): boolean;
+    protected abstract hasChanged(): boolean;
     /* Returns the latest perspective */
-    abstract get perspective(): T;
+    abstract get perspective(): P;
     /* (optional) Lets the observer trigger probing of the DHT in order to get an updated perspective */
     async probeDht(): Promise<void> {}
 

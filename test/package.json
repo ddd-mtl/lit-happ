@@ -1,0 +1,17 @@
+{
+  "name": "@ddd-qc/test",
+  "version": "0.0.1",
+  "description": "Test lib",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@ddd-qc/dna-client": "file:../"
+  }
+}
