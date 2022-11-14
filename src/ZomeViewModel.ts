@@ -28,14 +28,14 @@ export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeVie
     protected _hosts: [any, PropertyKey][] = [];
 
     /** Make sure provideContext is only called once */
-    static _isContextProvided = false;
+    //static _isContextProvided = false;
     provideContext(host: ReactiveElement): void {
-        if (ZomeViewModel._isContextProvided) {
-            console.error("Context already provided for", typeof this)
-            return;
-        }
+        // if (ZomeViewModel._isContextProvided) {
+        //     console.error("Context already provided for", typeof this)
+        //     return;
+        // }
         new ContextProvider(host, this.getContext(), this);
-        ZomeViewModel._isContextProvided = true;
+        //ZomeViewModel._isContextProvided = true;
     }
 
 
