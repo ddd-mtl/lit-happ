@@ -1,4 +1,14 @@
+import {ContextProvider, createContext} from "@lit-labs/context";
 import {ZomeBridge} from "./ZomeBridge";
+import {ReactiveElement} from "lit";
+
+export interface IZomeViewModel {
+    provideContext(host: ReactiveElement): void;
+    probeDht(): Promise<void>;
+    getEntryDefs(): Promise<[string, boolean][]>;
+    get zomeName(): string;
+}
+
 
 
 /**
@@ -8,14 +18,25 @@ import {ZomeBridge} from "./ZomeBridge";
  * LitElement hosts can subscribe to it in order to get updated when the perspective changes.
  * Hosts could also be allowed to trigger probing in order to get an updated perspective.
  */
-export abstract class ZomeViewModel<P, B extends ZomeBridge> {
+export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeViewModel {
 
     constructor(protected _bridge: B) {}
 
     /** -- Fields -- */
-
     protected _previousPerspective?: P;
     protected _hosts: [any, PropertyKey][] = [];
+
+    /** Make sure provideContext is only called once */
+    //static _isContextProvided = false;
+    provideContext(host: ReactiveElement): void {
+        const contextKey = `zome_view_model/${this._bridge.zomeName}`;
+        // if (ZomeViewModel._isContextProvided) {
+        //     console.error("Context already provided for", contextKey)
+        //     return;
+        // }
+        new ContextProvider(host, createContext<ZomeViewModel<P, B>>(contextKey), this);
+        //ZomeViewModel._isContextProvided = true;
+    }
 
 
     /** -- Methods that children must implement  --*/
@@ -59,4 +80,11 @@ export abstract class ZomeViewModel<P, B extends ZomeBridge> {
         }
         this._previousPerspective = this.perspective
     }
+
+
+    async getEntryDefs(): Promise<[string, boolean][]> {
+        return this._bridge.getEntryDefs()
+    }
+
+    get zomeName(): string {return this._bridge.zomeName}
 }

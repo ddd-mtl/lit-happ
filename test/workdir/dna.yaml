@@ -1,0 +1,16 @@
+---
+manifest_version: "1"
+name: playground
+uuid: ~
+properties: ~
+integrity:
+  origin_time: 2022-09-25T13:55:49.200Z
+  zomes:
+    - name: dummy_integrity
+      bundled: ../target/wasm32-unknown-unknown/release/dummy_integrity.wasm
+coordinator:
+  zomes:
+    - name: dummy
+      bundled: ../target/wasm32-unknown-unknown/release/dummy.wasm
+      dependencies:
+        - name: dummy_integrity

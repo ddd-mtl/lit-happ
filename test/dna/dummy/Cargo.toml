@@ -1,0 +1,13 @@
+[package]
+name = "dummy"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = [ "cdylib", "rlib" ]
+
+[dependencies]
+serde.workspace = true
+hdk.workspace = true
+dummy_integrity = { path = "../dummy_integrity" }
