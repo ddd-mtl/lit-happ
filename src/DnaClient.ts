@@ -1,5 +1,5 @@
-import {CellId} from "@holochain/client";
-import {AgnosticClient} from '@holochain-open-dev/cell-client';
+import {AppWebsocket, CellId} from "@holochain/client";
+import {AgnosticClient, HolochainClient} from '@holochain-open-dev/cell-client';
 import {serializeHash} from "@holochain-open-dev/utils";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 
@@ -27,6 +27,25 @@ export const delay = (ms:number) => new Promise(r => setTimeout(r, ms))
  * This class is expected to be used by Zome Bridges.
  */
 export class DnaClient {
+  /** async Factory */
+  static async new(port: number, installedAppId: string): Promise<DnaClient> {
+    const wsUrl = `ws://localhost:${port}`
+    try {
+      const appWebsocket = await AppWebsocket.connect(wsUrl)
+      console.log({appWebsocket})
+      const hcClient = new HolochainClient(appWebsocket)
+      /** Setup Context */
+      const appInfo = await hcClient.appWebsocket.appInfo({installed_app_id: installedAppId})
+      const cellId = appInfo.cell_data[0].cell_id;
+      return new DnaClient(hcClient, cellId);
+    } catch (e) {
+      console.error("DnaClient initialization failed", e)
+      return Promise.reject("DnaClient initialization failed");
+    }
+  }
+
+
+
   /** Ctor */
   constructor(public agnosticClient: AgnosticClient, public cellId: CellId, defaultTimeout?: number) {
     this.defaultTimeout = defaultTimeout? defaultTimeout : 10 * 1000;

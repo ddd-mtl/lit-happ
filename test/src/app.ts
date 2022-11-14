@@ -46,8 +46,7 @@ export class DummyApp extends LitElement {
 
   async firstUpdated() {
     let HC_PORT:any = process.env.HC_PORT;
-    this._dnaViewModel = new DnaViewModel(this, HC_PORT, "playground");
-    await this._dnaViewModel.initialize();
+    this._dnaViewModel = await DnaViewModel.new(this, HC_PORT, "playground");
     await this._dnaViewModel.addZomeViewModel(DummyViewModel)
     await this._dnaViewModel.probeAll();
     this._loaded = true;
