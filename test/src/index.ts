@@ -3,10 +3,12 @@ import {DnaClient, ZomeBridge, ZomeViewModel} from "@ddd-qc/dna-client";
 /** */
 export class DummyBridge extends ZomeBridge {
   zomeName = 'dummy'
+  getDummy(): void {}
 }
 
+
 /** */
-export class DummyViewModel extends ZomeViewModel<number> {
+export class DummyViewModel extends ZomeViewModel<number, DummyBridge> {
   constructor(protected dnaClient: DnaClient) {
       super(new DummyBridge(dnaClient));
   }
@@ -22,6 +24,7 @@ export class DummyViewModel extends ZomeViewModel<number> {
   async probeDht(): Promise<void> {
     let entryDefs = await this._bridge.getEntryDefs();
     console.log({entryDefs})
+    this._bridge.getDummy();
   }
 
 }

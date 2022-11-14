@@ -8,9 +8,9 @@ import {ZomeBridge} from "./ZomeBridge";
  * LitElement hosts can subscribe to it in order to get updated when the perspective changes.
  * Hosts could also be allowed to trigger probing in order to get an updated perspective.
  */
-export abstract class ZomeViewModel<P> {
+export abstract class ZomeViewModel<P, B extends ZomeBridge> {
 
-    constructor(protected _bridge: ZomeBridge) {}
+    constructor(protected _bridge: B) {}
 
     /** -- Fields -- */
 
