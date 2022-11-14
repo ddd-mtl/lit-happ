@@ -1,37 +1,8 @@
 import { LitElement, html } from "lit";
 import { state } from "lit/decorators.js";
-import {DnaClient, ZomeBridge, ZomeViewModel, DnaViewModel, EntryDefSelect} from "@ddd-qc/dna-client";
+import {DnaViewModel, EntryDefSelect} from "@ddd-qc/dna-client";
+import {DummyViewModel} from "./dummy";
 
-
-/** */
-export class DummyBridge extends ZomeBridge {
-  zomeName = 'dummy'
-  async getDummy(): Promise<void> {
-    return this.call('get_dummy', null);
-  }
-}
-
-
-/** */
-export class DummyViewModel extends ZomeViewModel<number, DummyBridge> {
-  constructor(protected dnaClient: DnaClient) {
-    super(new DummyBridge(dnaClient));
-  }
-
-  protected hasChanged(): boolean {
-    return false;
-  }
-
-  get perspective(): number {
-    return 42;
-  }
-
-  async probeDht(): Promise<void> {
-    let entryDefs = await this._bridge.getEntryDefs();
-    console.log({entryDefs})
-    this._bridge.getDummy();
-  }
-}
 
 
 /**

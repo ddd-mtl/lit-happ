@@ -7,6 +7,7 @@ export interface IZomeViewModel {
     probeDht(): Promise<void>;
     getEntryDefs(): Promise<[string, boolean][]>;
     get zomeName(): string;
+    getContext(): any;
 }
 
 
@@ -27,15 +28,14 @@ export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeVie
     protected _hosts: [any, PropertyKey][] = [];
 
     /** Make sure provideContext is only called once */
-    //static _isContextProvided = false;
+    static _isContextProvided = false;
     provideContext(host: ReactiveElement): void {
-        const contextKey = `zome_view_model/${this._bridge.zomeName}`;
-        // if (ZomeViewModel._isContextProvided) {
-        //     console.error("Context already provided for", contextKey)
-        //     return;
-        // }
-        new ContextProvider(host, createContext<ZomeViewModel<P, B>>(contextKey), this);
-        //ZomeViewModel._isContextProvided = true;
+        if (ZomeViewModel._isContextProvided) {
+            console.error("Context already provided for", typeof this)
+            return;
+        }
+        new ContextProvider(host, this.getContext(), this);
+        ZomeViewModel._isContextProvided = true;
     }
 
 
@@ -48,6 +48,7 @@ export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeVie
     protected abstract hasChanged(): boolean;
     /* Returns the latest perspective */
     abstract get perspective(): P;
+    abstract getContext(): any;
     /* (optional) Lets the observer trigger probing of the DHT in order to get an updated perspective */
     async probeDht(): Promise<void> {}
 
