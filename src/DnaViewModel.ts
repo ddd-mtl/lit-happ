@@ -21,26 +21,30 @@ export class DnaViewModel {
   /** -- Fields -- */
 
   private _allEntryTypes: Dictionary<[string, boolean][]> = {};
-  protected _viewModels: IZomeViewModel[] = [];
+  protected _viewModels: Dictionary<IZomeViewModel> = {};
 
   /** -- Getters -- */
 
   get entryTypes()  {return this._allEntryTypes}
-
+  get myAgentPubKey() {return this._dnaClient.myAgentPubKey}
 
   /** -- Methods -- */
+
+  getViewModel(name: string): IZomeViewModel | undefined {
+    return this._viewModels[name]
+  }
 
   /** */
   async addZomeViewModel(vmClass: {new(dnaClient: DnaClient): IZomeViewModel}) {
     const vm = new vmClass(this._dnaClient);
     vm.provideContext(this.host);
     this._allEntryTypes[vm.zomeName] = await vm.getEntryDefs();
-    this._viewModels.push(vm);
+    this._viewModels[vm.zomeName] = vm;
   }
 
   /** */
   async probeAll() {
-    for (const vm of this._viewModels) {
+    for (const [_name, vm] of Object.entries(this._viewModels)) {
       await vm.probeDht();
     }
   }

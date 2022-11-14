@@ -1,4 +1,4 @@
-import {ContextProvider, createContext} from "@lit-labs/context";
+import {ContextProvider} from "@lit-labs/context";
 import {ZomeBridge} from "./ZomeBridge";
 import {ReactiveElement} from "lit";
 
@@ -7,7 +7,7 @@ export interface IZomeViewModel {
     probeDht(): Promise<void>;
     getEntryDefs(): Promise<[string, boolean][]>;
     get zomeName(): string;
-    getContext(): any;
+    getContext(): any; // FIXME: use context type
 }
 
 

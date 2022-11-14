@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/dna-client",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Temporary wrapper around @holochain-open-dev/cell-client",
   "main": "dist/index.js",
   "module": "dist/index.js",
