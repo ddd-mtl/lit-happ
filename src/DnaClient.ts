@@ -1,4 +1,4 @@
-import {AppWebsocket, CellId} from "@holochain/client";
+import {AppSignalCb, AppWebsocket, CellId} from "@holochain/client";
 import {AgnosticClient, HolochainClient} from '@holochain-open-dev/cell-client';
 import {serializeHash} from "@holochain-open-dev/utils";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
@@ -16,6 +16,10 @@ export interface ZomeCallResponse {
   failure?: any,
   timestamp: number,
   requestIndex: number;
+}
+
+export interface SignalUnsubscriber {
+  unsubscribe: () => void;
 }
 
 export const delay = (ms:number) => new Promise(r => setTimeout(r, ms))
@@ -44,14 +48,13 @@ export class DnaClient {
     }
   }
 
-
-
   /** Ctor */
-  constructor(public agnosticClient: AgnosticClient, public cellId: CellId, defaultTimeout?: number) {
+  constructor(private _agnosticClient: AgnosticClient, public cellId: CellId, defaultTimeout?: number) {
     this.defaultTimeout = defaultTimeout? defaultTimeout : 10 * 1000;
     this.myAgentPubKey = serializeHash(cellId[1]);
     this.dnaHash = serializeHash(cellId[0]);
   }
+
 
   /** -- Fields -- */
 
@@ -64,11 +67,37 @@ export class DnaClient {
 
   private _write_mutex_locked: boolean = false;
 
-  /** Checks if obj is a Hash or list of hashes
-   * and tries to convert it a B64 or list of B64
+  private _signalHandlers: AppSignalCb[] = []
+
+
+  /** -- Methods -- */
+
+  /** Store signalHandler and forward it to HcClient */
+  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
+    const index = this._signalHandlers.indexOf(handler);
+    if (index >= 0) {
+      throw new Error("SignalHandler already added to this DnaClient");
+    }
+    this._signalHandlers.push(handler);
+    const unsubscribeHandler = this._agnosticClient.addSignalHandler(handler);
+    return  {
+      unsubscribe: () => {
+        const index = this._signalHandlers.indexOf(handler);
+        if (index <= -1) {
+          console.warn("unsubscribe failed: Couldn't find signalHandler in DnaClient")
+          return;
+        }
+        this._signalHandlers.slice(index, 1)
+        unsubscribeHandler.unsubscribe();
+      }
+    };
+  }
+
+  /**
+   * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
    */
   private anyToB64(obj: any): any {
-    /** Check if its a hash */
+    /** Check if it's a hash */
     if (obj instanceof Uint8Array) {
       return serializeHash(obj);
     } else {
@@ -119,7 +148,7 @@ export class DnaClient {
     const request: ZomeCallRequest = {zomeName, fnName, timestamp: Date.now(), payload: this.anyToB64(payload)};
     this._requestLog.push(request)
     try {
-      const result = await this.agnosticClient.callZome(this.cellId, zomeName, fnName, payload, this.defaultTimeout);
+      const result = await this._agnosticClient.callZome(this.cellId, zomeName, fnName, payload, this.defaultTimeout);
       //console.log("callZome: agent_directory." + fn_name + "() result")
       //console.info({result})
       let success = this.anyToB64(result)
@@ -134,7 +163,7 @@ export class DnaClient {
   }
 
 
-  // /** */
+  // /** TODO once we have getDnaDefinition() api */
   // dumpAllZomes() {
   //   // FIXME get DNA DEF
   //   for (const zomeName of dnaDef) {

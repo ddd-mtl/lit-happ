@@ -2,6 +2,8 @@ import {ContextProvider} from "@lit-labs/context";
 import {ZomeBridge} from "./ZomeBridge";
 import {ReactiveElement} from "lit";
 
+
+/** */
 export interface IZomeViewModel {
     provideContext(host: ReactiveElement): void;
     probeDht(): Promise<void>;
@@ -82,7 +84,7 @@ export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeVie
         this._previousPerspective = this.perspective
     }
 
-
+    /** */
     async getEntryDefs(): Promise<[string, boolean][]> {
         return this._bridge.getEntryDefs()
     }
