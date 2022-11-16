@@ -5,7 +5,8 @@ import {Dictionary} from "@holochain-open-dev/core-types";
 
 
 /**
- * Class that holds the appWebsocket, DnaClient and all viewModels of the Dna.
+ * ABC for holding the DnaClient and all the ZomeViewModels of the DNA by a host ReactiveElement.
+ * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
 export class DnaViewModel {
   /** async Factory */
@@ -15,13 +16,13 @@ export class DnaViewModel {
   }
 
   /** Ctor */
-  constructor(public host: ReactiveElement, protected _dnaClient: DnaClient) {}
+  private constructor(public host: ReactiveElement, protected _dnaClient: DnaClient) {}
 
 
   /** -- Fields -- */
 
   private _allEntryTypes: Dictionary<[string, boolean][]> = {};
-  protected _viewModels: Dictionary<IZomeViewModel> = {};
+  protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
 
   /** -- Getters -- */
 
@@ -30,21 +31,21 @@ export class DnaViewModel {
 
   /** -- Methods -- */
 
-  getViewModel(name: string): IZomeViewModel | undefined {
-    return this._viewModels[name]
+  getZomeViewModel(name: string): IZomeViewModel | undefined {
+    return this._zomeViewModels[name]
   }
 
   /** */
-  async addZomeViewModel(vmClass: {new(dnaClient: DnaClient): IZomeViewModel}) {
+  protected async addZomeViewModel(vmClass: {new(dnaClient: DnaClient): IZomeViewModel}) {
     const vm = new vmClass(this._dnaClient);
     vm.provideContext(this.host);
     this._allEntryTypes[vm.zomeName] = await vm.getEntryDefs();
-    this._viewModels[vm.zomeName] = vm;
+    this._zomeViewModels[vm.zomeName] = vm;
   }
 
   /** */
   async probeAll() {
-    for (const [_name, vm] of Object.entries(this._viewModels)) {
+    for (const [_name, vm] of Object.entries(this._zomeViewModels)) {
       await vm.probeDht();
     }
   }

@@ -1,5 +1,5 @@
 import {AppSignalCb, AppWebsocket, CellId} from "@holochain/client";
-import {AgnosticClient, HolochainClient} from '@holochain-open-dev/cell-client';
+import {HolochainClient} from '@holochain-open-dev/cell-client';
 import {serializeHash} from "@holochain-open-dev/utils";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 
@@ -18,7 +18,8 @@ export interface ZomeCallResponse {
   requestIndex: number;
 }
 
-export interface SignalUnsubscriber {
+/** From hc-client-js API */
+export interface ZomeSignalUnsubscriber {
   unsubscribe: () => void;
 }
 
@@ -26,12 +27,12 @@ export const delay = (ms:number) => new Promise(r => setTimeout(r, ms))
 
 
 /**
- * Handles the connection to a Cell.
- * Logs ZomeCalls and dispatch Signals.
- * This class is expected to be used by Zome Bridges.
+ * Creates an appWebsocket into a HolochainClient and holds this connection to the Cell.
+ * It logs ZomeCalls and dispatch Signals.
+ * This class is expected to be used by ZomeBridges.
  */
 export class DnaClient {
-  /** async Factory */
+  /** async factory */
   static async new(port: number, installedAppId: string): Promise<DnaClient> {
     const wsUrl = `ws://localhost:${port}`
     try {
@@ -49,7 +50,7 @@ export class DnaClient {
   }
 
   /** Ctor */
-  constructor(private _agnosticClient: AgnosticClient, public cellId: CellId, defaultTimeout?: number) {
+  private constructor(private _hcClient: HolochainClient, public cellId: CellId, defaultTimeout?: number) {
     this.defaultTimeout = defaultTimeout? defaultTimeout : 10 * 1000;
     this.myAgentPubKey = serializeHash(cellId[1]);
     this.dnaHash = serializeHash(cellId[0]);
@@ -73,13 +74,13 @@ export class DnaClient {
   /** -- Methods -- */
 
   /** Store signalHandler and forward it to HcClient */
-  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
+  addSignalHandler(handler: AppSignalCb): ZomeSignalUnsubscriber {
     const index = this._signalHandlers.indexOf(handler);
     if (index >= 0) {
       throw new Error("SignalHandler already added to this DnaClient");
     }
     this._signalHandlers.push(handler);
-    const unsubscribeHandler = this._agnosticClient.addSignalHandler(handler);
+    const unsubscribeHandler = this._hcClient.addSignalHandler(handler);
     return  {
       unsubscribe: () => {
         const index = this._signalHandlers.indexOf(handler);
@@ -148,7 +149,7 @@ export class DnaClient {
     const request: ZomeCallRequest = {zomeName, fnName, timestamp: Date.now(), payload: this.anyToB64(payload)};
     this._requestLog.push(request)
     try {
-      const result = await this._agnosticClient.callZome(this.cellId, zomeName, fnName, payload, this.defaultTimeout);
+      const result = await this._hcClient.callZome(this.cellId, zomeName, fnName, payload, this.defaultTimeout);
       //console.log("callZome: agent_directory." + fn_name + "() result")
       //console.info({result})
       let success = this.anyToB64(result)

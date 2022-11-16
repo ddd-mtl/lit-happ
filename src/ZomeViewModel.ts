@@ -3,23 +3,27 @@ import {ZomeBridge} from "./ZomeBridge";
 import {ReactiveElement} from "lit";
 
 
-/** */
+/** Interface for the generic-less ZomeViewModel class */
 export interface IZomeViewModel {
     provideContext(host: ReactiveElement): void;
     probeDht(): Promise<void>;
     getEntryDefs(): Promise<[string, boolean][]>;
     get zomeName(): string;
     getContext(): any; // FIXME: use context type
+
+    //get perspective(): any;
 }
 
 
-
 /**
- * Represents the ViewModel of a zome.
- * It is an Observable meant to be a singleton passed around by a Context.
- * It queries a cell's zome to get the agent's perspective (by callind a Zome Bridge).
- * LitElement hosts can subscribe to it in order to get updated when the perspective changes.
- * Hosts could also be allowed to trigger probing in order to get an updated perspective.
+ * Represents the ViewModel of a Zome.
+ * Views (i.e CustomElements) are required to use this in order to interact with a Zome / DNA.
+ * It is an Observable meant to be a singleton passed around by a (Lit) Context.
+ * It holds a ZomeBridge and a perspective.
+ * The perspective is the probed data from the Zome that is transformed and enhanced in order to be comsumed by a View.
+ * Many CustomElement hosts can subscribe to it in order to get updated when the perspective changes.
+ * Hosts can also trigger the probing in order to get an updated perspective.
+ * The perspective can be automatically updated by Signals from other Agents or the Zome Scheduler.
  */
 export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeViewModel {
 

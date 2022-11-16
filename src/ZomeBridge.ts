@@ -1,18 +1,25 @@
 import {DnaClient} from "./DnaClient";
 
-/** A ZomeBridge is an object that has a zomeName and private DnaClient */
+/**
+ * ABC for representing the zome function bindings of a Zome.
+ * It holds the zomeName and private DnaClient.
+ */
 export abstract class ZomeBridge {
   abstract zomeName: string;
 
   constructor(protected _dnaClient: DnaClient) {}
 
-  /** */
+
+  /** Helper for calling a zome function on its zome */
   protected async call(fn_name: string, payload: any, timeout?: number): Promise<any> {
     return this._dnaClient.callZome(this.zomeName, fn_name, payload, timeout);
   }
 
 
-  /** Returns array of zome's AppEntryDefNames and visibility */
+  /**
+   * Calls the `entry_defs()` zome function and
+   * returns an array of all the zome's AppEntryDefNames and visibility
+   */
   async getEntryDefs(): Promise<[string, boolean][]> {
     try {
       const entryDefs = await this.call("entry_defs", null, 2 * 1000);
