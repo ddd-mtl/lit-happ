@@ -17,7 +17,7 @@ export interface IZomeViewModel {
 
 /**
  * Represents the ViewModel of a Zome.
- * Views (i.e CustomElements) are required to use this in order to interact with a Zome / DNA.
+ * Views (i.e. CustomElements) are required to use this in order to interact with a Zome / DNA.
  * It is an Observable meant to be a singleton passed around by a (Lit) Context.
  * It holds a ZomeBridge and a perspective.
  * The perspective is the probed data from the Zome that is transformed and enhanced in order to be comsumed by a View.
@@ -27,7 +27,7 @@ export interface IZomeViewModel {
  */
 export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeViewModel {
 
-    constructor(protected _bridge: B) {}
+    protected constructor(protected _bridge: B) {}
 
     /** -- Fields -- */
     protected _previousPerspective?: P;

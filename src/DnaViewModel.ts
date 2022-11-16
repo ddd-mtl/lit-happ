@@ -16,7 +16,7 @@ export class DnaViewModel {
   }
 
   /** Ctor */
-  private constructor(public host: ReactiveElement, protected _dnaClient: DnaClient) {}
+  protected constructor(public host: ReactiveElement, protected _dnaClient: DnaClient) {}
 
 
   /** -- Fields -- */

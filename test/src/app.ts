@@ -1,7 +1,7 @@
-import { LitElement, html } from "lit";
+import {LitElement, html} from "lit";
 import { state } from "lit/decorators.js";
-import {DnaViewModel, EntryDefSelect} from "@ddd-qc/dna-client";
-import {DummyViewModel} from "./dummy";
+import {EntryDefSelect} from "@ddd-qc/dna-client";
+import {DummyDvm, DummyZvm} from "./dummy";
 
 
 
@@ -13,18 +13,17 @@ export class DummyApp extends LitElement {
   @state() private _loaded = false;
   @state() private _selectedZomeName = ""
 
-  private _dnaViewModel!: DnaViewModel;
+  private _dummyDvm!: DummyDvm;
 
   async firstUpdated() {
     let HC_PORT:any = process.env.HC_PORT;
-    this._dnaViewModel = await DnaViewModel.new(this, HC_PORT, "playground");
-    await this._dnaViewModel.addZomeViewModel(DummyViewModel)
-    await this._dnaViewModel.probeAll();
+    this._dummyDvm = await DummyDvm.new(this, HC_PORT, "playground");
+    await this._dummyDvm.probeAll();
     this._loaded = true;
   }
 
   async onDumpLogs(e: any) {
-    this._dnaViewModel.dumpLogs()
+    this._dummyDvm.dumpLogs()
   }
 
 
@@ -46,7 +45,7 @@ export class DummyApp extends LitElement {
       <div style="margin:10px;">
       <h2>Dummy App</h2>
       <input type="button" value="dump logs" @click=${this.onDumpLogs}>
-      <entry-def-select .dnaViewModel="${this._dnaViewModel}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+      <entry-def-select .dnaViewModel="${this._dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
       <h3>Selected AppEntryType</h3>
       <span id="entryLabel"></span>>
     `
