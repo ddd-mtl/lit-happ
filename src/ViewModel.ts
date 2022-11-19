@@ -34,6 +34,7 @@ import {ReactiveElement} from "lit";
     /** Make sure provideContext is only called once? */
     //static _isContextProvided = false;
     provideContext(host: ReactiveElement): void {
+        console.log("provideContext() called in ViewModel", host, this)
         // if (this._isContextProvided) {
         //     console.error("Context already provided for", typeof this)
         //     return;

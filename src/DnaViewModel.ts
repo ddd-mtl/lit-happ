@@ -3,7 +3,6 @@ import {IZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
-import { AgentPubKey } from "@holochain/client";
 
 
 /** Interface for the generic-less DnaViewModel class */
@@ -38,15 +37,23 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   /** -- Getters -- */
 
   get entryTypes(): Dictionary<[string, boolean][]> {return this._allEntryTypes}
-  get roleId(): string { return this._dnaProxy.roleId }
-  get dnaHash(): DnaHashB64 { return this._dnaProxy.dnaHash }
+  get roleId(): string {return this._dnaProxy.roleId}
+  get dnaHash(): DnaHashB64 {return this._dnaProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 {return this._dnaProxy.agentPubKey}
 
   getZomeViewModel(name: string): IZomeViewModel | undefined {
     return this._zomeViewModels[name]
   }
 
+
   /** -- Methods -- */
+
+  provideContext(host: ReactiveElement): void {
+    super.provideContext(host);
+    for (const zvm of Object.values(this._zomeViewModels)) {
+      zvm.provideContext(host)
+    }
+  }
 
   /** */
   protected async addZomeViewModel(zvmClass: {new(dnaProxy: DnaProxy): IZomeViewModel}) {

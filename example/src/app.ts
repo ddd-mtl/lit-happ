@@ -21,6 +21,7 @@ export class DummyApp extends LitElement {
 
   get dummyDvm(): IDnaViewModel {return this._happ.getDvm(this._dnaRoleId)!}
 
+  
   /** */
   async firstUpdated() {
     let HC_PORT = Number(process.env.HC_PORT);

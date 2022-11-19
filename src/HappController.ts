@@ -23,6 +23,7 @@ import { IDnaViewModel } from "./DnaViewModel";
 
   /** Provide context? */
   hostConnected(): void {
+    console.log("HappController.hostConnected() called")
       for (const dvm of Object.values(this._dvms)) {
         dvm.provideContext(this._host);
       }
