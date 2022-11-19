@@ -1,6 +1,6 @@
 import {LitElement, html} from "lit";
 import { state } from "lit/decorators.js";
-import {EntryDefSelect} from "@ddd-qc/dna-client";
+import {ConductorAppProxy, EntryDefSelect, HappController, IDnaViewModel} from "@ddd-qc/dna-client";
 import {DummyDvm, DummyZvm} from "./dummy";
 
 
@@ -13,17 +13,29 @@ export class DummyApp extends LitElement {
   @state() private _loaded = false;
   @state() private _selectedZomeName = ""
 
-  private _dummyDvm!: DummyDvm;
 
+  private _conductorAppProxy!: ConductorAppProxy;
+  private _happ!: HappController;
+
+  private _dnaRoleId!: string;
+
+  get dummyDvm(): IDnaViewModel {return this._happ.getDvm(this._dnaRoleId)!}
+
+  /** */
   async firstUpdated() {
-    let HC_PORT:any = process.env.HC_PORT;
-    this._dummyDvm = await DummyDvm.new(this, HC_PORT, "playground");
-    await this._dummyDvm.probeAll();
+    let HC_PORT = Number(process.env.HC_PORT);
+    this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
+    this._happ = await this._conductorAppProxy.newHappElement("playground")
+    const dummyDvm = await DummyDvm.new(this._happ);
+    this._dnaRoleId = await dummyDvm.roleId;
+    this._happ.addDvm(dummyDvm);
+    //this.addController(this._happ);
+    await dummyDvm.probeAll();
     this._loaded = true;
   }
 
   async onDumpLogs(e: any) {
-    this._dummyDvm.dumpLogs()
+    this.dummyDvm.dumpLogs()
   }
 
 
@@ -45,7 +57,7 @@ export class DummyApp extends LitElement {
       <div style="margin:10px;">
       <h2>Dummy App</h2>
       <input type="button" value="dump logs" @click=${this.onDumpLogs}>
-      <entry-def-select .dnaViewModel="${this._dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+      <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
       <h3>Selected AppEntryType</h3>
       <span id="entryLabel"></span>>
     `

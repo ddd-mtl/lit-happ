@@ -1,6 +1,6 @@
 ---
 manifest_version: "1"
-name: playground
+name: dummy
 uuid: ~
 properties: ~
 integrity:

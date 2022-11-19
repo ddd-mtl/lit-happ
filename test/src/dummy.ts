@@ -1,27 +1,24 @@
-import {DnaClient, DnaViewModel, ZomeBridge, ZomeViewModel} from "@ddd-qc/dna-client";
+import {DnaProxy, DnaViewModel, HappController, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import {createContext} from "@lit-labs/context";
 import {ReactiveElement} from "lit/development";
 
 
 /** */
-export class DummyBridge extends ZomeBridge {
-  zomeName = 'dummy'
+export class DummyZomeProxy extends ZomeProxy {
+  get zomeName(): string {return "dummy"}
   async getDummy(): Promise<void> {
-    return this.call('get_dummy', null);
+    return this.call('get_dummy', null, null);
   }
 }
 
 
-/**
- *
- */
-export class DummyZvm extends ZomeViewModel<number, DummyBridge> {
-  constructor(protected dnaClient: DnaClient) {
-    super(new DummyBridge(dnaClient));
+/** */
+export class DummyZvm extends ZomeViewModel<number, DummyZomeProxy> {
+  constructor(protected proxy: DnaProxy) {
+    super(new DummyZomeProxy(proxy));
   }
 
-  static context = createContext<DummyZvm>('zome_view_model/dummy');
-
+  static context = createContext<DummyZvm>('zvm/dummy');
   getContext():any {return DummyZvm.context}
 
   protected hasChanged(): boolean {
@@ -32,29 +29,35 @@ export class DummyZvm extends ZomeViewModel<number, DummyBridge> {
     return 42;
   }
 
-  async probeDht(): Promise<void> {
-    let entryDefs = await this._bridge.getEntryDefs();
+  async probeAll(): Promise<void> {
+    let entryDefs = await this._proxy.getEntryDefs();
     console.log({entryDefs})
-    this._bridge.getDummy();
+    this._proxy.getDummy();
   }
 }
 
 
-/**
- *
- */
-export class DummyDvm extends DnaViewModel {
+/** */
+export class DummyDvm extends DnaViewModel<number> {
   /** async factory */
-  static async new(host: ReactiveElement, port: number, installedAppId: string): Promise<DummyDvm> {
-    let dnaClient = await DnaClient.new(port, installedAppId);
-    return new DummyDvm(host, dnaClient);
+  static async new(happ: HappController): Promise<DummyDvm> {
+    const dnaProxy = await happ.conductorAppProxy.newDnaProxy("playground", "dummy");
+    return new DummyDvm(dnaProxy);
   }
 
-  private constructor(host: ReactiveElement, dnaClient: DnaClient) {
-    super(host, dnaClient);
+  private constructor(dnaProxy: DnaProxy) {
+    super(dnaProxy);
     this.addZomeViewModel(DummyZvm);
   }
 
-  get dummyZvm(): DummyZvm { return this.getZomeViewModel("dummy") as DummyZvm}
+
+  static context = createContext<DummyDvm>('dvm/dummy');
+  getContext():any {return DummyDvm.context}
+
+  protected hasChanged(): boolean {return true}
+
+  get perspective(): number {return 4242}
+
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy") as DummyZvm}
 
 }

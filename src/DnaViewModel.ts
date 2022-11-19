@@ -1,22 +1,36 @@
-import {DnaClient} from "./DnaClient";
+import {DnaProxy} from "./DnaProxy";
 import {IZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
-import {Dictionary} from "@holochain-open-dev/core-types";
+import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
+import { ViewModel } from "./ViewModel";
+import { AgentPubKey } from "@holochain/client";
+
+
+/** Interface for the generic-less DnaViewModel class */
+export interface IDnaViewModel {
+  get entryTypes(): Dictionary<[string, boolean][]>;
+  get roleId(): string;
+  get dnaHash(): DnaHashB64;
+  get agentPubKey(): AgentPubKeyB64;
+  probeAll(): Promise<void>;
+  dumpLogs(zomeName?: string): void;
+}
 
 
 /**
- * ABC for holding the DnaClient and all the ZomeViewModels of the DNA by a host ReactiveElement.
+ * Abstract ViewModel for a DNA.
+ * It holds the DnaClient and all the ZomeViewModels of the DNA.
+ * It is bound to one host ReactiveElement.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
-export class DnaViewModel {
-  /** async Factory */
-  static async new(host: ReactiveElement, port: number, installedAppId: string): Promise<DnaViewModel> {
-    let dnaClient = await DnaClient.new(port, installedAppId);
-    return new DnaViewModel(host, dnaClient);
-  }
+export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
 
   /** Ctor */
-  protected constructor(public host: ReactiveElement, protected _dnaClient: DnaClient) {}
+  protected constructor(protected _dnaProxy: DnaProxy) {super()}
+
+  // abstract provideContext(host: ReactiveElement):  Promise<void>;    
+  // abstract getContext(): any; // FIXME: use context type
+  // abstract get perspective(): P;
 
 
   /** -- Fields -- */
@@ -24,34 +38,39 @@ export class DnaViewModel {
   private _allEntryTypes: Dictionary<[string, boolean][]> = {};
   protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
 
+
   /** -- Getters -- */
 
-  get entryTypes()  {return this._allEntryTypes}
-  get myAgentPubKey() {return this._dnaClient.myAgentPubKey}
+  get entryTypes(): Dictionary<[string, boolean][]>  {return this._allEntryTypes}
+  get roleId(): string { return this._dnaProxy.roleId }
+  get dnaHash(): DnaHashB64 { return this._dnaProxy.dnaHash }
+  get agentPubKey(): AgentPubKeyB64 {return this._dnaProxy.agentPubKey}
+
 
   /** -- Methods -- */
 
+  /** */
   getZomeViewModel(name: string): IZomeViewModel | undefined {
     return this._zomeViewModels[name]
   }
 
   /** */
-  protected async addZomeViewModel(vmClass: {new(dnaClient: DnaClient): IZomeViewModel}) {
-    const vm = new vmClass(this._dnaClient);
-    vm.provideContext(this.host);
-    this._allEntryTypes[vm.zomeName] = await vm.getEntryDefs();
-    this._zomeViewModels[vm.zomeName] = vm;
+  protected async addZomeViewModel(zvmClass: {new(dnaProxy: DnaProxy): IZomeViewModel}) {
+    const zvm = new zvmClass(this._dnaProxy);
+    //vm.provideContext(this.host);
+    this._allEntryTypes[zvm.zomeName] = await zvm.getEntryDefs();
+    this._zomeViewModels[zvm.zomeName] = zvm;
   }
 
   /** */
-  async probeAll() {
-    for (const [_name, vm] of Object.entries(this._zomeViewModels)) {
-      await vm.probeDht();
+  async probeAll(): Promise<void> {
+    for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
+      await zvm.probeAll();
     }
   }
 
   /** */
-  dumpLogs(zomeName?: string) {
-    this._dnaClient.dumpLogs(zomeName)
+  dumpLogs(zomeName?: string): void {
+    this._dnaProxy.dumpLogs(zomeName)
   }
 }

@@ -1,6 +1,6 @@
 import { LitElement, html } from "lit";
 import { state, property } from "lit/decorators.js";
-import {DnaViewModel} from "../DnaViewModel";
+import {IDnaViewModel} from "../DnaViewModel";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 
 
@@ -13,7 +13,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
   @state() private _selectedZomeName = ""
 
   @property({ type: Object, attribute: false })
-  dnaViewModel!: DnaViewModel;
+  dnaViewModel!: IDnaViewModel;
 
   /** -- Methods -- */
 

@@ -36,7 +36,7 @@ pub enum DummyEntry {
 
 #[hdk_link_types]
 pub enum DummyLinkType {
-   All,
+   Default,
    ToDummies,
 }
 

@@ -1,16 +1,16 @@
 ---
 manifest_version: "1"
 
-name: dummy-happ
-description: dummy app
+name: playground-happ
+description: Playground happ for testing cell-proxy framework
 
 roles:
-  - id: playground
+  - id: dummy
     provisioning:
       strategy: create
       deferred: false
     dna:
-      bundled: ../playground.dna
+      bundled: ../dummy.dna
       uuid: ~
       properties: ~
       clone_limit: 0
