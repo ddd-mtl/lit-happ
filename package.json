@@ -10,8 +10,8 @@
   ],
   "scripts": {
     "tsc": "tsc",
-    "tsc:test": "cd test && npm run build",
-    "tsc:all": "tsc && npm run tsc:test",
+    "tsc:example": "cd example && npm run build",
+    "tsc:all": "tsc && npm run tsc:example",
     "publish-to-branch": "npm run build && rm -rf node_modules && gh-pages -d ./ -b build && npm i"
   },
   "repository": {
