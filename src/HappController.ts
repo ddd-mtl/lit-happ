@@ -1,6 +1,6 @@
 import { Dictionary } from "@holochain-open-dev/core-types";
-import { InstalledAppId, InstalledAppInfo } from "@holochain/client";
-import { ReactiveController } from "lit";
+import { InstalledAppInfo } from "@holochain/client";
+import { ReactiveController, ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 import { IDnaViewModel } from "./DnaViewModel";
 
@@ -8,10 +8,10 @@ import { IDnaViewModel } from "./DnaViewModel";
 /**
  * Provides the DnaViewModels for a happ
  */
- export class HappController /*implements ReactiveController*/ {
+ export class HappController implements ReactiveController {
 
   /** Ctor */
-  constructor(public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy) {}
+  constructor(protected _host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy) {}
 
   protected _dvms: Dictionary<IDnaViewModel> = {};
 
@@ -19,6 +19,13 @@ import { IDnaViewModel } from "./DnaViewModel";
 
   addDvm(dvm: IDnaViewModel) {
     this._dvms[dvm.roleId] = dvm
+  }
+
+  /** Provide context? */
+  hostConnected(): void {
+      for (const dvm of Object.values(this._dvms)) {
+        dvm.provideContext(this._host);
+      }
   }
 
   // /** */

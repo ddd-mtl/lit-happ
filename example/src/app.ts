@@ -25,11 +25,11 @@ export class DummyApp extends LitElement {
   async firstUpdated() {
     let HC_PORT = Number(process.env.HC_PORT);
     this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
-    this._happ = await this._conductorAppProxy.newHappElement("playground")
+    this._happ = await this._conductorAppProxy.newHappElement(this, "playground")
     const dummyDvm = await DummyDvm.new(this._happ);
     this._dnaRoleId = await dummyDvm.roleId;
     this._happ.addDvm(dummyDvm);
-    //this.addController(this._happ);
+    this.addController(this._happ);
     await dummyDvm.probeAll();
     this._loaded = true;
   }

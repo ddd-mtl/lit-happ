@@ -34,12 +34,12 @@ import {ReactiveElement} from "lit";
     /** Make sure provideContext is only called once? */
     //static _isContextProvided = false;
     provideContext(host: ReactiveElement): void {
-        // if (ZomeViewModel._isContextProvided) {
+        // if (this._isContextProvided) {
         //     console.error("Context already provided for", typeof this)
         //     return;
         // }
         new ContextProvider(host, this.getContext(), this);
-        //ZomeViewModel._isContextProvided = true;
+        //this._isContextProvided = true;
     }
 
 

@@ -4,6 +4,7 @@ import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { anyToB64 } from "./utils";
 import { DnaProxy } from "./DnaProxy";
 import { HappController } from "./HappController";
+import { ReactiveElement } from "lit";
 
 
 /** From hc-client-js API */
@@ -54,13 +55,13 @@ export class ConductorAppProxy {
   /** -- Methods -- */
 
   /** Spawn a HappElement for an AppId running on the ConductorAppProxy */
-  async newHappElement(installedAppId: InstalledAppId): Promise<HappController> {
+  async newHappElement(host: ReactiveElement, installedAppId: InstalledAppId): Promise<HappController> {
     try {
       const appInfo = await this._appWs.appInfo({ installed_app_id: installedAppId })
       if (!appInfo.status.hasOwnProperty("running")) {
         return Promise.reject(`HappElement initialization failed: hApp ${installedAppId} is not running`);
       }
-      return new HappController(appInfo, this);
+      return new HappController(host, appInfo, this);
     } catch (e) {
       console.error("HappElement initialization failed", e)
       return Promise.reject("HappElement initialization failed");

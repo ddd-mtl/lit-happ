@@ -14,23 +14,19 @@ export interface IDnaViewModel {
   get agentPubKey(): AgentPubKeyB64;
   probeAll(): Promise<void>;
   dumpLogs(zomeName?: string): void;
+  provideContext(host: ReactiveElement): void;
 }
 
 
 /**
  * Abstract ViewModel for a DNA.
- * It holds the DnaClient and all the ZomeViewModels of the DNA.
- * It is bound to one host ReactiveElement.
+ * It holds the DnaProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
 export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
 
   /** Ctor */
   protected constructor(protected _dnaProxy: DnaProxy) {super()}
-
-  // abstract provideContext(host: ReactiveElement):  Promise<void>;    
-  // abstract getContext(): any; // FIXME: use context type
-  // abstract get perspective(): P;
 
 
   /** -- Fields -- */
@@ -41,18 +37,16 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   /** -- Getters -- */
 
-  get entryTypes(): Dictionary<[string, boolean][]>  {return this._allEntryTypes}
+  get entryTypes(): Dictionary<[string, boolean][]> {return this._allEntryTypes}
   get roleId(): string { return this._dnaProxy.roleId }
   get dnaHash(): DnaHashB64 { return this._dnaProxy.dnaHash }
   get agentPubKey(): AgentPubKeyB64 {return this._dnaProxy.agentPubKey}
 
-
-  /** -- Methods -- */
-
-  /** */
   getZomeViewModel(name: string): IZomeViewModel | undefined {
     return this._zomeViewModels[name]
   }
+
+  /** -- Methods -- */
 
   /** */
   protected async addZomeViewModel(zvmClass: {new(dnaProxy: DnaProxy): IZomeViewModel}) {
