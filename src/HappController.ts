@@ -29,6 +29,9 @@ import { IDnaViewModel } from "./DnaViewModel";
       }
   }
 
+  /** QoL Helpers */
+  get installedAppId(): string {return this.appInfo.installed_app_id}
+
   // /** */
   // protected async addDnaViewModel(vmClass: {new(dnaClient: DnaProxy): IZomeViewModel}) {
   //   const vm = new vmClass(this._dnaClient);
