@@ -43,8 +43,8 @@ export class DummyDvm extends DnaViewModel<number> {
   /** async factory method */
   static async new(happ: HappController): Promise<DummyDvm> {
     const dnaProxy = await happ.conductorAppProxy.newDnaProxy(happ.installedAppId, "dummy");
-    let dvm = new DummyDvm(dnaProxy);
-    await dvm.addZomeViewModel(DummyZvm);
+    let dvm = new DummyDvm(dnaProxy, [DummyZvm]);
+    //await dvm.addZomeViewModel(DummyZvm);
     return dvm;
   }
 

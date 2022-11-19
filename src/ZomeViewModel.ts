@@ -1,8 +1,9 @@
-import { ContextProvider } from "@lit-labs/context";
 import { ReactiveElement } from "lit";
 import { ZomeProxy } from "./ZomeProxy";
 import { ViewModel } from "./ViewModel";
+import { DnaProxy } from "./DnaProxy";
 
+export type ZvmClass = {new(dnaProxy: DnaProxy): IZomeViewModel}
 
 /** Interface for the generic-less ZomeViewModel class */
 export interface IZomeViewModel {

@@ -1,5 +1,5 @@
 import {DnaProxy} from "./DnaProxy";
-import {IZomeViewModel} from "./ZomeViewModel";
+import {IZomeViewModel, ZvmClass} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
@@ -25,7 +25,13 @@ export interface IDnaViewModel {
 export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
 
   /** Ctor */
-  protected constructor(protected _dnaProxy: DnaProxy) {super()}
+  protected constructor(protected _dnaProxy: DnaProxy, zvmClasses: ZvmClass[]) {
+    super();
+    for (const zvm of zvmClasses) {
+      const obj = new zvm(this._dnaProxy);
+      this._zomeViewModels[obj.zomeName] = obj;
+    }
+  }
 
 
   /** -- Fields -- */
@@ -55,13 +61,13 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
     }
   }
 
-  /** */
-  protected async addZomeViewModel(zvmClass: {new(dnaProxy: DnaProxy): IZomeViewModel}) {
-    const zvm = new zvmClass(this._dnaProxy);
-    //vm.provideContext(this.host);
-    this._allEntryTypes[zvm.zomeName] = await zvm.getEntryDefs();
-    this._zomeViewModels[zvm.zomeName] = zvm;
-  }
+  // /** */
+  // protected addZomeViewModel(zvmClass: ZvmClass): void {
+  //   const zvm = new zvmClass(this._dnaProxy);
+  //   //vm.provideContext(this.host);
+  //   //this._allEntryTypes[zvm.zomeName] = await zvm.getEntryDefs();
+  //   this._zomeViewModels[zvm.zomeName] = zvm;
+  // }
 
   /** */
   async probeAll(): Promise<void> {

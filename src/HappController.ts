@@ -21,7 +21,7 @@ import { IDnaViewModel } from "./DnaViewModel";
     this._dvms[dvm.roleId] = dvm
   }
 
-  /** Provide context? */
+  /** Provide context */
   hostConnected(): void {
     console.log("HappController.hostConnected() called")
       for (const dvm of Object.values(this._dvms)) {
