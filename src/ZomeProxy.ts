@@ -23,7 +23,7 @@ export abstract class ZomeProxy {
 
   /** */
   async getEntryDefs(): Promise<[string, boolean][]> {
-    if (this._entryDefs) return this._entryDefs;
+    //if (this._entryDefs) return this._entryDefs;
     this._entryDefs = await this.callEntryDefs();
     return  this._entryDefs;
   }

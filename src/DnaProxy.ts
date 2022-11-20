@@ -50,6 +50,7 @@ export class DnaProxy {
   get dnaHash(): DnaHashB64 { return serializeHash(this.cellData.cell_id[0]) }
   get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellData.cell_id[1]) }
 
+
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
    */
@@ -70,7 +71,17 @@ export class DnaProxy {
       cell_id: this.cellData.cell_id,
       provenance: this.cellData.cell_id[1],
     } as CallZomeRequest;
-    return this._conductor.callZome(req, timeout);
+    const log = {request: req, timeout, requestTimestamp: Date.now(), executionTimestamp: Date.now()} as RequestLog;
+    const requestIndex = this._requestLog.length;
+    this._requestLog.push(log);
+    try {
+      const response = await this._conductor.callZome(req, timeout);
+      this._responseLog.push({requestIndex, success: response, timestamp: Date.now()});
+      return response;
+    } catch (e) {
+      this._responseLog.push({requestIndex, failure: e, timestamp: Date.now()});
+      return Promise.reject(e);
+    }
   }
 
   // /** TODO once we have getDnaDefinition() api */

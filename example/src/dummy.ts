@@ -6,7 +6,7 @@ import {ReactiveElement} from "lit/development";
 
 /** */
 export class DummyZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "dummy"}
+  get zomeName(): string {return "dummy_integrity"}
   async getDummy(): Promise<void> {
     return this.call('get_dummy', null, null);
   }
@@ -49,7 +49,7 @@ export class DummyDvm extends DnaViewModel<number> {
   }
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy") as DummyZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy_integrity") as DummyZvm}
 
 
   /** -- ViewModel Interface -- */

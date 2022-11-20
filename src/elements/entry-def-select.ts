@@ -12,11 +12,11 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
 
   /** -- Fields -- */
   @state() private _selectedZomeName = ""
+  @state() private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
   @property({ type: Object, attribute: false })
   dnaViewModel!: IDnaViewModel;
 
-  private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
   /** -- Methods -- */
 
@@ -34,7 +34,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
 
   /** */
   async onEntrySelect(e: any) {
-    console.log("onEntrySelect() CALLED", e)
+    // console.log("onEntrySelect() CALLED", e)
     const entrySelector = this.shadowRoot!.getElementById("selectedEntryType") as HTMLSelectElement;
     const options = {
       detail: { zome: this._selectedZomeName, entry: entrySelector.value},
@@ -60,7 +60,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
     let zomeTypes = Object.entries(this._allEntryDefs)
       .filter((item) => {return item[0] == this._selectedZomeName;})
       .map((item) => {return item[1]});
-    console.log({zomeTypes})
+    //console.log({zomeTypes})
 
     let entryTypeOptions = null;
     if (zomeTypes.length > 0) {
@@ -69,7 +69,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
           return html`<option>${pair[0]}</option>`;
         });
     }
-    console.log({entryTypeOptions})
+    //console.log({entryTypeOptions})
 
     /** render all */
     return html`

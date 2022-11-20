@@ -11,7 +11,9 @@ use hdi::prelude::*;
 ///
 #[hdk_entry_helper]
 #[derive(Clone, PartialEq)]
-pub struct Dummy {}
+pub struct Dummy {
+   value: u32,
+}
 
 
 

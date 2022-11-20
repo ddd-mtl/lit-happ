@@ -30,9 +30,9 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P>
 
     /** */
     async fetchEntryDefs(): Promise<[string, boolean][]> {
-        if (!this._entryDefs) {
+        //if (!this._entryDefs) {
             this._entryDefs = await this._proxy.getEntryDefs();
-        }
+        //}
         return this._entryDefs;
     }
 
