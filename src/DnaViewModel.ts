@@ -7,7 +7,8 @@ import { ViewModel } from "./ViewModel";
 
 /** Interface for the generic-less DnaViewModel class */
 export interface IDnaViewModel {
-  get entryTypes(): Dictionary<[string, boolean][]>;
+  fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
+  //get entryTypes(): Dictionary<[string, boolean][]>;
   get roleId(): string;
   get dnaHash(): DnaHashB64;
   get agentPubKey(): AgentPubKeyB64;
@@ -36,13 +37,13 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   /** -- Fields -- */
 
-  private _allEntryTypes: Dictionary<[string, boolean][]> = {};
+  private _allEntryDefs: Dictionary<[string, boolean][]> = {};
   protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
 
 
   /** -- Getters -- */
 
-  get entryTypes(): Dictionary<[string, boolean][]> {return this._allEntryTypes}
+  //get entryTypes(): Dictionary<[string, boolean][]> {return this._allEntryTypes}
   get roleId(): string {return this._dnaProxy.roleId}
   get dnaHash(): DnaHashB64 {return this._dnaProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 {return this._dnaProxy.agentPubKey}
@@ -60,6 +61,14 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
       zvm.provideContext(host)
     }
   }
+
+  async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
+    for (const zvm of Object.values(this._zomeViewModels)) {
+      this._allEntryDefs[zvm.zomeName] = await zvm.fetchEntryDefs(); // TODO optimize
+    }
+    return this._allEntryDefs;
+  }
+
 
   // /** */
   // protected addZomeViewModel(zvmClass: ZvmClass): void {
