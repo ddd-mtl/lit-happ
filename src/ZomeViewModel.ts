@@ -8,7 +8,7 @@ export type ZvmClass = {new(dnaProxy: DnaProxy): IZomeViewModel}
 /** Interface for the generic-less ZomeViewModel class */
 export interface IZomeViewModel {
     get zomeName(): string;
-    getEntryDefs(): Promise<[string, boolean][]>;
+    fetchEntryDefs(): Promise<[string, boolean][]>;
     provideContext(host: ReactiveElement): void;
     probeAll(): Promise<void>;
 }
@@ -26,9 +26,14 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P>
         super();
     }
 
+    protected _entryDefs?:[string, boolean][];
+
     /** */
-    async getEntryDefs(): Promise<[string, boolean][]> {
-        return this._proxy.getEntryDefs()
+    async fetchEntryDefs(): Promise<[string, boolean][]> {
+        if (!this._entryDefs) {
+            this._entryDefs = await this._proxy.getEntryDefs();
+        }
+        return this._entryDefs;
     }
 
     /** */

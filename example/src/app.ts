@@ -2,13 +2,14 @@ import {LitElement, html} from "lit";
 import { state } from "lit/decorators.js";
 import {ConductorAppProxy, EntryDefSelect, HappController, IDnaViewModel} from "@ddd-qc/dna-client";
 import {DummyDvm, DummyZvm} from "./dummy";
+import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 
 
 
 /**
  *
  */
-export class DummyApp extends LitElement {
+export class DummyApp extends ScopedElementsMixin(LitElement) {
 
   @state() private _loaded = false;
   @state() private _selectedZomeName = ""
@@ -31,7 +32,8 @@ export class DummyApp extends LitElement {
     this._dnaRoleId = await dummyDvm.roleId;
     this._happ.addDvm(dummyDvm);
     this.addController(this._happ);
-    await dummyDvm.probeAll();
+    //await dummyDvm.probeAll();
+    //await dummyDvm.fetchAllEntryDefs();
     this._loaded = true;
   }
 
@@ -56,11 +58,14 @@ export class DummyApp extends LitElement {
 
     return html`
       <div style="margin:10px;">
-      <h2>Dummy App</h2>
-      <input type="button" value="dump logs" @click=${this.onDumpLogs}>
-      <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
-      <h3>Selected AppEntryType</h3>
-      <span id="entryLabel"></span>>
+        <h2>Dummy App</h2>
+        <input type="button" value="dump logs" @click=${this.onDumpLogs}>
+        <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        <div style="margin:10px;">
+          <span>Selected AppEntryType:</span>
+          <span id="entryLabel"></span>
+        </div>
+      </div>
     `
   }
 

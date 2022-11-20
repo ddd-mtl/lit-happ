@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { state, property } from "lit/decorators.js";
 import {IDnaViewModel} from "../DnaViewModel";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
+import { Dictionary } from "@holochain-open-dev/core-types";
 
 
 /**
@@ -15,7 +16,14 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
   @property({ type: Object, attribute: false })
   dnaViewModel!: IDnaViewModel;
 
+  private _allEntryDefs: Dictionary<[string, boolean][]> = {};
+
   /** -- Methods -- */
+
+  async firstUpdated() {
+    this._allEntryDefs = await this.dnaViewModel.fetchAllEntryDefs()
+  }
+
 
   /** */
   async onZomeSelect(e: any) {
@@ -44,12 +52,12 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
       return html`<span>Loading...</span>`;
     }
 
-    const zomeOptions = Object.entries(this.dnaViewModel.entryTypes).map(
+    const zomeOptions = Object.entries(this._allEntryDefs).map(
       ([zomeName, _entryDef]) => {
         return html`<option>${zomeName}</option>`
       }
     )
-    let zomeTypes = Object.entries(this.dnaViewModel.entryTypes)
+    let zomeTypes = Object.entries(this._allEntryDefs)
       .filter((item) => {return item[0] == this._selectedZomeName;})
       .map((item) => {return item[1]});
     console.log({zomeTypes})
