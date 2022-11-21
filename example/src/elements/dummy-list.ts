@@ -1,9 +1,9 @@
 import {LitElement, html} from "lit";
 import {state, property} from "lit/decorators.js";
-import {ConductorAppProxy, EntryDefSelect, HappViewModel, IDnaViewModel} from "@ddd-qc/dna-client";
 import {contextProvided} from "@lit-labs/context";
-import {DummyDvm, DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
+import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
+import {serializeHash} from "@holochain-open-dev/utils";
 
 
 export class DummyList extends ScopedElementsMixin(LitElement) {
@@ -23,6 +23,23 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
     this._loaded = true;
   }
 
+
+  /** */
+  async onProbe(e: any) {
+    await this._dummyZvm.probeAll();
+  }
+
+
+  /** */
+  async onCreateDummy(e: any) {
+    const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
+    const value = Number(input.value);
+    let res = await this._dummyZvm.createDummy(value);
+    console.log("onCreateDummy() res =", serializeHash(res))
+    input.value = "";
+  }
+
+
   /** */
   render() {
     console.log("<dummy-list> render()")
@@ -38,6 +55,11 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
 
     /** render all */
     return html`
+        <h3>Dummy List</h3>
+        <input type="button" value="Probe" @click=${this.onProbe}>
+        <label for="dummyInput">New dummy:</label>
+        <input type="number" id="dummyInput" name="Value">
+        <input type="button" value="create" @click=${this.onCreateDummy}>
       <ul>
           ${dummyLi}
       </ul>

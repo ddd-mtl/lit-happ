@@ -33,12 +33,12 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   protected constructor(happ: HappViewModel, protected _cellProxy: CellProxy, zvmClasses: ZvmClass[]) {
     super();
     //happ.addDvm(this);
-    this.provideContext(happ.host);
     /** Create all ZVMs for this DNA */
     for (const zvmClass of zvmClasses) {
       const zvm = new zvmClass(this._cellProxy);
       this._zomeViewModels[zvm.zomeName] = zvm;
     }
+    this.provideContext(happ.host);
   }
 
 
@@ -64,17 +64,11 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   /** Override so we can provide context of all zomes */
   /*private*/ provideContext(host: ReactiveElement): void {
+    //console.log("DVM.provideContext()", host, this)
     super.provideContext(host);
     for (const zvm of Object.values(this._zomeViewModels)) {
       zvm.provideContext(host)
     }
-  }
-
-  async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
-    for (const zvm of Object.values(this._zomeViewModels)) {
-      this._allEntryDefs[zvm.zomeName] = await zvm.fetchEntryDefs(); // TODO optimize
-    }
-    return this._allEntryDefs;
   }
 
 
@@ -84,6 +78,17 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
       await zvm.probeAll();
     }
   }
+
+
+  /** */
+  async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
+    for (const zvm of Object.values(this._zomeViewModels)) {
+      this._allEntryDefs[zvm.zomeName] = await zvm.fetchEntryDefs(); // TODO optimize
+    }
+    return this._allEntryDefs;
+  }
+
+
 
   /** */
   dumpLogs(zomeName?: string): void {

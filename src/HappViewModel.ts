@@ -1,9 +1,8 @@
 import { Dictionary } from "@holochain-open-dev/core-types";
-import { InstalledAppInfo } from "@holochain/client";
+import { InstalledAppInfo, InstalledAppId, RoleId } from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 import {DvmClass, IDnaViewModel} from "./DnaViewModel";
-import {InstalledAppId, RoleId} from "@holochain/client/lib/types";
 
 /** */
 export interface HappDef {
@@ -33,13 +32,13 @@ export interface HappDef {
     //this._dvms[dvm.roleId] = dvm
   }
 
-  /** Provide context */
-  // hostConnected(): void {
-  //   console.log("HappController.hostConnected() called")
-  //     for (const dvm of Object.values(this._dvms)) {
-  //       dvm.provideContext(this._host);
-  //     }
-  // }
+
+  async probeAll(): Promise<void> {
+   for (const dvm of Object.values(this._dvms)) {
+    await dvm.probeAll();
+   }
+  }
+
 
   /** QoL Helpers */
   get installedAppId(): string {return this.appInfo.installed_app_id}

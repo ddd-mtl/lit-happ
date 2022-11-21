@@ -29,9 +29,11 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
   private _conductorAppProxy!: ConductorAppProxy;
   private _happ!: HappViewModel;
-  private _dnaRoleId!: string;
+
 
   get dummyDvm(): IDnaViewModel { return this._happ.getDvm("dummy_role")! }
+  get impostorDvm(): IDnaViewModel { return this._happ.getDvm("impostor_role")! }
+  get realDvm(): IDnaViewModel { return this._happ.getDvm("real_role")! }
 
 
   /** */
@@ -54,9 +56,10 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
 
   /** */
-  async onRefresh(e: any) {
-    let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
+  async onProbe(e: any) {
+    //let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
     //console.log({entryDefs})
+    this._happ.probeAll();
   }
 
 
@@ -77,9 +80,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
     return html`
       <div style="margin:10px;">
-        <h2>Dummy App</h2>
+        <h2>Playground App</h2>
         <input type="button" value="dump logs" @click=${this.onDumpLogs}>
-        <input type="button" value="refresh" @click=${this.onRefresh}>
+        <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <br/>
         <span>Select AppEntryType:</span>
         <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>

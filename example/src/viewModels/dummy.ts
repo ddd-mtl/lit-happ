@@ -32,7 +32,7 @@ export class DummyZomeProxy extends ZomeProxy {
  */
 export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy> {
   /** Ctor */
-  constructor(protected proxy: CellProxy) {
+  constructor(proxy: CellProxy) {
     super(new DummyZomeProxy(proxy));
   }
 
@@ -47,10 +47,21 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
 
   get perspective(): DummyZomePerspective {return {values: this._values}}
 
+  /** */
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this._values = await this._proxy.getMyDummies();
+    this.notifySubscribers();
+  }
+
+  /**  */
+  async createDummy(value: number): Promise<EntryHash> {
+    const res = await this._proxy.createDummy(value);
+    /** Add directly to perspective */
+    this._values.push(value);
+    this.notifySubscribers();
+    return res;
   }
 }
 

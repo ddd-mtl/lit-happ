@@ -9,7 +9,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 //     }
 //     abstract getContext(): any; // FIXME: use context type
 
-//     abstract probeDht(): Promise<void>;    
+//     abstract probeDht(): Promise<void>;
 //     abstract get perspective(): any;
 // }
 
@@ -22,7 +22,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
  * The ViewModel contains a perspective: All the data that a view can observe.
  * To update subscribers, it makes use of Lit's reactive properties.
  * When subscribing, a host must provide a reactive property that has the ViewModel's perspestives's type.
- * Hosts can trigger probing in order to get an updated perspective. 
+ * Hosts can trigger probing in order to get an updated perspective.
  * The perspective can be automatically updated by internal events.
  */
  export abstract class ViewModel<P> {
@@ -35,7 +35,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 
     /** Set ContextProvider for host */
     provideContext(providerHost: ReactiveElement): void {
-        console.log("provideContext() called in ViewModel", providerHost, this)
+        console.log("provideContext() called in ViewModel", providerHost, this.getContext())
         this._provider = new ContextProvider(providerHost, this.getContext(), this);
     }
 
