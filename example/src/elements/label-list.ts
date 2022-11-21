@@ -1,26 +1,49 @@
 import {LitElement, html} from "lit";
 import {state, property} from "lit/decorators.js";
-import {contextProvided} from "@lit-labs/context";
+import {ContextConsumer, contextProvided, ContextType, createContext} from "@lit-labs/context";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
+import {DnaHashB64} from "@holochain-open-dev/core-types";
 
 
 export class LabelList extends ScopedElementsMixin(LitElement) {
 
   @state() private _loaded = false;
 
-  @contextProvided({ context: LabelZvm.context, subscribe: true })
-  _zvm!: LabelZvm;
+  @property()
+  dnaHash!: DnaHashB64;
+
+  // @contextProvided({ context: LabelZvm.context, subscribe: true })
+  // _zvm!: LabelZvm;
+
+  _zvm!:LabelZvm;
+  _consumer!: any;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: LabelZomePerspective;
 
 
+  /** Fixme called twice for unknown reason */
+  async init(value: LabelZvm, dispose?: () => void): Promise<void> {
+    let self = (this as any).host;
+    console.log("LabelList.init()", self, value)
+    self._zvm = value;
+    self._zvm.subscribe(self, 'perspective');
+    self._loaded = true;
+  }
+
   /** */
   async firstUpdated() {
-    this._zvm.subscribe(this, 'perspective');
-    this._loaded = true;
+    console.log("LabelList firstUpdated()", this.dnaHash)
+    this._consumer = new ContextConsumer(
+      this,
+      createContext<LabelZvm>('zvm/label/' + this.dnaHash),
+      this.init,
+      false//true
+    );
+    console.log({consumer: this._consumer})
+    //this._loaded = true;
   }
 
 
@@ -41,8 +64,8 @@ export class LabelList extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("<dummy-list> render()")
-    if (!this._loaded) {
+    console.log("<label-list> render()", this.dnaHash, this._loaded)
+    if (!this._loaded /*|| !this.perspective*/) {
       return html`<span>Loading...</span>`;
     }
 

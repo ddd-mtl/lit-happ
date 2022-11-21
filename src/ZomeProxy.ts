@@ -8,7 +8,7 @@ import {CellProxy} from "./CellProxy";
  */
 export abstract class ZomeProxy {
 
-  constructor(protected _dnaProxy: CellProxy) {}
+  constructor(protected _cellProxy: CellProxy) {}
 
   private _entryDefs?: [string, boolean][];
 
@@ -17,7 +17,7 @@ export abstract class ZomeProxy {
 
   /** Helper for calling a zome function on its zome */
   protected async call(fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
-    return this._dnaProxy.callZome(this.zomeName, fn_name, payload, cap_secret, timeout);
+    return this._cellProxy.callZome(this.zomeName, fn_name, payload, cap_secret, timeout);
   }
 
 

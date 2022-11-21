@@ -22,7 +22,7 @@ export interface IZomeViewModel {
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
 export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P> implements IZomeViewModel {
-    protected constructor(protected _proxy: T) {
+    protected constructor(protected _zomeProxy: T) {
         super();
     }
 
@@ -31,13 +31,13 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P>
     /** */
     async fetchEntryDefs(): Promise<[string, boolean][]> {
         //if (!this._entryDefs) {
-            this._entryDefs = await this._proxy.getEntryDefs();
+            this._entryDefs = await this._zomeProxy.getEntryDefs();
         //}
         return this._entryDefs;
     }
 
     /** */
-    get zomeName(): string { return this._proxy.zomeName }
+    get zomeName(): string { return this._zomeProxy.zomeName }
 
     //abstract probeAll(): Promise<void>;
 

@@ -31,8 +31,8 @@ export class RealZomeProxy extends ZomeProxy {
  */
 export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
   /** Ctor */
-  constructor(protected proxy: CellProxy) {
-    super(new RealZomeProxy(proxy));
+  constructor(protected _cellProxy: CellProxy) {
+    super(new RealZomeProxy(_cellProxy));
   }
 
   private _values: number[] = [];
@@ -49,13 +49,13 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this._values = await this._proxy.getMyReals();
+    this._values = await this._zomeProxy.getMyReals();
     this.notifySubscribers();
   }
 
   /**  */
   async createReal(value: number): Promise<EntryHash> {
-    const res = await this._proxy.createReal(value);
+    const res = await this._zomeProxy.createReal(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();

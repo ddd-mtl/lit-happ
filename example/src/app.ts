@@ -7,6 +7,9 @@ import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import {RealList} from "./elements/real-list";
 import {LabelList} from "./elements/label-list";
+import {ContextProvider, createContext} from "@lit-labs/context";
+import {DnaHashB64} from "@holochain-open-dev/core-types";
+import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 
 
 
@@ -32,6 +35,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   private _conductorAppProxy!: ConductorAppProxy;
   private _happ!: HappViewModel;
 
+  //cellContext!: ContextKey<{__context__: string}, DnaHashB64>;
+
+
 
   get dummyDvm(): IDnaViewModel { return this._happ.getDvm("dummy_role")! }
   get impostorDvm(): IDnaViewModel { return this._happ.getDvm("impostor_role")! }
@@ -43,6 +49,11 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
     let HC_PORT = Number(process.env.HC_PORT);
     this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
     this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
+
+    // this.cellContext = createContext<DnaHashB64>("dnaHash");
+    // console.log({cellContext: this.cellContext})
+    // this._provider = new ContextProvider(this, this.cellContext, this.dummyDvm.dnaHash);
+    // console.log({provider: this._provider})
 
     //await dummyDvm.probeAll();
     //await dummyDvm.fetchAllEntryDefs();
@@ -94,15 +105,17 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
         <hr class="solid">
         <h2>Dummy Cell</h2>
         <dummy-list></dummy-list>
-        <label-list></label-list>
+        <label-list .dnaHash="${this.dummyDvm.dnaHash}"></label-list>
         <hr class="solid">          
         <h2>Real Cell</h2>
         <real-list></real-list>
-        <label-list></label-list>
+        <label-list .dnaHash="${this.realDvm.dnaHash}"></label-list>
+              <!--          
         <hr class="solid">          
         <h2>Impostor Cell</h2>
         <dummy-list></dummy-list>
-        <label-list></label-list>          
+        <label-list .dnaHash="${this.impostorDvm.dnaHash}"></label-list>
+        ->          
       </div>
     `
   }

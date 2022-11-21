@@ -42,7 +42,7 @@ export class RealList extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("<dummy-list> render()")
+    console.log("<real-list> render()")
     if (!this._loaded) {
       return html`<span>Loading...</span>`;
     }

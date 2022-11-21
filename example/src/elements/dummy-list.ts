@@ -4,11 +4,15 @@ import {contextProvided} from "@lit-labs/context";
 import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
+import {DnaHashB64} from "@holochain-open-dev/core-types";
 
 
 export class DummyList extends ScopedElementsMixin(LitElement) {
 
   @state() private _loaded = false;
+
+  // @contextProvided({ context: DummyZvm.context, subscribe: true })
+  // _dnaHash!: DnaHashB64;
 
   @contextProvided({ context: DummyZvm.context, subscribe: true })
   _dummyZvm!: DummyZvm;

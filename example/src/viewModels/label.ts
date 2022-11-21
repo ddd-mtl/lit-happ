@@ -33,31 +33,36 @@ export class LabelZomeProxy extends ZomeProxy {
  */
 export class LabelZvm extends ZomeViewModel<LabelZomePerspective, LabelZomeProxy> {
   /** Ctor */
-  constructor(protected proxy: CellProxy) {
-    super(new LabelZomeProxy(proxy));
+  constructor(protected _cellProxy: CellProxy) {
+    super(new LabelZomeProxy(_cellProxy));
   }
 
   private _values: string[] = [];
 
   /** -- ViewModel Interface -- */
 
-  static context = createContext<LabelZvm>('zvm/label');
-  getContext():any {return LabelZvm.context}
+  //static context = createContext<LabelZvm>('zvm/label');
+  //getContext(): any {return LabelZvm.context}
+
+  getContext(): any {return createContext<LabelZvm>('zvm/label/' + this._cellProxy.dnaHash)}
 
   protected hasChanged(): boolean {return true}
 
   get perspective(): LabelZomePerspective {return {values: this._values}}
 
+  /** */
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this._values = await this._proxy.getMyLabels();
+    this._values = await this._zomeProxy.getMyLabels();
     this.notifySubscribers();
   }
 
+  /** -- API  -- */
+
   /**  */
   async createLabel(value: string): Promise<EntryHash> {
-    const res = await this._proxy.createLabel(value);
+    const res = await this._zomeProxy.createLabel(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();
