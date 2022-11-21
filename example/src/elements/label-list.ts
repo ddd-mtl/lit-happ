@@ -18,32 +18,26 @@ export class LabelList extends ScopedElementsMixin(LitElement) {
   // _zvm!: LabelZvm;
 
   _zvm!:LabelZvm;
-  _consumer!: any;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: LabelZomePerspective;
 
 
-  /** Fixme called twice for unknown reason */
-  async init(value: LabelZvm, dispose?: () => void): Promise<void> {
-    let self = (this as any).host;
-    console.log("LabelList.init()", self, value)
-    self._zvm = value;
-    self._zvm.subscribe(self, 'perspective');
-    self._loaded = true;
-  }
-
   /** */
   async firstUpdated() {
     console.log("LabelList firstUpdated()", this.dnaHash)
-    this._consumer = new ContextConsumer(
+    /** Consume Context based on given dnaHash */
+    new ContextConsumer(
       this,
       createContext<LabelZvm>('zvm/label/' + this.dnaHash),
-      this.init,
-      false//true
+      async (value: LabelZvm, dispose?: () => void): Promise<void> => {
+      //console.log("LabelList.init()", this, value)
+      this._zvm = value;
+      this._zvm.subscribe(this, 'perspective');
+      this._loaded = true;
+    },
+      false, //true will call twice at init
     );
-    console.log({consumer: this._consumer})
-    //this._loaded = true;
   }
 
 

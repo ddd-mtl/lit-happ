@@ -82,6 +82,7 @@ export class ConductorAppProxy implements AppApi {
 
   /** Factory for doing all the async stuff */
   newCellProxy(appInfo: InstalledAppInfo, roleId: string): CellProxy {
+    //console.log({cellData:  appInfo.cell_data});
     for (const installedCell of appInfo.cell_data) {
       if (installedCell.role_id == roleId) {
         return new CellProxy(this, installedCell, this.defaultTimeout);

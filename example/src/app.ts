@@ -7,10 +7,6 @@ import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import {RealList} from "./elements/real-list";
 import {LabelList} from "./elements/label-list";
-import {ContextProvider, createContext} from "@lit-labs/context";
-import {DnaHashB64} from "@holochain-open-dev/core-types";
-import {ContextKey} from "@lit-labs/context/src/lib/context-key";
-
 
 
 /** */
@@ -103,19 +99,17 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
-        <h2>Dummy Cell</h2>
+        <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
         <dummy-list></dummy-list>
         <label-list .dnaHash="${this.dummyDvm.dnaHash}"></label-list>
         <hr class="solid">          
-        <h2>Real Cell</h2>
+        <h2>Real Cell: ${this.realDvm.dnaHash}</h2>
         <real-list></real-list>
-        <label-list .dnaHash="${this.realDvm.dnaHash}"></label-list>
-              <!--          
+        <label-list .dnaHash="${this.realDvm.dnaHash}"></label-list>       
         <hr class="solid">          
-        <h2>Impostor Cell</h2>
+        <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>
         <dummy-list></dummy-list>
-        <label-list .dnaHash="${this.impostorDvm.dnaHash}"></label-list>
-        ->          
+        <label-list .dnaHash="${this.impostorDvm.dnaHash}"></label-list>        
       </div>
     `
   }
