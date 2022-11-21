@@ -25,17 +25,17 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
   /** */
   async firstUpdated() {
     //console.log("DummyList firstUpdated()", serializeHash(this.cellData.cell_id[0]))
-    new ContextConsumer(
+    const consumer = new ContextConsumer(
       this,
       createContext<DummyZvm>('zvm/dummy/' + serializeHash(this.cellData.cell_id[0])),
-      (value: DummyZvm, dispose?: () => void): void => {
-        //console.log("DummyList.init()", this, value)
-        this._dummyZvm = value;
-        this._dummyZvm.subscribe(this, 'dummyPerspective');
-        this._loaded = true;
-      },
+      undefined,
       false, // true will call twice at init
     );
+
+    //console.log("DummyList firstUpdated()",
+    this._dummyZvm = consumer.value!;
+    this._dummyZvm.subscribe(this, 'dummyPerspective');
+
     /* Done */
     this._loaded = true;
   }

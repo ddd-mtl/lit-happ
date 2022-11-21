@@ -1,44 +1,15 @@
-import {LitElement, html} from "lit";
-import {state, property} from "lit/decorators.js";
-import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
+import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {InstalledCell} from "@holochain/client";
-import {cellContext} from "@ddd-qc/dna-client";
+import {ZomeElement} from "./ZomeElement";
 
-export class RealList extends ScopedElementsMixin(LitElement) {
-
-  @state() private _loaded = false;
-
-  @contextProvided({ context: cellContext, subscribe: true })
-  @property({type: Object})
-  cellData!: InstalledCell;
-
-  //@contextProvided({ context: RealZvm.context, subscribe: true })
-  _zvm!: RealZvm;
-
-  @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
-  perspective!: RealZomePerspective;
-
-
-  /** */
-  async firstUpdated() {
-    new ContextConsumer(
-      this,
-      createContext<RealZvm>('zvm/real/' + serializeHash(this.cellData.cell_id[0])),
-      (value: RealZvm, dispose?: () => void): void => {
-        //console.log("DummyList.init()", this, value)
-        this._zvm = value;
-        this._zvm.subscribe(this, 'perspective');
-        this._loaded = true;
-      },
-      false, // true will call twice at init
-    );
-    /* Done */
-    this._loaded = true;
+/**
+ *
+ */
+export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
+  constructor() {
+    super("real");
   }
-
 
   /** */
   async onProbe(e: any) {

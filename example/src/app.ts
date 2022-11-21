@@ -99,6 +99,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
+          <!--
         <cell-context .cellData="${this.dummyDvm.cellData}">
           <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
           <dummy-list></dummy-list>
@@ -110,6 +111,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>
+        -->
         <cell-context .cellData="${this.impostorDvm.cellData}">
           <hr class="solid">          
           <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>

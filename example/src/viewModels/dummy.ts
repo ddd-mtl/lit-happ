@@ -2,7 +2,6 @@ import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "
 import { EntryHash } from "@holochain/client";
 import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
-import {RealZvm} from "./real";
 
 /** */
 export interface DummyZomePerspective {
@@ -40,11 +39,7 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
 
   /** -- ViewModel Interface -- */
 
-  //static context = createContext<DummyZvm>('zvm/dummy');
-  //getContext():any {return DummyZvm.context}
-
   getContext(): any {return createContext<DummyZvm>('zvm/dummy/' + this._cellProxy.dnaHash)}
-
 
   protected hasChanged(): boolean {return true}
 
