@@ -1,13 +1,12 @@
 import { LitElement, html } from "lit";
 import { state } from "lit/decorators.js";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
-import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewModel } from "@ddd-qc/dna-client";
+import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewModel, CellContext } from "@ddd-qc/dna-client";
 import { DummyDvm } from "./viewModels/dummy";
 import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import {RealList} from "./elements/real-list";
 import {LabelList} from "./elements/label-list";
-import {CellContext} from "./elements/cell-context";
 
 
 /** */
@@ -114,7 +113,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
         <cell-context .cellData="${this.impostorDvm.cellData}">
           <hr class="solid">          
           <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>
-          <dummy-list></dummy-list>
+          <real-list></real-list>
           <label-list></label-list>
         </cell-context>
       </div>

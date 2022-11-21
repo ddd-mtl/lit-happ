@@ -1,12 +1,11 @@
 import {LitElement, html} from "lit";
 import {state, property} from "lit/decorators.js";
-import {ContextConsumer, contextProvided, ContextType, createContext} from "@lit-labs/context";
+import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {DnaHashB64} from "@holochain-open-dev/core-types";
 import {InstalledCell} from "@holochain/client";
-import {cellContext} from "./cell-context";
+import { cellContext } from "@ddd-qc/dna-client";
 
 
 export class LabelList extends ScopedElementsMixin(LitElement) {

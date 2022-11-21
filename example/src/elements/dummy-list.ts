@@ -4,9 +4,8 @@ import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context
 import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {cellContext} from "./cell-context";
 import {InstalledCell} from "@holochain/client";
-
+import {cellContext} from "@ddd-qc/dna-client";
 
 export class DummyList extends ScopedElementsMixin(LitElement) {
 

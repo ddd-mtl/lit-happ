@@ -4,10 +4,8 @@ import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {DummyZvm} from "../viewModels/dummy";
-import {cellContext} from "./cell-context";
 import {InstalledCell} from "@holochain/client";
-
+import {cellContext} from "@ddd-qc/dna-client";
 
 export class RealList extends ScopedElementsMixin(LitElement) {
 
