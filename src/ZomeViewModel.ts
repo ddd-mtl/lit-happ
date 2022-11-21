@@ -1,9 +1,9 @@
 import { ReactiveElement } from "lit";
 import { ZomeProxy } from "./ZomeProxy";
 import { ViewModel } from "./ViewModel";
-import { DnaProxy } from "./DnaProxy";
+import { CellProxy } from "./CellProxy";
 
-export type ZvmClass = {new(dnaProxy: DnaProxy): IZomeViewModel}
+export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
 /** Interface for the generic-less ZomeViewModel class */
 export interface IZomeViewModel {

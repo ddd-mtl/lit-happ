@@ -1,9 +1,12 @@
-import {DnaProxy} from "./DnaProxy";
+import {CellProxy} from "./CellProxy";
 import {IZomeViewModel, ZvmClass} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
+
+
+export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
 
 
 /** Interface for the generic-less DnaViewModel class */
@@ -27,14 +30,14 @@ export interface IDnaViewModel {
 export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
 
   /** Ctor */
-  protected constructor(happ: HappViewModel, protected _dnaProxy: DnaProxy, zvmClasses: ZvmClass[]) {
+  protected constructor(happ: HappViewModel, protected _cellProxy: CellProxy, zvmClasses: ZvmClass[]) {
     super();
-    happ.addDvm(this);
+    //happ.addDvm(this);
     this.provideContext(happ.host);
     /** Create all ZVMs for this DNA */
-    for (const zvm of zvmClasses) {
-      const obj = new zvm(this._dnaProxy);
-      this._zomeViewModels[obj.zomeName] = obj;
+    for (const zvmClass of zvmClasses) {
+      const zvm = new zvmClass(this._cellProxy);
+      this._zomeViewModels[zvm.zomeName] = zvm;
     }
   }
 
@@ -48,9 +51,9 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   /** -- Getters -- */
 
   //get entryTypes(): Dictionary<[string, boolean][]> {return this._allEntryTypes}
-  get roleId(): string {return this._dnaProxy.roleId}
-  get dnaHash(): DnaHashB64 {return this._dnaProxy.dnaHash}
-  get agentPubKey(): AgentPubKeyB64 {return this._dnaProxy.agentPubKey}
+  get roleId(): string {return this._cellProxy.roleId}
+  get dnaHash(): DnaHashB64 {return this._cellProxy.dnaHash}
+  get agentPubKey(): AgentPubKeyB64 {return this._cellProxy.agentPubKey}
 
   getZomeViewModel(name: string): IZomeViewModel | undefined {
     return this._zomeViewModels[name]
@@ -84,6 +87,6 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   /** */
   dumpLogs(zomeName?: string): void {
-    this._dnaProxy.dumpLogs(zomeName)
+    this._cellProxy.dumpLogs(zomeName)
   }
 }

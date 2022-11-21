@@ -1,9 +1,15 @@
 import { Dictionary } from "@holochain-open-dev/core-types";
 import { InstalledAppInfo } from "@holochain/client";
-import { ReactiveController, ReactiveElement } from "lit";
+import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import { IDnaViewModel } from "./DnaViewModel";
+import {DvmClass, IDnaViewModel} from "./DnaViewModel";
+import {InstalledAppId, RoleId} from "@holochain/client/lib/types";
 
+/** */
+export interface HappDef {
+ id: InstalledAppId,
+ dvmDefs: [RoleId, DvmClass][],
+}
 
 /**
  * Stores the DnaViewModels of a happ
@@ -11,14 +17,20 @@ import { IDnaViewModel } from "./DnaViewModel";
  export class HappViewModel /* implements ReactiveController */ {
 
   /** Ctor */
-  constructor(public host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy) {}
+  constructor(public host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy, dvmClasses: [RoleId, DvmClass][]) {
+   /** Create all DVMs for this Happ */
+   for (const [roleId, dvmClass] of dvmClasses) {
+    const dvm = new dvmClass(this, roleId); // FIXME this can throw an error
+    this._dvms[dvm.roleId] = dvm
+   }
+  }
 
   protected _dvms: Dictionary<IDnaViewModel> = {};
 
-  getDvm(name: string): IDnaViewModel | undefined {return this._dvms[name]}
+  getDvm(name: RoleId): IDnaViewModel | undefined {return this._dvms[name]}
 
-  addDvm(dvm: IDnaViewModel) {
-    this._dvms[dvm.roleId] = dvm
+  addCloneDvm(roleId: RoleId) {
+    //this._dvms[dvm.roleId] = dvm
   }
 
   /** Provide context */

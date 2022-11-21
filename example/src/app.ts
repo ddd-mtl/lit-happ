@@ -1,9 +1,22 @@
 import { LitElement, html } from "lit";
 import { state } from "lit/decorators.js";
-import { ConductorAppProxy, EntryDefSelect, HappViewModel, IDnaViewModel } from "@ddd-qc/dna-client";
-import { DummyDvm, DummyZvm } from "./dummy";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
+import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewModel } from "@ddd-qc/dna-client";
+import { DummyDvm } from "./viewModels/dummy";
+import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
+
+
+
+/** */
+export const PlaygroundHappDef: HappDef = {
+  id: "playground",
+  dvmDefs: [
+    ["dummy_role", DummyDvm],
+    ["impostor_role", DummyDvm],
+    ["real_role", RealDvm],
+  ]
+}
 
 
 /**
@@ -18,17 +31,15 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   private _happ!: HappViewModel;
   private _dnaRoleId!: string;
 
-  get dummyDvm(): IDnaViewModel { return this._happ.getDvm(this._dnaRoleId)! }
+  get dummyDvm(): IDnaViewModel { return this._happ.getDvm("dummy_role")! }
 
 
   /** */
   async firstUpdated() {
     let HC_PORT = Number(process.env.HC_PORT);
     this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
-    this._happ = await this._conductorAppProxy.newHappViewModel(this, "playground")
-    const dummyDvm = new DummyDvm(this._happ); // FIXME this can throw an error
+    this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
 
-    this._dnaRoleId = dummyDvm.roleId;
     //await dummyDvm.probeAll();
     //await dummyDvm.fetchAllEntryDefs();
 

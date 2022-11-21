@@ -1,10 +1,9 @@
 import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, InstalledAppId, InstalledAppInfo } from "@holochain/client";
-import { serializeHash } from "@holochain-open-dev/utils";
-import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
-import { anyToB64 } from "./utils";
-import { DnaProxy } from "./DnaProxy";
-import { HappViewModel } from "./HappViewModel";
+import { CellProxy } from "./CellProxy";
+import {HappDef, HappViewModel} from "./HappViewModel";
 import { ReactiveElement } from "lit";
+import {ZvmClass} from "./ZomeViewModel";
+import {DvmClass} from "./DnaViewModel";
 
 
 /** From hc-client-js API */
@@ -20,12 +19,21 @@ export interface SignalUnsubscriber {
  */
 export class ConductorAppProxy implements AppApi {
 
+  /** -- Proxy Pattern -- */
   // cloneCell
   // archiveCell
   async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
     return this._appWs!.appInfo(args);
-
   }
+
+  /** Passthrough with default timeout */
+  async callZome(req: CallZomeRequest, timeout?: number): Promise<any> {
+    timeout = timeout ? timeout : this.defaultTimeout
+    return this._appWs.callZome(req, timeout)
+  }
+
+  /** -- Creation -- */
+
   /** Factory for doing all the async stuff */
   static async new(port: number, defaultTimeout?: number): Promise<ConductorAppProxy> {
     const wsUrl = `ws://localhost:${port}`
@@ -36,8 +44,8 @@ export class ConductorAppProxy implements AppApi {
       conductor._appWs = appWebsocket;
       return conductor;
     } catch (e) {
-      console.error("ConductorAppService initialization failed", e)
-      return Promise.reject("ConductorAppService initialization failed");
+      console.error("ConductorAppProxy initialization failed", e)
+      return Promise.reject("ConductorAppProxy initialization failed");
     }
   }
 
@@ -58,13 +66,13 @@ export class ConductorAppProxy implements AppApi {
   /** -- Methods -- */
 
   /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
-  async newHappViewModel(host: ReactiveElement, installedAppId: InstalledAppId): Promise<HappViewModel> {
+  async newHappViewModel(host: ReactiveElement, happDef: HappDef): Promise<HappViewModel> {
     try {
-      const appInfo = await this._appWs.appInfo({ installed_app_id: installedAppId })
+      const appInfo = await this._appWs.appInfo({ installed_app_id: happDef.id })
       if (!appInfo.status.hasOwnProperty("running")) {
-        return Promise.reject(`HappViewModel initialization failed: hApp ${installedAppId} is not running`);
+        return Promise.reject(`HappViewModel initialization failed: hApp ${happDef.id} is not running`);
       }
-      return new HappViewModel(host, appInfo, this);
+      return new HappViewModel(host, appInfo, this, happDef.dvmDefs);
     } catch (e) {
       console.error("HappViewModel initialization failed", e)
       return Promise.reject("HappViewModel initialization failed");
@@ -73,13 +81,13 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** Factory for doing all the async stuff */
-  newDnaProxy(appInfo: InstalledAppInfo, roleId: string): DnaProxy {
+  newCellProxy(appInfo: InstalledAppInfo, roleId: string): CellProxy {
     for (const installedCell of appInfo.cell_data) {
       if (installedCell.role_id == roleId) {
-        return new DnaProxy(this, installedCell, this.defaultTimeout);
+        return new CellProxy(this, installedCell, this.defaultTimeout);
       }
     }
-    throw Error(`DnaProxy initialization failed: No cell with RoleId "${roleId}" found.`);
+    throw Error(`CellProxy initialization failed: No cell with RoleId "${roleId}" found.`);
   }
 
 
@@ -117,11 +125,4 @@ export class ConductorAppProxy implements AppApi {
     };
   }
 
-
-  /** Passthrough with default timeout */
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<any> {
-    timeout = timeout ? timeout : this.defaultTimeout
-    return this._appWs.callZome(req, timeout)
-  }
-
-}  
+}

@@ -1,8 +1,8 @@
-import {DnaProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { EntryHash, InstalledAppId } from "@holochain/client";
+import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import { EntryHash } from "@holochain/client";
 import {createContext} from "@lit-labs/context";
-import {ReactiveElement} from "lit/development";
-
+import {LabelZvm} from "./label";
+import {RealZvm} from "./real";
 
 /** */
 export interface DummyZomePerspective {
@@ -10,8 +10,8 @@ export interface DummyZomePerspective {
 }
 
 
-/** 
- * 
+/**
+ *
  */
 export class DummyZomeProxy extends ZomeProxy {
   get zomeName(): string {return "dummy"}
@@ -23,16 +23,16 @@ export class DummyZomeProxy extends ZomeProxy {
   }
   async getMyDummies(): Promise<number[]> {
     return this.call('get_my_dummies', null, null);
-  }  
+  }
 }
 
 
 /**
- * 
+ *
  */
 export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy> {
   /** Ctor */
-  constructor(protected proxy: DnaProxy) {
+  constructor(protected proxy: CellProxy) {
     super(new DummyZomeProxy(proxy));
   }
 
@@ -55,18 +55,19 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
 }
 
 
-/** 
- * 
+/**
+ *
  */
 export class DummyDvm extends DnaViewModel<number> {
   /** Ctor */
-  constructor(happ: HappViewModel) {
-    const dnaProxy = happ.conductorAppProxy.newDnaProxy(happ.appInfo, "dummy_role");
-    super(happ, dnaProxy, [DummyZvm]);
+  constructor(happ: HappViewModel, roleId: string) {
+    const cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, roleId); // FIXME can throw error
+    super(happ, cellProxy, [DummyZvm, LabelZvm]);
   }
 
   /** QoL Helpers */
   get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy") as DummyZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel("label") as LabelZvm}
 
 
   /** -- ViewModel Interface -- */
@@ -78,6 +79,5 @@ export class DummyDvm extends DnaViewModel<number> {
 
   get perspective(): number {return 4242}
 
-
-
 }
+

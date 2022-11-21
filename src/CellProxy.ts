@@ -20,12 +20,12 @@ export interface ResponseLog {
 
 
 /**
- * Proxy for a DNA.
- * It logs ZomeCalls.
+ * Proxy for a running DNA.
+ * It logs and queues ZomeCalls.
  * It holds a reference to its ConductorAppProxy and its cellData.
  * This class is expected to be used by ZomeProxies.
  */
-export class DnaProxy {
+export class CellProxy {
 
   /** Ctor */
   constructor(private _conductor: ConductorAppProxy, public cellData: InstalledCell, defaultTimeout?: number) {

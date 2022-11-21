@@ -1,5 +1,5 @@
 import { CapSecret } from "@holochain/client";
-import {DnaProxy} from "./DnaProxy";
+import {CellProxy} from "./CellProxy";
 
 
 /**
@@ -8,7 +8,7 @@ import {DnaProxy} from "./DnaProxy";
  */
 export abstract class ZomeProxy {
 
-  constructor(protected _dnaProxy: DnaProxy) {}
+  constructor(protected _dnaProxy: CellProxy) {}
 
   private _entryDefs?: [string, boolean][];
 

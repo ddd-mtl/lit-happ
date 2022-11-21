@@ -1,8 +1,8 @@
 export * from "./ConductorAppProxy";
-export * from "./HappViewModel";
-export * from "./DnaProxy";
-export * from "./ZomeViewModel";
+export * from "./CellProxy";
 export * from "./ZomeProxy";
+export * from "./HappViewModel";
+export * from "./ZomeViewModel";
 export * from "./DnaViewModel";
 export * from "./utils";
 
