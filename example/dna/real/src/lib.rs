@@ -18,10 +18,13 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
 #[hdk_extern]
 fn get_real(eh: EntryHash) -> ExternResult<f32> {
   debug!("*** get_real() called");
-  let res = get_entry(eh)?;
-  let RealEntry::Real(real) = res else {
-    return Err(WasmInnerGuest("Label not found"));
+  let Some(record) = get(eh, GetOptions::content())? else {
+    return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
   };
+  let record::RecordEntry::Present(entry) = record.entry() else {
+    return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
+  };
+  let real = Real::try_from(entry.clone())?;
   Ok(real.value)
 }
 
@@ -32,7 +35,7 @@ fn create_real(value: f32)  -> ExternResult<EntryHash> {
   let entry = Real {value};
   let eh = hash_entry(entry.clone())?;
   let ah = create_entry(RealEntry::Real(entry))?;
-  let link_ah = create_link(agent_info()?.agent_initial_key, eh, RealLink::Default, None)?;
+  let link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), RealLink::Default, LinkTag::from(()))?;
   Ok(eh)
 }
 
@@ -41,9 +44,9 @@ fn create_real(value: f32)  -> ExternResult<EntryHash> {
 #[hdk_extern]
 fn get_my_reals(_:()) -> ExternResult<Vec<f32>> {
   debug!("*** get_my_reals() called");
-  let links = get_links(agent_info()?.agent_initial_key, RealLink::Default, None)?;
+  let links = get_links(agent_info()?.agent_initial_pubkey, RealLink::Default, None)?;
   let labels = links.into_iter().map(|link| {
-      let name = get_real(link.target)?;
+      let name = get_real(link.target.into()).unwrap();
       return name;
   }).collect();
   Ok(labels)

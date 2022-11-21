@@ -3,6 +3,10 @@ resolver = "2"
 members = [
   "dna/dummy",
   "dna/dummy_integrity",
+  "dna/label",
+  "dna/label_integrity",
+  "dna/real",
+  "dna/real_integrity",    
 ]
 
 [workspace.package]

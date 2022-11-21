@@ -18,10 +18,13 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
 #[hdk_extern]
 fn get_dummy(eh: EntryHash) -> ExternResult<u32> {
   debug!("*** get_dummy() called");
-  let res = get_entry(eh)?;
-  let DummyEntry::Dummy(dummy) = res else {
-    return Err(WasmInnerGuest("Dummy not found"));
+  let Some(record) = get(eh, GetOptions::content())? else {
+    return Err(wasm_error!(WasmErrorInner::Guest("Dummy not found".to_string())));
   };
+  let record::RecordEntry::Present(entry) = record.entry() else {
+    return Err(wasm_error!(WasmErrorInner::Guest("Dummy not found".to_string())));
+  };
+  let dummy = Dummy::try_from(entry.clone())?;
   Ok(dummy.value)
 }
 
@@ -32,7 +35,7 @@ fn create_dummy(value: u32)  -> ExternResult<EntryHash> {
   let entry = Dummy {value};
   let eh = hash_entry(entry.clone())?;
   let ah = create_entry(DummyEntry::Dummy(entry))?;
-  let link_ah = create_link(agent_info()?.agent_initial_key, eh, DummyLinkType::Default, None)?;
+  let link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), DummyLinkType::Default, LinkTag::from(()))?;
   Ok(eh)
 }
 
@@ -41,9 +44,9 @@ fn create_dummy(value: u32)  -> ExternResult<EntryHash> {
 #[hdk_extern]
 fn get_my_dummies(_:()) -> ExternResult<Vec<u32>> {
   debug!("*** get_my_dummies() called");
-  let links = get_links(agent_info()?.agent_initial_key, DummyLinkType::Default, None)?;
+  let links = get_links(agent_info()?.agent_initial_pubkey, DummyLinkType::Default, None)?;
   let dummies = links.into_iter().map(|link| {
-      let value = get_dummy(link.target)?;
+      let value = get_dummy(link.target.into()).unwrap();
       return value;
   }).collect();
   Ok(dummies)
