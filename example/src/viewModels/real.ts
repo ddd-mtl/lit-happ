@@ -50,6 +50,16 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this._values = await this._proxy.getMyReals();
+    this.notifySubscribers();
+  }
+
+  /**  */
+  async createReal(value: number): Promise<EntryHash> {
+    const res = await this._proxy.createReal(value);
+    /** Add directly to perspective */
+    this._values.push(value);
+    this.notifySubscribers();
+    return res;
   }
 }
 

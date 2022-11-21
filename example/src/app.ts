@@ -5,6 +5,8 @@ import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewMode
 import { DummyDvm } from "./viewModels/dummy";
 import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
+import {RealList} from "./elements/real-list";
+import {LabelList} from "./elements/label-list";
 
 
 
@@ -87,9 +89,20 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
         <span>Select AppEntryType:</span>
         <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
         <div style="margin:10px;">
-        <span><span id="entryLabel">none</span></span>
+            <span><span id="entryLabel">none</span></span>
         </div>
+        <hr class="solid">
+        <h2>Dummy Cell</h2>
         <dummy-list></dummy-list>
+        <label-list></label-list>
+        <hr class="solid">          
+        <h2>Real Cell</h2>
+        <real-list></real-list>
+        <label-list></label-list>
+        <hr class="solid">          
+        <h2>Impostor Cell</h2>
+        <dummy-list></dummy-list>
+        <label-list></label-list>          
       </div>
     `
   }
@@ -98,7 +111,8 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
     return {
       "entry-def-select": EntryDefSelect,
       "dummy-list": DummyList,
-      //"fake-list": FakeList,
+      "real-list": RealList,
+      "label-list": LabelList,
     };
   }
 }

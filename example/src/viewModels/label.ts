@@ -19,7 +19,7 @@ export class LabelZomeProxy extends ZomeProxy {
   async getLabel(eh: EntryHash): Promise<string> {
     return this.call('get_label', eh, null);
   }
-  async createLabel(value: number): Promise<EntryHash> {
+  async createLabel(value: string): Promise<EntryHash> {
     return this.call('create_label', value, null);
   }
   async getMyLabels(): Promise<string[]> {
@@ -52,5 +52,15 @@ export class LabelZvm extends ZomeViewModel<LabelZomePerspective, LabelZomeProxy
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this._values = await this._proxy.getMyLabels();
+    this.notifySubscribers();
+  }
+
+  /**  */
+  async createLabel(value: string): Promise<EntryHash> {
+    const res = await this._proxy.createLabel(value);
+    /** Add directly to perspective */
+    this._values.push(value);
+    this.notifySubscribers();
+    return res;
   }
 }
