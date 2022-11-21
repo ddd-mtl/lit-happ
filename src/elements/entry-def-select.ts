@@ -24,7 +24,6 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
     this._allEntryDefs = await this.dnaViewModel.fetchAllEntryDefs()
   }
 
-
   /** */
   async onZomeSelect(e: any) {
     console.log("onZomeSelect() CALLED", e)

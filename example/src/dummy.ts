@@ -1,25 +1,42 @@
 import {DnaProxy, DnaViewModel, HappController, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { InstalledAppId } from "@holochain/client";
+import { EntryHash, InstalledAppId } from "@holochain/client";
 import {createContext} from "@lit-labs/context";
 import {ReactiveElement} from "lit/development";
 
 
 /** */
-export class DummyZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "dummy_integrity"}
-  async getDummy(): Promise<void> {
-    return this.call('get_dummy', null, null);
-  }
+export interface DummyZomePerspective {
+  values: number[],
 }
 
 
-/** */
-export class DummyZvm extends ZomeViewModel<number, DummyZomeProxy> {
+/** 
+ * 
+ */
+export class DummyZomeProxy extends ZomeProxy {
+  get zomeName(): string {return "dummy"}
+  async getDummy(eh: EntryHash): Promise<number> {
+    return this.call('get_dummy', eh, null);
+  }
+  async createDummy(value: number): Promise<EntryHash> {
+    return this.call('create_dummy', value, null);
+  }
+  async getMyDummies(): Promise<number[]> {
+    return this.call('get_my_dummies', null, null);
+  }  
+}
+
+
+/**
+ * 
+ */
+export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy> {
   /** Ctor */
   constructor(protected proxy: DnaProxy) {
     super(new DummyZomeProxy(proxy));
   }
 
+  private _values: number[] = [];
 
   /** -- ViewModel Interface -- */
 
@@ -28,28 +45,29 @@ export class DummyZvm extends ZomeViewModel<number, DummyZomeProxy> {
 
   protected hasChanged(): boolean {return true}
 
-  get perspective(): number {return 42}
+  get perspective(): DummyZomePerspective {return {values: this._values}}
 
   async probeAll(): Promise<void> {
-    let entryDefs = await this._proxy.getEntryDefs();
-    console.log({entryDefs})
-    this._proxy.getDummy();
+    //let entryDefs = await this._proxy.getEntryDefs();
+    //console.log({entryDefs})
+    this._values = await this._proxy.getMyDummies();
   }
 }
 
 
-/** */
+/** 
+ * 
+ */
 export class DummyDvm extends DnaViewModel<number> {
   /** async factory method */
   static async new(happ: HappController): Promise<DummyDvm> {
-    const dnaProxy = await happ.conductorAppProxy.newDnaProxy(happ.installedAppId, "dummy");
+    const dnaProxy = await happ.conductorAppProxy.newDnaProxy(happ.installedAppId, "dummy_role");
     let dvm = new DummyDvm(dnaProxy, [DummyZvm]);
-    //await dvm.addZomeViewModel(DummyZvm);
     return dvm;
   }
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy_integrity") as DummyZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy") as DummyZvm}
 
 
   /** -- ViewModel Interface -- */
