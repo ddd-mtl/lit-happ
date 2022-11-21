@@ -5,12 +5,21 @@ name: playground-happ
 description: Playground happ for testing cell-proxy framework
 
 roles:
-  - id: dummy
+  - id: dummy_role
     provisioning:
       strategy: create
       deferred: false
     dna:
-      bundled: ../dummy.dna
+      bundled: ../dummy_dna.dna
+      uuid: ~
+      properties: ~
+      clone_limit: 0
+  - id: real_role
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ../real_dna.dna
       uuid: ~
       properties: ~
       clone_limit: 0

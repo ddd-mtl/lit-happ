@@ -1,21 +1,21 @@
 ---
 manifest_version: "1"
-name: real_dna
+name: dummy_dna
 uuid: ~
 properties: ~
 integrity:
   origin_time: 2022-09-25T13:55:49.200Z
   zomes:
-    - name: real_integrity
-      bundled: ../target/wasm32-unknown-unknown/release/real_integrity.wasm
+    - name: dummy_integrity
+      bundled: ../target/wasm32-unknown-unknown/release/dummy_integrity.wasm
     - name: label_integrity
       bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm      
 coordinator:
   zomes:
-    - name: real
-      bundled: ../target/wasm32-unknown-unknown/release/real.wasm
+    - name: dummy
+      bundled: ../target/wasm32-unknown-unknown/release/dummy.wasm
       dependencies:
-        - name: real_integrity
+        - name: dummy_integrity
     - name: label
       bundled: ../target/wasm32-unknown-unknown/release/label.wasm
       dependencies:
