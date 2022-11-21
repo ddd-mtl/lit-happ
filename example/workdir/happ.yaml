@@ -23,3 +23,12 @@ roles:
       uuid: ~
       properties: ~
       clone_limit: 0
+  - id: impostor_role
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ../dummy_dna.dna
+      uuid: ~
+      properties: ~
+      clone_limit: 0      
