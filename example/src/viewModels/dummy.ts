@@ -70,8 +70,7 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
 export class DummyDvm extends DnaViewModel<number> {
   /** Ctor */
   constructor(happ: HappViewModel, roleId: string) {
-    const cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, roleId); // FIXME can throw error
-    super(happ, cellProxy, [DummyZvm, LabelZvm]);
+    super(happ, roleId, [DummyZvm, LabelZvm]);
   }
 
   /** QoL Helpers */

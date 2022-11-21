@@ -4,7 +4,7 @@ import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
-import {InstalledCell} from "@holochain/client";
+import {InstalledCell, RoleId} from "@holochain/client";
 
 
 export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
@@ -32,9 +32,9 @@ export interface IDnaViewModel {
 export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
 
   /** Ctor */
-  protected constructor(happ: HappViewModel, protected _cellProxy: CellProxy, zvmClasses: ZvmClass[]) {
+  protected constructor(happ: HappViewModel, roleId: RoleId, zvmClasses: ZvmClass[]) {
     super();
-    //happ.addDvm(this);
+    this._cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, roleId); // FIXME can throw error
     /** Create all ZVMs for this DNA */
     for (const zvmClass of zvmClasses) {
       const zvm = new zvmClass(this._cellProxy);
@@ -48,7 +48,7 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
   protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
-
+  protected _cellProxy: CellProxy;
 
   /** -- Getters -- */
 
@@ -77,7 +77,8 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   /** */
   async probeAll(): Promise<void> {
-    for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
+    for (const [name, zvm] of Object.entries(this._zomeViewModels)) {
+      //console.log("Dvm.probeAll()", name)
       await zvm.probeAll();
     }
   }

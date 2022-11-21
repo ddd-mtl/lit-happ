@@ -14,7 +14,7 @@ export const PlaygroundHappDef: HappDef = {
   id: "playground",
   dvmDefs: [
     ["dummy_role", DummyDvm],
-    ["impostor_role", DummyDvm],
+    ["impostor_role", RealDvm],
     ["real_role", RealDvm],
   ]
 }
@@ -31,9 +31,6 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   private _conductorAppProxy!: ConductorAppProxy;
   private _happ!: HappViewModel;
 
-  //cellContext!: ContextKey<{__context__: string}, DnaHashB64>;
-
-
 
   get dummyDvm(): IDnaViewModel { return this._happ.getDvm("dummy_role")! }
   get impostorDvm(): IDnaViewModel { return this._happ.getDvm("impostor_role")! }
@@ -46,12 +43,8 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
     this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
     this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
 
-    // this.cellContext = createContext<DnaHashB64>("dnaHash");
-    // console.log({cellContext: this.cellContext})
-    // this._provider = new ContextProvider(this, this.cellContext, this.dummyDvm.dnaHash);
-    // console.log({provider: this._provider})
+    await this._happ.probeAll();
 
-    //await dummyDvm.probeAll();
     //await dummyDvm.fetchAllEntryDefs();
 
     this._loaded = true;
@@ -99,7 +92,6 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
-          <!--
         <cell-context .cellData="${this.dummyDvm.cellData}">
           <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
           <dummy-list></dummy-list>
@@ -111,7 +103,6 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>
-        -->
         <cell-context .cellData="${this.impostorDvm.cellData}">
           <hr class="solid">          
           <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>

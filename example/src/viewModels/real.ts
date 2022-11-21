@@ -1,5 +1,5 @@
 import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { EntryHash } from "@holochain/client";
+import {EntryHash, RoleId} from "@holochain/client";
 import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
 
@@ -72,9 +72,8 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
  */
 export class RealDvm extends DnaViewModel<number> {
   /** Ctor */
-  constructor(happ: HappViewModel, roleId: string) {
-    const cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, roleId); // FIXME can throw error
-    super(happ, cellProxy, [RealZvm, LabelZvm]);
+  constructor(happ: HappViewModel, roleId: RoleId) {
+    super(happ, roleId, [RealZvm, LabelZvm]);
   }
 
   /** QoL Helpers */
@@ -85,7 +84,7 @@ export class RealDvm extends DnaViewModel<number> {
   /** -- ViewModel Interface -- */
 
   static context = createContext<RealDvm>('dvm/real');
-  getContext():any {return RealDvm.context}
+  getContext(): any {return RealDvm.context}
 
   protected hasChanged(): boolean {return true}
 

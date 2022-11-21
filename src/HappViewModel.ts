@@ -37,6 +37,7 @@ export interface HappDef {
 
   async probeAll(): Promise<void> {
    for (const dvm of Object.values(this._dvms)) {
+    //console.log("Hvm.probeAll() dvm =", dvm.roleId)
     await dvm.probeAll();
    }
   }
