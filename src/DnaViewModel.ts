@@ -3,6 +3,7 @@ import {IZomeViewModel, ZvmClass} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
+import { HappViewModel } from "./HappViewModel";
 
 
 /** Interface for the generic-less DnaViewModel class */
@@ -26,8 +27,11 @@ export interface IDnaViewModel {
 export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
 
   /** Ctor */
-  protected constructor(protected _dnaProxy: DnaProxy, zvmClasses: ZvmClass[]) {
+  protected constructor(happ: HappViewModel, protected _dnaProxy: DnaProxy, zvmClasses: ZvmClass[]) {
     super();
+    happ.addDvm(this);
+    this.provideContext(happ.host);
+    /** Create all ZVMs for this DNA */
     for (const zvm of zvmClasses) {
       const obj = new zvm(this._dnaProxy);
       this._zomeViewModels[obj.zomeName] = obj;
@@ -55,7 +59,8 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
   /** -- Methods -- */
 
-  provideContext(host: ReactiveElement): void {
+  /** Override so we can provide context of all zomes */
+  /*private*/ provideContext(host: ReactiveElement): void {
     super.provideContext(host);
     for (const zvm of Object.values(this._zomeViewModels)) {
       zvm.provideContext(host)

@@ -3,7 +3,7 @@ import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { anyToB64 } from "./utils";
 import { DnaProxy } from "./DnaProxy";
-import { HappController } from "./HappController";
+import { HappViewModel } from "./HappViewModel";
 import { ReactiveElement } from "lit";
 
 
@@ -54,35 +54,29 @@ export class ConductorAppProxy {
 
   /** -- Methods -- */
 
-  /** Spawn a HappElement for an AppId running on the ConductorAppProxy */
-  async newHappElement(host: ReactiveElement, installedAppId: InstalledAppId): Promise<HappController> {
+  /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
+  async newHappViewModel(host: ReactiveElement, installedAppId: InstalledAppId): Promise<HappViewModel> {
     try {
       const appInfo = await this._appWs.appInfo({ installed_app_id: installedAppId })
       if (!appInfo.status.hasOwnProperty("running")) {
-        return Promise.reject(`HappElement initialization failed: hApp ${installedAppId} is not running`);
+        return Promise.reject(`HappViewModel initialization failed: hApp ${installedAppId} is not running`);
       }
-      return new HappController(host, appInfo, this);
+      return new HappViewModel(host, appInfo, this);
     } catch (e) {
-      console.error("HappElement initialization failed", e)
-      return Promise.reject("HappElement initialization failed");
+      console.error("HappViewModel initialization failed", e)
+      return Promise.reject("HappViewModel initialization failed");
     }
   }
 
 
   /** Factory for doing all the async stuff */
-  async newDnaProxy(installedAppId: string, roleId: string): Promise<DnaProxy> {
-    try {
-      const appInfo = await this._appWs.appInfo({ installed_app_id: installedAppId });
-      for (const installedCell of appInfo.cell_data) {
-        if (installedCell.role_id == roleId) {
-          return new DnaProxy(this, installedCell, this.defaultTimeout);
-        }
+   newDnaProxy(appInfo: InstalledAppInfo, roleId: string): DnaProxy {
+    for (const installedCell of appInfo.cell_data) {
+      if (installedCell.role_id == roleId) {
+        return new DnaProxy(this, installedCell, this.defaultTimeout);
       }
-      return Promise.reject(`DnaService initialization failed: No cell with RoleId "${roleId}" found.`);
-    } catch (e) {
-      console.error("DnaService initialization failed", e)
-      return Promise.reject("DnaService initialization failed");
     }
+    throw Error(`DnaProxy initialization failed: No cell with RoleId "${roleId}" found.`);
   }
   
 

@@ -1,5 +1,5 @@
 import {ContextProvider} from "@lit-labs/context";
-import {ReactiveElement} from "lit";
+import {ReactiveControllerHost, ReactiveElement} from "lit";
 
 
 /** Interface for a generic ViewModel */
@@ -29,18 +29,14 @@ import {ReactiveElement} from "lit";
 
     /** -- Fields -- */
     protected _previousPerspective?: P;
-    protected _hosts: [any /*ReactiveElement*/, PropertyKey][] = [];
+    protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
 
-    /** Make sure provideContext is only called once? */
-    //static _isContextProvided = false;
-    provideContext(host: ReactiveElement): void {
-        console.log("provideContext() called in ViewModel", host, this)
-        // if (this._isContextProvided) {
-        //     console.error("Context already provided for", typeof this)
-        //     return;
-        // }
-        new ContextProvider(host, this.getContext(), this);
-        //this._isContextProvided = true;
+    protected _provider?: any; // ContextProvider<this.getContext()>;
+
+    /** Set ContextProvider for host */
+    provideContext(providerHost: ReactiveElement): void {
+        console.log("provideContext() called in ViewModel", providerHost, this)
+        this._provider = new ContextProvider(providerHost, this.getContext(), this);
     }
 
 
@@ -61,28 +57,28 @@ import {ReactiveElement} from "lit";
     /** -- Observer pattern -- */
 
     /** */
-    subscribe(host: any, propName: PropertyKey) {
-        host[propName] = this.perspective;
-        this._hosts.push([host, propName])
+    subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey) {
+        (providedHost as any)[propName] = this.perspective;
+        this._providedHosts.push([providedHost, propName])
     }
 
     /** */
-    unsubscribe(candidat: any) {
+    unsubscribe(candidat: ReactiveControllerHost) {
         let index  = 0;
-        for (const [host, _propName] of this._hosts) {
+        for (const [host, _propName] of this._providedHosts) {
             if (host === candidat) break;
             index += 1;
         }
         if (index > -1) {
-            this._hosts.splice(index, 1);
+            this._providedHosts.splice(index, 1);
         }
     }
 
     /** */
     protected notifySubscribers() {
         if (!this.hasChanged()) return;
-        for (const [host, propName] of this._hosts) {
-            host[propName] = this.perspective;
+        for (const [host, propName] of this._providedHosts) {
+            (host as any)[propName] = this.perspective;
         }
         this._previousPerspective = this.perspective
     }

@@ -1,6 +1,6 @@
 import {LitElement, html} from "lit";
 import {state, property} from "lit/decorators.js";
-import {ConductorAppProxy, EntryDefSelect, HappController, IDnaViewModel} from "@ddd-qc/dna-client";
+import {ConductorAppProxy, EntryDefSelect, HappViewModel, IDnaViewModel} from "@ddd-qc/dna-client";
 import {contextProvided} from "@lit-labs/context";
 import {DummyDvm, DummyZomePerspective, DummyZvm} from "../dummy";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";

@@ -1,4 +1,4 @@
-import {DnaProxy, DnaViewModel, HappController, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import {DnaProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash, InstalledAppId } from "@holochain/client";
 import {createContext} from "@lit-labs/context";
 import {ReactiveElement} from "lit/development";
@@ -59,11 +59,10 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
  * 
  */
 export class DummyDvm extends DnaViewModel<number> {
-  /** async factory method */
-  static async new(happ: HappController): Promise<DummyDvm> {
-    const dnaProxy = await happ.conductorAppProxy.newDnaProxy(happ.installedAppId, "dummy_role");
-    let dvm = new DummyDvm(dnaProxy, [DummyZvm]);
-    return dvm;
+  /** Ctor */
+  constructor(happ: HappViewModel) {
+    const dnaProxy = happ.conductorAppProxy.newDnaProxy(happ.appInfo, "dummy_role");
+    super(happ, dnaProxy, [DummyZvm]);
   }
 
   /** QoL Helpers */
