@@ -1,4 +1,4 @@
-import { AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, InstalledAppId, InstalledAppInfo } from "@holochain/client";
+import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, InstalledAppId, InstalledAppInfo } from "@holochain/client";
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { anyToB64 } from "./utils";
@@ -18,11 +18,14 @@ export interface SignalUnsubscriber {
  * Factory for Dna and Zome proxies that uses this appWebsocket.
  * TODO Implement Singleton per port?
  */
-export class ConductorAppProxy {
+export class ConductorAppProxy implements AppApi {
 
   // cloneCell
   // archiveCell
+  async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
+    return this._appWs!.appInfo(args);
 
+  }
   /** Factory for doing all the async stuff */
   static async new(port: number, defaultTimeout?: number): Promise<ConductorAppProxy> {
     const wsUrl = `ws://localhost:${port}`
@@ -70,7 +73,7 @@ export class ConductorAppProxy {
 
 
   /** Factory for doing all the async stuff */
-   newDnaProxy(appInfo: InstalledAppInfo, roleId: string): DnaProxy {
+  newDnaProxy(appInfo: InstalledAppInfo, roleId: string): DnaProxy {
     for (const installedCell of appInfo.cell_data) {
       if (installedCell.role_id == roleId) {
         return new DnaProxy(this, installedCell, this.defaultTimeout);
@@ -78,7 +81,7 @@ export class ConductorAppProxy {
     }
     throw Error(`DnaProxy initialization failed: No cell with RoleId "${roleId}" found.`);
   }
-  
+
 
   /** */
   private onSignal(signal: AppSignal): void {
@@ -117,7 +120,7 @@ export class ConductorAppProxy {
 
   /** Passthrough with default timeout */
   async callZome(req: CallZomeRequest, timeout?: number): Promise<any> {
-    timeout = timeout? timeout : this.defaultTimeout
+    timeout = timeout ? timeout : this.defaultTimeout
     return this._appWs.callZome(req, timeout)
   }
 
