@@ -7,6 +7,7 @@ import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import {RealList} from "./elements/real-list";
 import {LabelList} from "./elements/label-list";
+import {CellContext} from "./elements/cell-context";
 
 
 /** */
@@ -99,17 +100,23 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
-        <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
-        <dummy-list></dummy-list>
-        <label-list .dnaHash="${this.dummyDvm.dnaHash}"></label-list>
-        <hr class="solid">          
-        <h2>Real Cell: ${this.realDvm.dnaHash}</h2>
-        <real-list></real-list>
-        <label-list .dnaHash="${this.realDvm.dnaHash}"></label-list>       
-        <hr class="solid">          
-        <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>
-        <dummy-list></dummy-list>
-        <label-list .dnaHash="${this.impostorDvm.dnaHash}"></label-list>        
+        <cell-context .cellData="${this.dummyDvm.cellData}">
+          <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
+          <dummy-list></dummy-list>
+          <label-list></label-list>
+        </cell-context>
+        <cell-context .cellData="${this.realDvm.cellData}">
+          <hr class="solid">          
+          <h2>Real Cell: ${this.realDvm.dnaHash}</h2>
+          <real-list></real-list>
+          <label-list></label-list>
+        </cell-context>
+        <cell-context .cellData="${this.impostorDvm.cellData}">
+          <hr class="solid">          
+          <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>
+          <dummy-list></dummy-list>
+          <label-list></label-list>
+        </cell-context>
       </div>
     `
   }
@@ -120,6 +127,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
       "dummy-list": DummyList,
       "real-list": RealList,
       "label-list": LabelList,
+      "cell-context": CellContext,
     };
   }
 }

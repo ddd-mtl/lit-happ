@@ -5,18 +5,23 @@ import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {DnaHashB64} from "@holochain-open-dev/core-types";
+import {InstalledCell} from "@holochain/client";
+import {cellContext} from "./cell-context";
 
 
 export class LabelList extends ScopedElementsMixin(LitElement) {
 
   @state() private _loaded = false;
 
-  @property()
-  dnaHash!: DnaHashB64;
+  // @property()
+  // dnaHash!: DnaHashB64;
 
-  // @contextProvided({ context: LabelZvm.context, subscribe: true })
-  // _zvm!: LabelZvm;
+  @contextProvided({ context: cellContext, subscribe: true })
+  @property({type: Object})
+  cellData!: InstalledCell;
 
+
+  /** Provided by Context depending on cellData.dnaHash */
   _zvm!:LabelZvm;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
@@ -25,19 +30,20 @@ export class LabelList extends ScopedElementsMixin(LitElement) {
 
   /** */
   async firstUpdated() {
-    console.log("LabelList firstUpdated()", this.dnaHash)
+    //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
-    new ContextConsumer(
+    /*const consumer =*/ new ContextConsumer(
       this,
-      createContext<LabelZvm>('zvm/label/' + this.dnaHash),
-      async (value: LabelZvm, dispose?: () => void): Promise<void> => {
+      createContext<LabelZvm>('zvm/label/' + serializeHash(this.cellData.cell_id[0])),
+      (value: LabelZvm, dispose?: () => void): void => {
       //console.log("LabelList.init()", this, value)
       this._zvm = value;
       this._zvm.subscribe(this, 'perspective');
       this._loaded = true;
     },
-      false, //true will call twice at init
+      false, // true will call twice at init
     );
+    //console.log({consumer})
   }
 
 
@@ -58,8 +64,8 @@ export class LabelList extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("<label-list> render()", this.dnaHash, this._loaded)
-    if (!this._loaded /*|| !this.perspective*/) {
+    //console.log("<label-list> render()", this.cellData, this._loaded)
+    if (!this._loaded /*|| this.cellData*//*|| !this.perspective*/) {
       return html`<span>Loading...</span>`;
     }
 
@@ -78,7 +84,7 @@ export class LabelList extends ScopedElementsMixin(LitElement) {
       <ul>
           ${dummyLi}
       </ul>
-    `
+    `;
 
   }
 }

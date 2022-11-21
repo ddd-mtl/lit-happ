@@ -1,20 +1,22 @@
 import {LitElement, html} from "lit";
 import {state, property} from "lit/decorators.js";
-import {contextProvided} from "@lit-labs/context";
+import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {DnaHashB64} from "@holochain-open-dev/core-types";
+import {cellContext} from "./cell-context";
+import {InstalledCell} from "@holochain/client";
 
 
 export class DummyList extends ScopedElementsMixin(LitElement) {
 
   @state() private _loaded = false;
 
-  // @contextProvided({ context: DummyZvm.context, subscribe: true })
-  // _dnaHash!: DnaHashB64;
+  @contextProvided({ context: cellContext, subscribe: true })
+  @property({type: Object})
+  cellData!: InstalledCell;
 
-  @contextProvided({ context: DummyZvm.context, subscribe: true })
+  //@contextProvided({ context: DummyZvm.context, subscribe: true })
   _dummyZvm!: DummyZvm;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
@@ -23,7 +25,19 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
 
   /** */
   async firstUpdated() {
-    this._dummyZvm.subscribe(this, 'dummyPerspective');
+    //console.log("DummyList firstUpdated()", serializeHash(this.cellData.cell_id[0]))
+    new ContextConsumer(
+      this,
+      createContext<DummyZvm>('zvm/dummy/' + serializeHash(this.cellData.cell_id[0])),
+      (value: DummyZvm, dispose?: () => void): void => {
+        //console.log("DummyList.init()", this, value)
+        this._dummyZvm = value;
+        this._dummyZvm.subscribe(this, 'dummyPerspective');
+        this._loaded = true;
+      },
+      false, // true will call twice at init
+    );
+    /* Done */
     this._loaded = true;
   }
 
@@ -39,14 +53,14 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
     const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
     const value = Number(input.value);
     let res = await this._dummyZvm.createDummy(value);
-    console.log("onCreateDummy() res =", serializeHash(res))
+    //console.log("onCreateDummy() res =", serializeHash(res))
     input.value = "";
   }
 
 
   /** */
   render() {
-    console.log("<dummy-list> render()")
+    //console.log("<dummy-list> render()", this.cellData)
     if (!this._loaded) {
       return html`<span>Loading...</span>`;
     }

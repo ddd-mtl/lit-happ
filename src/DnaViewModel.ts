@@ -4,6 +4,7 @@ import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
+import {InstalledCell} from "@holochain/client";
 
 
 export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
@@ -16,6 +17,7 @@ export interface IDnaViewModel {
   get roleId(): string;
   get dnaHash(): DnaHashB64;
   get agentPubKey(): AgentPubKeyB64;
+  get cellData(): InstalledCell;
   probeAll(): Promise<void>;
   dumpLogs(zomeName?: string): void;
   provideContext(host: ReactiveElement): void;
@@ -54,6 +56,7 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   get roleId(): string {return this._cellProxy.roleId}
   get dnaHash(): DnaHashB64 {return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 {return this._cellProxy.agentPubKey}
+  get cellData(): InstalledCell {return this._cellProxy.cellData}
 
   getZomeViewModel(name: string): IZomeViewModel | undefined {
     return this._zomeViewModels[name]

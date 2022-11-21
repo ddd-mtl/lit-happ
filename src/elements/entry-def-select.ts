@@ -26,7 +26,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
 
   /** */
   async onZomeSelect(e: any) {
-    console.log("onZomeSelect() CALLED", e)
+    //console.log("onZomeSelect() CALLED", e)
     const zomeSelector = this.shadowRoot!.getElementById("selectedZome") as HTMLSelectElement;
     this._selectedZomeName = zomeSelector.value;
   }
@@ -46,7 +46,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("entry-def-select render() called!")
+    //console.log("entry-def-select render() called!")
     if (!this.dnaViewModel) {
       return html`<span>Loading...</span>`;
     }
