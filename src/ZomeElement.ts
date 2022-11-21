@@ -3,8 +3,9 @@ import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {InstalledCell} from "@holochain/client";
-import {cellContext, ViewModel} from "@ddd-qc/dna-client";
 import {serializeHash} from "@holochain-open-dev/utils";
+import {ViewModel} from "./ViewModel";
+import {cellContext} from "./elements/cell-context";
 
 
 /**

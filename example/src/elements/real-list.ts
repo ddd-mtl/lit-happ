@@ -1,7 +1,8 @@
 import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {ZomeElement} from "./ZomeElement";
+import { ZomeElement } from "@ddd-qc/dna-client";
+
 
 /**
  *
