@@ -1,0 +1,13 @@
+[package]
+name = "real"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = [ "cdylib", "rlib" ]
+
+[dependencies]
+serde.workspace = true
+hdk.workspace = true
+real_integrity = { path = "../real_integrity" }

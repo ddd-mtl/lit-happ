@@ -70,14 +70,6 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   }
 
 
-  // /** */
-  // protected addZomeViewModel(zvmClass: ZvmClass): void {
-  //   const zvm = new zvmClass(this._dnaProxy);
-  //   //vm.provideContext(this.host);
-  //   //this._allEntryTypes[zvm.zomeName] = await zvm.getEntryDefs();
-  //   this._zomeViewModels[zvm.zomeName] = zvm;
-  // }
-
   /** */
   async probeAll(): Promise<void> {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {

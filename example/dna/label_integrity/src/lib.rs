@@ -11,34 +11,22 @@ use hdi::prelude::*;
 ///
 #[hdk_entry_helper]
 #[derive(Clone, PartialEq)]
-pub struct Dummy {
-   pub value: u32,
-}
-
-
-
-///
-#[hdk_entry_helper]
-#[derive(Clone, PartialEq)]
-pub struct Fake {
+pub struct Label {
    pub name: String,
 }
 
 
 #[hdk_entry_defs]
-#[unit_enum(DummyEntryTypes)]
-pub enum DummyEntry {
+#[unit_enum(LabelEntryTypes)]
+pub enum LabelEntry {
    #[entry_def(required_validations = 3, visibility = "public")]
-   Dummy(Dummy),
-   // #[entry_def(required_validations = 3, visibility = "public")]
-   // Fake(Fake),
+   Label(Label),
 }
 
 
 
 #[hdk_link_types]
-pub enum DummyLinkType {
+pub enum LabelLink {
    Default,
-   ToDummies,
 }
 

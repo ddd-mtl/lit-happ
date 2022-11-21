@@ -1,8 +1,9 @@
-import {LitElement, html} from "lit";
+import { LitElement, html } from "lit";
 import { state } from "lit/decorators.js";
-import {ConductorAppProxy, EntryDefSelect, HappController, IDnaViewModel} from "@ddd-qc/dna-client";
-import {DummyDvm, DummyZvm} from "./dummy";
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
+import { ConductorAppProxy, EntryDefSelect, HappController, IDnaViewModel } from "@ddd-qc/dna-client";
+import { DummyDvm, DummyZvm } from "./dummy";
+import { ScopedElementsMixin } from "@open-wc/scoped-elements";
+import { DummyList } from "./elements/dummy-list";
 
 
 /**
@@ -17,9 +18,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   private _happ!: HappController;
   private _dnaRoleId!: string;
 
-  get dummyDvm(): IDnaViewModel {return this._happ.getDvm(this._dnaRoleId)!}
+  get dummyDvm(): IDnaViewModel { return this._happ.getDvm(this._dnaRoleId)! }
 
-  
+
   /** */
   async firstUpdated() {
     let HC_PORT = Number(process.env.HC_PORT);
@@ -35,7 +36,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   }
 
 
-  /** */  
+  /** */
   async onDumpLogs(e: any) {
     this.dummyDvm.dumpLogs()
   }
@@ -74,6 +75,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
         <div style="margin:10px;">
         <span><span id="entryLabel">none</span></span>
         </div>
+        <dummy-list></dummy-list>
       </div>
     `
   }
@@ -81,6 +83,8 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   static get scopedElements() {
     return {
       "entry-def-select": EntryDefSelect,
+      "dummy-list": DummyList,
+      //"fake-list": FakeList,
     };
   }
 }
