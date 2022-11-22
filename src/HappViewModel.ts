@@ -1,5 +1,5 @@
-import {Dictionary, DnaHashB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {InstalledAppInfo, InstalledAppId, RoleId, DnaHash} from "@holochain/client";
+import {Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
+import {InstalledAppInfo, InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 import {DvmClass, IDnaViewModel} from "./DnaViewModel";

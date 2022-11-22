@@ -1,4 +1,4 @@
-import { AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CapSecret, CellId, InstalledAppId, InstalledAppInfo, InstalledCell } from "@holochain/client";
+import { CallZomeRequest, CapSecret, InstalledCell } from "@holochain/client";
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
@@ -81,6 +81,30 @@ export class CellProxy {
     } catch (e) {
       this._responseLog.push({requestIndex, failure: e, timestamp: Date.now()});
       return Promise.reject(e);
+    }
+  }
+
+
+  /**
+   * Calls the `entry_defs()` zome function and
+   * returns an array of all the zome's AppEntryDefNames and visibility
+   */
+  async callEntryDefs(zomeName: string): Promise<[string, boolean][]> {
+    try {
+      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 2 * 1000);
+      //console.debug("getEntryDefs() for " + this.zomeName + " result:")
+      //console.log({entryDefs})
+      let result: [string, boolean][] = []
+      for (const def of entryDefs.Defs) {
+        const name = def.id.App;
+        result.push([name, def.visibility.hasOwnProperty('Public') ])
+      }
+      //console.log({result})
+      return result;
+    } catch (e) {
+      console.error("Calling getEntryDefs() on " + zomeName + " failed: ")
+      console.error({e})
+      return Promise.reject(e)
     }
   }
 

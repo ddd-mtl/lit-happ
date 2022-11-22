@@ -2,9 +2,6 @@ import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWeb
 import { CellProxy } from "./CellProxy";
 import {HappDef, HappViewModel} from "./HappViewModel";
 import { ReactiveElement } from "lit";
-import {ZvmClass} from "./ZomeViewModel";
-import {DvmClass} from "./DnaViewModel";
-
 
 /** From hc-client-js API */
 export interface SignalUnsubscriber {
@@ -110,7 +107,7 @@ export class ConductorAppProxy implements AppApi {
   addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
     const index = this._signalHandlers.indexOf(handler);
     if (index >= 0) {
-      throw new Error("SignalHandler already added to this DnaClient");
+      throw new Error("SignalHandler already added to this CellProxy");
     }
     this._signalHandlers.push(handler);
     /* return tailored unsubscribe function to the caller */
@@ -118,7 +115,7 @@ export class ConductorAppProxy implements AppApi {
       unsubscribe: () => {
         const index = this._signalHandlers.indexOf(handler);
         if (index <= -1) {
-          console.warn("unsubscribe failed: Couldn't find signalHandler in DnaClient")
+          console.warn("unsubscribe failed: Couldn't find signalHandler in CellProxy")
           return;
         }
         this._signalHandlers.slice(index, 1)

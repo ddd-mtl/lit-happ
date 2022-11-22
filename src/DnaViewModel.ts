@@ -26,7 +26,7 @@ export interface IDnaViewModel {
 
 /**
  * Abstract ViewModel for a DNA.
- * It holds the DnaProxy and all the ZomeViewModels of the DNA.
+ * It holds the CellProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
 export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
@@ -45,27 +45,25 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
 
 
   /** -- Fields -- */
-
-  private _allEntryDefs: Dictionary<[string, boolean][]> = {};
-  protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
   protected _cellProxy: CellProxy;
+  protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
+  private _allEntryDefs: Dictionary<[string, boolean][]> = {};
+
 
   /** -- Getters -- */
 
-  //get entryTypes(): Dictionary<[string, boolean][]> {return this._allEntryTypes}
+  get cellData(): InstalledCell {return this._cellProxy.cellData}
   get roleId(): string {return this._cellProxy.roleId}
   get dnaHash(): DnaHashB64 {return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 {return this._cellProxy.agentPubKey}
-  get cellData(): InstalledCell {return this._cellProxy.cellData}
 
-  getZomeViewModel(name: string): IZomeViewModel | undefined {
-    return this._zomeViewModels[name]
-  }
+  getEntryDefs(zomeName: string): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
+  getZomeViewModel(zomeName: string): IZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
 
 
   /** -- Methods -- */
 
-  /** Override so we can provide context of all zomes */
+  /** Override so we can provide context of all zvms */
   /*private*/ provideContext(host: ReactiveElement): void {
     //console.log("DVM.provideContext()", host, this)
     super.provideContext(host);
@@ -84,10 +82,10 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   }
 
 
-  /** */
+  /** Useless since the entry defs are in the integrity zome which is not represented here */
   async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
-      this._allEntryDefs[zvm.zomeName] = await zvm.fetchEntryDefs(); // TODO optimize
+      this._allEntryDefs[zvm.zomeName] = await this._cellProxy.callEntryDefs(zvm.zomeName); // TODO optimize
     }
     return this._allEntryDefs;
   }
