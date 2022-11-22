@@ -1,7 +1,7 @@
 {
   "name": "@ddd-qc/dna-client",
-  "version": "0.5.1",
-  "description": "Temporary wrapper around @holochain-open-dev/cell-client",
+  "version": "0.5.2",
+  "description": "MVVM Framework for holochain apps using Lit",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",

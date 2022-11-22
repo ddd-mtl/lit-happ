@@ -7,6 +7,7 @@ export * from "./DnaViewModel";
 export * from "./utils";
 export * from "./ViewModel";
 export * from "./ZomeElement";
+export * from "./DnaElement";
 
 export * from "./elements/entry-def-select";
 export * from "./elements/cell-context";
