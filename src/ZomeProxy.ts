@@ -4,21 +4,11 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ICellDef, IZomeSpecific} from "./CellDef";
 
 
-// export class TypeHelper {
-//   static typeName(ctor: { name:string }) : string {
-//     return ctor.name;
-//   }
-// }
-
-let typeName = (ctor: { name:string }) : string => {
-  return ctor.name;
-}
-
 /**
  * ABC for representing the zome function bindings of a Zome.
  * It holds the zomeName and reference to a CellProxy.
  */
-export abstract class ZomeProxy implements ICellDef/*, IZomeSpecific*/ {
+export abstract class ZomeProxy implements ICellDef, IZomeSpecific {
 
   constructor(protected _cellProxy: CellProxy) {}
 

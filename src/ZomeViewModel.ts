@@ -12,9 +12,6 @@ export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 export type IZomeViewModel = IZomeSpecific & ICellDef & IViewModel;
 
 
-
-
-
 /**
  * Abstract ViewModel for a Zome.
  * It extends a ViewModel by adding a ZomeProxy.
@@ -27,6 +24,7 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P>
         super();
     }
 
+    /** debug */
     get thisName(): string {return this.constructor.name}
 
     get zomeName(): string { return this._zomeProxy.zomeName }
