@@ -2,16 +2,13 @@ import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 
 
-/** Interface for a generic ViewModel */
-// export abstract class ViewModel {
-//     provideContext(host: ReactiveElement): void {
-//         new ContextProvider(host, this.getContext(), this);
-//     }
-//     abstract getContext(): any; // FIXME: use context type
-
-//     abstract probeDht(): Promise<void>;
-//     abstract get perspective(): any;
-// }
+/** Interface for the generic-less ViewModel class */
+export interface IViewModel {
+  provideContext(host: ReactiveElement): void;
+  getContext(): any;  // FIXME context type
+  get perspective(): any;
+  probeAll(): Promise<void>;
+}
 
 
 /**
@@ -25,33 +22,37 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
  * Hosts can trigger probing in order to get an updated perspective.
  * The perspective can be automatically updated by internal events.
  */
- export abstract class ViewModel<P> {
+ export abstract class ViewModel<P> implements IViewModel {
 
-    /** -- Fields -- */
-    protected _previousPerspective?: P;
-    protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
+  /** -- Fields -- */
+  protected _previousPerspective?: P;
+  protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
 
-    protected _provider?: any; // FIXME ContextProvider<this.getContext()>;
+  protected _provider?: any; // FIXME ContextProvider<this.getContext()>;
 
-    /** Set ContextProvider for host */
-    provideContext(providerHost: ReactiveElement): void {
-        console.log(`Providing context "${this.getContext()}" | in host `, providerHost);
-        this._provider = new ContextProvider(providerHost, this.getContext(), this);
-    }
+  /** -- IViewModel interface -- */
+
+  /** Set ContextProvider for host */
+  provideContext(providerHost: ReactiveElement): void {
+      console.log(`Providing context "${this.getContext()}" | in host `, providerHost);
+      this._provider = new ContextProvider(providerHost, this.getContext(), this);
+  }
+
+  abstract getContext(): any;
+  abstract get perspective(): P;
+
+  /* (optional) Lets the observer trigger probing in order to get an updated perspective */
+  async probeAll(): Promise<void> {}
 
 
-    /** -- Methods that children must implement  --*/
-    /**
-     * Return true if the perspective has changed. This will trigger an update on the observers
-     * Child classes are expected to compare their latest constructed perspective (the one returned by this.perspective())
-     * with this._previousPerspective.
-     */
-    protected abstract hasChanged(): boolean;
-    /* Returns the latest perspective */
-    abstract get perspective(): P;
-    abstract getContext(): any; // FIXME context type
-    /* (optional) Lets the observer trigger probing in order to get an updated perspective */
-    async probeAll(): Promise<void> {}
+  /**
+   * Return true if the perspective has changed. This will trigger an update on the observers
+   * Child classes are expected to compare their latest constructed perspective (the one returned by this.perspective())
+   * with this._previousPerspective.
+   */
+  protected abstract hasChanged(): boolean;
+
+
 
 
     /** -- Observer pattern -- */

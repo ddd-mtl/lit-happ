@@ -1,15 +1,14 @@
 import {CapSecret, CellId, InstalledCell, RoleId} from "@holochain/client";
 import {CellProxy} from "./CellProxy";
-import {AgentPubKeyB64, DnaHashB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {CellDef} from "./CellDef";
-import {serializeHash} from "@holochain-open-dev/utils";
+import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
+import {ICellDef} from "./CellDef";
 
 
 /**
  * ABC for representing the zome function bindings of a Zome.
  * It holds the zomeName and reference to a CellProxy.
  */
-export abstract class ZomeProxy implements CellDef {
+export abstract class ZomeProxy implements ICellDef {
 
   constructor(protected _cellProxy: CellProxy) {}
 

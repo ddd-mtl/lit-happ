@@ -3,16 +3,15 @@ import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
-import {CellDef} from "./CellDef";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {serializeHash} from "@holochain-open-dev/utils";
+import {ICellDef} from "./CellDef";
 
 
 /**
  * LitElement that is bound to a specific DnaViewModel
  */
-export class DnaElement<P, DVM extends DnaViewModel<P>> extends ScopedElementsMixin(LitElement) implements CellDef {
+export class DnaElement<P, DVM extends DnaViewModel<P>> extends ScopedElementsMixin(LitElement) implements ICellDef {
 
   constructor(public dnaName: string) {
     super();

@@ -2,7 +2,7 @@ import {CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId} from "@holoch
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import {CellDef} from "./CellDef";
+import {ICellDef} from "./CellDef";
 
 
 export interface RequestLog {
@@ -26,7 +26,7 @@ export interface ResponseLog {
  * It holds a reference to its ConductorAppProxy and its cellData.
  * This class is expected to be used by ZomeProxies.
  */
-export class CellProxy implements CellDef {
+export class CellProxy implements ICellDef {
 
   /** Ctor */
   constructor(private _conductor: ConductorAppProxy, public cellDef: InstalledCell, defaultTimeout?: number) {

@@ -6,14 +6,14 @@ import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {ViewModel} from "./ViewModel";
 import {cellContext} from "./elements/cell-context";
-import {CellDef} from "./CellDef";
+import {ICellDef} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 
 /**
  * LitElement that is bound to a specific ZomeViewModel
  */
-export class ZomeElement<P, Z extends ViewModel<P>> extends ScopedElementsMixin(LitElement) implements CellDef {
+export class ZomeElement<P, Z extends ViewModel<P>> extends ScopedElementsMixin(LitElement) implements ICellDef {
 
   constructor(public zomeName: string) {
     super();

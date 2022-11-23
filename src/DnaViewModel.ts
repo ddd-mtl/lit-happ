@@ -1,31 +1,23 @@
 import {CellProxy} from "./CellProxy";
 import {IZomeViewModel, ZvmClass} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
-import {AgentPubKeyB64, Dictionary, DnaHashB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import { ViewModel } from "./ViewModel";
+import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
+import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
-import {CellDef} from "./CellDef";
+import {ICellDef} from "./CellDef";
 
 
 export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
 
 
-export type IDnaViewModel = _DnaViewModel & CellDef
+export type IDnaViewModel = _DnaViewModel & ICellDef & IViewModel;
 
 /** Interface for the generic-less DnaViewModel class */
 interface _DnaViewModel {
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
-
-  // get roleId(): RoleId;
-  // get dnaHash(): DnaHashB64;
-  // get agentPubKey(): AgentPubKeyB64;
-  //get cellDef(): InstalledCell;
-
-  probeAll(): Promise<void>;
   dumpLogs(zomeName?: string): void;
-  provideContext(host: ReactiveElement): void;
 }
 
 

@@ -22,7 +22,7 @@ export class CellContext extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("CellContext set", this.cellDef.role_id)
+    console.log(`CellContext set "${this.cellDef.role_id}"`)
     return html`<slot></slot>`;
   }
 }

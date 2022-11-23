@@ -1,19 +1,19 @@
-import { ReactiveElement } from "lit";
-import { ZomeProxy } from "./ZomeProxy";
-import { ViewModel } from "./ViewModel";
-import { CellProxy } from "./CellProxy";
 import {createContext} from "@lit-labs/context";
-import {CellDef} from "./CellDef";
+import { ZomeProxy } from "./ZomeProxy";
+import {IViewModel, ViewModel} from "./ViewModel";
+import { CellProxy } from "./CellProxy";
+import {ICellDef} from "./CellDef";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
+export type IZomeViewModel = _ZomeViewModel & ICellDef & IViewModel;
+
+
 /** Interface for the generic-less ZomeViewModel class */
-export interface IZomeViewModel {
+export interface _ZomeViewModel {
     get zomeName(): string;
-    provideContext(host: ReactiveElement): void;
-    probeAll(): Promise<void>;
 }
 
 
@@ -24,7 +24,7 @@ export interface IZomeViewModel {
  * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P> implements IZomeViewModel, CellDef {
+export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P> implements IZomeViewModel {
     protected constructor(protected _zomeProxy: T) {
         super();
     }
