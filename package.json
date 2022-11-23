@@ -14,6 +14,7 @@
     "tsc:all": "tsc && npm run tsc:example",
     "start": "cd example && npm run start",
     "build:happ": "cd example && npm run build:happ",
+    "devtest": "npm run build:happ && npm run tsc:all && npm run start",
     "publish-to-branch": "npm run build && rm -rf node_modules && gh-pages -d ./ -b build && npm i"
   },
   "repository": {

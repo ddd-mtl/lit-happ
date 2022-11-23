@@ -10,10 +10,11 @@ export interface HappDef {
  dvmDefs: [RoleId, DvmClass][],
 }
 
+
 /**
  * Stores the DnaViewModels of a happ
  */
- export class HappViewModel /* implements ReactiveController */ {
+ export class HappViewModel {
 
   /** Ctor */
   constructor(public host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy, dvmClasses: [RoleId, DvmClass][]) {

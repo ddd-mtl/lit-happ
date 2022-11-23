@@ -1,5 +1,6 @@
 import { CapSecret } from "@holochain/client";
 import {CellProxy} from "./CellProxy";
+import {EntryHashB64} from "@holochain-open-dev/core-types";
 
 
 /**
@@ -14,6 +15,8 @@ export abstract class ZomeProxy {
 
 
   abstract get zomeName(): string;
+
+  get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
 
   /** Helper for calling a zome function on its zome */
   protected async call(fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {

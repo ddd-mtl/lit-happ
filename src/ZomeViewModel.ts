@@ -2,6 +2,7 @@ import { ReactiveElement } from "lit";
 import { ZomeProxy } from "./ZomeProxy";
 import { ViewModel } from "./ViewModel";
 import { CellProxy } from "./CellProxy";
+import {createContext} from "@lit-labs/context";
 
 export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
@@ -25,10 +26,13 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P>
         super();
     }
 
-    /** */
     get zomeName(): string { return this._zomeProxy.zomeName }
+    get dnaHash(): string { return this._zomeProxy.dnaHash }
 
-    //abstract probeAll(): Promise<void>;
-
+    getContext(): any {
+        const context = createContext<typeof this>('zvm/'+ this.zomeName +'/' + this.dnaHash)
+        console.log({context})
+        return context
+    }
 }
 

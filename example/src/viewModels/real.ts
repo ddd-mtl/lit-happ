@@ -42,7 +42,7 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
   // static context = createContext<RealZvm>('zvm/real');
   // getContext():any {return RealZvm.context}
 
-  getContext(): any {return createContext<RealZvm>('zvm/real/' + this._cellProxy.dnaHash)}
+  //getContext(): any {return createContext<RealZvm>('zvm/real/' + this._cellProxy.dnaHash)}
 
 
   protected hasChanged(): boolean {return true}

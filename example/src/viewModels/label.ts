@@ -44,7 +44,7 @@ export class LabelZvm extends ZomeViewModel<LabelZomePerspective, LabelZomeProxy
   //static context = createContext<LabelZvm>('zvm/label');
   //getContext(): any {return LabelZvm.context}
 
-  getContext(): any {return createContext<LabelZvm>('zvm/label/' + this._cellProxy.dnaHash)}
+  //getContext(): any {return createContext<LabelZvm>('zvm/label/' + this._cellProxy.dnaHash)}
 
   protected hasChanged(): boolean {return true}
 

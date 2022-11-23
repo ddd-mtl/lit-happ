@@ -17,12 +17,12 @@ export class ZomeElement<P, Z extends ViewModel<P>> extends ScopedElementsMixin(
     super();
   }
 
+
   @state() protected _loaded = false;
 
   @contextProvided({ context: cellContext, subscribe: true })
   @property({type: Object})
   cellData!: InstalledCell;
-
   /** Provided by Context depending on cellData.dnaHash */
   protected _zvm!: Z;
 
@@ -33,9 +33,11 @@ export class ZomeElement<P, Z extends ViewModel<P>> extends ScopedElementsMixin(
   async firstUpdated() {
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
+    const context = createContext<Z>('zvm/'+ this.zomeName + '/' + serializeHash(this.cellData.cell_id[0]))
+    console.log("Requesting context", context)
     /*const consumer =*/ new ContextConsumer(
       this,
-      createContext<Z>('zvm/'+ this.zomeName + '/' + serializeHash(this.cellData.cell_id[0])),
+      context,
       (value: Z, dispose?: () => void): void => {
         this._zvm = value;
         this._zvm.subscribe(this, 'perspective');

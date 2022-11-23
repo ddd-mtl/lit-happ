@@ -39,7 +39,7 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
 
   /** -- ViewModel Interface -- */
 
-  getContext(): any {return createContext<DummyZvm>('zvm/dummy/' + this._cellProxy.dnaHash)}
+  //getContext(): any {return createContext<DummyZvm>('zvm/dummy/' + this._cellProxy.dnaHash)}
 
   protected hasChanged(): boolean {return true}
 
