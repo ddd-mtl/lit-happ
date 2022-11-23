@@ -8,6 +8,9 @@ export interface IViewModel {
   getContext(): any;  // FIXME context type
   get perspective(): any;
   probeAll(): Promise<void>;
+  /** -- Observer pattern -- */
+  subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey): void;
+  unsubscribe(candidat: ReactiveControllerHost): void;
 }
 
 
@@ -53,35 +56,34 @@ export interface IViewModel {
   protected abstract hasChanged(): boolean;
 
 
+  /** -- Observer pattern -- */
+
+  /** */
+  subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey): void {
+      (providedHost as any)[propName] = this.perspective;
+      this._providedHosts.push([providedHost, propName])
+  }
+
+  /** */
+  unsubscribe(candidat: ReactiveControllerHost): void {
+      let index  = 0;
+      for (const [host, _propName] of this._providedHosts) {
+          if (host === candidat) break;
+          index += 1;
+      }
+      if (index > -1) {
+          this._providedHosts.splice(index, 1);
+      }
+  }
 
 
-    /** -- Observer pattern -- */
-
-    /** */
-    subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey) {
-        (providedHost as any)[propName] = this.perspective;
-        this._providedHosts.push([providedHost, propName])
-    }
-
-    /** */
-    unsubscribe(candidat: ReactiveControllerHost) {
-        let index  = 0;
-        for (const [host, _propName] of this._providedHosts) {
-            if (host === candidat) break;
-            index += 1;
-        }
-        if (index > -1) {
-            this._providedHosts.splice(index, 1);
-        }
-    }
-
-    /** */
-    protected notifySubscribers() {
-        if (!this.hasChanged()) return;
-        for (const [host, propName] of this._providedHosts) {
-            (host as any)[propName] = this.perspective;
-        }
-        this._previousPerspective = this.perspective
-    }
+  /** */
+  protected notifySubscribers() {
+      if (!this.hasChanged()) return;
+      for (const [host, propName] of this._providedHosts) {
+          (host as any)[propName] = this.perspective;
+      }
+      this._previousPerspective = this.perspective
+  }
 
 }

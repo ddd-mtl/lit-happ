@@ -1,19 +1,28 @@
 import {CapSecret, CellId, InstalledCell, RoleId} from "@holochain/client";
 import {CellProxy} from "./CellProxy";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {ICellDef} from "./CellDef";
+import {ICellDef, IZomeSpecific} from "./CellDef";
 
+
+// export class TypeHelper {
+//   static typeName(ctor: { name:string }) : string {
+//     return ctor.name;
+//   }
+// }
+
+let typeName = (ctor: { name:string }) : string => {
+  return ctor.name;
+}
 
 /**
  * ABC for representing the zome function bindings of a Zome.
  * It holds the zomeName and reference to a CellProxy.
  */
-export abstract class ZomeProxy implements ICellDef {
+export abstract class ZomeProxy implements ICellDef/*, IZomeSpecific*/ {
 
   constructor(protected _cellProxy: CellProxy) {}
 
   //private _entryDefs?: [string, boolean][];
-
 
   abstract get zomeName(): string;
 
@@ -26,7 +35,7 @@ export abstract class ZomeProxy implements ICellDef {
 
   /** Helper for calling a zome function on its zome */
   protected async call(fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
-    return this._cellProxy.callZome(this.zomeName, fn_name, payload, cap_secret, timeout);
+    return this._cellProxy.callZome( this.zomeName, fn_name, payload, cap_secret, timeout);
   }
 
 

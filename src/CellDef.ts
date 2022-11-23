@@ -11,3 +11,8 @@ export interface ICellDef {
   get agentPubKey(): AgentPubKeyB64;
   get cellId(): CellId;
 }
+
+
+export interface IZomeSpecific {
+   get zomeName(): string;
+}

@@ -2,19 +2,17 @@ import {createContext} from "@lit-labs/context";
 import { ZomeProxy } from "./ZomeProxy";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
-import {ICellDef} from "./CellDef";
+import {ICellDef, IZomeSpecific} from "./CellDef";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
-export type IZomeViewModel = _ZomeViewModel & ICellDef & IViewModel;
-
-
 /** Interface for the generic-less ZomeViewModel class */
-export interface _ZomeViewModel {
-    get zomeName(): string;
-}
+export type IZomeViewModel = IZomeSpecific & ICellDef & IViewModel;
+
+
+
 
 
 /**
@@ -29,7 +27,10 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ViewModel<P>
         super();
     }
 
+    get thisName(): string {return this.constructor.name}
+
     get zomeName(): string { return this._zomeProxy.zomeName }
+
 
     /** CellDef interface */
     get cellDef(): InstalledCell { return this._zomeProxy.cellDef }

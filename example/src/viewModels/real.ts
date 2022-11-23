@@ -13,7 +13,9 @@ export interface RealZomePerspective {
  *
  */
 export class RealZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "zReal"}
+
+  get zomeName(): string {return "zReal" }
+
   async getReal(eh: EntryHash): Promise<number> {
     return this.call('get_real', eh, null);
   }
@@ -38,12 +40,6 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
   private _values: number[] = [];
 
   /** -- ViewModel Interface -- */
-
-  // static context = createContext<RealZvm>('zvm/real');
-  // getContext():any {return RealZvm.context}
-
-  //getContext(): any {return createContext<RealZvm>('zvm/real/' + this._cellProxy.dnaHash)}
-
 
   protected hasChanged(): boolean {return true}
 
@@ -83,7 +79,7 @@ export class RealDvm extends DnaViewModel<number> {
 
   /** -- ViewModel Interface -- */
 
-  static context = createContext<RealDvm>('dvm/real');
+  static context = createContext<RealDvm>('dvm/rReal');
   getContext(): any {return RealDvm.context}
 
   protected hasChanged(): boolean {return true}

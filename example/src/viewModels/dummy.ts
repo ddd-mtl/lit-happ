@@ -13,7 +13,9 @@ export interface DummyZomePerspective {
  *
  */
 export class DummyZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "zDummy"}
+
+  get zomeName(): string {return "zDummy" }
+
   async getDummy(eh: EntryHash): Promise<number> {
     return this.call('get_dummy', eh, null);
   }
@@ -24,7 +26,6 @@ export class DummyZomeProxy extends ZomeProxy {
     return this.call('get_my_dummies', null, null);
   }
 }
-
 
 /**
  *
@@ -38,8 +39,6 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
   private _values: number[] = [];
 
   /** -- ViewModel Interface -- */
-
-  //getContext(): any {return createContext<DummyZvm>('zvm/dummy/' + this._cellProxy.dnaHash)}
 
   protected hasChanged(): boolean {return true}
 
@@ -80,7 +79,7 @@ export class DummyDvm extends DnaViewModel<number> {
 
   /** -- ViewModel Interface -- */
 
-  static context = createContext<DummyDvm>('dvm/dummy');
+  static context = createContext<DummyDvm>('dvm/rDummy');
   getContext():any {return DummyDvm.context}
 
   protected hasChanged(): boolean {return true}

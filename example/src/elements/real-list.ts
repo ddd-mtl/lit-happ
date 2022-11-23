@@ -8,6 +8,7 @@ import { ZomeElement } from "@ddd-qc/dna-client";
  *
  */
 export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
+
   constructor() {
     super("zReal");
   }

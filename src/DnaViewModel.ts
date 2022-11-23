@@ -73,6 +73,10 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   }
 
 
+  // static context = createContext<typeof this>('dvm/'+ this.roleId);
+  // getContext():any {return DnaViewModel.context}
+
+
   /** */
   async probeAll(): Promise<void> {
     for (const [name, zvm] of Object.entries(this._zomeViewModels)) {
