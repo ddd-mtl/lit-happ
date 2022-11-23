@@ -48,10 +48,7 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMi
   async firstUpdated() {
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
-    //const zvm = this._zvm as IZomeViewModel;
-    //const zomeName = this._zvm.zomeName;
-    //const zomeName = ZomeProxy.constructor.name;
-    //const zomeName = Z.zomeName;
+    // FIXME check: "${this._zomeName}" != "${this._zvm.zomeName}"
     const contextType = createContext<ZVM>('zvm/'+ this._zomeName + '/' + this.dnaHash)
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
@@ -59,9 +56,6 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMi
       contextType,
       (value: ZVM, dispose?: () => void): void => {
         this._zvm = value;
-        if (this._zomeName != this._zvm.zomeName) {
-          throw Error(`ZVM and ZomeElement zomeNames mismatch: "${this._zomeName}" != "${this._zvm.zomeName}"`)
-        }
         this._zvm.subscribe(this, 'perspective');
         this._loaded = true;
       },

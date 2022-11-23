@@ -39,6 +39,7 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixi
   async firstUpdated() {
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
+    // FIXME Check "${this._roleId}" != "${this._dvm.roleId}"
     const contextType = createContext<DVM>('dvm/'+ this._roleId);
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
@@ -46,9 +47,6 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixi
       contextType,
       (value: DVM, dispose?: () => void): void => {
         this._dvm = value;
-        if (this._roleId != this._dvm.roleId) {
-          throw Error(`DVM and DnaElement roleId mismatch: "${this._roleId}" != "${this._dvm.roleId}"`)
-        }
         this._dvm.subscribe(this, 'perspective');
         this._loaded = true;
       },
