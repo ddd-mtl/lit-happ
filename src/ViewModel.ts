@@ -49,7 +49,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
     protected abstract hasChanged(): boolean;
     /* Returns the latest perspective */
     abstract get perspective(): P;
-    abstract getContext(): any;
+    abstract getContext(): any; // FIXME context type
     /* (optional) Lets the observer trigger probing in order to get an updated perspective */
     async probeAll(): Promise<void> {}
 

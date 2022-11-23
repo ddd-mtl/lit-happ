@@ -1,7 +1,8 @@
-import { CallZomeRequest, CapSecret, InstalledCell } from "@holochain/client";
+import {CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId} from "@holochain/client";
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
+import {CellDef} from "./CellDef";
 
 
 export interface RequestLog {
@@ -25,10 +26,10 @@ export interface ResponseLog {
  * It holds a reference to its ConductorAppProxy and its cellData.
  * This class is expected to be used by ZomeProxies.
  */
-export class CellProxy {
+export class CellProxy implements CellDef {
 
   /** Ctor */
-  constructor(private _conductor: ConductorAppProxy, public cellData: InstalledCell, defaultTimeout?: number) {
+  constructor(private _conductor: ConductorAppProxy, public cellDef: InstalledCell, defaultTimeout?: number) {
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
   }
 
@@ -44,12 +45,14 @@ export class CellProxy {
   private _callMutex: boolean = false;
 
 
+  /** -- CellDef interface -- */
+
+  get roleId(): RoleId { return this.cellDef.role_id }
+  get cellId(): CellId { return this.cellDef.cell_id }
+  get dnaHash(): DnaHashB64 { return serializeHash(this.cellDef.cell_id[0]) }
+  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellDef.cell_id[1]) }
+
   /** -- Methods -- */
-
-  get roleId(): string { return this.cellData.role_id }
-  get dnaHash(): DnaHashB64 { return serializeHash(this.cellData.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellData.cell_id[1]) }
-
 
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
@@ -68,8 +71,8 @@ export class CellProxy {
     timeout = timeout ? timeout : this.defaultTimeout
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cellData.cell_id,
-      provenance: this.cellData.cell_id[1],
+      cell_id: this.cellDef.cell_id,
+      provenance: this.cellDef.cell_id[1],
     } as CallZomeRequest;
     const log = {request: req, timeout, requestTimestamp: Date.now(), executionTimestamp: Date.now()} as RequestLog;
     const requestIndex = this._requestLog.length;

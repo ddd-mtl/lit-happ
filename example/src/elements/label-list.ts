@@ -1,50 +1,16 @@
-import {LitElement, html} from "lit";
-import {state, property} from "lit/decorators.js";
-import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
+import {html} from "lit";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {InstalledCell} from "@holochain/client";
-import { cellContext } from "@ddd-qc/dna-client";
+import {ZomeElement} from "@ddd-qc/dna-client";
 
+/**
+ *
+ */
+export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
-export class LabelList extends ScopedElementsMixin(LitElement) {
-
-  @state() private _loaded = false;
-
-  // @property()
-  // dnaHash!: DnaHashB64;
-
-  @contextProvided({ context: cellContext, subscribe: true })
-  @property({type: Object})
-  cellData!: InstalledCell;
-
-
-  /** Provided by Context depending on cellData.dnaHash */
-  _zvm!:LabelZvm;
-
-  @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
-  perspective!: LabelZomePerspective;
-
-
-  /** */
-  async firstUpdated() {
-    //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
-    /** Consume Context based on given dnaHash */
-    /*const consumer =*/ new ContextConsumer(
-      this,
-      createContext<LabelZvm>('zvm/label/' + serializeHash(this.cellData.cell_id[0])),
-      (value: LabelZvm, dispose?: () => void): void => {
-      //console.log("LabelList.init()", this, value)
-      this._zvm = value;
-      this._zvm.subscribe(this, 'perspective');
-      this._loaded = true;
-    },
-      false, // true will call twice at init
-    );
-    //console.log({consumer})
+  constructor() {
+    super("zLabel");
   }
-
 
   /** */
   async onProbe(e: any) {

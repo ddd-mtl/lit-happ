@@ -13,7 +13,7 @@ export interface RealZomePerspective {
  *
  */
 export class RealZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "real"}
+  get zomeName(): string {return "zReal"}
   async getReal(eh: EntryHash): Promise<number> {
     return this.call('get_real', eh, null);
   }
@@ -77,8 +77,8 @@ export class RealDvm extends DnaViewModel<number> {
   }
 
   /** QoL Helpers */
-  get realZvm(): RealZvm {return this.getZomeViewModel("real") as RealZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel("label") as LabelZvm}
+  get realZvm(): RealZvm {return this.getZomeViewModel("zReal") as RealZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel("zLabel") as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

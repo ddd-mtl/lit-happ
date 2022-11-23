@@ -1,6 +1,6 @@
 ---
 manifest_version: "1"
-name: real_dna
+name: dReal
 uuid: ~
 properties: ~
 integrity:
@@ -9,14 +9,14 @@ integrity:
     - name: real_integrity
       bundled: ../target/wasm32-unknown-unknown/release/real_integrity.wasm
     - name: label_integrity
-      bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm      
+      bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
 coordinator:
   zomes:
-    - name: real
+    - name: zReal
       bundled: ../target/wasm32-unknown-unknown/release/real.wasm
       dependencies:
         - name: real_integrity
-    - name: label
+    - name: zLabel
       bundled: ../target/wasm32-unknown-unknown/release/label.wasm
       dependencies:
         - name: label_integrity

@@ -13,7 +13,7 @@ export interface DummyZomePerspective {
  *
  */
 export class DummyZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "dummy"}
+  get zomeName(): string {return "zDummy"}
   async getDummy(eh: EntryHash): Promise<number> {
     return this.call('get_dummy', eh, null);
   }
@@ -74,8 +74,8 @@ export class DummyDvm extends DnaViewModel<number> {
   }
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel("dummy") as DummyZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel("label") as LabelZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel("zDummy") as DummyZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel("zLabel") as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

@@ -1,49 +1,20 @@
-import {LitElement, html} from "lit";
-import {state, property} from "lit/decorators.js";
-import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
+import {html} from "lit";
 import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
-import {serializeHash} from "@holochain-open-dev/utils";
-import {InstalledCell} from "@holochain/client";
-import {cellContext} from "@ddd-qc/dna-client";
-
-export class DummyList extends ScopedElementsMixin(LitElement) {
-
-  @state() private _loaded = false;
-
-  @contextProvided({ context: cellContext, subscribe: true })
-  @property({type: Object})
-  cellData!: InstalledCell;
-
-  //@contextProvided({ context: DummyZvm.context, subscribe: true })
-  _dummyZvm!: DummyZvm;
-
-  @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
-  dummyPerspective!: DummyZomePerspective;
+import {ZomeElement} from "@ddd-qc/dna-client";
 
 
-  /** */
-  async firstUpdated() {
-    //console.log("DummyList firstUpdated()", serializeHash(this.cellData.cell_id[0]))
-    const consumer = new ContextConsumer(
-      this,
-      createContext<DummyZvm>('zvm/dummy/' + serializeHash(this.cellData.cell_id[0])),
-      undefined,
-      false, // true will call twice at init
-    );
+/**
+ *
+ */
+export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
-    //console.log("DummyList firstUpdated()",
-    this._dummyZvm = consumer.value!;
-    this._dummyZvm.subscribe(this, 'dummyPerspective');
-
-    /* Done */
-    this._loaded = true;
+  constructor() {
+    super("zDummy");
   }
-
 
   /** */
   async onProbe(e: any) {
-    await this._dummyZvm.probeAll();
+    await this._zvm.probeAll();
   }
 
 
@@ -51,7 +22,7 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
   async onCreateDummy(e: any) {
     const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
     const value = Number(input.value);
-    let res = await this._dummyZvm.createDummy(value);
+    let res = await this._zvm.createDummy(value);
     //console.log("onCreateDummy() res =", serializeHash(res))
     input.value = "";
   }
@@ -64,7 +35,7 @@ export class DummyList extends ScopedElementsMixin(LitElement) {
       return html`<span>Loading...</span>`;
     }
 
-    const dummyLi = Object.values(this.dummyPerspective.values).map(
+    const dummyLi = Object.values(this.perspective.values).map(
       (value) => {
         return html`<li>${value}</li>`
       }

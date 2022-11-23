@@ -1,34 +1,34 @@
 ---
 manifest_version: "1"
 
-name: playground-happ
+name: playground
 description: Playground happ for testing cell-proxy framework
 
 roles:
-  - id: dummy_role
+  - id: rDummy
     provisioning:
       strategy: create
       deferred: false
     dna:
-      bundled: ../dummy_dna.dna
+      bundled: ../../artifacts/dummy.dna
       uuid: ~
       properties: ~
       clone_limit: 0
-  - id: real_role
+  - id: rReal
     provisioning:
       strategy: create
       deferred: false
     dna:
-      bundled: ../real_dna.dna
+      bundled: ../../artifacts/real.dna
       uuid: ~
       properties: ~
       clone_limit: 0
-  - id: impostor_role
+  - id: rImpostor
     provisioning:
       strategy: create
       deferred: false
     dna:
-      bundled: ../real_dna.dna
+      bundled: ../../artifacts/real.dna
       uuid: ~
       properties: ~
       clone_limit: 0

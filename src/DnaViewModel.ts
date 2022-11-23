@@ -1,23 +1,28 @@
 import {CellProxy} from "./CellProxy";
 import {IZomeViewModel, ZvmClass} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
-import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
+import {AgentPubKeyB64, Dictionary, DnaHashB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import { ViewModel } from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
-import {InstalledCell, RoleId} from "@holochain/client";
+import {CellId, InstalledCell, RoleId} from "@holochain/client";
+import {CellDef} from "./CellDef";
 
 
 export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
 
 
+export type IDnaViewModel = _DnaViewModel & CellDef
+
 /** Interface for the generic-less DnaViewModel class */
-export interface IDnaViewModel {
+interface _DnaViewModel {
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
-  get roleId(): string;
-  get dnaHash(): DnaHashB64;
-  get agentPubKey(): AgentPubKeyB64;
-  get cellData(): InstalledCell;
+
+  // get roleId(): RoleId;
+  // get dnaHash(): DnaHashB64;
+  // get agentPubKey(): AgentPubKeyB64;
+  //get cellDef(): InstalledCell;
+
   probeAll(): Promise<void>;
   dumpLogs(zomeName?: string): void;
   provideContext(host: ReactiveElement): void;
@@ -50,12 +55,15 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
 
-  /** -- Getters -- */
+  /** CellDef interface */
+  get cellDef(): InstalledCell {return this._cellProxy.cellDef}
+  get roleId(): RoleId { return this._cellProxy.roleId }
+  get cellId(): CellId { return this._cellProxy.cellId }
+  get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
+  get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
 
-  get cellData(): InstalledCell {return this._cellProxy.cellData}
-  get roleId(): string {return this._cellProxy.roleId}
-  get dnaHash(): DnaHashB64 {return this._cellProxy.dnaHash}
-  get agentPubKey(): AgentPubKeyB64 {return this._cellProxy.agentPubKey}
+
+  /** -- Getters -- */
 
   getEntryDefs(zomeName: string): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: string): IZomeViewModel | undefined {return this._zomeViewModels[zomeName]}

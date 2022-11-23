@@ -13,9 +13,9 @@ import {LabelList} from "./elements/label-list";
 export const PlaygroundHappDef: HappDef = {
   id: "playground",
   dvmDefs: [
-    ["dummy_role", DummyDvm],
-    ["impostor_role", RealDvm],
-    ["real_role", RealDvm],
+    ["rDummy", DummyDvm],
+    ["rImpostor", RealDvm],
+    ["rReal", RealDvm],
   ]
 }
 
@@ -32,9 +32,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   private _happ!: HappViewModel;
 
 
-  get dummyDvm(): IDnaViewModel { return this._happ.getDvm("dummy_role")! }
-  get impostorDvm(): IDnaViewModel { return this._happ.getDvm("impostor_role")! }
-  get realDvm(): IDnaViewModel { return this._happ.getDvm("real_role")! }
+  get dummyDvm(): IDnaViewModel { return this._happ.getDvm("rDummy")! }
+  get impostorDvm(): IDnaViewModel { return this._happ.getDvm("rImpostor")! }
+  get realDvm(): IDnaViewModel { return this._happ.getDvm("rReal")! }
 
 
   /** */
@@ -92,18 +92,18 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
-        <cell-context .cellData="${this.dummyDvm.cellData}">
+        <cell-context .cellDef="${this.dummyDvm.cellDef}">
           <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
           <dummy-list></dummy-list>
           <label-list></label-list>
         </cell-context>
-        <cell-context .cellData="${this.realDvm.cellData}">
+        <cell-context .cellDef="${this.realDvm.cellDef}">
           <hr class="solid">          
           <h2>Real Cell: ${this.realDvm.dnaHash}</h2>
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>
-        <cell-context .cellData="${this.impostorDvm.cellData}">
+        <cell-context .cellDef="${this.impostorDvm.cellDef}">
           <hr class="solid">          
           <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>
           <real-list></real-list>

@@ -1,6 +1,6 @@
 ---
 manifest_version: "1"
-name: dummy_dna
+name: dDummy
 uuid: ~
 properties: ~
 integrity:
@@ -9,14 +9,14 @@ integrity:
     - name: dummy_integrity
       bundled: ../target/wasm32-unknown-unknown/release/dummy_integrity.wasm
     - name: label_integrity
-      bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm      
+      bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
 coordinator:
   zomes:
-    - name: dummy
+    - name: zDummy
       bundled: ../target/wasm32-unknown-unknown/release/dummy.wasm
       dependencies:
         - name: dummy_integrity
-    - name: label
+    - name: zLabel
       bundled: ../target/wasm32-unknown-unknown/release/label.wasm
       dependencies:
         - name: label_integrity

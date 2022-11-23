@@ -9,7 +9,7 @@ import { ZomeElement } from "@ddd-qc/dna-client";
  */
 export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
   constructor() {
-    super("real");
+    super("zReal");
   }
 
   /** */
@@ -30,7 +30,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   /** */
   render() {
-    console.log("<real-list> render()", this.cellData)
+    console.log("<real-list> render()", this.cellDef)
     if (!this._loaded) {
       return html`<span>Loading...</span>`;
     }

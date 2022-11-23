@@ -1,6 +1,5 @@
 import {CellProxy, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash } from "@holochain/client";
-import {createContext} from "@lit-labs/context";
 
 
 /**
@@ -15,7 +14,7 @@ export interface LabelZomePerspective {
  *
  */
 export class LabelZomeProxy extends ZomeProxy {
-  get zomeName(): string {return "label"}
+  get zomeName(): string {return "zLabel"}
   async getLabel(eh: EntryHash): Promise<string> {
     return this.call('get_label', eh, null);
   }
