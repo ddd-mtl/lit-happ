@@ -79,8 +79,8 @@ export class RealDvm extends DnaViewModel<number> {
 
   /** -- ViewModel Interface -- */
 
-  static context = createContext<RealDvm>('dvm/rReal');
-  getContext(): any {return RealDvm.context}
+  // static context = createContext<RealDvm>('dvm/rReal');
+  // getContext(): any {return RealDvm.context}
 
   protected hasChanged(): boolean {return true}
 

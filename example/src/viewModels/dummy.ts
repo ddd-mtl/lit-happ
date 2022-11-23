@@ -79,8 +79,8 @@ export class DummyDvm extends DnaViewModel<number> {
 
   /** -- ViewModel Interface -- */
 
-  static context = createContext<DummyDvm>('dvm/rDummy');
-  getContext():any {return DummyDvm.context}
+  // static context = createContext<DummyDvm>('dvm/rDummy');
+  // getContext():any {return DummyDvm.context}
 
   protected hasChanged(): boolean {return true}
 

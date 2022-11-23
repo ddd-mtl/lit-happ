@@ -2,7 +2,7 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, createContext} from "@lit-labs/context";
-import {DnaViewModel, IDnaViewModel} from "./DnaViewModel";
+import {IDnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ICellDef} from "./CellDef";
@@ -12,6 +12,10 @@ import {ICellDef} from "./CellDef";
  * LitElement that is bound to a specific DnaViewModel
  */
 export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef {
+
+  constructor(protected _roleId: RoleId) {
+    super();
+  }
 
   @state() protected _loaded = false;
 
@@ -35,13 +39,16 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixi
   async firstUpdated() {
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
-    const contextType = createContext<DVM>('dvm/'+ this._dvm.roleId);
+    const contextType = createContext<DVM>('dvm/'+ this._roleId);
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
       (value: DVM, dispose?: () => void): void => {
         this._dvm = value;
+        if (this._roleId != this._dvm.roleId) {
+          throw Error(`DVM and DnaElement roleId mismatch: "${this._roleId}" != "${this._dvm.roleId}"`)
+        }
         this._dvm.subscribe(this, 'perspective');
         this._loaded = true;
       },

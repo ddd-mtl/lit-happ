@@ -6,6 +6,7 @@ import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {ICellDef} from "./CellDef";
+import {createContext} from "@lit-labs/context";
 
 
 export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
@@ -73,8 +74,7 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   }
 
 
-  // static context = createContext<typeof this>('dvm/'+ this.roleId);
-  // getContext():any {return DnaViewModel.context}
+  getContext():any {return createContext<typeof this>('dvm/' + this.roleId)};
 
 
   /** */
