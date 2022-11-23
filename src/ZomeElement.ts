@@ -45,7 +45,7 @@ export class ZomeElement<P, Z extends ViewModel<P>> extends ScopedElementsMixin(
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
     const contextType = createContext<Z>('zvm/'+ this.zomeName + '/' + serializeHash(this.cellDef.cell_id[0]))
-    console.log("Requesting context", contextType)
+    console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,

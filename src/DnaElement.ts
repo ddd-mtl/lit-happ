@@ -46,7 +46,7 @@ export class DnaElement<P, DVM extends DnaViewModel<P>> extends ScopedElementsMi
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
     const contextType = createContext<DVM>('dvm/'+ this.dnaName);
-    console.log("Requesting context", contextType);
+    console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,

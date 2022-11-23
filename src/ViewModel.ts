@@ -31,11 +31,11 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
     protected _previousPerspective?: P;
     protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
 
-    protected _provider?: any; // ContextProvider<this.getContext()>;
+    protected _provider?: any; // FIXME ContextProvider<this.getContext()>;
 
     /** Set ContextProvider for host */
     provideContext(providerHost: ReactiveElement): void {
-        console.log("provideContext() called in ViewModel", providerHost, this.getContext())
+        console.log(`Providing context "${this.getContext()}" | in host `, providerHost);
         this._provider = new ContextProvider(providerHost, this.getContext(), this);
     }
 
