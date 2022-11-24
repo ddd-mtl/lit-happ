@@ -34,8 +34,8 @@ fn create_label(name: String)  -> ExternResult<EntryHash> {
   debug!("*** create_label() called");
   let entry = Label {name};
   let eh = hash_entry(entry.clone())?;
-  let ah = create_entry(LabelEntry::Label(entry))?;
-  let link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), LabelLink::Default, LinkTag::from(()))?;
+  let _ah = create_entry(LabelEntry::Label(entry))?;
+  let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), LabelLink::Default, LinkTag::from(()))?;
   Ok(eh)
 }
 

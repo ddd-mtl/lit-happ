@@ -16,20 +16,12 @@ import {ZomeProxy} from "./ZomeProxy";
  */
 export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
-  // constructor(protected _zomeName: string) {
-  //   super();
-  // }
-
   constructor(zvm: typeof ZomeSpecific) {
     super();
-    console.log("ZomeElement.ctor()", zvm.zomeName);
-    (this.constructor as any).zomeName = zvm.zomeName;
+    this.setZomeName(zvm.zomeName);
   }
 
-  //protected _zomeName: string;
-
   @state() protected _loaded = false;
-
 
   @contextProvided({ context: cellContext, subscribe: true })
   @property({type: Object})
@@ -47,8 +39,6 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixi
   get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellDef.cell_id[1]) }
 
 
-  //get zomeName(): string { return this._zvm.zomeName};
-
 
   /** -- Methods -- */
 
@@ -56,8 +46,7 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixi
   async firstUpdated() {
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
-    // FIXME check: "${this._zomeName}" != "${this._zvm.zomeName}"
-    const contextType = createContext<ZVM>('zvm/'+ this.getZomeName() + '/' + this.dnaHash)
+    const contextType = createContext<ZVM>('zvm/'+ this.zomeName + '/' + this.dnaHash)
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,

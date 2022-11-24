@@ -27,8 +27,6 @@ export interface IViewModel {
  */
  export abstract class ViewModel implements IViewModel {
 
-  constructor(...args: any[]) {}
-
   /** -- Fields -- */
   protected _previousPerspective?: any;
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];

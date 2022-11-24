@@ -6,12 +6,11 @@ import {ICellDef, ZomeSpecificMixin} from "./CellDef";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
+
 export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
 /** Interface for the generic-less ZomeViewModel class */
-export type IZomeViewModel = /*ZomeSpecific &*/ ICellDef & IViewModel /*& {getZomeName(): string;}*/;
-
-
+export type IZomeViewModel = ICellDef & IViewModel;
 
 /**
  * Abstract ViewModel for a Zome.
@@ -23,11 +22,8 @@ export type IZomeViewModel = /*ZomeSpecific &*/ ICellDef & IViewModel /*& {getZo
 export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ZomeSpecificMixin(ViewModel) implements IZomeViewModel {
     protected constructor(protected _zomeProxy: T) {
         super();
-        (this.constructor as any).zomeName = this._zomeProxy.getZomeName();
+        this.setZomeName(this._zomeProxy.zomeName);
     }
-
-    //zomeName(): string { return this._zomeProxy.getZomeName() }
-    //get zomeName(): string { return this.zomeName }
 
     abstract get perspective(): P;
 
@@ -40,7 +36,7 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ZomeSpecific
 
     /** */
     getContext(): any {
-        const context = createContext<typeof this>('zvm/'+ this.getZomeName() +'/' + this.dnaHash)
+        const context = createContext<typeof this>('zvm/'+ this.zomeName +'/' + this.dnaHash)
         //console.log({contextType: typeof context})
         return context
     }

@@ -34,8 +34,8 @@ fn create_dummy(value: u32)  -> ExternResult<EntryHash> {
   debug!("*** create_dummy() called");
   let entry = Dummy {value};
   let eh = hash_entry(entry.clone())?;
-  let ah = create_entry(DummyEntry::Dummy(entry))?;
-  let link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), DummyLinkType::Default, LinkTag::from(()))?;
+  let _ah = create_entry(DummyEntry::Dummy(entry))?;
+  let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), DummyLinkType::Default, LinkTag::from(()))?;
   Ok(eh)
 }
 
