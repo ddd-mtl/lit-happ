@@ -56,11 +56,12 @@ export class CellProxy implements ICellDef {
 
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
+   * FIXME
    */
-  async callZomeBlocking(req: CallZomeRequest, timeout?: number): Promise<any> {
+  async callZomeBlocking(zome_name: string, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
     this._callMutex = true;
     timeout = timeout ? timeout : this.defaultTimeout
-    const result = await this._conductor.callZome(req, timeout);
+    const result = await this.callZome(zome_name, fn_name, payload, cap_secret, timeout);
     this._callMutex = false;
     return result;
   }

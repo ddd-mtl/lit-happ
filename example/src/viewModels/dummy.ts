@@ -1,6 +1,5 @@
 import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash } from "@holochain/client";
-import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
 
 /** */
@@ -17,13 +16,13 @@ export class DummyZomeProxy extends ZomeProxy {
   static zomeName = "zDummy";
 
   async getDummy(eh: EntryHash): Promise<number> {
-    return this.call('get_dummy', eh, null);
+    return this.call('get_dummy', eh);
   }
   async createDummy(value: number): Promise<EntryHash> {
-    return this.call('create_dummy', value, null);
+    return this.callBlocking('create_dummy', value);
   }
   async getMyDummies(): Promise<number[]> {
-    return this.call('get_my_dummies', null, null);
+    return this.call('get_my_dummies', null);
   }
 }
 

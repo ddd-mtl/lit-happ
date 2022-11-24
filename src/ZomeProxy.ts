@@ -22,9 +22,17 @@ export abstract class ZomeProxy extends ZomeSpecific implements ICellDef {
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
 
   /** Helper for calling a zome function on its zome */
-  protected async call(fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
-    console.log("ZomeProxy.call", this.zomeName)
+  protected async call(fn_name: string, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
+    //console.log("ZomeProxy.call", this.zomeName)
+    const cap_secret = maybeSecret? maybeSecret : null;
     return this._cellProxy.callZome(this.zomeName, fn_name, payload, cap_secret, timeout);
+  }
+
+  /** Helper for calling a zome function on its zome */
+  protected async callBlocking(fn_name: string, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
+    //console.log("ZomeProxy.call", this.zomeName)
+    const cap_secret = maybeSecret? maybeSecret : null;
+    return this._cellProxy.callZomeBlocking(this.zomeName, fn_name, payload, cap_secret, timeout);
   }
 
 }

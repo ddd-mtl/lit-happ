@@ -18,13 +18,13 @@ export class LabelZomeProxy extends ZomeProxy {
   static zomeName = "zLabel"
 
   async getLabel(eh: EntryHash): Promise<string> {
-    return this.call('get_label', eh, null);
+    return this.call('get_label', eh);
   }
   async createLabel(value: string): Promise<EntryHash> {
-    return this.call('create_label', value, null);
+    return this.callBlocking('create_label', value);
   }
   async getMyLabels(): Promise<string[]> {
-    return this.call('get_my_labels', null, null);
+    return this.call('get_my_labels', null);
   }
 }
 

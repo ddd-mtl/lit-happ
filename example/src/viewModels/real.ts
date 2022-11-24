@@ -1,6 +1,5 @@
 import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import {EntryHash, RoleId} from "@holochain/client";
-import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
 
 
@@ -18,13 +17,13 @@ export class RealZomeProxy extends ZomeProxy {
   static zomeName = "zReal";
 
   async getReal(eh: EntryHash): Promise<number> {
-    return this.call('get_real', eh, null);
+    return this.call('get_real', eh);
   }
   async createReal(value: number): Promise<EntryHash> {
-    return this.call('create_real', value, null);
+    return this.callBlocking('create_real', value);
   }
   async getMyReals(): Promise<number[]> {
-    return this.call('get_my_reals', null, null);
+    return this.call('get_my_reals', null);
   }
 }
 

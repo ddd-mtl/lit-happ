@@ -1,6 +1,6 @@
 import {html} from "lit";
-import {DummyDvm, DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
-import {DnaElement, ZomeElement} from "@ddd-qc/dna-client";
+import {DummyDvm, DummyZomePerspective} from "../viewModels/dummy";
+import {DnaElement} from "@ddd-qc/dna-client";
 
 
 /**
