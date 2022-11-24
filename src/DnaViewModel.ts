@@ -5,7 +5,7 @@ import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core
 import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
-import {ICellDef, RoleSpecificMixin, ZomeSpecific} from "./CellDef";
+import {ICellDef, RoleSpecificMixin} from "./CellDef";
 import {createContext} from "@lit-labs/context";
 
 
@@ -27,7 +27,7 @@ interface _DnaViewModel {
  * It holds the CellProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
-export abstract class DnaViewModel<P> extends RoleSpecificMixin(ViewModel) implements IDnaViewModel {
+export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IDnaViewModel {
 
   /** Ctor */
   protected constructor(happ: HappViewModel, roleId: RoleId, zvmClasses: ZvmClass[]) {
@@ -42,8 +42,6 @@ export abstract class DnaViewModel<P> extends RoleSpecificMixin(ViewModel) imple
     this.provideContext(happ.host);
   }
 
-
-  abstract get perspective(): P;
 
   /** -- Fields -- */
   protected _cellProxy: CellProxy;

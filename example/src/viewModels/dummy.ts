@@ -29,13 +29,17 @@ export class DummyZomeProxy extends ZomeProxy {
 /**
  *
  */
-export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy> {
+export class DummyZvm extends ZomeViewModel {
   /** Ctor */
   constructor(protected _cellProxy: CellProxy) {
     super(new DummyZomeProxy(_cellProxy));
   }
 
   private _values: number[] = [];
+
+
+  get zomeProxy(): DummyZomeProxy {return this._baseZomeProxy as DummyZomeProxy;}
+
 
   /** -- ViewModel Interface -- */
 
@@ -47,13 +51,13 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this._values = await this._zomeProxy.getMyDummies();
+    this._values = await this.zomeProxy.getMyDummies();
     this.notifySubscribers();
   }
 
   /**  */
   async createDummy(value: number): Promise<EntryHash> {
-    const res = await this._zomeProxy.createDummy(value);
+    const res = await this.zomeProxy.createDummy(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();
@@ -65,7 +69,7 @@ export class DummyZvm extends ZomeViewModel<DummyZomePerspective, DummyZomeProxy
 /**
  *
  */
-export class DummyDvm extends DnaViewModel<number> {
+export class DummyDvm extends DnaViewModel {
   /** Ctor */
   constructor(happ: HappViewModel, roleId: string) {
     super(happ, roleId, [DummyZvm, LabelZvm]);

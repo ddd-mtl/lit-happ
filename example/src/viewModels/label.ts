@@ -1,12 +1,11 @@
 import {CellProxy, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash } from "@holochain/client";
 
-
 /**
  *
  */
 export interface LabelZomePerspective {
-  values: string[];
+  names: string[];
 }
 
 
@@ -32,7 +31,7 @@ export class LabelZomeProxy extends ZomeProxy {
 /**
  *
  */
-export class LabelZvm extends ZomeViewModel<LabelZomePerspective, LabelZomeProxy> {
+export class LabelZvm extends ZomeViewModel {
   /** Ctor */
   constructor(protected _cellProxy: CellProxy) {
     super(new LabelZomeProxy(_cellProxy));
@@ -40,17 +39,20 @@ export class LabelZvm extends ZomeViewModel<LabelZomePerspective, LabelZomeProxy
 
   private _values: string[] = [];
 
-  /** -- ViewModel Interface -- */
+
+  /** -- (Zome)ViewModel Interface -- */
+
+  get zomeProxy(): LabelZomeProxy {return this._baseZomeProxy as LabelZomeProxy;}
 
   protected hasChanged(): boolean {return true}
 
-  get perspective(): LabelZomePerspective {return {values: this._values}}
+  get perspective(): LabelZomePerspective {return {names: this._values}}
 
   /** */
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this._values = await this._zomeProxy.getMyLabels();
+    this._values = await this.zomeProxy.getMyLabels();
     this.notifySubscribers();
   }
 
@@ -58,7 +60,7 @@ export class LabelZvm extends ZomeViewModel<LabelZomePerspective, LabelZomeProxy
 
   /**  */
   async createLabel(value: string): Promise<EntryHash> {
-    const res = await this._zomeProxy.createLabel(value);
+    const res = await this.zomeProxy.createLabel(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();

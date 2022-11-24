@@ -4,6 +4,10 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ICellDef, ZomeSpecific} from "./CellDef";
 
 
+
+//export type IZomeProxy = ICellDef & IZomeSpecific;
+
+
 /**
  * ABC for representing the zome function bindings of a Zome.
  * It holds the zomeName and reference to a CellProxy.

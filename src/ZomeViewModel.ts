@@ -1,8 +1,8 @@
 import {createContext} from "@lit-labs/context";
-import { ZomeProxy } from "./ZomeProxy";
+import {ZomeProxy} from "./ZomeProxy";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
-import {ICellDef, IZomeSpecific, ZomeSpecific, ZomeSpecificMixin} from "./CellDef";
+import {ICellDef, IZomeSpecific, ZomeSpecificMixin} from "./CellDef";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
@@ -19,22 +19,20 @@ export type IZomeViewModel = ICellDef & IViewModel & IZomeSpecific;
  * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ZomeSpecificMixin(ViewModel) implements IZomeViewModel {
-    protected constructor(protected _zomeProxy: T) {
+export abstract class ZomeViewModel extends ZomeSpecificMixin(ViewModel) implements IZomeViewModel {
+    protected constructor(protected _baseZomeProxy: ZomeProxy) {
         super();
-        this.setZomeName(this._zomeProxy.zomeName);
+        this.setZomeName(this._baseZomeProxy.zomeName);
     }
 
-    //constructor(...args: any[]) {super()}
-
-    abstract get perspective(): P;
+    abstract get zomeProxy(): ZomeProxy;
 
     /** CellDef interface */
-    get cellDef(): InstalledCell { return this._zomeProxy.cellDef }
-    get roleId(): RoleId { return this._zomeProxy.roleId }
-    get cellId(): CellId { return this._zomeProxy.cellId }
-    get dnaHash(): EntryHashB64 { return this._zomeProxy.dnaHash}
-    get agentPubKey(): AgentPubKeyB64 { return this._zomeProxy.agentPubKey }
+    get cellDef(): InstalledCell { return this._baseZomeProxy.cellDef }
+    get roleId(): RoleId { return this._baseZomeProxy.roleId }
+    get cellId(): CellId { return this._baseZomeProxy.cellId }
+    get dnaHash(): EntryHashB64 { return this._baseZomeProxy.dnaHash}
+    get agentPubKey(): AgentPubKeyB64 { return this._baseZomeProxy.agentPubKey }
 
     /** */
     getContext(): any {

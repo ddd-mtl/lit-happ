@@ -34,6 +34,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
     if (!this._loaded) {
       return html`<span>Loading...</span>`;
     }
+    console.log("dummy-list:", this._zvm.perspective.values)
 
     const dummyLi = Object.values(this.perspective.values).map(
       (value) => {

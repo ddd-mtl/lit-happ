@@ -1,11 +1,12 @@
 import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import {EntryHash, RoleId} from "@holochain/client";
 import {LabelZvm} from "./label";
+import {DummyZomeProxy} from "./dummy";
 
 
 /** */
 export interface RealZomePerspective {
-  values: number[];
+  floats: number[];
 }
 
 
@@ -31,7 +32,7 @@ export class RealZomeProxy extends ZomeProxy {
 /**
  *
  */
-export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
+export class RealZvm extends ZomeViewModel {
   /** Ctor */
   constructor(protected _cellProxy: CellProxy) {
     super(new RealZomeProxy(_cellProxy));
@@ -39,22 +40,25 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
 
   private _values: number[] = [];
 
+
   /** -- ViewModel Interface -- */
+
+  get zomeProxy(): RealZomeProxy {return this._baseZomeProxy as RealZomeProxy;}
 
   protected hasChanged(): boolean {return true}
 
-  get perspective(): RealZomePerspective {return {values: this._values}}
+  get perspective(): RealZomePerspective {return {floats: this._values}}
 
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this._values = await this._zomeProxy.getMyReals();
+    this._values = await this.zomeProxy.getMyReals();
     this.notifySubscribers();
   }
 
   /**  */
   async createReal(value: number): Promise<EntryHash> {
-    const res = await this._zomeProxy.createReal(value);
+    const res = await this.zomeProxy.createReal(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();
@@ -66,7 +70,7 @@ export class RealZvm extends ZomeViewModel<RealZomePerspective, RealZomeProxy> {
 /**
  *
  */
-export class RealDvm extends DnaViewModel<number> {
+export class RealDvm extends DnaViewModel {
   /** Ctor */
   constructor(happ: HappViewModel, roleId: RoleId) {
     super(happ, roleId, [RealZvm, LabelZvm]);
