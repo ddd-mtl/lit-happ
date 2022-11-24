@@ -9,7 +9,7 @@ import {ZomeElement} from "@ddd-qc/dna-client";
 export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
   constructor() {
-    super("zDummy");
+    super(DummyZomePerspective.zomeName)
   }
 
   /** */
