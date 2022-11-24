@@ -27,12 +27,13 @@ interface _DnaViewModel {
  * It holds the CellProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
-export abstract class DnaViewModel<P> extends ViewModel implements IDnaViewModel {
+export abstract class DnaViewModel<P> extends RoleSpecificMixin(ViewModel) implements IDnaViewModel {
 
   /** Ctor */
   protected constructor(happ: HappViewModel, roleId: RoleId, zvmClasses: ZvmClass[]) {
     super();
     this._cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, roleId); // FIXME can throw error
+    this.setRoleId(this._cellProxy.roleId);
     /** Create all ZVMs for this DNA */
     for (const zvmClass of zvmClasses) {
       const zvm = new zvmClass(this._cellProxy);
@@ -52,7 +53,7 @@ export abstract class DnaViewModel<P> extends ViewModel implements IDnaViewModel
 
   /** CellDef interface */
   get cellDef(): InstalledCell {return this._cellProxy.cellDef}
-  get roleId(): RoleId { return this._cellProxy.roleId }
+  //get roleId(): RoleId { return this._cellProxy.roleId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._cellProxy.cellId }
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }

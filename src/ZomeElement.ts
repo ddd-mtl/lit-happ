@@ -4,12 +4,11 @@ import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {ViewModel} from "./ViewModel";
 import {cellContext} from "./elements/cell-context";
 import {ICellDef, ZomeSpecific, ZomeSpecificMixin} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
-import {IZomeViewModel, ZomeViewModel} from "./ZomeViewModel";
-import {ZomeProxy} from "./ZomeProxy";
+import {IZomeViewModel} from "./ZomeViewModel";
+
 
 /**
  * LitElement that is bound to a specific ZomeViewModel

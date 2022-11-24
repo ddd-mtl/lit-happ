@@ -21,7 +21,6 @@ export abstract class ZomeProxy extends ZomeSpecific implements ICellDef {
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
 
-
   /** Helper for calling a zome function on its zome */
   protected async call(fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
     console.log("ZomeProxy.call", this.zomeName)

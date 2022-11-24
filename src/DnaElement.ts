@@ -5,16 +5,17 @@ import {ContextConsumer, createContext} from "@lit-labs/context";
 import {IDnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {ICellDef} from "./CellDef";
+import {ICellDef, RoleSpecificMixin, RoleSpecific} from "./CellDef";
 
 
 /**
  * LitElement that is bound to a specific DnaViewModel
  */
-export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef {
+export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
-  constructor(protected _roleId: RoleId) {
+  constructor(dvm: typeof RoleSpecific) {
     super();
+    this.setRoleId(dvm.roleId);
   }
 
   @state() protected _loaded = false;
@@ -27,7 +28,7 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixi
 
   /** CellDef interface */
   get cellDef(): InstalledCell {return this._dvm.cellDef}
-  get roleId(): RoleId { return this._dvm.roleId }
+  //get roleId(): RoleId { return this._dvm.roleId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._dvm.cellId }
   get dnaHash(): EntryHashB64 { return this._dvm.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._dvm.agentPubKey }
@@ -40,7 +41,7 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends ScopedElementsMixi
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
     // FIXME Check "${this._roleId}" != "${this._dvm.roleId}"
-    const contextType = createContext<DVM>('dvm/'+ this._roleId);
+    const contextType = createContext<DVM>('dvm/'+ this.roleId);
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,

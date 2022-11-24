@@ -46,11 +46,11 @@ export const ZomeSpecific = ZomeSpecificMixin(Empty);
 /** */
 export function RoleSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class Roly extends Base {
-    static roleId: string;
-    get roleId(): string {return (this.constructor as any).roleId}
-    setRoleId(name: string): void {(this.constructor as any).roleId = name}
+    static roleId: RoleId;
+    get roleId(): RoleId {return (this.constructor as any).roleId}
+    setRoleId(name: RoleId): void {(this.constructor as any).roleId = name}
   };
   return Roly;
 }
 
-export const RoleSpecific = ZomeSpecificMixin(Empty);
+export const RoleSpecific = RoleSpecificMixin(Empty);

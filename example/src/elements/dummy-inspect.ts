@@ -9,7 +9,7 @@ import {DnaElement, ZomeElement} from "@ddd-qc/dna-client";
 export class DummyInspect extends DnaElement<DummyZomePerspective, DummyDvm> {
 
   constructor() {
-    super("rDummy")
+    super(DummyDvm)
   }
 
   /** */
