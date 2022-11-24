@@ -4,8 +4,9 @@ import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
 
 /** */
-export interface RealZomePerspective {
-  values: number[],
+export class RealZomePerspective {
+  static readonly zomeName = "zReal";
+  values: number[] = [];
 }
 
 
@@ -14,7 +15,7 @@ export interface RealZomePerspective {
  */
 export class RealZomeProxy extends ZomeProxy {
 
-  get zomeName(): string {return "zReal" }
+  readonly zomeName = RealZomePerspective.zomeName
 
   async getReal(eh: EntryHash): Promise<number> {
     return this.call('get_real', eh, null);

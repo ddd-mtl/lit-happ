@@ -4,8 +4,9 @@ import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
 
 /** */
-export interface DummyZomePerspective {
-  values: number[],
+export class DummyZomePerspective {
+  static readonly zomeName = "zDummy";
+  values: number[] = [];
 }
 
 
@@ -14,7 +15,7 @@ export interface DummyZomePerspective {
  */
 export class DummyZomeProxy extends ZomeProxy {
 
-  get zomeName(): string {return "zDummy" }
+  readonly zomeName = DummyZomePerspective.zomeName
 
   async getDummy(eh: EntryHash): Promise<number> {
     return this.call('get_dummy', eh, null);
