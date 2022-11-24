@@ -27,7 +27,7 @@ interface _DnaViewModel {
  * It holds the CellProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
-export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewModel {
+export abstract class DnaViewModel<P> extends ViewModel implements IDnaViewModel {
 
   /** Ctor */
   protected constructor(happ: HappViewModel, roleId: RoleId, zvmClasses: ZvmClass[]) {
@@ -36,11 +36,15 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
     /** Create all ZVMs for this DNA */
     for (const zvmClass of zvmClasses) {
       const zvm = new zvmClass(this._cellProxy);
-      this._zomeViewModels[zvm.zomeName] = zvm;
+      const zomeName = (zvm.constructor as any).zomeName
+      console.log("zvmClass.zomeName", zvm.constructor, zomeName)
+      this._zomeViewModels[zomeName] = zvm;
     }
     this.provideContext(happ.host);
   }
 
+
+  abstract get perspective(): P;
 
   /** -- Fields -- */
   protected _cellProxy: CellProxy;
@@ -89,7 +93,7 @@ export abstract class DnaViewModel<P> extends ViewModel<P> implements IDnaViewMo
   /** Useless since the entry defs are in the integrity zome which is not represented here */
   async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
-      this._allEntryDefs[zvm.zomeName] = await this._cellProxy.callEntryDefs(zvm.zomeName); // TODO optimize
+      this._allEntryDefs[(zvm.constructor as any).zomeName] = await this._cellProxy.callEntryDefs((zvm.constructor as any).zomeName); // TODO optimize
     }
     return this._allEntryDefs;
   }

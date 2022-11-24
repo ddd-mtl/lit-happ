@@ -5,9 +5,8 @@ import { EntryHash } from "@holochain/client";
 /**
  *
  */
-export class LabelZomePerspective {
-  static readonly zomeName = "zLabel";
-  values: string[] = [];
+export interface LabelZomePerspective {
+  values: string[];
 }
 
 
@@ -16,7 +15,7 @@ export class LabelZomePerspective {
  */
 export class LabelZomeProxy extends ZomeProxy {
 
-  readonly zomeName = LabelZomePerspective.zomeName
+  static zomeName = "zLabel"
 
   async getLabel(eh: EntryHash): Promise<string> {
     return this.call('get_label', eh, null);

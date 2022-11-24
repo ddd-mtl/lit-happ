@@ -25,10 +25,12 @@ export interface IViewModel {
  * Hosts can trigger probing in order to get an updated perspective.
  * The perspective can be automatically updated by internal events.
  */
- export abstract class ViewModel<P> implements IViewModel {
+ export abstract class ViewModel implements IViewModel {
+
+  constructor(...args: any[]) {}
 
   /** -- Fields -- */
-  protected _previousPerspective?: P;
+  protected _previousPerspective?: any;
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
 
   protected _provider?: any; // FIXME ContextProvider<this.getContext()>;
@@ -42,7 +44,7 @@ export interface IViewModel {
   }
 
   abstract getContext(): any;
-  abstract get perspective(): P;
+  abstract get perspective(): any;
 
   /* (optional) Lets the observer trigger probing in order to get an updated perspective */
   async probeAll(): Promise<void> {}

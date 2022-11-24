@@ -6,19 +6,27 @@ import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {ViewModel} from "./ViewModel";
 import {cellContext} from "./elements/cell-context";
-import {ICellDef, IZomeSpecific} from "./CellDef";
+import {ICellDef, ZomeSpecific, ZomeSpecificMixin} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
-import {IZomeViewModel} from "./ZomeViewModel";
+import {IZomeViewModel, ZomeViewModel} from "./ZomeViewModel";
 import {ZomeProxy} from "./ZomeProxy";
 
 /**
  * LitElement that is bound to a specific ZomeViewModel
  */
-export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef, IZomeSpecific {
+export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
-  constructor(protected _zomeName: string) {
+  // constructor(protected _zomeName: string) {
+  //   super();
+  // }
+
+  constructor(zvm: typeof ZomeSpecific) {
     super();
+    console.log("ZomeElement.ctor()", zvm.zomeName);
+    (this.constructor as any).zomeName = zvm.zomeName;
   }
+
+  //protected _zomeName: string;
 
   @state() protected _loaded = false;
 
@@ -39,7 +47,7 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMi
   get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellDef.cell_id[1]) }
 
 
-  get zomeName(): string { return this._zvm.zomeName};
+  //get zomeName(): string { return this._zvm.zomeName};
 
 
   /** -- Methods -- */
@@ -49,7 +57,7 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMi
     //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
     /** Consume Context based on given dnaHash */
     // FIXME check: "${this._zomeName}" != "${this._zvm.zomeName}"
-    const contextType = createContext<ZVM>('zvm/'+ this._zomeName + '/' + this.dnaHash)
+    const contextType = createContext<ZVM>('zvm/'+ this.getZomeName() + '/' + this.dnaHash)
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,

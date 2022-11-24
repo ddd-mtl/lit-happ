@@ -3,14 +3,13 @@ import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {serializeHash} from "@holochain-open-dev/utils";
 import { ZomeElement } from "@ddd-qc/dna-client";
 
-
 /**
  *
  */
 export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   constructor() {
-    super(RealZomePerspective.zomeName)
+    super(RealZvm)
   }
 
   /** */

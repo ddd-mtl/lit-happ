@@ -3,10 +3,10 @@ import {EntryHash, RoleId} from "@holochain/client";
 import {createContext} from "@lit-labs/context";
 import {LabelZvm} from "./label";
 
+
 /** */
-export class RealZomePerspective {
-  static readonly zomeName = "zReal";
-  values: number[] = [];
+export interface RealZomePerspective {
+  values: number[];
 }
 
 
@@ -15,7 +15,7 @@ export class RealZomePerspective {
  */
 export class RealZomeProxy extends ZomeProxy {
 
-  readonly zomeName = RealZomePerspective.zomeName
+  static zomeName = "zReal";
 
   async getReal(eh: EntryHash): Promise<number> {
     return this.call('get_real', eh, null);
