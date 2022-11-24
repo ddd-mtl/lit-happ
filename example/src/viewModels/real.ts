@@ -79,9 +79,6 @@ export class RealDvm extends DnaViewModel<number> {
 
   /** -- ViewModel Interface -- */
 
-  // static context = createContext<RealDvm>('dvm/rReal');
-  // getContext(): any {return RealDvm.context}
-
   protected hasChanged(): boolean {return true}
 
   get perspective(): number {return 3.1418}
