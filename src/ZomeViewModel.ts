@@ -2,7 +2,7 @@ import {createContext} from "@lit-labs/context";
 import { ZomeProxy } from "./ZomeProxy";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
-import {ICellDef, ZomeSpecificMixin} from "./CellDef";
+import {ICellDef, IZomeSpecific, ZomeSpecific, ZomeSpecificMixin} from "./CellDef";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
@@ -10,7 +10,7 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
 /** Interface for the generic-less ZomeViewModel class */
-export type IZomeViewModel = ICellDef & IViewModel;
+export type IZomeViewModel = ICellDef & IViewModel & IZomeSpecific;
 
 /**
  * Abstract ViewModel for a Zome.
@@ -24,6 +24,8 @@ export abstract class ZomeViewModel<P, T extends ZomeProxy> extends ZomeSpecific
         super();
         this.setZomeName(this._zomeProxy.zomeName);
     }
+
+    //constructor(...args: any[]) {super()}
 
     abstract get perspective(): P;
 

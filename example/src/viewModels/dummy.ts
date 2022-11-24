@@ -73,8 +73,8 @@ export class DummyDvm extends DnaViewModel<number> {
   }
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel("zDummy") as DummyZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel("zLabel") as LabelZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.zomeName) as DummyZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.zomeName) as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

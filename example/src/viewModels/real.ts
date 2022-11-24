@@ -74,8 +74,8 @@ export class RealDvm extends DnaViewModel<number> {
   }
 
   /** QoL Helpers */
-  get realZvm(): RealZvm {return this.getZomeViewModel("zReal") as RealZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel("zLabel") as LabelZvm}
+  get realZvm(): RealZvm {return this.getZomeViewModel(RealZvm.zomeName) as RealZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.zomeName) as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

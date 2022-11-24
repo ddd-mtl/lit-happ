@@ -5,7 +5,7 @@ import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core
 import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
-import {ICellDef} from "./CellDef";
+import {ICellDef, RoleSpecificMixin, ZomeSpecific} from "./CellDef";
 import {createContext} from "@lit-labs/context";
 
 
@@ -36,9 +36,7 @@ export abstract class DnaViewModel<P> extends ViewModel implements IDnaViewModel
     /** Create all ZVMs for this DNA */
     for (const zvmClass of zvmClasses) {
       const zvm = new zvmClass(this._cellProxy);
-      const zomeName = (zvm.constructor as any).zomeName
-      console.log("zvmClass.zomeName", zvm.constructor, zomeName)
-      this._zomeViewModels[zomeName] = zvm;
+      this._zomeViewModels[zvm.zomeName] = zvm;
     }
     this.provideContext(happ.host);
   }
