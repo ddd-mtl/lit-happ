@@ -1,14 +1,14 @@
-import {serializeHash} from "@holochain-open-dev/utils";
+import { serializeHash } from "@holochain-open-dev/utils";
 
 
 /**  */
-export const delay = (ms:number) => new Promise(r => setTimeout(r, ms))
+export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
  */
-  export function anyToB64(obj: any): any {
+export function anyToB64(obj: any): any {
   /** Check if it's a hash */
   if (obj instanceof Uint8Array) {
     return serializeHash(obj);
@@ -30,4 +30,23 @@ export const delay = (ms:number) => new Promise(r => setTimeout(r, ms))
     }
   }
   return obj;
+}
+
+
+/**
+ * 
+ */
+export class Queue<T> {
+  private _store: T[] = [];
+
+  get length(): number {return this._store.length}
+
+  push(val: T) {
+    this._store.push(val);
+  }
+  pop(): T | undefined {
+    return this._store.shift();
+  }
+
+  isEmpty(): boolean { return this._store.length == 0}
 }
