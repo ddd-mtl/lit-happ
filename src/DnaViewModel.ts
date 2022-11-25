@@ -5,7 +5,7 @@ import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core
 import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
-import {ICellDef, RoleSpecificMixin} from "./CellDef";
+import {ICellDef, RoleSpecific, RoleSpecificMixin} from "./CellDef";
 import {createContext} from "@lit-labs/context";
 
 
@@ -19,7 +19,7 @@ interface _DnaViewModel {
   dumpLogs(zomeName?: string): void;
 }
 
-export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
+export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel} & typeof RoleSpecific;
 
 
 /**

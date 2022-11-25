@@ -8,6 +8,7 @@ export * from "./utils";
 export * from "./ViewModel";
 export * from "./ZomeElement";
 export * from "./DnaElement";
+export * from "./HappElement";
 
 export * from "./elements/entry-def-select";
 export * from "./elements/cell-context";

@@ -1,6 +1,7 @@
 import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash } from "@holochain/client";
 import {LabelZvm} from "./label";
+import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 
 /** */
 export interface DummyZomePerspective {
@@ -25,6 +26,7 @@ export class DummyZomeProxy extends ZomeProxy {
     return this.call('get_my_dummies', null);
   }
 }
+
 
 /**
  *
@@ -70,6 +72,9 @@ export class DummyZvm extends ZomeViewModel {
  *
  */
 export class DummyDvm extends DnaViewModel {
+
+  static roleId = "rDummy";
+
   /** Ctor */
   constructor(happ: HappViewModel, roleId: string) {
     super(happ, roleId, [DummyZvm, LabelZvm]);

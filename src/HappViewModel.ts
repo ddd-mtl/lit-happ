@@ -7,7 +7,7 @@ import {DvmClass, IDnaViewModel} from "./DnaViewModel";
 /** */
 export interface HappDef {
  id: InstalledAppId,
- dvmDefs: [RoleId, DvmClass][],
+ dvmDefs: (DvmClass | [DvmClass, RoleId])[],
 }
 
 
@@ -17,10 +17,15 @@ export interface HappDef {
  export class HappViewModel {
 
   /** Ctor */
-  constructor(public host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy, dvmClasses: [RoleId, DvmClass][]) {
+  constructor(public host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy, dvmClasses: (DvmClass | [DvmClass, RoleId])[]) {
    /** Create all DVMs for this Happ */
-   for (const [roleId, dvmClass] of dvmClasses) {
-    const dvm = new dvmClass(this, roleId); // FIXME this can throw an error
+   for (const dvmPair of dvmClasses) {
+    let dvm;
+    if (!Array.isArray(dvmPair)) {
+     dvm = new dvmPair(this, dvmPair.roleId); // WARN this can throw an error
+    } else {
+     dvm = new dvmPair[0](this, dvmPair[1]); // WARN this can throw an error
+    }
     this._dvms[dvm.roleId] = dvm
    }
   }

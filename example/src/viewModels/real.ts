@@ -71,6 +71,9 @@ export class RealZvm extends ZomeViewModel {
  *
  */
 export class RealDvm extends DnaViewModel {
+
+  static roleId = "rReal";
+
   /** Ctor */
   constructor(happ: HappViewModel, roleId: RoleId) {
     super(happ, roleId, [RealZvm, LabelZvm]);

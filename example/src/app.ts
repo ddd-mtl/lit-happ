@@ -1,7 +1,7 @@
-import { LitElement, html } from "lit";
+import {LitElement, html, ReactiveElement} from "lit";
 import { state } from "lit/decorators.js";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
-import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewModel, CellContext } from "@ddd-qc/dna-client";
+import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
 import { DummyDvm } from "./viewModels/dummy";
 import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -11,14 +11,66 @@ import {DummyInspect} from "./elements/dummy-inspect";
 
 
 /** */
-export const PlaygroundHappDef: HappDef = {
+export const playgroundHappDef: HappDef = {
   id: "playground",
   dvmDefs: [
-    ["rDummy", DummyDvm],
-    ["rImpostor", RealDvm],
-    ["rReal", RealDvm],
+    DummyDvm,
+    RealDvm,
+    [RealDvm, "rImpostor"],
   ]
 }
+
+/** TESTING Decorator for better init */
+/** Doesn't solve our problem since our initializer is doing an async call */
+
+interface IHapp {
+  get conductorAppProxy(): ConductorAppProxy;
+  get hvm(): HappViewModel;
+}
+
+
+class Happ {
+  conductorAppProxy!: ConductorAppProxy;
+  hvm!: HappViewModel;
+}
+
+// A TypeScript decorator
+const happy = (proto: ReactiveElement, key: string) => {
+  const ctor = proto.constructor as typeof ReactiveElement;
+
+  ctor.addInitializer(async (instance: ReactiveElement) => {
+    console.log("initializeHapp()", instance, key);
+    //const happElem = await HappElement.new(Number(process.env.HC_PORT), playgroundHappDef);
+
+    let happEl = {} as Happ;
+    happEl.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+    happEl.hvm = await happEl.conductorAppProxy.newHappViewModel(instance, playgroundHappDef); // FIXME this can
+
+
+    (instance as any)[key] = happEl;
+    console.log("initializeHapp() Done", happEl);
+    //instance.addController(happElem)
+    instance.requestUpdate();
+  });
+};
+
+
+// /** */
+// async function initializeHapp(instance: ReactiveElement) {
+//   console.log("initializeHapp()", instance);
+//   // let HC_PORT = Number(process.env.HC_PORT);
+//   // this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
+//   // this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
+//   //
+//   // await this._happ.probeAll();
+//
+//   //await dummyDvm.fetchAllEntryDefs();
+//
+//   const happElem = HappElement.new(Number(process.env.HC_PORT), PlaygroundHappDef)
+//   //instance['happ'] = happElem;
+//   instance.addController(happElem)
+// }
+
 
 
 /**
@@ -26,29 +78,20 @@ export const PlaygroundHappDef: HappDef = {
  */
 export class DummyApp extends ScopedElementsMixin(LitElement) {
 
-  @state() private _loaded = false;
+  @happy _happ!: HappElement;
+
   @state() private _selectedZomeName = ""
 
-  private _conductorAppProxy!: ConductorAppProxy;
-  private _happ!: HappViewModel;
+  get dummyDvm(): IDnaViewModel { return this._happ.hvm.getDvm(DummyDvm.roleId)! }
+  get impostorDvm(): IDnaViewModel { return this._happ.hvm.getDvm("rImpostor")! }
+  get realDvm(): IDnaViewModel { return this._happ.hvm.getDvm(RealDvm.roleId)! }
 
 
-  get dummyDvm(): IDnaViewModel { return this._happ.getDvm(DummyDvm.roleId)! }
-  get impostorDvm(): IDnaViewModel { return this._happ.getDvm("rImpostor")! }
-  get realDvm(): IDnaViewModel { return this._happ.getDvm(RealDvm.roleId)! }
-
-
-  /** */
-  async firstUpdated() {
-    let HC_PORT = Number(process.env.HC_PORT);
-    this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
-    this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
-
-    await this._happ.probeAll();
-
-    //await dummyDvm.fetchAllEntryDefs();
-
-    this._loaded = true;
+  /**
+   *
+   */
+  shouldUpdate() {
+    return !!this._happ;
   }
 
 
@@ -62,7 +105,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   async onProbe(e: any) {
     //let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
     //console.log({entryDefs})
-    this._happ.probeAll();
+    this._happ.probeAll(undefined);
   }
 
 
@@ -76,10 +119,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("dummy-app render() called!")
-    if (!this._loaded) {
-      return html`<span>Loading...</span>`;
-    }
+    console.log("dummy-app render() called!", this._happ);
 
     return html`
       <div style="margin:10px;">
@@ -127,3 +167,5 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
     };
   }
 }
+
+//DummyApp.addInitializer(initializeHapp);
