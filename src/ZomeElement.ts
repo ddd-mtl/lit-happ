@@ -57,11 +57,10 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixi
 
   /** RequestZvm on first "shouldUpdate" */
   shouldUpdate() {
-    console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.cellDef);
+    //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.cellDef);
     if (!this._zvm) {
       this.requestZvm();
     }
-    console.log("ZomeElement.shouldUpdate() end", !!this._zvm);
     return !!this._zvm;
   }
 
