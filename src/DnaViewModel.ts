@@ -9,17 +9,17 @@ import {ICellDef, RoleSpecificMixin} from "./CellDef";
 import {createContext} from "@lit-labs/context";
 
 
-export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
-
-
+/** Interfaces that DnaViewModel must implement */
 export type IDnaViewModel = _DnaViewModel & ICellDef & IViewModel;
 
-/** Interface for the generic-less DnaViewModel class */
+/** Interface specific to DnaViewModel class */
 interface _DnaViewModel {
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   dumpLogs(zomeName?: string): void;
 }
+
+export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
 
 
 /**

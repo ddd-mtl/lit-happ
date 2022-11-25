@@ -7,10 +7,10 @@ import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 
-export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
-
-/** Interface for the generic-less ZomeViewModel class */
+/** Interfaces that ZomeViewModel must implement */
 export type IZomeViewModel = ICellDef & IViewModel & IZomeSpecific;
+
+export type ZvmClass = {new(proxy: CellProxy): IZomeViewModel}
 
 /**
  * Abstract ViewModel for a Zome.

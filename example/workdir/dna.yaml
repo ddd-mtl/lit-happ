@@ -13,10 +13,10 @@ integrity:
 coordinator:
   zomes:
     - name: zReal
-      bundled: ../target/wasm32-unknown-unknown/release/real.wasm
+      bundled: ../target/wasm32-unknown-unknown/release/zReal.wasm
       dependencies:
         - name: real_integrity
     - name: zLabel
-      bundled: ../target/wasm32-unknown-unknown/release/label.wasm
+      bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
         - name: label_integrity

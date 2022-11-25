@@ -13,10 +13,10 @@ integrity:
 coordinator:
   zomes:
     - name: zDummy
-      bundled: ../target/wasm32-unknown-unknown/release/dummy.wasm
+      bundled: ../target/wasm32-unknown-unknown/release/zDummy.wasm
       dependencies:
         - name: dummy_integrity
     - name: zLabel
-      bundled: ../target/wasm32-unknown-unknown/release/label.wasm
+      bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
         - name: label_integrity
