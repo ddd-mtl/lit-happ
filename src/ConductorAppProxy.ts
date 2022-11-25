@@ -31,13 +31,27 @@ export class ConductorAppProxy implements AppApi {
 
   /** -- Creation -- */
 
-  /** Factory for doing all the async stuff */
-  static async new(port: number, defaultTimeout?: number): Promise<ConductorAppProxy> {
-    const wsUrl = `ws://localhost:${port}`
-    const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
+  /** async Factory */
+  static async new(port_or_socket: number | AppWebsocket, defaultTimeout?: number): Promise<ConductorAppProxy> {
+    if (port_or_socket instanceof AppWebsocket) {
+      return  ConductorAppProxy.fromSocket(port_or_socket);
+    } else {
+      const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
+      let wsUrl = `ws://localhost:${port_or_socket}`
+      try {
+        let conductor = new ConductorAppProxy(timeout);
+        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout, conductor.onSignal)
+        return conductor;
+      } catch (e) {
+        console.error("ConductorAppProxy initialization failed", e)
+        return Promise.reject("ConductorAppProxy initialization failed");
+      }
+    }
+  }
+
+  private static async fromSocket(appWebsocket: AppWebsocket): Promise<ConductorAppProxy> {
     try {
-      let conductor = new ConductorAppProxy(port, timeout);
-      const appWebsocket = await AppWebsocket.connect(wsUrl, timeout, conductor.onSignal)
+      let conductor = new ConductorAppProxy(appWebsocket.defaultTimeout);
       conductor._appWs = appWebsocket;
       return conductor;
     } catch (e) {
@@ -47,7 +61,7 @@ export class ConductorAppProxy implements AppApi {
   }
 
   /** Ctor */
-  private constructor(public readonly port: number, public defaultTimeout: number) {
+  private constructor(public defaultTimeout: number) {
     //const _unsubscribe = _appWs.addSignalHandler(this.onSignal);
     const _unsub = this.addSignalHandler(this.logSignal);
   }

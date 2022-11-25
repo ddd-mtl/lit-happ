@@ -14,10 +14,7 @@ export class DummyInspect extends DnaElement<DummyZomePerspective, DummyDvm> {
 
   /** */
   render() {
-    //console.log("<dummy-list> render()", this.cellData)
-    if (!this._loaded) {
-      return html`<span>Loading...</span>`;
-    }
+    console.log("DummyInspect render()", this._dvm)
 
     /** render all */
     return html`

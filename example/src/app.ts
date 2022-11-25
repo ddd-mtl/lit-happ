@@ -33,9 +33,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   private _happ!: HappViewModel;
 
 
-  get dummyDvm(): IDnaViewModel { return this._happ.getDvm("rDummy")! }
+  get dummyDvm(): IDnaViewModel { return this._happ.getDvm(DummyDvm.roleId)! }
   get impostorDvm(): IDnaViewModel { return this._happ.getDvm("rImpostor")! }
-  get realDvm(): IDnaViewModel { return this._happ.getDvm("rReal")! }
+  get realDvm(): IDnaViewModel { return this._happ.getDvm(RealDvm.roleId)! }
 
 
   /** */

@@ -54,3 +54,14 @@ export function RoleSpecificMixin<TBase extends AbstractConstructor>(Base: TBase
 }
 
 export const RoleSpecific = RoleSpecificMixin(Empty);
+
+
+// // A TypeScript decorator
+// const myDecorator = (proto: ReactiveElement, key: string) => {
+//   const ctor = proto.constructor as typeof ReactiveElement;
+//
+//   ctor.addInitializer((instance: ReactiveElement) => {
+//     // This is run during construction of the element
+//     new MyController(instance);
+//   });
+// };

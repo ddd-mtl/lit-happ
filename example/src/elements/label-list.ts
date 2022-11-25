@@ -30,10 +30,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
   /** */
   render() {
     //console.log("<label-list> render()", this.cellData, this._loaded)
-    if (!this._loaded /*|| this.cellData*//*|| !this.perspective*/) {
-      return html`<span>Loading...</span>`;
-    }
-    console.log("label-list:", this._zvm.perspective.names)
+    console.log("label-list:", this.perspective.names)
 
     const dummyLi = Object.values(this.perspective.names).map(
       (value) => {

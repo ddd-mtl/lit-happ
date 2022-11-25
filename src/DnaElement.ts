@@ -16,9 +16,8 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(
   constructor(dvm: typeof RoleSpecific) {
     super();
     this.setRoleId(dvm.roleId);
+    this.requestDvm();
   }
-
-  @state() protected _loaded = false;
 
   /** Provided by Context depending on dnaName */
   protected _dvm!: DVM;
@@ -34,13 +33,11 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(
   get agentPubKey(): AgentPubKeyB64 { return this._dvm.agentPubKey }
 
 
-  /** -- methods -- */
+  /** -- Methods -- */
 
   /** */
-  async firstUpdated() {
-    //console.log("LabelList firstUpdated()", serializeHash(this.cellData?.cell_id[0]))
+  private requestDvm() {
     /** Consume Context based on given dnaHash */
-    // FIXME Check "${this._roleId}" != "${this._dvm.roleId}"
     const contextType = createContext<DVM>('dvm/'+ this.roleId);
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
@@ -49,7 +46,6 @@ export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(
       (value: DVM, dispose?: () => void): void => {
         this._dvm = value;
         this._dvm.subscribe(this, 'perspective');
-        this._loaded = true;
       },
       false, // true will call twice at init
     );

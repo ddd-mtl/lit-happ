@@ -30,11 +30,8 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   /** */
   render() {
-    console.log("<real-list> render()", this.cellDef)
-    if (!this._loaded) {
-      return html`<span>Loading...</span>`;
-    }
-    console.log("real-list:", this._zvm.perspective.floats)
+    //console.log("<real-list> render()", this._zvm)
+    console.log("real-list:", this.perspective.floats)
 
     const dummyLi = Object.values(this.perspective.floats).map(
       (value) => {
