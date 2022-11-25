@@ -57,6 +57,24 @@ export class CellProxy implements ICellDef {
 
   /** -- Methods -- */
 
+  /** Pass call request to conductor proxy and log it */
+  async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
+    reqLog.executionTimestamp = Date.now();
+    const requestIndex = this._requestLog.length;
+    this._requestLog.push(reqLog);
+    try {
+      const response = await this._conductor.callZome(reqLog.request, reqLog.timeout);
+      const respLog = { requestIndex, success: response, timestamp: Date.now() };
+      this._responseLog.push(respLog);
+      return respLog;
+    } catch (e) {
+      const respLog = { requestIndex, failure: e, timestamp: Date.now() }
+      this._responseLog.push(respLog);
+      return respLog;
+    }
+  }
+    
+  
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
    * TODO: Implement call queue instead of mutex
@@ -80,29 +98,11 @@ export class CellProxy implements ICellDef {
     const respLog = await this.executeZomeCall(log);
     this._canCallBlocking = true;
     if (respLog.failure) {
+      this.dumpLogs(zome_name);
       return Promise.reject(respLog.failure)
     }
     return respLog.success;
   }
-
-
-  /** Pass call request to conductor proxy and log it */
-  async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
-    reqLog.executionTimestamp = Date.now();
-    const requestIndex = this._requestLog.length;
-    this._requestLog.push(reqLog);
-    try {
-      const response = await this._conductor.callZome(reqLog.request, reqLog.timeout);
-      const respLog = { requestIndex, success: response, timestamp: Date.now() };
-      this._responseLog.push(respLog);
-      return respLog;
-    } catch (e) {
-      const respLog = { requestIndex, failure: e, timestamp: Date.now() }
-      this._responseLog.push(respLog);
-      return respLog;
-    }
-  }
-  
 
   /** */
   async callZome(zome_name: string, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
@@ -115,6 +115,7 @@ export class CellProxy implements ICellDef {
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     const respLog = await this.executeZomeCall(log);
     if (respLog.failure) {
+      this.dumpLogs(zome_name);
       return Promise.reject(respLog.failure)
     }
     return respLog.success;
