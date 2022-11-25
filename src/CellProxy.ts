@@ -74,7 +74,7 @@ export class CellProxy implements ICellDef {
     }
   }
     
-  
+
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
    * TODO: Implement call queue instead of mutex
@@ -92,6 +92,7 @@ export class CellProxy implements ICellDef {
       await delay(1);
     }
     if (Date.now() - log.requestTimestamp >= timeout) {
+      console.warn({requestLogs: this._requestLog})
       return Promise.reject("Waiting for zomeCall execution timed-out");
     }
     this._canCallBlocking = false;
