@@ -15,8 +15,6 @@ export interface RealZomePerspective {
  */
 export class RealZomeProxy extends ZomeProxy {
 
-  static zomeName = "zReal";
-
   async getReal(eh: EntryHash): Promise<number> {
     return this.call('get_real', eh);
   }
@@ -33,9 +31,12 @@ export class RealZomeProxy extends ZomeProxy {
  *
  */
 export class RealZvm extends ZomeViewModel {
+
+  static DEFAULT_ZOME_NAME = "zReal";
+
   /** Ctor */
-  constructor(protected _cellProxy: CellProxy) {
-    super(new RealZomeProxy(_cellProxy));
+  constructor(protected _cellProxy: CellProxy, zomeName?: string) {
+    super(new RealZomeProxy(_cellProxy, zomeName? zomeName:RealZvm.DEFAULT_ZOME_NAME));
   }
 
   private _values: number[] = [];
@@ -72,16 +73,16 @@ export class RealZvm extends ZomeViewModel {
  */
 export class RealDvm extends DnaViewModel {
 
-  static roleId = "rReal";
+  static DEFAULT_ROLE_ID = "rReal";
 
   /** Ctor */
-  constructor(happ: HappViewModel, roleId: RoleId) {
-    super(happ, roleId, [RealZvm, LabelZvm]);
+  constructor(happ: HappViewModel, roleId?: RoleId) {
+    super(happ, [RealZvm, LabelZvm], roleId);
   }
 
   /** QoL Helpers */
-  get realZvm(): RealZvm {return this.getZomeViewModel(RealZvm.zomeName) as RealZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.zomeName) as LabelZvm}
+  get realZvm(): RealZvm {return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

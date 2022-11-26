@@ -14,8 +14,6 @@ export interface LabelZomePerspective {
  */
 export class LabelZomeProxy extends ZomeProxy {
 
-  static zomeName = "zLabel"
-
   async getLabel(eh: EntryHash): Promise<string> {
     return this.call('get_label', eh);
   }
@@ -32,9 +30,12 @@ export class LabelZomeProxy extends ZomeProxy {
  *
  */
 export class LabelZvm extends ZomeViewModel {
+
+  static DEFAULT_ZOME_NAME = "zLabel"
+
   /** Ctor */
-  constructor(protected _cellProxy: CellProxy) {
-    super(new LabelZomeProxy(_cellProxy));
+  constructor(protected _cellProxy: CellProxy, zomeName?: string) {
+    super(new LabelZomeProxy(_cellProxy, zomeName? zomeName : LabelZvm.DEFAULT_ZOME_NAME));
   }
 
   private _values: string[] = [];

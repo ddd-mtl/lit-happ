@@ -8,8 +8,9 @@ import {ZomeElement} from "@ddd-qc/dna-client";
  */
 export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
+  /** */
   constructor() {
-    super(DummyZvm)
+    super(DummyZvm.DEFAULT_ZOME_NAME)
   }
 
   /** */
@@ -31,7 +32,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
   /** */
   render() {
     //console.log("<dummy-list> render()", this._zvm)
-    console.log("dummy-list:", this.perspective.values)
+    //console.log("dummy-list:", this.perspective.values)
 
     const dummyLi = Object.values(this.perspective.values).map(
       (value) => {

@@ -2,27 +2,28 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
-import {CellId, InstalledCell, RoleId} from "@holochain/client";
+import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {cellContext} from "./elements/cell-context";
-import {ICellDef, ZomeSpecific, ZomeSpecificMixin} from "./CellDef";
+import {ICellDef} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import {IZomeViewModel} from "./ZomeViewModel";
+import {ZomeSpecific, ZomeSpecificMixin} from "./mixins";
 
 
 /**
- * LitElement that is bound to a specific ZomeViewModel
+ * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
+export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef {
 
-  constructor(zvm: typeof ZomeSpecific) {
+  constructor(public readonly zomeName: ZomeName) {
     super();
-    this.setZomeName(zvm.zomeName);
+    //this.zomeName = zvm.DEFAULT_ZOME_NAME;
   }
 
   @contextProvided({ context: cellContext, subscribe: true})
   @property({type: Object})
-  cellDef!: InstalledCell;
+  installedCell!: InstalledCell;
 
   /** Provided by Context depending on cellData.dnaHash */
   protected _zvm!: ZVM;
@@ -31,10 +32,10 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixi
   perspective!: P;
 
   /** CellDef interface */
-  get roleId(): RoleId { return this.cellDef.role_id }
-  get cellId(): CellId { return this.cellDef.cell_id }
-  get dnaHash(): DnaHashB64 { return serializeHash(this.cellDef.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellDef.cell_id[1]) }
+  get roleId(): RoleId { return this.installedCell.role_id }
+  get cellId(): CellId { return this.installedCell.cell_id }
+  get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }
+  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.installedCell.cell_id[1]) }
 
 
   /** -- Methods -- */
@@ -57,7 +58,7 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixi
 
   /** RequestZvm on first "shouldUpdate" */
   shouldUpdate() {
-    //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.cellDef);
+    //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.installedCell);
     if (!this._zvm) {
       this.requestZvm();
     }
@@ -65,3 +66,4 @@ export class ZomeElement<P, ZVM extends IZomeViewModel> extends ZomeSpecificMixi
   }
 
 }
+

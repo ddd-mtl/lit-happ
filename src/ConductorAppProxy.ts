@@ -1,7 +1,8 @@
-import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, InstalledAppId, InstalledAppInfo } from "@holochain/client";
+import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, DnaDefinition, InstalledAppId, InstalledAppInfo } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {HappDef, HappViewModel} from "./HappViewModel";
 import { ReactiveElement } from "lit";
+import { MyDnaDef } from "./CellDef";
 
 /** From hc-client-js API */
 export interface SignalUnsubscriber {
@@ -92,11 +93,12 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** Factory for doing all the async stuff */
-  newCellProxy(appInfo: InstalledAppInfo, roleId: string): CellProxy {
+  newCellProxy(appInfo: InstalledAppInfo, roleId: string/*, dnaDef: DnaDefinition*/): CellProxy {
     //console.log({cellData:  appInfo.cell_data});
     for (const installedCell of appInfo.cell_data) {
       if (installedCell.role_id == roleId) {
-        return new CellProxy(this, installedCell, this.defaultTimeout);
+        //const myDnaDef = new MyDnaDef(dnaDef);
+        return new CellProxy(this, installedCell, /*myDnaDef,*/ this.defaultTimeout);
       }
     }
     throw Error(`CellProxy initialization failed: No cell with RoleId "${roleId}" found.`);

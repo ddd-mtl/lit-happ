@@ -9,7 +9,7 @@ import {ZomeElement} from "@ddd-qc/dna-client";
 export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   constructor() {
-    super(LabelZvm)
+    super(LabelZvm.DEFAULT_ZOME_NAME)
   }
 
   /** */
@@ -30,7 +30,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
   /** */
   render() {
     //console.log("<label-list> render()", this.cellData, this._loaded)
-    console.log("label-list:", this.perspective.names)
+    //console.log("label-list:", this.perspective.names)
 
     const dummyLi = Object.values(this.perspective.names).map(
       (value) => {

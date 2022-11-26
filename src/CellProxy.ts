@@ -2,7 +2,7 @@ import { CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId } from "@holo
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import { ICellDef } from "./CellDef";
+import { ICellDef, MyDnaDef } from "./CellDef";
 import { delay, Queue } from "./utils";
 
 
@@ -24,13 +24,17 @@ export interface ResponseLog {
 /**
  * Proxy for a running DNA.
  * It logs and queues ZomeCalls.
- * It holds a reference to its ConductorAppProxy and its cellDef (InstalledCell).
+ * It holds a reference to its ConductorAppProxy and its InstalledCell.
  * This class is expected to be used by ZomeProxies.
  */
 export class CellProxy implements ICellDef {
 
   /** Ctor */
-  constructor(private _conductor: ConductorAppProxy, public cellDef: InstalledCell, defaultTimeout?: number) {
+  constructor(
+    private _conductor: ConductorAppProxy, 
+    public readonly installedCell: InstalledCell, 
+    //public readonly dnaDef: MyDnaDef,
+    defaultTimeout?: number) {
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
   }
 
@@ -49,10 +53,10 @@ export class CellProxy implements ICellDef {
 
   /** -- CellDef interface -- */
 
-  get roleId(): RoleId { return this.cellDef.role_id }
-  get cellId(): CellId { return this.cellDef.cell_id }
-  get dnaHash(): DnaHashB64 { return serializeHash(this.cellDef.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.cellDef.cell_id[1]) }
+  get roleId(): RoleId { return this.installedCell.role_id }
+  get cellId(): CellId { return this.installedCell.cell_id }
+  get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }
+  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.installedCell.cell_id[1]) }
 
 
   /** -- Methods -- */
@@ -83,8 +87,8 @@ export class CellProxy implements ICellDef {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cellDef.cell_id,
-      provenance: this.cellDef.cell_id[1],
+      cell_id: this.installedCell.cell_id,
+      provenance: this.installedCell.cell_id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     
@@ -110,8 +114,8 @@ export class CellProxy implements ICellDef {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cellDef.cell_id,
-      provenance: this.cellDef.cell_id[1],
+      cell_id: this.installedCell.cell_id,
+      provenance: this.installedCell.cell_id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     const respLog = await this.executeZomeCall(log);
@@ -128,6 +132,7 @@ export class CellProxy implements ICellDef {
    * returns an array of all the zome's AppEntryDefNames and visibility
    */
   async callEntryDefs(zomeName: string): Promise<[string, boolean][]> {
+    console.log("callEntryDefs()", zomeName)
     try {
       const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 2 * 1000);
       //console.debug("getEntryDefs() for " + this.zomeName + " result:")
@@ -177,9 +182,12 @@ export class CellProxy implements ICellDef {
       const output = response.failure ? response.failure : response.success;
       const log = zomeName ? { startTime, fnName: requestLog.request.fn_name, input, output, duration }
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration }
-      result.push(log)
+      result.push(log);
     }
-    if (zomeName) console.log("Call log for zome " + zomeName)
+    console.warn("Dumping logs for Cell", this.dnaHash)
+    if (zomeName) {
+      console.warn(" - For Zome " + zomeName);
+    }
     console.table(result)
   }
 

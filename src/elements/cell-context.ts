@@ -10,19 +10,19 @@ export const cellContext = createContext<InstalledCell>('cell');
 export class CellContext extends ScopedElementsMixin(LitElement) {
 
   @property({type: Object})
-  cellDef!: InstalledCell;
+  installedCell!: InstalledCell;
 
   /* create a provider controller */
-  private _provider = new ContextProvider(this, cellContext, this.cellDef);
+  private _provider = new ContextProvider(this, cellContext, this.installedCell);
 
   /** */
   firstUpdated() {
-    this._provider.setValue(this.cellDef);
+    this._provider.setValue(this.installedCell);
   }
 
   /** */
   render() {
-    console.log(`CellContext set "${this.cellDef.role_id}"`)
+    console.log(`CellContext set "${this.installedCell.role_id}"`)
     return html`<slot></slot>`;
   }
 }

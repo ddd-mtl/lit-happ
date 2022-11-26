@@ -2,12 +2,14 @@ import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 
 
-/** Interface for the generic-less ViewModel class */
+/** ViewModel Interface */
 export interface IViewModel {
-  provideContext(host: ReactiveElement): void;
-  getContext(): any;  // FIXME context type
+  /** -- Holochain specific -- */    
   get perspective(): any;
   probeAll(): Promise<void>;
+  /** -- Context -- */
+  provideContext(host: ReactiveElement): void;
+  getContext(): any;   
   /** -- Observer pattern -- */
   subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey): void;
   unsubscribe(candidat: ReactiveControllerHost): void;

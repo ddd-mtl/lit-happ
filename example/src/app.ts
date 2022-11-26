@@ -55,6 +55,7 @@ const happy = (proto: ReactiveElement, key: string) => {
 };
 
 
+
 // /** */
 // async function initializeHapp(instance: ReactiveElement) {
 //   console.log("initializeHapp()", instance);
@@ -63,10 +64,10 @@ const happy = (proto: ReactiveElement, key: string) => {
 //   // this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
 //   //
 //   // await this._happ.probeAll();
-//
+
 //   //await dummyDvm.fetchAllEntryDefs();
-//
-//   const happElem = HappElement.new(Number(process.env.HC_PORT), PlaygroundHappDef)
+
+//   const happElem = HappElement.new(Number(process.env.HC_PORT), playgroundHappDef)
 //   //instance['happ'] = happElem;
 //   instance.addController(happElem)
 // }
@@ -78,26 +79,33 @@ const happy = (proto: ReactiveElement, key: string) => {
  */
 export class DummyApp extends ScopedElementsMixin(LitElement) {
 
-  @happy _happ!: HappElement;
+  constructor() {
+    super();
+    this.initHapp();
+  }
+
+  //@happy _happ!: HappElement;
+  _happ!: IHapp;
 
   @state() private _selectedZomeName = ""
 
-  get dummyDvm(): IDnaViewModel { return this._happ.hvm.getDvm(DummyDvm.roleId)! }
+  get dummyDvm(): IDnaViewModel { return this._happ.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! }
   get impostorDvm(): IDnaViewModel { return this._happ.hvm.getDvm("rImpostor")! }
-  get realDvm(): IDnaViewModel { return this._happ.hvm.getDvm(RealDvm.roleId)! }
+  get realDvm(): IDnaViewModel { return this._happ.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! }
 
 
-  /**
-   *
-   */
-  shouldUpdate() {
-    return !!this._happ;
+  /** */
+  async initHapp() {
+    const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+    const hvm = await conductorAppProxy.newHappViewModel(this, playgroundHappDef); // FIXME this can throw an error
+    this._happ = {conductorAppProxy,hvm}
+    this.requestUpdate();
   }
 
 
   /** */
-  async onDumpLogs(e: any) {
-    this.dummyDvm.dumpLogs()
+  shouldUpdate() {
+    return !!this._happ;
   }
 
 
@@ -105,7 +113,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   async onProbe(e: any) {
     //let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
     //console.log({entryDefs})
-    this._happ.probeAll(undefined);
+    this._happ.hvm.probeAll();
   }
 
 
@@ -119,12 +127,11 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("dummy-app render() called!", this._happ);
+    console.log("<dummy-app> render()", this._happ);
 
     return html`
       <div style="margin:10px;">
         <h2>Playground App</h2>
-        <input type="button" value="dump logs" @click=${this.onDumpLogs}>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <br/>
         <span>Select AppEntryType:</span>
@@ -135,20 +142,29 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
         <hr class="solid">
         <dummy-inspect></dummy-inspect>  
         <hr class="solid">
-        <cell-context .cellDef="${this.dummyDvm.cellDef}">
-          <h2>Dummy Cell: ${this.dummyDvm.dnaHash}</h2>
+        <cell-context .installedCell="${this.dummyDvm.installedCell}">
+          <h2>
+            Dummy Cell: ${this.dummyDvm.dnaHash} 
+            <input type="button" value="dump logs" @click=${(e:any) => this.dummyDvm.dumpLogs()}>
+          </h2>
           <dummy-list></dummy-list>
           <label-list></label-list>
         </cell-context>
-        <cell-context .cellDef="${this.realDvm.cellDef}">
+        <cell-context .installedCell="${this.realDvm.installedCell}">
           <hr class="solid">          
-          <h2>Real Cell: ${this.realDvm.dnaHash}</h2>
+          <h2>
+            Real Cell: ${this.realDvm.dnaHash} 
+            <input type="button" value="dump logs" @click=${(e:any) => this.realDvm.dumpLogs()}>
+          </h2>
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>
-        <cell-context .cellDef="${this.impostorDvm.cellDef}">
+        <cell-context .installedCell="${this.impostorDvm.installedCell}">
           <hr class="solid">          
-          <h2>Impostor Cell: ${this.impostorDvm.dnaHash}</h2>
+          <h2>
+            Impostor Cell: ${this.impostorDvm.dnaHash} 
+            <input type="button" value="dump logs" @click=${(e:any) => this.impostorDvm.dumpLogs()}>
+          </h2>
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>

@@ -9,18 +9,18 @@ import {DnaElement} from "@ddd-qc/dna-client";
 export class DummyInspect extends DnaElement<DummyZomePerspective, DummyDvm> {
 
   constructor() {
-    super(DummyDvm)
+    super(DummyDvm.DEFAULT_ROLE_ID)
   }
 
   /** */
   render() {
-    console.log("DummyInspect render()", this._dvm)
+    console.log("<dummy-inspect> render()", this._dvm)
 
     /** render all */
     return html`
       <h4>Dummy Inspect: "${this._dvm.roleId}"</h4>
-      <div>dummyZvm: ${this._dvm.dummyZvm.zomeName}</div>
-      <div>labelZvm: ${this._dvm.labelZvm.zomeName}</div>
+      <span>dummyZvm: ${this._dvm.dummyZvm.zomeName}</span> |
+      <span>labelZvm: ${this._dvm.labelZvm.zomeName}</span>
     `
   }
 }

@@ -2,13 +2,17 @@ import {Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import {InstalledAppInfo, InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import {DvmClass, IDnaViewModel} from "./DnaViewModel";
+import {DvmDef, IDnaViewModel} from "./DnaViewModel";
+import { RoleSpecific } from "./mixins";
 
 /** */
 export interface HappDef {
  id: InstalledAppId,
- dvmDefs: (DvmClass | [DvmClass, RoleId])[],
+ dvmDefs: DvmDef[],
 }
+
+
+export type HvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel} & typeof RoleSpecific;
 
 
 /**
@@ -17,14 +21,18 @@ export interface HappDef {
  export class HappViewModel {
 
   /** Ctor */
-  constructor(public host: ReactiveElement, public readonly appInfo: InstalledAppInfo, public conductorAppProxy: ConductorAppProxy, dvmClasses: (DvmClass | [DvmClass, RoleId])[]) {
+  constructor(
+    public readonly host: ReactiveElement, 
+    public readonly appInfo: InstalledAppInfo, 
+    public readonly conductorAppProxy: ConductorAppProxy, 
+    dvmDefs: DvmDef[]) {
    /** Create all DVMs for this Happ */
-   for (const dvmPair of dvmClasses) {
+   for (const dvmDef of dvmDefs) {
     let dvm;
-    if (!Array.isArray(dvmPair)) {
-     dvm = new dvmPair(this, dvmPair.roleId); // WARN this can throw an error
+    if (Array.isArray(dvmDef)) {
+      dvm = new dvmDef[0](this, dvmDef[1]); // WARN this can throw an error
     } else {
-     dvm = new dvmPair[0](this, dvmPair[1]); // WARN this can throw an error
+      dvm = new dvmDef(this); // WARN this can throw an error
     }
     this._dvms[dvm.roleId] = dvm
    }

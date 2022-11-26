@@ -14,8 +14,6 @@ export interface DummyZomePerspective {
  */
 export class DummyZomeProxy extends ZomeProxy {
 
-  static zomeName = "zDummy";
-
   async getDummy(eh: EntryHash): Promise<number> {
     return this.call('get_dummy', eh);
   }
@@ -32,9 +30,12 @@ export class DummyZomeProxy extends ZomeProxy {
  *
  */
 export class DummyZvm extends ZomeViewModel {
+
+  static DEFAULT_ZOME_NAME = "zDummy";
+
   /** Ctor */
-  constructor(protected _cellProxy: CellProxy) {
-    super(new DummyZomeProxy(_cellProxy));
+  constructor(protected _cellProxy: CellProxy, zomeName?: string) {
+    super(new DummyZomeProxy(_cellProxy, zomeName? zomeName : DummyZvm.DEFAULT_ZOME_NAME));
   }
 
   private _values: number[] = [];
@@ -73,16 +74,16 @@ export class DummyZvm extends ZomeViewModel {
  */
 export class DummyDvm extends DnaViewModel {
 
-  static roleId = "rDummy";
+  static DEFAULT_ROLE_ID = "rDummy";
 
   /** Ctor */
-  constructor(happ: HappViewModel, roleId: string) {
-    super(happ, roleId, [DummyZvm, LabelZvm]);
+  constructor(happ: HappViewModel, roleId?: string) {
+    super(happ, [DummyZvm, LabelZvm], roleId);
   }
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.zomeName) as DummyZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.zomeName) as LabelZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.DEFAULT_ZOME_NAME) as DummyZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

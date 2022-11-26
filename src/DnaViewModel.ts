@@ -1,16 +1,17 @@
 import {CellProxy} from "./CellProxy";
-import {IZomeViewModel, ZvmClass} from "./ZomeViewModel";
+import {IZomeViewModel, ZvmClass, ZvmDef} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
-import {ICellDef, RoleSpecific, RoleSpecificMixin} from "./CellDef";
+import {ICellDef} from "./CellDef";
 import {createContext} from "@lit-labs/context";
+import { IRoleSpecific, RoleSpecific, RoleSpecificMixin } from "./mixins";
 
 
 /** Interfaces that DnaViewModel must implement */
-export type IDnaViewModel = _DnaViewModel & ICellDef & IViewModel;
+export type IDnaViewModel = _DnaViewModel & ICellDef & IViewModel & IRoleSpecific;
 
 /** Interface specific to DnaViewModel class */
 interface _DnaViewModel {
@@ -19,8 +20,9 @@ interface _DnaViewModel {
   dumpLogs(zomeName?: string): void;
 }
 
-export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel} & typeof RoleSpecific;
+export type DvmClass = {new(happ: HappViewModel, roleId?: string): IDnaViewModel};
 
+export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
 
 /**
  * Abstract ViewModel for a DNA.
@@ -30,13 +32,21 @@ export type DvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
 export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IDnaViewModel {
 
   /** Ctor */
-  protected constructor(happ: HappViewModel, roleId: RoleId, zvmClasses: ZvmClass[]) {
+  protected constructor(happ: HappViewModel, zvmDefs: ZvmDef[], roleId?: RoleId) {
     super();
-    this._cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, roleId); // FIXME can throw error
-    this.setRoleId(this._cellProxy.roleId);
+    if (roleId) {
+      this.roleId = roleId;
+    }
+    this._cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, this.roleId); // FIXME can throw error
     /** Create all ZVMs for this DNA */
-    for (const zvmClass of zvmClasses) {
-      const zvm = new zvmClass(this._cellProxy);
+    for (const zvmDef of zvmDefs) {
+      let zvm;
+      if (Array.isArray(zvmDef)) {
+        zvm = new zvmDef[0](this._cellProxy, zvmDef[1]);
+      } else {
+        zvm = new zvmDef(this._cellProxy);
+      }
+      // TODO check zvm.zomeName exists in _cellProxy
       this._zomeViewModels[zvm.zomeName] = zvm;
     }
     this.provideContext(happ.host);
@@ -50,7 +60,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
 
   /** CellDef interface */
-  get cellDef(): InstalledCell {return this._cellProxy.cellDef}
+  get installedCell(): InstalledCell {return this._cellProxy.installedCell}
   //get roleId(): RoleId { return this._cellProxy.roleId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._cellProxy.cellId }
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
@@ -90,7 +100,9 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   /** Useless since the entry defs are in the integrity zome which is not represented here */
   async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
-      this._allEntryDefs[(zvm.constructor as any).zomeName] = await this._cellProxy.callEntryDefs((zvm.constructor as any).zomeName); // TODO optimize
+      //const zomeName = (zvm.constructor as any).DEFAULT_ZOME_NAME;
+      const zomeName =  zvm.zomeName;
+      this._allEntryDefs[zomeName] = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize
     }
     return this._allEntryDefs;
   }

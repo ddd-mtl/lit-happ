@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { state, property } from "lit/decorators.js";
-import {IDnaViewModel} from "../DnaViewModel";
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
+import { IDnaViewModel } from "../DnaViewModel";
+import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import { Dictionary } from "@holochain-open-dev/core-types";
 
 
@@ -36,7 +36,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
     // console.log("onEntrySelect() CALLED", e)
     const entrySelector = this.shadowRoot!.getElementById("selectedEntryType") as HTMLSelectElement;
     const options = {
-      detail: { zome: this._selectedZomeName, entry: entrySelector.value},
+      detail: { zome: this._selectedZomeName, entry: entrySelector.value },
       bubbles: true,
       composed: true
     };
@@ -46,10 +46,10 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    //console.log("entry-def-select render() called!")
-    if (!this.dnaViewModel) {
-      return html`<span>Loading...</span>`;
-    }
+    console.log("<entry-def-select> render()", this.dnaViewModel)
+    // if (!this.dnaViewModel) {
+    //   return html`<span>Loading...</span>`;
+    // }
 
     const zomeOptions = Object.entries(this._allEntryDefs).map(
       ([zomeName, _entryDef]) => {
@@ -57,14 +57,14 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
       }
     )
     let zomeTypes = Object.entries(this._allEntryDefs)
-      .filter((item) => {return item[0] == this._selectedZomeName;})
-      .map((item) => {return item[1]});
+      .filter((item) => { return item[0] == this._selectedZomeName; })
+      .map((item) => { return item[1] });
     //console.log({zomeTypes})
 
     let entryTypeOptions = null;
     if (zomeTypes.length > 0) {
       entryTypeOptions = Object.entries(zomeTypes[0]).map(
-        ([_zomeName, pair]) => {
+        ([zomeName, pair]) => {
           return html`<option>${pair[0]}</option>`;
         });
     }

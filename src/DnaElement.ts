@@ -5,28 +5,35 @@ import {ContextConsumer, createContext} from "@lit-labs/context";
 import {IDnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {ICellDef, RoleSpecificMixin, RoleSpecific} from "./CellDef";
+import {ICellDef} from "./CellDef";
+import { RoleSpecific, RoleSpecificMixin } from "./mixins";
 
 
 /**
- * LitElement that is bound to a specific DnaViewModel
+ * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
 export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
-  constructor(dvm: typeof RoleSpecific) {
+  // constructor(dvm: typeof RoleSpecific) {
+  //   super();
+  //   this.roleId = dvm.DEFAULT_ROLE_ID;
+  //   this.requestDvm();
+  // }
+
+  constructor(public readonly roleId: RoleId) {
     super();
-    this.setRoleId(dvm.roleId);
+    //this.roleId = dvm.DEFAULT_ROLE_ID;
     this.requestDvm();
   }
 
-  /** Provided by Context depending on dnaName */
+  /** Provided by Context depending on roleId */
   protected _dvm!: DVM;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
   /** CellDef interface */
-  get cellDef(): InstalledCell {return this._dvm.cellDef}
+  get installedCell(): InstalledCell {return this._dvm.installedCell}
   //get roleId(): RoleId { return this._dvm.roleId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._dvm.cellId }
   get dnaHash(): EntryHashB64 { return this._dvm.dnaHash}
