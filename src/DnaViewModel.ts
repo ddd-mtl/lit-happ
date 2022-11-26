@@ -1,5 +1,5 @@
 import {CellProxy} from "./CellProxy";
-import {IZomeViewModel, ZvmClass, ZvmDef} from "./ZomeViewModel";
+import {ZomeViewModel, ZvmDef} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {IViewModel, ViewModel} from "./ViewModel";
@@ -72,7 +72,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   /** -- Fields -- */
   protected _cellProxy: CellProxy;
-  protected _zomeViewModels: Dictionary<IZomeViewModel> = {};
+  protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
 
@@ -87,7 +87,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   /** -- Getters -- */
 
   getEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
-  getZomeViewModel(zomeName: ZomeName): IZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
+  getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
 
 
   /** -- Methods -- */

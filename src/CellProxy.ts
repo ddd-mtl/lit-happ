@@ -3,7 +3,7 @@ import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 import { ICellDef, MyDnaDef } from "./CellDef";
-import { delay, Queue } from "./utils";
+import { anyToB64, delay, Queue } from "./utils";
 
 
 export interface RequestLog {
@@ -167,21 +167,14 @@ export class CellProxy implements ICellDef {
       if (zomeName && requestLog.request.zome_name != zomeName) {
         continue;
       }
-
-      const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
-
-      const startDate = new Date(requestLog.requestTimestamp);
-      const startTime = ""
-        + zeroPad(startDate.getHours(), 2)
-        + ":" + zeroPad(startDate.getMinutes(), 2)
-        + ":" + zeroPad(startDate.getSeconds(), 2)
-        + "." + zeroPad(startDate.getMilliseconds(), 3);
-      const durationDate = new Date(response.timestamp - requestLog.requestTimestamp);
-      const duration = durationDate.getSeconds() + "." + zeroPad(durationDate.getMilliseconds(), 3)
+      const startTime = prettyDate(new Date(requestLog.requestTimestamp));
+      const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
+      const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
       const input = requestLog.request.payload instanceof Uint8Array ? serializeHash(requestLog.request.payload) : requestLog.request.payload;
-      const output = response.failure ? response.failure : response.success;
-      const log = zomeName ? { startTime, fnName: requestLog.request.fn_name, input, output, duration }
-        : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration }
+      const output = anyToB64(response.failure ? response.failure : response.success);
+      const log = zomeName
+        ? { startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
     console.warn("Dumping logs for Cell", this.dnaHash)
@@ -191,4 +184,20 @@ export class CellProxy implements ICellDef {
     console.table(result)
   }
 
+}
+
+const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
+
+
+function prettyDuration(date: Date): string {
+  return date.getSeconds() + "." + zeroPad(date.getMilliseconds(), 3)
+}
+
+/** */
+function prettyDate(date: Date): string {
+  return ""
+  + zeroPad(date.getHours(), 2)
+  + ":" + zeroPad(date.getMinutes(), 2)
+  + ":" + zeroPad(date.getSeconds(), 2)
+  + "." + zeroPad(date.getMilliseconds(), 3);
 }

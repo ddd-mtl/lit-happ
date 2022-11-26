@@ -8,10 +8,7 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import { IZomeSpecific, RoleSpecificMixin, ZomeSpecificMixin } from "./mixins";
 
 
-/** Interfaces that ZomeViewModel must implement */
-export type IZomeViewModel = ICellDef & IViewModel & IZomeSpecific;
-
-export type ZvmClass = {new(proxy: CellProxy, zomeName?: ZomeName): IZomeViewModel}
+export type ZvmClass = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel}
 
 export type ZvmDef = ZvmClass | [ZvmClass, ZomeName]; // optional ZomeName override
 
@@ -22,7 +19,7 @@ export type ZvmDef = ZvmClass | [ZvmClass, ZomeName]; // optional ZomeName overr
  * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel extends ZomeSpecificMixin(ViewModel) implements IZomeViewModel {
+export abstract class ZomeViewModel extends ZomeSpecificMixin(ViewModel) implements ICellDef {
     
     /** Ctor */
     constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
