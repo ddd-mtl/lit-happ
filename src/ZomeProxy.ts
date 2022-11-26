@@ -5,6 +5,9 @@ import {IZome} from "./CellDef";
 import {ZomeSpecific } from "./mixins";
 
 
+export type ZomeProxyClass = {new(cellProxy: CellProxy, zomeName: ZomeName): ZomeProxy};
+
+
 /**
  * ABC for representing the zome function bindings of a Zome.
  * It holds the zomeName and reference to a CellProxy.

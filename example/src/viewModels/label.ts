@@ -1,13 +1,6 @@
 import {CellProxy, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash, ZomeName } from "@holochain/client";
 
-/**
- *
- */
-export interface LabelZomePerspective {
-  names: string[];
-}
-
 
 /**
  *
@@ -29,25 +22,29 @@ export class LabelZomeProxy extends ZomeProxy {
 /**
  *
  */
+ export interface LabelZomePerspective {
+  names: string[];
+}
+
+
+/**
+ *
+ */
 export class LabelZvm extends ZomeViewModel {
 
+  /** -- ZomeViewModel Interface -- */
+
   static readonly DEFAULT_ZOME_NAME = "zLabel"
+  static readonly PROXY_TYPE = LabelZomeProxy;
 
-  /** Ctor */
-  constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
-    super(new LabelZomeProxy(_cellProxy, zomeName? zomeName : LabelZvm.DEFAULT_ZOME_NAME));
-  }
+  get zomeProxy(): LabelZomeProxy {return this._zomeProxy as LabelZomeProxy;}
 
-  private _values: string[] = [];
-
-
-  /** -- (Zome)ViewModel Interface -- */
-
-  get zomeProxy(): LabelZomeProxy {return this._baseZomeProxy as LabelZomeProxy;}
+  get perspective(): LabelZomePerspective {return {names: this._values}}
 
   protected hasChanged(): boolean {return true}
 
-  get perspective(): LabelZomePerspective {return {names: this._values}}
+  private _values: string[] = [];
+
 
   /** */
   async probeAll(): Promise<void> {

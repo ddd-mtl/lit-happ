@@ -1,13 +1,7 @@
-import {CellProxy, ConductorAppProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import {CellProxy, ConductorAppProxy, DnaViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
 import { EntryHash, InstalledAppId, RoleId, ZomeName } from "@holochain/client";
 import {LabelZvm} from "./label";
-import {ContextKey} from "@lit-labs/context/src/lib/context-key";
-import { ReactiveElement } from "lit";
 
-/** */
-export interface DummyZomePerspective {
-  values: number[];
-}
 
 
 /**
@@ -27,29 +21,30 @@ export class DummyZomeProxy extends ZomeProxy {
 }
 
 
+/** */
+export interface DummyZomePerspective {
+  values: number[];
+}
+
+
 /**
  *
  */
 export class DummyZvm extends ZomeViewModel {
 
+  /** -- ZomeViewModel Interface -- */
+
   static readonly DEFAULT_ZOME_NAME = "zDummy";
+  static readonly PROXY_TYPE = DummyZomeProxy;
 
-  /** Ctor */
-  constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
-    super(new DummyZomeProxy(_cellProxy, zomeName? zomeName : DummyZvm.DEFAULT_ZOME_NAME));
-  }
-
-  private _values: number[] = [];
-
-
-  get zomeProxy(): DummyZomeProxy {return this._baseZomeProxy as DummyZomeProxy;}
-
-
-  /** -- ViewModel Interface -- */
+  get zomeProxy(): DummyZomeProxy {return this._zomeProxy as DummyZomeProxy;}
 
   protected hasChanged(): boolean {return true}
 
   get perspective(): DummyZomePerspective {return {values: this._values}}
+
+  private _values: number[] = [];
+
 
   /** */
   async probeAll(): Promise<void> {
@@ -75,15 +70,10 @@ export class DummyZvm extends ZomeViewModel {
  */
 export class DummyDvm extends DnaViewModel {
 
+  /** -- DnaViewModel Interface -- */
+
   static readonly DEFAULT_ROLE_ID = "rDummy";
-
   static readonly ZVM_DEFS = [DummyZvm, LabelZvm]
-
-  // /** Ctor */
-  // constructor(happ: HappViewModel, roleId?: RoleId) {
-  //   super(DummyDvm.ZVM_DEFS, happ, roleId);
-  // }
-
 
   /** QoL Helpers */
   get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.DEFAULT_ZOME_NAME) as DummyZvm}

@@ -1,13 +1,6 @@
-import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import {EntryHash, RoleId, ZomeName} from "@holochain/client";
-import {LabelZvm} from "./label";
-import {DummyZomeProxy} from "./dummy";
-
-
-/** */
-export interface RealZomePerspective {
-  floats: number[];
-}
+import { CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel } from "@ddd-qc/dna-client";
+import { EntryHash, RoleId, ZomeName } from "@holochain/client";
+import { LabelZvm } from "./label";
 
 
 /**
@@ -27,28 +20,33 @@ export class RealZomeProxy extends ZomeProxy {
 }
 
 
+/** */
+export interface RealZomePerspective {
+  floats: number[];
+}
+
+
 /**
  *
  */
 export class RealZvm extends ZomeViewModel {
 
+  /** -- ZomeViewModel Interface -- */
+
   static readonly DEFAULT_ZOME_NAME = "zReal";
-
-  /** Ctor */
-  constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
-    super(new RealZomeProxy(_cellProxy, zomeName? zomeName:RealZvm.DEFAULT_ZOME_NAME));
-  }
-
-  private _values: number[] = [];
+  static readonly PROXY_TYPE = RealZomeProxy;
 
 
   /** -- ViewModel Interface -- */
 
-  get zomeProxy(): RealZomeProxy {return this._baseZomeProxy as RealZomeProxy;}
+  get zomeProxy(): RealZomeProxy { return this._zomeProxy as RealZomeProxy; }
 
-  protected hasChanged(): boolean {return true}
+  protected hasChanged(): boolean { return true }
 
-  get perspective(): RealZomePerspective {return {floats: this._values}}
+  get perspective(): RealZomePerspective { return { floats: this._values } }
+
+  private _values: number[] = [];
+
 
   async probeAll(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
@@ -73,26 +71,23 @@ export class RealZvm extends ZomeViewModel {
  */
 export class RealDvm extends DnaViewModel {
 
-  static readonly DEFAULT_ROLE_ID = "rReal";
+  /** -- DnaViewModel Interface -- */
 
+  static readonly DEFAULT_ROLE_ID = "rReal";
   static readonly ZVM_DEFS = [RealZvm, LabelZvm]
 
-
-  /** Ctor */
-  // constructor(happ: HappViewModel, roleId?: RoleId) {
-  //   super(happ, [RealZvm, LabelZvm], roleId);
-  // }
-
   /** QoL Helpers */
-  get realZvm(): RealZvm {return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm}
-
+  get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
+  get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm }
+ 
 
   /** -- ViewModel Interface -- */
 
-  protected hasChanged(): boolean {return true}
+  protected hasChanged(): boolean { return true }
 
-  get perspective(): number {return 3.1418}
+  get perspective(): number { return 3.1418 }
+
+
 
 }
 
