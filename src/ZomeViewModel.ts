@@ -3,7 +3,7 @@ import {ZomeProxy} from "./ZomeProxy";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
 import {ICellDef} from "./CellDef";
-import {CellId, InstalledCell, RoleId} from "@holochain/client";
+import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import { IZomeSpecific, RoleSpecificMixin, ZomeSpecificMixin } from "./mixins";
 
@@ -11,9 +11,9 @@ import { IZomeSpecific, RoleSpecificMixin, ZomeSpecificMixin } from "./mixins";
 /** Interfaces that ZomeViewModel must implement */
 export type IZomeViewModel = ICellDef & IViewModel & IZomeSpecific;
 
-export type ZvmClass = {new(proxy: CellProxy, zomeName?: string): IZomeViewModel}
+export type ZvmClass = {new(proxy: CellProxy, zomeName?: ZomeName): IZomeViewModel}
 
-export type ZvmDef = ZvmClass | [ZvmClass, string]; // optional ZomeName override
+export type ZvmDef = ZvmClass | [ZvmClass, ZomeName]; // optional ZomeName override
 
 /**
  * Abstract ViewModel for a Zome.
@@ -23,7 +23,7 @@ export type ZvmDef = ZvmClass | [ZvmClass, string]; // optional ZomeName overrid
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
 export abstract class ZomeViewModel extends RoleSpecificMixin(ZomeSpecificMixin(ViewModel)) implements IZomeViewModel {
-    protected constructor(protected _baseZomeProxy: ZomeProxy, zomeName?: string) {
+    protected constructor(protected _baseZomeProxy: ZomeProxy, zomeName?: ZomeName) {
         super();
         if (zomeName) {
             this.zomeName = zomeName;

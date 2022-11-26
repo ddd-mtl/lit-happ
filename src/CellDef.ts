@@ -2,6 +2,9 @@ import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import {CellId, DnaDefinition, DnaModifiers, InstalledCell, RoleId, WasmHash, ZomeDefinition, ZomeName} from "@holochain/client";
 import { IRoleSpecific, IZomeSpecific, ZomeSpecific } from "./mixins";
 
+
+export type IZome = ICellDef & IZomeSpecific;
+
 /**
  *
  */

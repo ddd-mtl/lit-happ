@@ -21,8 +21,8 @@ export function ZomeSpecificMixin<TBase extends AbstractConstructor>(Base: TBase
     constructor(...args: any[]){super(); this.zomeName = (this.constructor as any).DEFAULT_ZOME_NAME}
     static readonly DEFAULT_ZOME_NAME: ZomeName;
     zomeName: ZomeName;
-    //get zomeName(): string {return (this.constructor as any).DEFAULT_ZOME_NAME}
-    //setZomeName(name: string): void {(this.constructor as any).DEFAULT_ZOME_NAME = name}
+    //get zomeName(): ZomeName {return (this.constructor as any).DEFAULT_ZOME_NAME}
+    //setZomeName(name: ZomeName): void {(this.constructor as any).DEFAULT_ZOME_NAME = name}
   };
   return AZomeSpecific;
 }

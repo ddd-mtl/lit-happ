@@ -1,5 +1,5 @@
 import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import {EntryHash, RoleId} from "@holochain/client";
+import {EntryHash, RoleId, ZomeName} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {DummyZomeProxy} from "./dummy";
 
@@ -35,7 +35,7 @@ export class RealZvm extends ZomeViewModel {
   static DEFAULT_ZOME_NAME = "zReal";
 
   /** Ctor */
-  constructor(protected _cellProxy: CellProxy, zomeName?: string) {
+  constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
     super(new RealZomeProxy(_cellProxy, zomeName? zomeName:RealZvm.DEFAULT_ZOME_NAME));
   }
 

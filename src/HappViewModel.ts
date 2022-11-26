@@ -12,7 +12,7 @@ export interface HappDef {
 }
 
 
-export type HvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel} & typeof RoleSpecific;
+export type HvmClass = {new(happ: HappViewModel, roleId: RoleId): IDnaViewModel} & typeof RoleSpecific;
 
 
 /**
@@ -58,5 +58,5 @@ export type HvmClass = {new(happ: HappViewModel, roleId: string): IDnaViewModel}
 
 
   /** QoL Helpers */
-  get installedAppId(): string {return this.appInfo.installed_app_id}
+  get installedAppId(): InstalledAppId {return this.appInfo.installed_app_id}
  }

@@ -4,7 +4,7 @@ import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
-import {CellId, InstalledCell, RoleId} from "@holochain/client";
+import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {ICellDef} from "./CellDef";
 import {createContext} from "@lit-labs/context";
 import { IRoleSpecific, RoleSpecific, RoleSpecificMixin } from "./mixins";
@@ -17,10 +17,10 @@ export type IDnaViewModel = _DnaViewModel & ICellDef & IViewModel & IRoleSpecifi
 interface _DnaViewModel {
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
-  dumpLogs(zomeName?: string): void;
+  dumpLogs(zomeName?: ZomeName): void;
 }
 
-export type DvmClass = {new(happ: HappViewModel, roleId?: string): IDnaViewModel};
+export type DvmClass = {new(happ: HappViewModel, roleId?: RoleId): IDnaViewModel};
 
 export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
 
@@ -69,8 +69,8 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   /** -- Getters -- */
 
-  getEntryDefs(zomeName: string): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
-  getZomeViewModel(zomeName: string): IZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
+  getEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
+  getZomeViewModel(zomeName: ZomeName): IZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
 
 
   /** -- Methods -- */
@@ -110,7 +110,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
 
   /** */
-  dumpLogs(zomeName?: string): void {
+  dumpLogs(zomeName?: ZomeName): void {
     this._cellProxy.dumpLogs(zomeName)
   }
 }

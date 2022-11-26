@@ -1,8 +1,9 @@
-import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, DnaDefinition, InstalledAppId, InstalledAppInfo } from "@holochain/client";
+import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, DnaDefinition, InstalledAppId, InstalledAppInfo, RoleId } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {HappDef, HappViewModel} from "./HappViewModel";
 import { ReactiveElement } from "lit";
 import { MyDnaDef } from "./CellDef";
+import { Role } from "@holochain/client/lib/hdk/countersigning";
 
 /** From hc-client-js API */
 export interface SignalUnsubscriber {
@@ -93,7 +94,7 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** Factory for doing all the async stuff */
-  newCellProxy(appInfo: InstalledAppInfo, roleId: string/*, dnaDef: DnaDefinition*/): CellProxy {
+  newCellProxy(appInfo: InstalledAppInfo, roleId: RoleId/*, dnaDef: DnaDefinition*/): CellProxy {
     //console.log({cellData:  appInfo.cell_data});
     for (const installedCell of appInfo.cell_data) {
       if (installedCell.role_id == roleId) {

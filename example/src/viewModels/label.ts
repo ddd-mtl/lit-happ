@@ -1,5 +1,5 @@
 import {CellProxy, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { EntryHash } from "@holochain/client";
+import { EntryHash, ZomeName } from "@holochain/client";
 
 /**
  *
@@ -34,7 +34,7 @@ export class LabelZvm extends ZomeViewModel {
   static DEFAULT_ZOME_NAME = "zLabel"
 
   /** Ctor */
-  constructor(protected _cellProxy: CellProxy, zomeName?: string) {
+  constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
     super(new LabelZomeProxy(_cellProxy, zomeName? zomeName : LabelZvm.DEFAULT_ZOME_NAME));
   }
 

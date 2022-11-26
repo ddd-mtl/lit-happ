@@ -5,20 +5,17 @@ import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {cellContext} from "./elements/cell-context";
-import {ICellDef} from "./CellDef";
+import {IZome} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import {IZomeViewModel} from "./ZomeViewModel";
-import {ZomeSpecific, ZomeSpecificMixin} from "./mixins";
-
 
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef {
+export class ZomeElement<P, ZVM extends IZomeViewModel> extends ScopedElementsMixin(LitElement) implements IZome {
 
   constructor(public readonly zomeName: ZomeName) {
     super();
-    //this.zomeName = zvm.DEFAULT_ZOME_NAME;
   }
 
   @contextProvided({ context: cellContext, subscribe: true})

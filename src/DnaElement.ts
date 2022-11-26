@@ -14,15 +14,8 @@ import { RoleSpecific, RoleSpecificMixin } from "./mixins";
  */
 export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
-  // constructor(dvm: typeof RoleSpecific) {
-  //   super();
-  //   this.roleId = dvm.DEFAULT_ROLE_ID;
-  //   this.requestDvm();
-  // }
-
   constructor(public readonly roleId: RoleId) {
     super();
-    //this.roleId = dvm.DEFAULT_ROLE_ID;
     this.requestDvm();
   }
 

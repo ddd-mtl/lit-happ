@@ -1,4 +1,4 @@
-import { CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId } from "@holochain/client";
+import { CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId, ZomeName } from "@holochain/client";
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
@@ -83,7 +83,7 @@ export class CellProxy implements ICellDef {
    * callZome() with "Mutex" (for calls that writes to source-chain)
    * TODO: Implement call queue instead of mutex
    */
-  async callZomeBlocking(zome_name: string, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
+  async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -110,7 +110,7 @@ export class CellProxy implements ICellDef {
   }
 
   /** */
-  async callZome(zome_name: string, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
+  async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -131,7 +131,7 @@ export class CellProxy implements ICellDef {
    * Calls the `entry_defs()` zome function and
    * returns an array of all the zome's AppEntryDefNames and visibility
    */
-  async callEntryDefs(zomeName: string): Promise<[string, boolean][]> {
+  async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
     console.log("callEntryDefs()", zomeName)
     try {
       const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 2 * 1000);
@@ -160,7 +160,7 @@ export class CellProxy implements ICellDef {
   // }
 
   /**  */
-  dumpLogs(zomeName?: string) {
+  dumpLogs(zomeName?: ZomeName) {
     let result = [];
     for (const response of this._responseLog) {
       const requestLog = this._requestLog[response.requestIndex];
