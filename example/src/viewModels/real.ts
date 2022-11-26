@@ -32,7 +32,7 @@ export class RealZomeProxy extends ZomeProxy {
  */
 export class RealZvm extends ZomeViewModel {
 
-  static DEFAULT_ZOME_NAME = "zReal";
+  static readonly DEFAULT_ZOME_NAME = "zReal";
 
   /** Ctor */
   constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
@@ -73,12 +73,15 @@ export class RealZvm extends ZomeViewModel {
  */
 export class RealDvm extends DnaViewModel {
 
-  static DEFAULT_ROLE_ID = "rReal";
+  static readonly DEFAULT_ROLE_ID = "rReal";
+
+  static readonly ZVM_DEFS = [RealZvm, LabelZvm]
+
 
   /** Ctor */
-  constructor(happ: HappViewModel, roleId?: RoleId) {
-    super(happ, [RealZvm, LabelZvm], roleId);
-  }
+  // constructor(happ: HappViewModel, roleId?: RoleId) {
+  //   super(happ, [RealZvm, LabelZvm], roleId);
+  // }
 
   /** QoL Helpers */
   get realZvm(): RealZvm {return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm}

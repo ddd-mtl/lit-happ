@@ -44,8 +44,7 @@ const happy = (proto: ReactiveElement, key: string) => {
 
     let happEl = {} as Happ;
     happEl.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    happEl.hvm = await happEl.conductorAppProxy.newHappViewModel(instance, playgroundHappDef); // FIXME this can
-
+    happEl.hvm = await happEl.conductorAppProxy.createHvm(instance, playgroundHappDef);
 
     (instance as any)[key] = happEl;
     console.log("initializeHapp() Done", happEl);
@@ -97,8 +96,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   /** */
   async initHapp() {
     const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    const hvm = await conductorAppProxy.newHappViewModel(this, playgroundHappDef); // FIXME this can throw an error
-    this._happ = {conductorAppProxy,hvm}
+    const hvm = await conductorAppProxy.createHvm(this, playgroundHappDef);
+
+    this._happ = {conductorAppProxy, hvm}
     this.requestUpdate();
   }
 

@@ -39,7 +39,7 @@ export interface IRoleSpecific {
 export function RoleSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class ARoleSpecific extends Base {
     constructor(...args: any[]){super(); this.roleId = (this.constructor as any).DEFAULT_ROLE_ID}
-    static DEFAULT_ROLE_ID: RoleId;
+    static readonly DEFAULT_ROLE_ID: RoleId;
     roleId: RoleId;
     //get roleId(): RoleId {return (this.constructor as any).ROLE_ID}
     //setRoleId(name: RoleId): void {(this.constructor as any).ROLE_ID = name}
@@ -58,7 +58,7 @@ export interface IHappSpecific {
 
 export function HappSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class AHappSpecific extends Base {
-    static happId: InstalledAppId;
+    static readonly happId: InstalledAppId;
     get happId(): InstalledAppId {return (this.constructor as any).happId}
     setHappId(id: InstalledAppId): void {(this.constructor as any).happId = id}
   };

@@ -1,9 +1,10 @@
-import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, DnaDefinition, InstalledAppId, InstalledAppInfo, RoleId } from "@holochain/client";
+import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, DnaDefinition, InstalledAppId, InstalledAppInfo, InstalledCell, RoleId } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {HappDef, HappViewModel} from "./HappViewModel";
 import { ReactiveElement } from "lit";
 import { MyDnaDef } from "./CellDef";
 import { Role } from "@holochain/client/lib/hdk/countersigning";
+import { Dictionary } from "@holochain-open-dev/core-types";
 
 /** From hc-client-js API */
 export interface SignalUnsubscriber {
@@ -17,6 +18,32 @@ export interface SignalUnsubscriber {
  * TODO Implement Singleton per port?
  */
 export class ConductorAppProxy implements AppApi {
+
+  /** InstalledAppId -> [RoleId]*/
+  private _installedHapps: Dictionary<Array<InstalledCell>> = {}
+
+  /** CellDef -> CellProxy */
+  private _cellProxies: Dictionary<CellProxy> = {}
+
+  /** */
+  getRoles(installedAppId: InstalledAppId): RoleId[] | undefined {
+    if (!this._installedHapps[installedAppId]) return undefined;
+    return Object.values(this._installedHapps[installedAppId]).map((installedCell) => {
+      return installedCell.role_id;
+    });
+  }
+
+  /** */
+  getInstalledCell(installedAppId: InstalledAppId, roleId: RoleId): InstalledCell {
+    const maybeAppInfo = this._installedHapps[installedAppId];
+    if (!maybeAppInfo) throw Error("No hApp found with ID " + installedAppId);
+    for (const cellData of maybeAppInfo) {
+      if (cellData.role_id == roleId) {
+        return cellData;
+      }
+    }
+    throw Error(`getInstalledCell() failed: RoleId "${roleId}" not found in happ ${installedAppId}`);
+  }
 
   /** -- Proxy Pattern -- */
   // cloneCell
@@ -79,32 +106,50 @@ export class ConductorAppProxy implements AppApi {
   /** -- Methods -- */
 
   /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
-  async newHappViewModel(host: ReactiveElement, happDef: HappDef): Promise<HappViewModel> {
-    try {
-      const appInfo = await this._appWs.appInfo({ installed_app_id: happDef.id })
-      if (!appInfo.status.hasOwnProperty("running")) {
-        return Promise.reject(`HappViewModel initialization failed: hApp ${happDef.id} is not running`);
-      }
-      return new HappViewModel(host, appInfo, this, happDef.dvmDefs);
-    } catch (e) {
-      console.error("HappViewModel initialization failed", e)
-      return Promise.reject("HappViewModel initialization failed");
-    }
+  async createHvm(host: ReactiveElement, happDef: HappDef): Promise<HappViewModel> {
+    await this.createCellProxies(happDef);
+    return new HappViewModel(host, this, happDef);
   }
 
 
-  /** Factory for doing all the async stuff */
-  newCellProxy(appInfo: InstalledAppInfo, roleId: RoleId/*, dnaDef: DnaDefinition*/): CellProxy {
-    //console.log({cellData:  appInfo.cell_data});
-    for (const installedCell of appInfo.cell_data) {
-      if (installedCell.role_id == roleId) {
-        //const myDnaDef = new MyDnaDef(dnaDef);
-        return new CellProxy(this, installedCell, /*myDnaDef,*/ this.defaultTimeout);
-      }
+  /** Get stored CellProxy or attempt to create it */
+   getCellProxy(installedAppId: InstalledAppId, roleId: RoleId): CellProxy {
+    const cellDef = "" + installedAppId + "/" + roleId;
+    let maybeProxy = this._cellProxies[cellDef];
+    if (!maybeProxy) {
+      throw Error(`getCellProxy() failed: No Cell found for RoleId "${roleId}" in happ ${installedAppId}`);
     }
-    throw Error(`CellProxy initialization failed: No cell with RoleId "${roleId}" found.`);
+    return maybeProxy;
   }
 
+
+  /** */
+  async createCellProxy(installedAppId: InstalledAppId, roleId: RoleId): Promise<void> {
+    const cellDef = "" + installedAppId + "/" + roleId;
+    let maybeProxy = this._cellProxies[cellDef];
+    if (maybeProxy) {
+      console.warn("Cell already created", cellDef);
+      return;
+    }
+    const installedAppInfo = await this.appInfo({installed_app_id: installedAppId});
+    this._installedHapps[installedAppId] = installedAppInfo.cell_data;
+    const installedCell = this.getInstalledCell(installedAppId, roleId);
+    const cellProxy = new CellProxy(this, installedCell, this.defaultTimeout);
+    this._cellProxies[cellDef] = cellProxy;
+  }
+
+  private async createCellProxies(happDef: HappDef): Promise<void> {
+    for (const dvmDef of happDef.dvmDefs) {
+      let roleId;
+      if (Array.isArray(dvmDef)) {
+        roleId = dvmDef[1];
+      } else {
+        roleId = dvmDef.DEFAULT_ROLE_ID;
+        //roleId = (dvmDef.constructor as any).DEFAULT_ROLE_ID;
+      }
+      await this.createCellProxy(happDef.id, roleId);
+    }
+  }
 
   /** */
   private onSignal(signal: AppSignal): void {

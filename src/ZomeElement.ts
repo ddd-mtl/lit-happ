@@ -9,6 +9,7 @@ import {IZome} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import {IZomeViewModel} from "./ZomeViewModel";
 
+
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */

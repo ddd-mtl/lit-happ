@@ -1,7 +1,8 @@
-import {CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { EntryHash, RoleId, ZomeName } from "@holochain/client";
+import {CellProxy, ConductorAppProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import { EntryHash, InstalledAppId, RoleId, ZomeName } from "@holochain/client";
 import {LabelZvm} from "./label";
 import {ContextKey} from "@lit-labs/context/src/lib/context-key";
+import { ReactiveElement } from "lit";
 
 /** */
 export interface DummyZomePerspective {
@@ -31,7 +32,7 @@ export class DummyZomeProxy extends ZomeProxy {
  */
 export class DummyZvm extends ZomeViewModel {
 
-  static DEFAULT_ZOME_NAME = "zDummy";
+  static readonly DEFAULT_ZOME_NAME = "zDummy";
 
   /** Ctor */
   constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
@@ -74,12 +75,15 @@ export class DummyZvm extends ZomeViewModel {
  */
 export class DummyDvm extends DnaViewModel {
 
-  static DEFAULT_ROLE_ID = "rDummy";
+  static readonly DEFAULT_ROLE_ID = "rDummy";
 
-  /** Ctor */
-  constructor(happ: HappViewModel, roleId?: RoleId) {
-    super(happ, [DummyZvm, LabelZvm], roleId);
-  }
+  static readonly ZVM_DEFS = [DummyZvm, LabelZvm]
+
+  // /** Ctor */
+  // constructor(happ: HappViewModel, roleId?: RoleId) {
+  //   super(DummyDvm.ZVM_DEFS, happ, roleId);
+  // }
+
 
   /** QoL Helpers */
   get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.DEFAULT_ZOME_NAME) as DummyZvm}

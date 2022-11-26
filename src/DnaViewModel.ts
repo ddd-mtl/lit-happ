@@ -4,10 +4,11 @@ import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {IViewModel, ViewModel} from "./ViewModel";
 import { HappViewModel } from "./HappViewModel";
-import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {ICellDef} from "./CellDef";
 import {createContext} from "@lit-labs/context";
 import { IRoleSpecific, RoleSpecific, RoleSpecificMixin } from "./mixins";
+import { ConductorAppProxy } from "./ConductorAppProxy";
 
 
 /** Interfaces that DnaViewModel must implement */
@@ -20,7 +21,14 @@ interface _DnaViewModel {
   dumpLogs(zomeName?: ZomeName): void;
 }
 
-export type DvmClass = {new(happ: HappViewModel, roleId?: RoleId): IDnaViewModel};
+export type DvmClass = {
+  new(
+    host: ReactiveElement, 
+    installedAppId: InstalledAppId, 
+    conductorAppProxy: ConductorAppProxy, 
+    roleId?: RoleId,
+    ): IDnaViewModel;
+  } & typeof RoleSpecific;
 
 export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
 
@@ -31,13 +39,22 @@ export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
  */
 export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IDnaViewModel {
 
+  /* private */ static ZVM_DEFS: ZvmDef[];
+
   /** Ctor */
-  protected constructor(happ: HappViewModel, zvmDefs: ZvmDef[], roleId?: RoleId) {
+  constructor(   
+    host: ReactiveElement, 
+    installedAppId: InstalledAppId, 
+    conductorAppProxy: ConductorAppProxy, 
+    //zvmDefs: ZvmDef[],      
+    roleId?: RoleId,
+    ) {
     super();
     if (roleId) {
       this.roleId = roleId;
     }
-    this._cellProxy = happ.conductorAppProxy.newCellProxy(happ.appInfo, this.roleId); // FIXME can throw error
+    const zvmDefs = (this.constructor as any).ZVM_DEFS;
+    this._cellProxy = conductorAppProxy.getCellProxy(installedAppId, this.roleId); // WARN can throw error
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;
@@ -49,7 +66,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
       // TODO check zvm.zomeName exists in _cellProxy
       this._zomeViewModels[zvm.zomeName] = zvm;
     }
-    this.provideContext(happ.host);
+    this.provideContext(host);
   }
 
 

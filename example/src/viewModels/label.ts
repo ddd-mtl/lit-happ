@@ -31,7 +31,7 @@ export class LabelZomeProxy extends ZomeProxy {
  */
 export class LabelZvm extends ZomeViewModel {
 
-  static DEFAULT_ZOME_NAME = "zLabel"
+  static readonly DEFAULT_ZOME_NAME = "zLabel"
 
   /** Ctor */
   constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
