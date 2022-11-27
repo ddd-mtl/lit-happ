@@ -1,13 +1,13 @@
-import {LitElement, html, ReactiveElement} from "lit";
+import { LitElement, html, ReactiveElement } from "lit";
 import { state } from "lit/decorators.js";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
 import { DummyDvm } from "./viewModels/dummy";
-import {RealDvm} from "./viewModels/real";
+import { RealDvm } from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
-import {RealList} from "./elements/real-list";
-import {LabelList} from "./elements/label-list";
-import {DummyInspect, RealInspect} from "./elements/dummy-inspect";
+import { RealList } from "./elements/real-list";
+import { LabelList } from "./elements/label-list";
+import { DummyInspect, RealInspect } from "./elements/dummy-inspect";
 
 
 /** TESTING Decorator for better init */
@@ -66,52 +66,52 @@ interface IHapp {
 /**
  *
  */
-export class PlaygroundApp extends ScopedElementsMixin(LitElement) {
+export class PlaygroundApp extends HappElement {
 
 
-/** */
-static HVM_DEF: HvmDef = {
-  id: "playground",
-  dvmDefs: [DummyDvm, RealDvm,[RealDvm, "rImpostor"]],
-};
+  /** */
+  static HVM_DEF: HvmDef = {
+    id: "playground",
+    dvmDefs: [DummyDvm, RealDvm, [RealDvm, "rImpostor"]],
+  };
 
 
-  constructor() {
-    super();
-    this.initHapp();
-  }
+  // constructor() {
+  //   super();
+  //   this.initHapp();
+  // }
 
   //@happy _happ!: HappElement;
-  _happ!: IHapp;
+  //_happ!: IHapp;
 
   @state() private _selectedZomeName = ""
 
-  get dummyDvm(): DummyDvm { return this._happ.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm}
-  get impostorDvm(): RealDvm { return this._happ.hvm.getDvm("rImpostor")! as RealDvm}
-  get realDvm(): RealDvm { return this._happ.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! as RealDvm}
+  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }
+  get impostorDvm(): RealDvm { return this.hvm.getDvm("rImpostor")! as RealDvm }
+  get realDvm(): RealDvm { return this.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! as RealDvm }
 
 
-  /** */
-  async initHapp() {
-    const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    const hvm = await HappViewModel.new(this, conductorAppProxy, PlaygroundApp.HVM_DEF);
+  // /** */
+  // async initHapp() {
+  //   const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+  //   const hvm = await HappViewModel.new(this, conductorAppProxy, PlaygroundApp.HVM_DEF);
 
-    this._happ = {conductorAppProxy, hvm}
-    this.requestUpdate();
-  }
+  //   this._happ = {conductorAppProxy, hvm}
+  //   this.requestUpdate();
+  // }
 
 
-  /** */
-  shouldUpdate() {
-    return !!this._happ;
-  }
+  // /** */
+  // shouldUpdate() {
+  //   return !!this._happ;
+  // }
 
 
   /** */
   async onProbe(e: any) {
     //let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
     //console.log({entryDefs})
-    this._happ.hvm.probeAll();
+    this.hvm.probeAll();
   }
 
 
@@ -125,7 +125,7 @@ static HVM_DEF: HvmDef = {
 
   /** */
   render() {
-    console.log("<dummy-app> render()", this._happ);
+    console.log("<dummy-app> render()", this.hvm);
 
     return html`
       <div style="margin:10px;">
@@ -145,7 +145,7 @@ static HVM_DEF: HvmDef = {
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
             Dummy Cell: ${this.dummyDvm.dnaHash} 
-            <input type="button" value="dump logs" @click=${(e:any) => this.dummyDvm.dumpLogs()}>
+            <input type="button" value="dump logs" @click=${(e: any) => this.dummyDvm.dumpLogs()}>
           </h2>
           <dummy-list></dummy-list>
           <label-list></label-list>
@@ -154,7 +154,7 @@ static HVM_DEF: HvmDef = {
           <hr class="solid">          
           <h2>
             Real Cell: ${this.realDvm.dnaHash} 
-            <input type="button" value="dump logs" @click=${(e:any) => this.realDvm.dumpLogs()}>
+            <input type="button" value="dump logs" @click=${(e: any) => this.realDvm.dumpLogs()}>
           </h2>
           <real-list></real-list>
           <label-list></label-list>
@@ -163,7 +163,7 @@ static HVM_DEF: HvmDef = {
           <hr class="solid">          
           <h2>
             Impostor Cell: ${this.impostorDvm.dnaHash} 
-            <input type="button" value="dump logs" @click=${(e:any) => this.impostorDvm.dumpLogs()}>
+            <input type="button" value="dump logs" @click=${(e: any) => this.impostorDvm.dumpLogs()}>
           </h2>
           <real-list></real-list>
           <label-list></label-list>

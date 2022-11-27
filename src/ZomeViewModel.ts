@@ -30,18 +30,20 @@ export function zvm(zProxyCtor: typeof ZomeProxy) {
  */
 export abstract class ZomeViewModel extends ViewModel implements ICellDef {
     
+    /** Zome proxy constructor */
     static ZOME_PROXY: ZomeProxyConstructor;
     protected _zomeProxy: ZomeProxy;
     /* Child class should implement with child proxy class as return type */
     abstract get zomeProxy(): ZomeProxy; 
-
-    static get DEFAULT_ZOME_NAME(): string {
-        return this.ZOME_PROXY.DEFAULT_ZOME_NAME;
-    }
     getProxyConstructor(): ZomeProxyConstructor {
         return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
 
+    
+    /** Zome name */
+    static get DEFAULT_ZOME_NAME(): string {
+        return this.ZOME_PROXY.DEFAULT_ZOME_NAME;
+    }
     zomeName!: ZomeName;
 
 
