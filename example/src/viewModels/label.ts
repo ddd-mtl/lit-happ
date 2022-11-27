@@ -36,8 +36,7 @@ export class LabelZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY_FACTORY = LabelZomeProxy;
-
+  static readonly ZOME_PROXY = LabelZomeProxy;
   get zomeProxy(): LabelZomeProxy {return this._zomeProxy as LabelZomeProxy;}
 
   get perspective(): LabelZomePerspective {return {names: this._values}}

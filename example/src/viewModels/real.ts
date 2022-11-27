@@ -35,7 +35,7 @@ export class RealZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY_FACTORY = RealZomeProxy;
+  static readonly ZOME_PROXY = RealZomeProxy;
 
 
   /** -- ViewModel Interface -- */

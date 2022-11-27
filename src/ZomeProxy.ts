@@ -4,9 +4,7 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ZomeSpecific } from "./mixins";
 
 
-//export type ZomeProxyDef = ZomeProxyFactory | [ZomeName, ZomeProxyFactory];
-
-export type ZomeProxyFactory = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
+export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
 
 /**

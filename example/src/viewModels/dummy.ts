@@ -29,13 +29,13 @@ export interface DummyZomePerspective {
 
 
 /**
- * FIXME ZomeViewModel<F extends ZomeProxyFactory>
+ *
  */
 export class DummyZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY_FACTORY = DummyZomeProxy;
+  static readonly ZOME_PROXY = DummyZomeProxy;
 
   get zomeProxy(): DummyZomeProxy {return this._zomeProxy as DummyZomeProxy;}
 

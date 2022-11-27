@@ -11,7 +11,7 @@ export interface HappDef {
 }
 
 
-export type HvmFactory = {new(installedAppId: InstalledAppId): HappViewModel};
+export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
 
 
 /**

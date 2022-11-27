@@ -1,22 +1,22 @@
 import {createContext} from "@lit-labs/context";
-import {ZomeProxy, ZomeProxyFactory} from "./ZomeProxy";
+import {ZomeProxy, ZomeProxyConstructor} from "./ZomeProxy";
 import {ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
 import {ICellDef} from "./CellDef";
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import { ZomeSpecific, ZomeSpecificMixin } from "./mixins";
 
 
-export type ZvmFactory = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
+export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
-export type ZvmDef = ZvmFactory | [ZvmFactory, ZomeName]; // optional ZomeName override
+export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional ZomeName override
+
 
 /** Class Decorator */
-export function zvm(zProxyFactory: typeof ZomeProxy) {
+export function zvm(zProxyCtor: typeof ZomeProxy) {
     return (ctor: Function) => {
         //let zvmCtor = (ctor as typeof ZomeViewModel);
-        (ctor as any).ZOME_PROXY_FACTORY = zProxyFactory;
+        (ctor as any).ZOME_PROXY = zProxyCtor;
         //get zomeProxy(): DummyZomeProxy {return this._zomeProxy as DummyZomeProxy;}
         //(ctor as any).zomeProxy = function() {return (ctor as any)._zomeProxy as typeof zProxyFactory;}
         //(ctor as any).zomeProxy = (ctor as any)._zomeProxy as typeof zProxyFactory;
@@ -33,35 +33,33 @@ export function zvm(zProxyFactory: typeof ZomeProxy) {
  */
 export abstract class ZomeViewModel extends ViewModel implements ICellDef {
     
-    static ZOME_PROXY_FACTORY: ZomeProxyFactory;
+    static ZOME_PROXY: ZomeProxyConstructor;
+    protected _zomeProxy: ZomeProxy;
+    /* Child class should implement with child proxy class as return type */
+    abstract get zomeProxy(): ZomeProxy; 
 
     static get DEFAULT_ZOME_NAME(): string {
-        return this.ZOME_PROXY_FACTORY.DEFAULT_ZOME_NAME;
+        return this.ZOME_PROXY.DEFAULT_ZOME_NAME;
     }
-    getProxyFactory(): ZomeProxyFactory {
-        return (this.constructor as typeof ZomeViewModel).ZOME_PROXY_FACTORY;
+    getProxyConstructor(): ZomeProxyConstructor {
+        return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
 
     zomeName!: ZomeName;
-
-    protected _zomeProxy: ZomeProxy;
-    
-    /* Child class should implement with child proxy class as return type */
-    abstract get zomeProxy(): ZomeProxy; 
 
 
     /** Ctor */
     constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
         super();
-        const zProxyFactory = this.getProxyFactory();
-        if (!zProxyFactory) {
-            throw Error("ZOME_PROXY_FACTORY undefined in ZVM subclass " + this.constructor.name);
+        const zProxyCtor = this.getProxyConstructor();
+        if (!zProxyCtor) {
+            throw Error("ZOME_PROXY static field undefined in ZVM subclass " + this.constructor.name);
         }
         if (zomeName) {
             this.zomeName = zomeName;
-            this._zomeProxy = new zProxyFactory(cellProxy, this.zomeName);
+            this._zomeProxy = new zProxyCtor(cellProxy, this.zomeName);
         } else {
-            this._zomeProxy = new zProxyFactory(cellProxy);
+            this._zomeProxy = new zProxyCtor(cellProxy);
             this.zomeName = this._zomeProxy.getDefaultZomeName();
         }
     }

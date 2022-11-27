@@ -19,7 +19,7 @@ interface IDnaViewModel {
   dumpLogs(zomeName?: ZomeName): void;
 }
 
-export type DvmFactory = {
+export type DvmConstructor = {
   new(
     host: ReactiveElement, 
     installedAppId: InstalledAppId, 
@@ -28,7 +28,7 @@ export type DvmFactory = {
     ): DnaViewModel;
   } & typeof RoleSpecific;
 
-export type DvmDef = DvmFactory | [DvmFactory, RoleId] // optional roleId override
+export type DvmDef = DvmConstructor | [DvmConstructor, RoleId] // optional roleId override
 
 /**
  * Abstract ViewModel for a DNA.
