@@ -12,6 +12,17 @@ export type ZvmFactory = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewMo
 
 export type ZvmDef = ZvmFactory | [ZvmFactory, ZomeName]; // optional ZomeName override
 
+/** Class Decorator */
+export function zvm(zProxyFactory: typeof ZomeProxy) {
+    return (ctor: Function) => {
+        //let zvmCtor = (ctor as typeof ZomeViewModel);
+        (ctor as any).ZOME_PROXY_FACTORY = zProxyFactory;
+        //get zomeProxy(): DummyZomeProxy {return this._zomeProxy as DummyZomeProxy;}
+        //(ctor as any).zomeProxy = function() {return (ctor as any)._zomeProxy as typeof zProxyFactory;}
+        //(ctor as any).zomeProxy = (ctor as any)._zomeProxy as typeof zProxyFactory;
+    }
+}
+
 
 /**
  * Abstract ViewModel for a Zome.
@@ -33,6 +44,12 @@ export abstract class ZomeViewModel extends ViewModel implements ICellDef {
 
     zomeName!: ZomeName;
 
+    protected _zomeProxy: ZomeProxy;
+    
+    /* Child class should implement with child proxy class as return type */
+    abstract get zomeProxy(): ZomeProxy; 
+
+
     /** Ctor */
     constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
         super();
@@ -49,10 +66,6 @@ export abstract class ZomeViewModel extends ViewModel implements ICellDef {
         }
     }
 
-    protected _zomeProxy: ZomeProxy;
-    
-    /* Child class should implement with child proxy class as return type */
-    abstract get zomeProxy(): ZomeProxy; 
 
     /** CellDef interface */
     get installedCell(): InstalledCell { return this._zomeProxy.installedCell }
