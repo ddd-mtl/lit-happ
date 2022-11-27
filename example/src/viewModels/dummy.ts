@@ -79,7 +79,9 @@ export class DummyDvm extends DnaViewModel {
   static readonly ZVM_DEFS = [DummyZvm, LabelZvm]
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZomeProxy.DEFAULT_ZOME_NAME) as DummyZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.DEFAULT_ZOME_NAME) as DummyZvm}
+
+  //get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZomeProxy.DEFAULT_ZOME_NAME) as DummyZvm}
   get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZomeProxy.DEFAULT_ZOME_NAME) as LabelZvm}
 
 

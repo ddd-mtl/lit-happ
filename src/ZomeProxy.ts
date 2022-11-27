@@ -6,7 +6,7 @@ import {ZomeSpecific } from "./mixins";
 
 //export type ZomeProxyDef = ZomeProxyFactory | [ZomeName, ZomeProxyFactory];
 
-export type ZomeProxyFactory = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy};
+export type ZomeProxyFactory = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
 
 /**

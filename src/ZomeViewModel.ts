@@ -24,6 +24,9 @@ export abstract class ZomeViewModel extends ViewModel implements ICellDef {
     
     static ZOME_PROXY_FACTORY: ZomeProxyFactory;
 
+    static get DEFAULT_ZOME_NAME(): string {
+        return this.ZOME_PROXY_FACTORY.DEFAULT_ZOME_NAME;
+    }
     getProxyFactory(): ZomeProxyFactory {
         return (this.constructor as typeof ZomeViewModel).ZOME_PROXY_FACTORY;
     }

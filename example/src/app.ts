@@ -7,7 +7,7 @@ import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import {RealList} from "./elements/real-list";
 import {LabelList} from "./elements/label-list";
-import {DummyInspect} from "./elements/dummy-inspect";
+import {DummyInspect, RealInspect} from "./elements/dummy-inspect";
 
 
 /** */
@@ -140,7 +140,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
-        <dummy-inspect></dummy-inspect>  
+        <dummy-inspect></dummy-inspect> 
+        <real-inspect></real-inspect>
+        <real-inspect roleId="rImpostor"></real-inspect>   
         <hr class="solid">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
@@ -176,6 +178,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
     return {
       "entry-def-select": EntryDefSelect,
       "dummy-inspect": DummyInspect,
+      "real-inspect": RealInspect,
       "dummy-list": DummyList,
       "real-list": RealList,
       "label-list": LabelList,

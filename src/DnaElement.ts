@@ -6,16 +6,21 @@ import {DnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ICellDef} from "./CellDef";
+import { RoleSpecificMixin } from "./mixins";
 
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
-export class DnaElement<P, DVM extends DnaViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef {
+export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
-  constructor(public readonly roleId: RoleId) {
+  /** if roleId is not provided, subclass must call requestDvm() in its Ctor */
+  constructor(roleId?: RoleId) {
     super();
-    this.requestDvm();
+    if (roleId) {
+      this.roleId = roleId;
+      this.requestDvm();
+    }
   }
 
   /** Provided by Context depending on roleId */
@@ -35,7 +40,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends ScopedElementsMixin
   /** -- Methods -- */
 
   /** */
-  private requestDvm() {
+  protected requestDvm() {
     /** Consume Context based on given dnaHash */
     const contextType = createContext<DVM>('dvm/'+ this.roleId);
     console.log(`Requesting context "${contextType}"`)
