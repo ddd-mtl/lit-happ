@@ -80,9 +80,7 @@ export class DummyDvm extends DnaViewModel {
 
   /** QoL Helpers */
   get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.DEFAULT_ZOME_NAME) as DummyZvm}
-
-  //get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZomeProxy.DEFAULT_ZOME_NAME) as DummyZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZomeProxy.DEFAULT_ZOME_NAME) as LabelZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

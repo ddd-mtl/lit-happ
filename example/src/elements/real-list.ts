@@ -9,7 +9,7 @@ import { ZomeElement } from "@ddd-qc/dna-client";
 export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   constructor() {
-    super(RealZomeProxy.DEFAULT_ZOME_NAME)
+    super(RealZvm.DEFAULT_ZOME_NAME)
   }
 
   /** */

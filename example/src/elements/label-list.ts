@@ -9,7 +9,7 @@ import {ZomeElement} from "@ddd-qc/dna-client";
 export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   constructor() {
-    super(LabelZomeProxy.DEFAULT_ZOME_NAME)
+    super(LabelZvm.DEFAULT_ZOME_NAME)
   }
 
   /** */

@@ -78,8 +78,8 @@ export class RealDvm extends DnaViewModel {
   static readonly ZVM_DEFS = [RealZvm, LabelZvm]
 
   /** QoL Helpers */
-  get realZvm(): RealZvm { return this.getZomeViewModel(RealZomeProxy.DEFAULT_ZOME_NAME) as RealZvm }
-  get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZomeProxy.DEFAULT_ZOME_NAME) as LabelZvm }
+  get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
+  get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm }
  
 
   /** -- ViewModel Interface -- */

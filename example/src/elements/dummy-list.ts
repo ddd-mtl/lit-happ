@@ -10,7 +10,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
   /** */
   constructor() {
-    super(DummyZomeProxy.DEFAULT_ZOME_NAME)
+    super(DummyZvm.DEFAULT_ZOME_NAME)
   }
 
   /** */
