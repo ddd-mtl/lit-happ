@@ -1,8 +1,9 @@
 import {html, ReactiveElement} from "lit";
 import { state } from "lit/decorators.js";
 import {ConductorAppProxy} from "./ConductorAppProxy";
-import {HappDef, HappViewModel} from "./HappViewModel";
+import {HappViewModel} from "./HappViewModel";
 import {AppWebsocket} from "@holochain/client";
+import { HvmDef } from "./definitions";
 
 
 
@@ -17,7 +18,7 @@ export class HappElement extends ReactiveElement {
   protected constructor() {super()}
 
   /** */
-  static async new(port_or_socket: number | AppWebsocket, happDef: HappDef): Promise<HappElement> {
+  static async new(port_or_socket: number | AppWebsocket, hvmDef: HvmDef): Promise<HappElement> {
     let happEl = new HappElement();
     happEl.conductorAppProxy = await ConductorAppProxy.new(port_or_socket);
     //happEl.hvm = await happEl.conductorAppProxy.newHappViewModel(happEl, happDef); // FIXME this can throw an error

@@ -1,10 +1,10 @@
 import {CellProxy} from "./CellProxy";
-import {ZomeViewModel, ZvmDef} from "./ZomeViewModel";
+import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ViewModel} from "./ViewModel";
 import {CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
-import {ICellDef} from "./CellDef";
+import {ICellDef, ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
 import {RoleSpecific, RoleSpecificMixin } from "./mixins";
 import { ConductorAppProxy } from "./ConductorAppProxy";
@@ -28,7 +28,6 @@ export type DvmConstructor = {
     ): DnaViewModel;
   } & typeof RoleSpecific;
 
-export type DvmDef = DvmConstructor | [DvmConstructor, RoleId] // optional roleId override
 
 /**
  * Abstract ViewModel for a DNA.

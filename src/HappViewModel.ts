@@ -2,17 +2,11 @@ import {Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import {InstalledAppInfo, InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import {DnaViewModel, DvmDef} from "./DnaViewModel";
-
-/** */
-export interface HappDef {
- id: InstalledAppId,
- dvmDefs: DvmDef[],
-}
+import { HvmDef } from "./definitions";
+import {DnaViewModel} from "./DnaViewModel";
 
 
 export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
-
 
 /**
  * "ViewModel" of a hApp
@@ -20,19 +14,25 @@ export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel
  */
  export class HappViewModel {
 
+    /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
+    static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, happDef: HvmDef): Promise<HappViewModel> {
+      await conductorAppProxy.createCellProxies(happDef);
+      return new HappViewModel(host, conductorAppProxy, happDef);
+    }
+
   /** Ctor */
   constructor(
     host: ReactiveElement, // VIEW
     conductorAppProxy: ConductorAppProxy, // MODEL 
-    happDef: HappDef, 
+    hvmDef: HvmDef, 
     ) {
    /** Create all DVMs for this Happ */
-   for (const dvmDef of happDef.dvmDefs) {
+   for (const dvmDef of hvmDef.dvmDefs) {
     let dvm;
     if (Array.isArray(dvmDef)) {
-      dvm = new dvmDef[0](host, happDef.id, conductorAppProxy, dvmDef[1]); // WARN this can throw an error
+      dvm = new dvmDef[0](host, hvmDef.id, conductorAppProxy, dvmDef[1]); // WARN this can throw an error
     } else {
-      dvm = new dvmDef(host, happDef.id, conductorAppProxy); // WARN this can throw an error
+      dvm = new dvmDef(host, hvmDef.id, conductorAppProxy); // WARN this can throw an error
     }
     this._dvms[dvm.roleId] = dvm
    }

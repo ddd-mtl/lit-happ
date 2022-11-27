@@ -1,8 +1,8 @@
-import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId, DnaDefinition, InstalledAppId, InstalledAppInfo, InstalledCell, RoleId } from "@holochain/client";
-import { CellProxy } from "./CellProxy";
-import {HappDef, HappViewModel} from "./HappViewModel";
-import { ReactiveElement } from "lit";
+import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest
+  , InstalledAppId, InstalledCell, RoleId } from "@holochain/client";
 import { Dictionary } from "@holochain-open-dev/core-types";
+import { CellProxy } from "./CellProxy";
+import { HvmDef } from "./definitions";
 
 /** From hc-client-js API */
 export interface SignalUnsubscriber {
@@ -103,11 +103,11 @@ export class ConductorAppProxy implements AppApi {
 
   /** -- Methods -- */
 
-  /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
-  async createHvm(host: ReactiveElement, happDef: HappDef): Promise<HappViewModel> {
-    await this.createCellProxies(happDef);
-    return new HappViewModel(host, this, happDef);
-  }
+  // /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
+  // async createHvm(host: ReactiveElement, happDef: HappDef): Promise<HappViewModel> {
+  //   await this.createCellProxies(happDef);
+  //   return new HappViewModel(host, this, happDef);
+  // }
 
 
   /** Get stored CellProxy or attempt to create it */
@@ -136,15 +136,15 @@ export class ConductorAppProxy implements AppApi {
     this._cellProxies[cellDef] = cellProxy;
   }
 
-  private async createCellProxies(happDef: HappDef): Promise<void> {
-    for (const dvmDef of happDef.dvmDefs) {
+  async createCellProxies(hvmDef: HvmDef): Promise<void> {
+    for (const dvmDef of hvmDef.dvmDefs) {
       let roleId;
       if (Array.isArray(dvmDef)) {
         roleId = dvmDef[1];
       } else {
         roleId = dvmDef.DEFAULT_ROLE_ID;
       }
-      await this.createCellProxy(happDef.id, roleId);
+      await this.createCellProxy(hvmDef.id, roleId);
     }
   }
 

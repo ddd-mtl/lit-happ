@@ -1,7 +1,20 @@
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
-import {CellId, InstalledCell, RoleId} from "@holochain/client";
+import {CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import { DvmConstructor } from "./DnaViewModel";
+import { ZvmConstructor } from "./ZomeViewModel";
 
 
+export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional ZomeName override
+
+export type DvmDef = DvmConstructor | [DvmConstructor, RoleId] // optional roleId override
+
+/** */
+export interface HvmDef {
+  id: InstalledAppId,
+  dvmDefs: DvmDef[],
+ }
+
+ 
 /**
  *
  */

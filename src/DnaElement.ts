@@ -5,7 +5,7 @@ import {ContextConsumer, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {ICellDef} from "./CellDef";
+import {ICellDef} from "./definitions";
 import { RoleSpecificMixin } from "./mixins";
 
 

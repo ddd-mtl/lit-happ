@@ -2,15 +2,12 @@ import {createContext} from "@lit-labs/context";
 import {ZomeProxy, ZomeProxyConstructor} from "./ZomeProxy";
 import {ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
-import {ICellDef} from "./CellDef";
+import {ICellDef} from "./definitions";
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 
 export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
-
-export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional ZomeName override
-
 
 /** Class Decorator */
 export function zvm(zProxyCtor: typeof ZomeProxy) {

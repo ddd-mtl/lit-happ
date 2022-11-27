@@ -1,7 +1,7 @@
 import {LitElement, html, ReactiveElement} from "lit";
 import { state } from "lit/decorators.js";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
-import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
+import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
 import { DummyDvm } from "./viewModels/dummy";
 import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -11,7 +11,7 @@ import {DummyInspect, RealInspect} from "./elements/dummy-inspect";
 
 
 /** */
-export const playgroundHappDef: HappDef = {
+export const playgroundHappDef: HvmDef = {
   id: "playground",
   dvmDefs: [
     DummyDvm,
@@ -44,7 +44,7 @@ const happy = (proto: ReactiveElement, key: string) => {
 
     let happEl = {} as Happ;
     happEl.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    happEl.hvm = await happEl.conductorAppProxy.createHvm(instance, playgroundHappDef);
+    happEl.hvm = await HappViewModel.new(instance, happEl.conductorAppProxy, playgroundHappDef);
 
     (instance as any)[key] = happEl;
     console.log("initializeHapp() Done", happEl);
@@ -96,7 +96,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   /** */
   async initHapp() {
     const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    const hvm = await conductorAppProxy.createHvm(this, playgroundHappDef);
+    const hvm = await HappViewModel.new(this, conductorAppProxy, playgroundHappDef);
 
     this._happ = {conductorAppProxy, hvm}
     this.requestUpdate();
