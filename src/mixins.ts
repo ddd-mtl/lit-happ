@@ -12,7 +12,6 @@ class Empty {
 
 /** ------------------------------------------------------------------------------------------- **/
 
-
 export function ZomeSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class AZomeSpecific extends Base /*implements IZomeSpecific*/ {
     constructor(...args: any[]){super(); this.zomeName = (this.constructor as any).DEFAULT_ZOME_NAME}
@@ -26,10 +25,6 @@ export const ZomeSpecific = ZomeSpecificMixin(Empty);
 
 
 /** ------------------------------------------------------------------------------------------- **/
-
-export interface IRoleSpecific {
-  get roleId(): RoleId;
-}
 
 export function RoleSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class ARoleSpecific extends Base {
@@ -46,10 +41,6 @@ export const RoleSpecific = RoleSpecificMixin(Empty);
 
 
 /** ------------------------------------------------------------------------------------------- **/
-
-export interface IHappSpecific {
-  get appId(): InstalledAppId;
-}
 
 export function HappSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class AHappSpecific extends Base {

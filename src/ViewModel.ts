@@ -2,18 +2,18 @@ import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 
 
-/** ViewModel Interface */
-export interface IViewModel {
-  /** -- Holochain specific -- */    
-  get perspective(): any;
-  probeAll(): Promise<void>;
-  /** -- Context -- */
-  provideContext(host: ReactiveElement): void;
-  getContext(): any;   
-  /** -- Observer pattern -- */
-  subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey): void;
-  unsubscribe(candidat: ReactiveControllerHost): void;
-}
+// /** ViewModel Interface */
+// export interface IViewModel {
+//   /** -- Holochain specific -- */    
+//   get perspective(): any;
+//   probeAll(): Promise<void>;
+//   /** -- Context -- */
+//   provideContext(host: ReactiveElement): void;
+//   getContext(): any;   
+//   /** -- Observer pattern -- */
+//   subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey): void;
+//   unsubscribe(candidat: ReactiveControllerHost): void;
+// }
 
 
 /**
@@ -27,15 +27,15 @@ export interface IViewModel {
  * Hosts can trigger probing in order to get an updated perspective.
  * The perspective can be automatically updated by internal events.
  */
- export abstract class ViewModel implements IViewModel {
+ export abstract class ViewModel /*implements IViewModel*/ {
 
   /** -- Fields -- */
   protected _previousPerspective?: any;
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
 
-  protected _provider?: any; // FIXME ContextProvider<this.getContext()>;
+  protected _provider?: any; // FIXME type: ContextProvider<this.getContext()>;
 
-  /** -- IViewModel interface -- */
+  /** -- Methods -- */
 
   /** Set ContextProvider for host */
   provideContext(providerHost: ReactiveElement): void {

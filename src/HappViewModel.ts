@@ -3,7 +3,6 @@ import {InstalledAppInfo, InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 import {DnaViewModel, DvmDef} from "./DnaViewModel";
-import { IHappSpecific, RoleSpecific } from "./mixins";
 
 /** */
 export interface HappDef {

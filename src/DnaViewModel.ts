@@ -2,11 +2,11 @@ import {CellProxy} from "./CellProxy";
 import {ZomeViewModel, ZvmDef} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
-import {IViewModel, ViewModel} from "./ViewModel";
+import {ViewModel} from "./ViewModel";
 import {CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {ICellDef} from "./CellDef";
 import {createContext} from "@lit-labs/context";
-import { IRoleSpecific, RoleSpecific, RoleSpecificMixin } from "./mixins";
+import {RoleSpecific, RoleSpecificMixin } from "./mixins";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 
 
