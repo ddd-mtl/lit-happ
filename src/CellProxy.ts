@@ -2,7 +2,7 @@ import { CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId, ZomeName } f
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import { ICellDef, MyDnaDef } from "./CellDef";
+import { ICellDef } from "./CellDef";
 import { anyToB64, delay, Queue } from "./utils";
 
 

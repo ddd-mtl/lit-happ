@@ -12,17 +12,12 @@ class Empty {
 
 /** ------------------------------------------------------------------------------------------- **/
 
-export interface IZomeSpecific {
-  get zomeName(): ZomeName;
-}
 
 export function ZomeSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
-  abstract class AZomeSpecific extends Base implements IZomeSpecific {
+  abstract class AZomeSpecific extends Base /*implements IZomeSpecific*/ {
     constructor(...args: any[]){super(); this.zomeName = (this.constructor as any).DEFAULT_ZOME_NAME}
     static readonly DEFAULT_ZOME_NAME: ZomeName;
     zomeName: ZomeName;
-    //get zomeName(): ZomeName {return (this.constructor as any).DEFAULT_ZOME_NAME}
-    //setZomeName(name: ZomeName): void {(this.constructor as any).DEFAULT_ZOME_NAME = name}
   };
   return AZomeSpecific;
 }

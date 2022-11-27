@@ -1,11 +1,11 @@
 import {createContext} from "@lit-labs/context";
-import {ZomeProxy, ZomeProxyClass} from "./ZomeProxy";
-import {IViewModel, ViewModel} from "./ViewModel";
+import {ZomeProxy} from "./ZomeProxy";
+import {ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
 import {ICellDef} from "./CellDef";
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import { IZomeSpecific, RoleSpecificMixin, ZomeSpecificMixin } from "./mixins";
+import { ZomeSpecificMixin } from "./mixins";
 
 
 export type ZvmClass = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel}

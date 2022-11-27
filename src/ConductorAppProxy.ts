@@ -2,8 +2,6 @@ import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWeb
 import { CellProxy } from "./CellProxy";
 import {HappDef, HappViewModel} from "./HappViewModel";
 import { ReactiveElement } from "lit";
-import { MyDnaDef } from "./CellDef";
-import { Role } from "@holochain/client/lib/hdk/countersigning";
 import { Dictionary } from "@holochain-open-dev/core-types";
 
 /** From hc-client-js API */
