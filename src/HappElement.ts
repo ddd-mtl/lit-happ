@@ -4,6 +4,7 @@ import {ConductorAppProxy} from "./ConductorAppProxy";
 import {HappViewModel} from "./HappViewModel";
 import { HvmDef } from "./definitions";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
+import { AppWebsocket } from "@holochain/client";
 
 
 
@@ -12,31 +13,22 @@ import { ScopedElementsMixin } from "@open-wc/scoped-elements";
  */
 export class HappElement extends ScopedElementsMixin(LitElement) {
 
-
+  /** Must be defined by subclass */
   static HVM_DEF: HvmDef;
-
 
   conductorAppProxy!: ConductorAppProxy;
   hvm!: HappViewModel;
 
-  protected constructor() {
+  /** Ctor */
+  protected constructor(port_or_socket: number | AppWebsocket) {
     super();
-    /* await */ this.initHapp();
+    /* await */ this.initHapp(port_or_socket);
   }
 
-  /** */
-  // static async new(port_or_socket: number | AppWebsocket, hvmDef: HvmDef): Promise<HappElement> {
-  //   let happEl = new HappElement();
-  //   happEl.conductorAppProxy = await ConductorAppProxy.new(port_or_socket);
-  //   //happEl.hvm = await happEl.conductorAppProxy.newHappViewModel(happEl, happDef); // FIXME this can throw an error
-  //   //await this._happ.probeAll();
-  //   return happEl;
-  // }
-
 
   /** */
-  protected async initHapp() {
-    this.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+  protected async initHapp(port_or_socket: number | AppWebsocket): Promise<void> {
+    this.conductorAppProxy = await ConductorAppProxy.new(port_or_socket);
     const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappElement subclass " + this.constructor.name);

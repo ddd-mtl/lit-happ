@@ -68,43 +68,27 @@ interface IHapp {
  */
 export class PlaygroundApp extends HappElement {
 
+  /** Ctor */
+  constructor() {
+    super(Number(process.env.HC_PORT));
+  }
 
-  /** */
+  /** HvmDef */
   static HVM_DEF: HvmDef = {
     id: "playground",
     dvmDefs: [DummyDvm, RealDvm, [RealDvm, "rImpostor"]],
   };
 
-
-  // constructor() {
-  //   super();
-  //   this.initHapp();
-  // }
-
-  //@happy _happ!: HappElement;
-  //_happ!: IHapp;
-
-  @state() private _selectedZomeName = ""
-
+  /** QoL */
   get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }
   get impostorDvm(): RealDvm { return this.hvm.getDvm("rImpostor")! as RealDvm }
   get realDvm(): RealDvm { return this.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! as RealDvm }
 
 
-  // /** */
-  // async initHapp() {
-  //   const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-  //   const hvm = await HappViewModel.new(this, conductorAppProxy, PlaygroundApp.HVM_DEF);
+  //@happy _happ!: HappElement;
+  //_happ!: IHapp;
 
-  //   this._happ = {conductorAppProxy, hvm}
-  //   this.requestUpdate();
-  // }
-
-
-  // /** */
-  // shouldUpdate() {
-  //   return !!this._happ;
-  // }
+  @state() private _selectedZomeName = ""
 
 
   /** */
