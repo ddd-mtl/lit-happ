@@ -24,21 +24,25 @@ export abstract class ZomeViewModel extends ViewModel implements ICellDef {
     
     static ZOME_PROXY_FACTORY: ZomeProxyFactory;
 
+    getProxyFactory(): ZomeProxyFactory {
+        return (this.constructor as typeof ZomeViewModel).ZOME_PROXY_FACTORY;
+    }
+
     zomeName!: ZomeName;
 
     /** Ctor */
     constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
         super();
-        const zProxyFactory = (this.constructor as any).ZOME_PROXY_FACTORY;
+        const zProxyFactory = this.getProxyFactory();
+        if (!zProxyFactory) {
+            throw Error("ZOME_PROXY_FACTORY undefined in ZVM subclass " + this.constructor.name);
+        }
         if (zomeName) {
             this.zomeName = zomeName;
             this._zomeProxy = new zProxyFactory(cellProxy, this.zomeName);
         } else {
-            if (!zProxyFactory) {
-                throw Error("ZOME_PROXY_FACTORY undefined in ZVM subclass " + this.constructor.name);
-            }
             this._zomeProxy = new zProxyFactory(cellProxy);
-            this.zomeName = (this._zomeProxy.constructor as any).DEFAULT_ZOME_NAME;
+            this.zomeName = this._zomeProxy.getDefaultZomeName();
         }
     }
 

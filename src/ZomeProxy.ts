@@ -20,13 +20,11 @@ export abstract class ZomeProxy extends ZomeSpecific {
     super();
     if (zomeName) {this.zomeName = zomeName;}
       else {
-        let ctor: any = this.constructor as typeof ZomeSpecific;
-        if (!ctor.DEFAULT_ZOME_NAME) throw Error("zomeName not defined in ZomeProxy subclass " + ctor.name);
+        if (!this.getDefaultZomeName()) {
+          throw Error("zomeName not defined in ZomeProxy subclass " + this.constructor.name);
+        }
       }
   }
-
-  //protected _zomeName!: ZomeName;
-  //get zomeName(): ZomeName {return this._zomeName};
 
   /** CellDef interface */
   get installedCell(): InstalledCell { return this._cellProxy.installedCell }
