@@ -6,13 +6,12 @@ import {DnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ICellDef} from "./CellDef";
-import { RoleSpecificMixin } from "./mixins";
 
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
-export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
+export class DnaElement<P, DVM extends DnaViewModel> extends ScopedElementsMixin(LitElement) implements ICellDef {
 
   constructor(public readonly roleId: RoleId) {
     super();

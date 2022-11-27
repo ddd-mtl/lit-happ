@@ -10,10 +10,8 @@ export interface HappDef {
  dvmDefs: DvmDef[],
 }
 
-//export type IHappViewModel = IDnaViewModel & IHappSpecific;
 
-
-export type HvmClass = {new(installedAppId: InstalledAppId): HappViewModel};
+export type HvmFactory = {new(installedAppId: InstalledAppId): HappViewModel};
 
 
 /**
@@ -26,9 +24,6 @@ export type HvmClass = {new(installedAppId: InstalledAppId): HappViewModel};
   constructor(
     host: ReactiveElement, // VIEW
     conductorAppProxy: ConductorAppProxy, // MODEL 
-    //public readonly appInfo: InstalledAppInfo,        
-    //installedAppId: InstalledAppId,
-    //dvmDefs: DvmDef[],
     happDef: HappDef, 
     ) {
    /** Create all DVMs for this Happ */
@@ -49,9 +44,9 @@ export type HvmClass = {new(installedAppId: InstalledAppId): HappViewModel};
 
   getDnaHash(name: RoleId): DnaHashB64 {return this._dvms[name].dnaHash}
 
-  addCloneDvm(roleId: RoleId) {
-    //this._dvms[dvm.roleId] = dvm
-  }
+  // addCloneDvm(roleId: RoleId) {
+  //   //this._dvms[dvm.roleId] = dvm
+  // }
 
 
   /** */

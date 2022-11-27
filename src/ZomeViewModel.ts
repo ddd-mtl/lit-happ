@@ -5,12 +5,12 @@ import { CellProxy } from "./CellProxy";
 import {ICellDef} from "./CellDef";
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import { ZomeSpecificMixin } from "./mixins";
+import { ZomeSpecific, ZomeSpecificMixin } from "./mixins";
 
 
-export type ZvmClass = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel}
+export type ZvmFactory = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} & typeof ZomeSpecific;
 
-export type ZvmDef = ZvmClass | [ZvmClass, ZomeName]; // optional ZomeName override
+export type ZvmDef = ZvmFactory | [ZvmFactory, ZomeName]; // optional ZomeName override
 
 /**
  * Abstract ViewModel for a Zome.
@@ -32,8 +32,9 @@ export abstract class ZomeViewModel extends ZomeSpecificMixin(ViewModel) impleme
     }
 
     protected _zomeProxy: ZomeProxy;
-
-    abstract get zomeProxy(): ZomeProxy; // Child class should implement with child proxy class as return type
+    
+    /* Child class should implement with child proxy class as return type */
+    abstract get zomeProxy(): ZomeProxy; 
 
     /** CellDef interface */
     get installedCell(): InstalledCell { return this._zomeProxy.installedCell }

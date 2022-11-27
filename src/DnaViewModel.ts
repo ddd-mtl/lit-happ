@@ -10,6 +10,8 @@ import {RoleSpecific, RoleSpecificMixin } from "./mixins";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 
 
+//export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
+
 /** Interface specific to DnaViewModel class */
 interface IDnaViewModel {
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
@@ -17,7 +19,7 @@ interface IDnaViewModel {
   dumpLogs(zomeName?: ZomeName): void;
 }
 
-export type DvmClass = {
+export type DvmFactory = {
   new(
     host: ReactiveElement, 
     installedAppId: InstalledAppId, 
@@ -26,7 +28,7 @@ export type DvmClass = {
     ): DnaViewModel;
   } & typeof RoleSpecific;
 
-export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
+export type DvmDef = DvmFactory | [DvmFactory, RoleId] // optional roleId override
 
 /**
  * Abstract ViewModel for a DNA.
@@ -112,7 +114,6 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   /** Useless since the entry defs are in the integrity zome which is not represented here */
   async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
-      //const zomeName = (zvm.constructor as any).DEFAULT_ZOME_NAME;
       const zomeName =  zvm.zomeName;
       this._allEntryDefs[zomeName] = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize
     }

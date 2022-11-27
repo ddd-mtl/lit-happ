@@ -143,7 +143,6 @@ export class ConductorAppProxy implements AppApi {
         roleId = dvmDef[1];
       } else {
         roleId = dvmDef.DEFAULT_ROLE_ID;
-        //roleId = (dvmDef.constructor as any).DEFAULT_ROLE_ID;
       }
       await this.createCellProxy(happDef.id, roleId);
     }

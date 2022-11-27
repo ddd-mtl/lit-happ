@@ -2,20 +2,6 @@ import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 
 
-// /** ViewModel Interface */
-// export interface IViewModel {
-//   /** -- Holochain specific -- */    
-//   get perspective(): any;
-//   probeAll(): Promise<void>;
-//   /** -- Context -- */
-//   provideContext(host: ReactiveElement): void;
-//   getContext(): any;   
-//   /** -- Observer pattern -- */
-//   subscribe(providedHost: ReactiveControllerHost, propName: PropertyKey): void;
-//   unsubscribe(candidat: ReactiveControllerHost): void;
-// }
-
-
 /**
  * ABC of a ViewModel.
  * It mediates the interaction between a View (CustomElements) and a Model (Zome / DNA).
@@ -32,23 +18,16 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
   /** -- Fields -- */
   protected _previousPerspective?: any;
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
-
   protected _provider?: any; // FIXME type: ContextProvider<this.getContext()>;
 
-  /** -- Methods -- */
 
-  /** Set ContextProvider for host */
-  provideContext(providerHost: ReactiveElement): void {
-      console.log(`Providing context "${this.getContext()}" | in host `, providerHost);
-      this._provider = new ContextProvider(providerHost, this.getContext(), this);
-  }
-
+  /** -- Abstract methods -- */
+  
   abstract getContext(): any;
+  /* Child class should implement with specific type */  
   abstract get perspective(): any;
-
   /* (optional) Lets the observer trigger probing in order to get an updated perspective */
   async probeAll(): Promise<void> {}
-
 
   /**
    * Return true if the perspective has changed. This will trigger an update on the observers
@@ -57,6 +36,14 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
    */
   protected abstract hasChanged(): boolean;
 
+
+  /** -- Final methods -- */
+
+  /** Set ContextProvider for host */
+  provideContext(providerHost: ReactiveElement): void {
+    console.log(`Providing context "${this.getContext()}" | in host `, providerHost);
+    this._provider = new ContextProvider(providerHost, this.getContext(), this);
+  }
 
   /** -- Observer pattern -- */
 
@@ -77,7 +64,6 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
           this._providedHosts.splice(index, 1);
       }
   }
-
 
   /** */
   protected notifySubscribers() {
