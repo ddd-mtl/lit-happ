@@ -3,7 +3,6 @@ import {ZomeViewModel, ZvmDef} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {IViewModel, ViewModel} from "./ViewModel";
-import { HappViewModel } from "./HappViewModel";
 import {CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {ICellDef} from "./CellDef";
 import {createContext} from "@lit-labs/context";
@@ -11,11 +10,8 @@ import { IRoleSpecific, RoleSpecific, RoleSpecificMixin } from "./mixins";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 
 
-/** Interfaces that DnaViewModel must implement */
-export type IDnaViewModel = _DnaViewModel & ICellDef & IViewModel & IRoleSpecific;
-
 /** Interface specific to DnaViewModel class */
-interface _DnaViewModel {
+interface IDnaViewModel {
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   dumpLogs(zomeName?: ZomeName): void;
@@ -27,7 +23,7 @@ export type DvmClass = {
     installedAppId: InstalledAppId, 
     conductorAppProxy: ConductorAppProxy, 
     roleId?: RoleId,
-    ): IDnaViewModel;
+    ): DnaViewModel;
   } & typeof RoleSpecific;
 
 export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
@@ -37,7 +33,7 @@ export type DvmDef = DvmClass | [DvmClass, RoleId] // optional roleId override
  * It holds the CellProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  */
-export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IDnaViewModel {
+export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements ICellDef, IDnaViewModel {
 
   /* private */ static ZVM_DEFS: ZvmDef[];
 
@@ -45,8 +41,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   constructor(   
     host: ReactiveElement, 
     installedAppId: InstalledAppId, 
-    conductorAppProxy: ConductorAppProxy, 
-    //zvmDefs: ZvmDef[],      
+    conductorAppProxy: ConductorAppProxy,     
     roleId?: RoleId,
     ) {
     super();

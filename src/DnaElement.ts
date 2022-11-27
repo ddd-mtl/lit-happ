@@ -2,17 +2,17 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, createContext} from "@lit-labs/context";
-import {IDnaViewModel} from "./DnaViewModel";
+import {DnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ICellDef} from "./CellDef";
-import { RoleSpecific, RoleSpecificMixin } from "./mixins";
+import { RoleSpecificMixin } from "./mixins";
 
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
-export class DnaElement<P, DVM extends IDnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
+export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
 
   constructor(public readonly roleId: RoleId) {
     super();

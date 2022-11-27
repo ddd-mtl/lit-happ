@@ -5,7 +5,6 @@ import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {cellContext} from "./elements/cell-context";
-//import {IZome} from "./CellDef";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ZomeViewModel } from "./ZomeViewModel";
 
@@ -13,7 +12,7 @@ import { ZomeViewModel } from "./ZomeViewModel";
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMixin(LitElement) /*implements IZome*/ {
+export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMixin(LitElement) {
 
   constructor(public readonly zomeName: ZomeName) {
     super();

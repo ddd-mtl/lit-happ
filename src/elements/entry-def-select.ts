@@ -1,6 +1,6 @@
 import { LitElement, html } from "lit";
 import { state, property } from "lit/decorators.js";
-import { IDnaViewModel } from "../DnaViewModel";
+import { DnaViewModel } from "../DnaViewModel";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import { Dictionary } from "@holochain-open-dev/core-types";
 
@@ -15,7 +15,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
   @state() private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
   @property({ type: Object, attribute: false })
-  dnaViewModel!: IDnaViewModel;
+  dnaViewModel!: DnaViewModel;
 
 
   /** -- Methods -- */

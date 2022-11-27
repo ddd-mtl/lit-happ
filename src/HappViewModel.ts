@@ -2,7 +2,7 @@ import {Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import {InstalledAppInfo, InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import {DvmDef, IDnaViewModel} from "./DnaViewModel";
+import {DnaViewModel, DvmDef} from "./DnaViewModel";
 import { IHappSpecific, RoleSpecific } from "./mixins";
 
 /** */
@@ -11,10 +11,10 @@ export interface HappDef {
  dvmDefs: DvmDef[],
 }
 
-export type IHappViewModel = IDnaViewModel & IHappSpecific;
+//export type IHappViewModel = IDnaViewModel & IHappSpecific;
 
 
-export type HvmClass = {new(installedAppId: InstalledAppId): IHappViewModel};
+export type HvmClass = {new(installedAppId: InstalledAppId): HappViewModel};
 
 
 /**
@@ -44,9 +44,9 @@ export type HvmClass = {new(installedAppId: InstalledAppId): IHappViewModel};
    }
   }
 
-  protected _dvms: Dictionary<IDnaViewModel> = {};
+  protected _dvms: Dictionary<DnaViewModel> = {};
 
-  getDvm(name: RoleId): IDnaViewModel | undefined {return this._dvms[name]}
+  getDvm(name: RoleId): DnaViewModel | undefined {return this._dvms[name]}
 
   getDnaHash(name: RoleId): DnaHashB64 {return this._dvms[name].dnaHash}
 

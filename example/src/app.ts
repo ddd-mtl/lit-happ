@@ -1,7 +1,7 @@
 import {LitElement, html, ReactiveElement} from "lit";
 import { state } from "lit/decorators.js";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
-import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, IDnaViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
+import { ConductorAppProxy, EntryDefSelect, HappDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
 import { DummyDvm } from "./viewModels/dummy";
 import {RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -88,9 +88,9 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
   @state() private _selectedZomeName = ""
 
-  get dummyDvm(): IDnaViewModel { return this._happ.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! }
-  get impostorDvm(): IDnaViewModel { return this._happ.hvm.getDvm("rImpostor")! }
-  get realDvm(): IDnaViewModel { return this._happ.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! }
+  get dummyDvm(): DummyDvm { return this._happ.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm}
+  get impostorDvm(): RealDvm { return this._happ.hvm.getDvm("rImpostor")! as RealDvm}
+  get realDvm(): RealDvm { return this._happ.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! as RealDvm}
 
 
   /** */
