@@ -1,5 +1,5 @@
 import {html} from "lit";
-import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
+import {LabelZomePerspective, LabelZomeProxy, LabelZvm} from "../viewModels/label";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {ZomeElement} from "@ddd-qc/dna-client";
 
@@ -9,7 +9,7 @@ import {ZomeElement} from "@ddd-qc/dna-client";
 export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   constructor() {
-    super(LabelZvm.DEFAULT_ZOME_NAME)
+    super(LabelZomeProxy.DEFAULT_ZOME_NAME)
   }
 
   /** */

@@ -1,13 +1,14 @@
-import {CellProxy, ConductorAppProxy, DnaViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { EntryHash, InstalledAppId, RoleId, ZomeName } from "@holochain/client";
-import {LabelZvm} from "./label";
-
+import {DnaViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import {EntryHash} from "@holochain/client";
+import {LabelZomeProxy, LabelZvm} from "./label";
 
 
 /**
  *
  */
 export class DummyZomeProxy extends ZomeProxy {
+
+  static readonly DEFAULT_ZOME_NAME = "zDummy"
 
   async getDummy(eh: EntryHash): Promise<number> {
     return this.call('get_dummy', eh);
@@ -28,14 +29,13 @@ export interface DummyZomePerspective {
 
 
 /**
- *
+ * FIXME ZomeViewModel<F extends ZomeProxyFactory>
  */
 export class DummyZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly DEFAULT_ZOME_NAME = "zDummy";
-  static readonly PROXY_TYPE = DummyZomeProxy;
+  static readonly ZOME_PROXY_FACTORY = DummyZomeProxy;
 
   get zomeProxy(): DummyZomeProxy {return this._zomeProxy as DummyZomeProxy;}
 
@@ -53,6 +53,9 @@ export class DummyZvm extends ZomeViewModel {
     this._values = await this.zomeProxy.getMyDummies();
     this.notifySubscribers();
   }
+
+
+  /** -- Dummy specific methods -- */
 
   /**  */
   async createDummy(value: number): Promise<EntryHash> {
@@ -76,8 +79,8 @@ export class DummyDvm extends DnaViewModel {
   static readonly ZVM_DEFS = [DummyZvm, LabelZvm]
 
   /** QoL Helpers */
-  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZvm.DEFAULT_ZOME_NAME) as DummyZvm}
-  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm}
+  get dummyZvm(): DummyZvm {return this.getZomeViewModel(DummyZomeProxy.DEFAULT_ZOME_NAME) as DummyZvm}
+  get labelZvm(): LabelZvm {return this.getZomeViewModel(LabelZomeProxy.DEFAULT_ZOME_NAME) as LabelZvm}
 
 
   /** -- ViewModel Interface -- */

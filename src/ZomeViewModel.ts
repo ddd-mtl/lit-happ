@@ -1,5 +1,5 @@
 import {createContext} from "@lit-labs/context";
-import {ZomeProxy} from "./ZomeProxy";
+import {ZomeProxy, ZomeProxyFactory} from "./ZomeProxy";
 import {ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
 import {ICellDef} from "./CellDef";
@@ -8,9 +8,10 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import { ZomeSpecific, ZomeSpecificMixin } from "./mixins";
 
 
-export type ZvmFactory = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} & typeof ZomeSpecific;
+export type ZvmFactory = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
 export type ZvmDef = ZvmFactory | [ZvmFactory, ZomeName]; // optional ZomeName override
+
 
 /**
  * Abstract ViewModel for a Zome.
@@ -19,16 +20,26 @@ export type ZvmDef = ZvmFactory | [ZvmFactory, ZomeName]; // optional ZomeName o
  * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel extends ZomeSpecificMixin(ViewModel) implements ICellDef {
+export abstract class ZomeViewModel extends ViewModel implements ICellDef {
     
+    static ZOME_PROXY_FACTORY: ZomeProxyFactory;
+
+    zomeName!: ZomeName;
+
     /** Ctor */
     constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
         super();
+        const zProxyFactory = (this.constructor as any).ZOME_PROXY_FACTORY;
         if (zomeName) {
             this.zomeName = zomeName;
+            this._zomeProxy = new zProxyFactory(cellProxy, this.zomeName);
+        } else {
+            if (!zProxyFactory) {
+                throw Error("ZOME_PROXY_FACTORY undefined in ZVM subclass " + this.constructor.name);
+            }
+            this._zomeProxy = new zProxyFactory(cellProxy);
+            this.zomeName = (this._zomeProxy.constructor as any).DEFAULT_ZOME_NAME;
         }
-        const zProxyClass = (this.constructor as any).PROXY_TYPE;
-        this._zomeProxy = new zProxyClass(cellProxy, this.zomeName);
     }
 
     protected _zomeProxy: ZomeProxy;

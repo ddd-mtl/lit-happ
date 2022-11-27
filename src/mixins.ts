@@ -13,8 +13,11 @@ class Empty {
 /** ------------------------------------------------------------------------------------------- **/
 
 export function ZomeSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
-  abstract class AZomeSpecific extends Base /*implements IZomeSpecific*/ {
-    constructor(...args: any[]){super(); this.zomeName = (this.constructor as any).DEFAULT_ZOME_NAME}
+  abstract class AZomeSpecific extends Base {
+    constructor(...args: any[]){
+      super(args); 
+      this.zomeName = (this.constructor as any).DEFAULT_ZOME_NAME
+    }
     static readonly DEFAULT_ZOME_NAME: ZomeName;
     zomeName: ZomeName;
   };

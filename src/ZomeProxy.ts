@@ -4,7 +4,9 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ZomeSpecific } from "./mixins";
 
 
-export type ZomeProxyFactory = {new(cellProxy: CellProxy, zomeName: ZomeName): ZomeProxy};
+//export type ZomeProxyDef = ZomeProxyFactory | [ZomeName, ZomeProxyFactory];
+
+export type ZomeProxyFactory = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy};
 
 
 /**
@@ -14,11 +16,17 @@ export type ZomeProxyFactory = {new(cellProxy: CellProxy, zomeName: ZomeName): Z
 export abstract class ZomeProxy extends ZomeSpecific {
 
   /** Ctor */
-  constructor(protected _cellProxy: CellProxy, zomeName: ZomeName) {
+  constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
     super();
-    this.zomeName = zomeName;
+    if (zomeName) {this.zomeName = zomeName;}
+      else {
+        let ctor: any = this.constructor as typeof ZomeSpecific;
+        if (!ctor.DEFAULT_ZOME_NAME) throw Error("zomeName not defined in ZomeProxy subclass " + ctor.name);
+      }
   }
 
+  //protected _zomeName!: ZomeName;
+  //get zomeName(): ZomeName {return this._zomeName};
 
   /** CellDef interface */
   get installedCell(): InstalledCell { return this._cellProxy.installedCell }

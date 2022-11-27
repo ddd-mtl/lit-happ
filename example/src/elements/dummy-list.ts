@@ -1,5 +1,5 @@
 import {html} from "lit";
-import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
+import {DummyZomePerspective, DummyZomeProxy, DummyZvm} from "../viewModels/dummy";
 import {ZomeElement} from "@ddd-qc/dna-client";
 
 
@@ -10,7 +10,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
   /** */
   constructor() {
-    super(DummyZvm.DEFAULT_ZOME_NAME)
+    super(DummyZomeProxy.DEFAULT_ZOME_NAME)
   }
 
   /** */

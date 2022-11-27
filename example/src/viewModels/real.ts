@@ -1,12 +1,14 @@
 import { CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel } from "@ddd-qc/dna-client";
 import { EntryHash, RoleId, ZomeName } from "@holochain/client";
-import { LabelZvm } from "./label";
+import { LabelZomeProxy, LabelZvm } from "./label";
 
 
 /**
  *
  */
 export class RealZomeProxy extends ZomeProxy {
+
+  static readonly DEFAULT_ZOME_NAME: string = "zReal";
 
   async getReal(eh: EntryHash): Promise<number> {
     return this.call('get_real', eh);
@@ -33,8 +35,7 @@ export class RealZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly DEFAULT_ZOME_NAME = "zReal";
-  static readonly PROXY_TYPE = RealZomeProxy;
+  static readonly ZOME_PROXY_FACTORY = RealZomeProxy;
 
 
   /** -- ViewModel Interface -- */
@@ -77,8 +78,8 @@ export class RealDvm extends DnaViewModel {
   static readonly ZVM_DEFS = [RealZvm, LabelZvm]
 
   /** QoL Helpers */
-  get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
-  get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm }
+  get realZvm(): RealZvm { return this.getZomeViewModel(RealZomeProxy.DEFAULT_ZOME_NAME) as RealZvm }
+  get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZomeProxy.DEFAULT_ZOME_NAME) as LabelZvm }
  
 
   /** -- ViewModel Interface -- */

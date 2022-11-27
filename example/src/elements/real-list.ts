@@ -1,5 +1,5 @@
 import {html} from "lit";
-import {RealZomePerspective, RealZvm} from "../viewModels/real";
+import {RealZomePerspective, RealZomeProxy, RealZvm} from "../viewModels/real";
 import {serializeHash} from "@holochain-open-dev/utils";
 import { ZomeElement } from "@ddd-qc/dna-client";
 
@@ -9,7 +9,7 @@ import { ZomeElement } from "@ddd-qc/dna-client";
 export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   constructor() {
-    super(RealZvm.DEFAULT_ZOME_NAME)
+    super(RealZomeProxy.DEFAULT_ZOME_NAME)
   }
 
   /** */
