@@ -39,7 +39,7 @@ export class DummyInspect extends DnaElement<DummyZomePerspective, DummyDvm> {
   constructor() {
     super();
     const roleId = this.getAttribute("roleId");
-    console.log(roleId)
+    //console.log(roleId)
     this.roleId = roleId? roleId: RealDvm.DEFAULT_ROLE_ID;
     this.requestDvm();
   }

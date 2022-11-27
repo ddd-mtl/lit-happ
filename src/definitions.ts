@@ -8,6 +8,12 @@ export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional Zo
 
 export type DvmDef = DvmConstructor | [DvmConstructor, RoleId] // optional roleId override
 
+
+// export interface DnaDef {
+//   dnaName: string,
+//   zvmDefs: ZvmDef[],
+// }
+
 /** */
 export interface HvmDef {
   id: InstalledAppId,

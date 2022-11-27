@@ -10,16 +10,6 @@ import {LabelList} from "./elements/label-list";
 import {DummyInspect, RealInspect} from "./elements/dummy-inspect";
 
 
-/** */
-export const playgroundHappDef: HvmDef = {
-  id: "playground",
-  dvmDefs: [
-    DummyDvm,
-    RealDvm,
-    [RealDvm, "rImpostor"],
-  ]
-}
-
 /** TESTING Decorator for better init */
 /** Doesn't solve our problem since our initializer is doing an async call */
 
@@ -29,29 +19,29 @@ interface IHapp {
 }
 
 
-class Happ {
-  conductorAppProxy!: ConductorAppProxy;
-  hvm!: HappViewModel;
-}
+// class Happ {
+//   conductorAppProxy!: ConductorAppProxy;
+//   hvm!: HappViewModel;
+// }
 
-// A TypeScript decorator
-const happy = (proto: ReactiveElement, key: string) => {
-  const ctor = proto.constructor as typeof ReactiveElement;
+// // A TypeScript decorator
+// const happy = (proto: ReactiveElement, key: string) => {
+//   const ctor = proto.constructor as typeof ReactiveElement;
 
-  ctor.addInitializer(async (instance: ReactiveElement) => {
-    console.log("initializeHapp()", instance, key);
-    //const happElem = await HappElement.new(Number(process.env.HC_PORT), playgroundHappDef);
+//   ctor.addInitializer(async (instance: ReactiveElement) => {
+//     console.log("initializeHapp()", instance, key);
+//     //const happElem = await HappElement.new(Number(process.env.HC_PORT), playgroundHappDef);
 
-    let happEl = {} as Happ;
-    happEl.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    happEl.hvm = await HappViewModel.new(instance, happEl.conductorAppProxy, playgroundHappDef);
+//     let happEl = {} as Happ;
+//     happEl.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+//     happEl.hvm = await HappViewModel.new(instance, happEl.conductorAppProxy, playgroundDef);
 
-    (instance as any)[key] = happEl;
-    console.log("initializeHapp() Done", happEl);
-    //instance.addController(happElem)
-    instance.requestUpdate();
-  });
-};
+//     (instance as any)[key] = happEl;
+//     console.log("initializeHapp() Done", happEl);
+//     //instance.addController(happElem)
+//     instance.requestUpdate();
+//   });
+// };
 
 
 
@@ -76,7 +66,15 @@ const happy = (proto: ReactiveElement, key: string) => {
 /**
  *
  */
-export class DummyApp extends ScopedElementsMixin(LitElement) {
+export class PlaygroundApp extends ScopedElementsMixin(LitElement) {
+
+
+/** */
+static HVM_DEF: HvmDef = {
+  id: "playground",
+  dvmDefs: [DummyDvm, RealDvm,[RealDvm, "rImpostor"]],
+};
+
 
   constructor() {
     super();
@@ -96,7 +94,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
   /** */
   async initHapp() {
     const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-    const hvm = await HappViewModel.new(this, conductorAppProxy, playgroundHappDef);
+    const hvm = await HappViewModel.new(this, conductorAppProxy, PlaygroundApp.HVM_DEF);
 
     this._happ = {conductorAppProxy, hvm}
     this.requestUpdate();
@@ -131,7 +129,7 @@ export class DummyApp extends ScopedElementsMixin(LitElement) {
 
     return html`
       <div style="margin:10px;">
-        <h2>Playground App</h2>
+        <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <br/>
         <span>Select AppEntryType:</span>
