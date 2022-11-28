@@ -36,6 +36,12 @@ fn create_dummy(value: u32)  -> ExternResult<EntryHash> {
   let eh = hash_entry(entry.clone())?;
   let _ah = create_entry(DummyEntry::Dummy(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), DummyLinkType::Default, LinkTag::from(()))?;
+
+  let payload = "I like bananas";
+  debug!("emit_signal() {:?}", payload);
+  emit_signal(payload)?;
+
+  /// DONE
   Ok(eh)
 }
 

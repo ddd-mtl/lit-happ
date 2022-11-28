@@ -1,10 +1,13 @@
-import { AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest
-  , InstalledAppId, InstalledCell, RoleId } from "@holochain/client";
+import {
+  AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId
+  , InstalledAppId, InstalledCell, RoleId
+} from "@holochain/client";
 import { Dictionary } from "@holochain-open-dev/core-types";
 import { CellProxy } from "./CellProxy";
-import { HvmDef } from "./definitions";
+import {Hcl, CellIdStr, HvmDef, str2CellId, HCL} from "./definitions";
+import {areCellsEqual, prettyDate} from "./utils";
 
-/** From hc-client-js API */
+/** */
 export interface SignalUnsubscriber {
   unsubscribe: () => void;
 }
@@ -12,18 +15,30 @@ export interface SignalUnsubscriber {
 
 /**
  * Creates, connects and holds a appWebsocket.
- * Factory for Dna and Zome proxies that uses this appWebsocket.
+ * Creates and holds Cell proxies for this appWebsocket.
  * TODO Implement Singleton per port?
  */
 export class ConductorAppProxy implements AppApi {
 
-  /** InstalledAppId -> [RoleId]*/
-  private _installedHapps: Dictionary<Array<InstalledCell>> = {}
+  /** -- Fields -- */
 
-  /** CellDef -> CellProxy */
-  private _cellProxies: Dictionary<CellProxy> = {}
+  private _appWs!: AppWebsocket;
 
-  /** */
+  /** CellIdStr -> AppSignalCb */
+  private _signalHandlers: Dictionary<AppSignalCb> = {};
+  /** [Timestamp, CellId, Signal] */
+  private _signalLogs: [number, string, AppSignal][] = [];
+  /** InstalledAppId -> [RoleId] */
+  private _installedHapps: Dictionary<Array<InstalledCell>> = {};
+  /** HCL -> CellProxy */
+  private _cellProxies: Dictionary<CellProxy> = {};
+
+  /** CellIdStr -> HCL */
+  private _cellReverseMap: Dictionary<HCL> = {};
+
+
+  /** -- Getters -- */
+
   getRoles(installedAppId: InstalledAppId): RoleId[] | undefined {
     if (!this._installedHapps[installedAppId]) return undefined;
     return Object.values(this._installedHapps[installedAppId]).map((installedCell) => {
@@ -43,7 +58,9 @@ export class ConductorAppProxy implements AppApi {
     throw Error(`getInstalledCell() failed: RoleId "${roleId}" not found in happ ${installedAppId}`);
   }
 
-  /** -- Proxy Pattern -- */
+
+  /** -- AppApi -- */
+
   // cloneCell
   // archiveCell
   async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
@@ -56,6 +73,7 @@ export class ConductorAppProxy implements AppApi {
     return this._appWs.callZome(req, timeout)
   }
 
+
   /** -- Creation -- */
 
   /** async Factory */
@@ -67,7 +85,7 @@ export class ConductorAppProxy implements AppApi {
       let wsUrl = `ws://localhost:${port_or_socket}`
       try {
         let conductor = new ConductorAppProxy(timeout);
-        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout, conductor.onSignal)
+        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout, (sig) => {conductor.onSignal(sig)})
         return conductor;
       } catch (e) {
         console.error("ConductorAppProxy initialization failed", e)
@@ -76,10 +94,12 @@ export class ConductorAppProxy implements AppApi {
     }
   }
 
+  /** */
   private static async fromSocket(appWebsocket: AppWebsocket): Promise<ConductorAppProxy> {
     try {
       let conductor = new ConductorAppProxy(appWebsocket.defaultTimeout);
       conductor._appWs = appWebsocket;
+      console.log("Using pre-existing AppWebsocket. ConductorAppProxy's 'onSignal()' SignalHandler needs to be set by the provider of the AppWebsocket.")
       return conductor;
     } catch (e) {
       console.error("ConductorAppProxy initialization failed", e)
@@ -90,30 +110,22 @@ export class ConductorAppProxy implements AppApi {
   /** Ctor */
   private constructor(public defaultTimeout: number) {
     //const _unsubscribe = _appWs.addSignalHandler(this.onSignal);
-    const _unsub = this.addSignalHandler(this.logSignal);
+    const _unsub = this.addSignalHandler((sig) => this.logSignal(sig));
   }
-
-
-  /** -- Fields -- */
-  private _appWs!: AppWebsocket;
-
-  private _signalHandlers: AppSignalCb[] = []
-  private _signalLogs: [number, AppSignal][] = [];
 
 
   /** -- Methods -- */
 
-  // /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
-  // async createHvm(host: ReactiveElement, happDef: HappDef): Promise<HappViewModel> {
-  //   await this.createCellProxies(happDef);
-  //   return new HappViewModel(host, this, happDef);
-  // }
 
+  getCellLocation(cellId: CellId): HCL | undefined {
+    const str = CellIdStr(cellId);
+    return this._cellReverseMap[str];
+  }
 
   /** Get stored CellProxy or attempt to create it */
    getCellProxy(installedAppId: InstalledAppId, roleId: RoleId): CellProxy {
-    const cellDef = "" + installedAppId + "/" + roleId;
-    let maybeProxy = this._cellProxies[cellDef];
+    const hcl = Hcl(installedAppId, roleId);
+    let maybeProxy = this._cellProxies[hcl];
     if (!maybeProxy) {
       throw Error(`getCellProxy() failed: No Cell found for RoleId "${roleId}" in happ ${installedAppId}`);
     }
@@ -123,17 +135,18 @@ export class ConductorAppProxy implements AppApi {
 
   /** */
   async createCellProxy(installedAppId: InstalledAppId, roleId: RoleId): Promise<void> {
-    const cellDef = "" + installedAppId + "/" + roleId;
-    let maybeProxy = this._cellProxies[cellDef];
+    const hcl = Hcl(installedAppId, roleId);
+    let maybeProxy = this._cellProxies[hcl];
     if (maybeProxy) {
-      console.warn("Cell already created", cellDef);
+      console.warn("Cell already created", hcl);
       return;
     }
     const installedAppInfo = await this.appInfo({installed_app_id: installedAppId});
     this._installedHapps[installedAppId] = installedAppInfo.cell_data;
     const installedCell = this.getInstalledCell(installedAppId, roleId);
     const cellProxy = new CellProxy(this, installedCell, this.defaultTimeout);
-    this._cellProxies[cellDef] = cellProxy;
+    this._cellProxies[hcl] = cellProxy;
+    this._cellReverseMap[CellIdStr(cellProxy.cellId)] = hcl;
   }
 
   async createCellProxies(hvmDef: HvmDef): Promise<void> {
@@ -150,34 +163,63 @@ export class ConductorAppProxy implements AppApi {
 
   /** */
   private onSignal(signal: AppSignal): void {
-    for (const handler of this._signalHandlers) {
-      handler(signal)
+    for (const [cellIdStr, handler] of Object.entries(this._signalHandlers)) {
+      if (cellIdStr !== "" && !areCellsEqual(str2CellId(cellIdStr), signal.data.cellId)) {
+        continue;
+      }
+      handler(signal);
     }
   }
 
 
+  /** */
+  dumpSignals(cellId?: CellId) {
+    if (cellId) {
+      const cellStr = CellIdStr(cellId);
+      console.warn("Dumping signal logs for cell", this._cellReverseMap[cellStr])
+      const logs = this._signalLogs
+        .filter((log) => log[1] == cellStr)
+        .map((log) => {
+          return { timestamp: prettyDate(new Date(log[0])), payload: log[2].data.payload}
+        });
+      console.table(logs);
+    } else {
+      console.warn("Dumping all signal logs")
+      const logs = this._signalLogs
+        .map((log) => {
+          return { timestamp: prettyDate(new Date(log[0])), cell: this._cellReverseMap[log[1]], payload: log[2].data.payload}
+        });
+      console.table(logs);
+    }
+  }
+
   /** Log all signals received */
   private logSignal(signal: AppSignal): void {
-    this._signalLogs.push([Date.now(), signal])
+    this._signalLogs.push([Date.now(), CellIdStr(signal.data.cellId), signal])
+    //console.log("signal logged", this._signalLogs)
   }
 
 
   /** Store signalHandler to internal handler array */
-  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
-    const index = this._signalHandlers.indexOf(handler);
-    if (index >= 0) {
-      throw new Error("SignalHandler already added to this CellProxy");
+  addSignalHandler(handler: AppSignalCb, cellId?: CellId): SignalUnsubscriber {
+    const cellIdStr = cellId? CellIdStr(cellId): "";
+    //const maybeHandler = this._signalHandlers[cellIdStr]
+    if (cellId) {
+      const maybeHandler = Object.getOwnPropertyDescriptor(this._signalHandlers, cellIdStr);
+      if (maybeHandler && maybeHandler.value) {
+        throw new Error(`SignalHandler already added to CellProxy ${cellIdStr}`);
+      }
     }
-    this._signalHandlers.push(handler);
+    this._signalHandlers[cellIdStr] = handler;
     /* return tailored unsubscribe function to the caller */
     return {
       unsubscribe: () => {
-        const index = this._signalHandlers.indexOf(handler);
-        if (index <= -1) {
-          console.warn("unsubscribe failed: Couldn't find signalHandler in CellProxy")
+        const maybeHandler = this._signalHandlers[cellIdStr]
+        if (!maybeHandler) {
+          console.warn("unsubscribe failed: Couldn't find signalHandler for CellProxy", cellId)
           return;
         }
-        this._signalHandlers.slice(index, 1)
+        delete this._signalHandlers[cellIdStr];
       }
     };
   }

@@ -2,7 +2,7 @@ import {createContext} from "@lit-labs/context";
 import {ZomeProxy, ZomeProxyConstructor} from "./ZomeProxy";
 import {ViewModel} from "./ViewModel";
 import { CellProxy } from "./CellProxy";
-import {ICellDef} from "./definitions";
+import {IInstalledCell} from "./definitions";
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
@@ -28,18 +28,18 @@ export function zvm(zProxyCtor: typeof ZomeProxy) {
  * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel extends ViewModel implements ICellDef {
-    
+export abstract class ZomeViewModel extends ViewModel implements IInstalledCell {
+
     /** Zome proxy constructor */
     static ZOME_PROXY: ZomeProxyConstructor;
     protected _zomeProxy: ZomeProxy;
     /* Child class should implement with child proxy class as return type */
-    abstract get zomeProxy(): ZomeProxy; 
+    abstract get zomeProxy(): ZomeProxy;
     getProxyConstructor(): ZomeProxyConstructor {
         return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
 
-    
+
     /** Zome name */
     static get DEFAULT_ZOME_NAME(): string {
         return this.ZOME_PROXY.DEFAULT_ZOME_NAME;

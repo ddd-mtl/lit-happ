@@ -1,9 +1,9 @@
-import { CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId, ZomeName } from "@holochain/client";
+import {AppSignalCb, CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
-import { ConductorAppProxy } from "./ConductorAppProxy";
-import { ICellDef } from "./definitions";
-import { anyToB64, delay, Queue } from "./utils";
+import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
+import {CellIdStr, IInstalledCell} from "./definitions";
+import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
 
 
 export interface RequestLog {
@@ -27,12 +27,12 @@ export interface ResponseLog {
  * It holds a reference to its ConductorAppProxy and its InstalledCell.
  * This class is expected to be used by ZomeProxies.
  */
-export class CellProxy implements ICellDef {
+export class CellProxy implements IInstalledCell {
 
   /** Ctor */
   constructor(
-    private _conductor: ConductorAppProxy, 
-    public readonly installedCell: InstalledCell, 
+    private _conductor: ConductorAppProxy,
+    public readonly installedCell: InstalledCell,
     //public readonly dnaDef: MyDnaDef,
     defaultTimeout?: number) {
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
@@ -61,6 +61,15 @@ export class CellProxy implements ICellDef {
 
   /** -- Methods -- */
 
+  /** */
+  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
+    return this._conductor.addSignalHandler(handler, this.cellId);
+  }
+
+  dumpSignals() {
+    this._conductor.dumpSignals(this.cellId);
+  }
+
   /** Pass call request to conductor proxy and log it */
   async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
     reqLog.executionTimestamp = Date.now();
@@ -77,7 +86,7 @@ export class CellProxy implements ICellDef {
       return respLog;
     }
   }
-    
+
 
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
@@ -91,7 +100,7 @@ export class CellProxy implements ICellDef {
       provenance: this.installedCell.cell_id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
-    
+
     while(!this._canCallBlocking && Date.now() - log.requestTimestamp < timeout) {
       await delay(1);
     }
@@ -132,7 +141,7 @@ export class CellProxy implements ICellDef {
    * returns an array of all the zome's AppEntryDefNames and visibility
    */
   async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
-    console.log("callEntryDefs()", zomeName)
+    //console.log("callEntryDefs()", zomeName)
     try {
       const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 2 * 1000);
       //console.debug("getEntryDefs() for " + this.zomeName + " result:")
@@ -177,7 +186,7 @@ export class CellProxy implements ICellDef {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn("Dumping logs for Cell", this.dnaHash)
+    console.warn("Dumping logs for Cell", this._conductor.getCellLocation(this.cellId))
     if (zomeName) {
       console.warn(" - For Zome " + zomeName);
     }
@@ -186,18 +195,3 @@ export class CellProxy implements ICellDef {
 
 }
 
-const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
-
-
-function prettyDuration(date: Date): string {
-  return date.getSeconds() + "." + zeroPad(date.getMilliseconds(), 3)
-}
-
-/** */
-function prettyDate(date: Date): string {
-  return ""
-  + zeroPad(date.getHours(), 2)
-  + ":" + zeroPad(date.getMinutes(), 2)
-  + ":" + zeroPad(date.getSeconds(), 2)
-  + "." + zeroPad(date.getMilliseconds(), 3);
-}

@@ -115,6 +115,7 @@ export class PlaygroundApp extends HappElement {
       <div style="margin:10px;">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
+        <input type="button" value="Dump signals" @click=${(e:any) => {this.conductorAppProxy.dumpSignals()}}>
         <br/>
         <span>Select AppEntryType:</span>
         <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
@@ -128,7 +129,7 @@ export class PlaygroundApp extends HappElement {
         <hr class="solid">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
-            Dummy Cell: ${this.dummyDvm.dnaHash} 
+            Dummy Cell: ${this.dummyDvm.hcl} 
             <input type="button" value="dump logs" @click=${(e: any) => this.dummyDvm.dumpLogs()}>
           </h2>
           <dummy-list></dummy-list>
@@ -137,7 +138,7 @@ export class PlaygroundApp extends HappElement {
         <cell-context .installedCell="${this.realDvm.installedCell}">
           <hr class="solid">          
           <h2>
-            Real Cell: ${this.realDvm.dnaHash} 
+            Real Cell: ${this.realDvm.hcl} 
             <input type="button" value="dump logs" @click=${(e: any) => this.realDvm.dumpLogs()}>
           </h2>
           <real-list></real-list>
@@ -146,7 +147,7 @@ export class PlaygroundApp extends HappElement {
         <cell-context .installedCell="${this.impostorDvm.installedCell}">
           <hr class="solid">          
           <h2>
-            Impostor Cell: ${this.impostorDvm.dnaHash} 
+            Impostor Cell: ${this.impostorDvm.hcl} 
             <input type="button" value="dump logs" @click=${(e: any) => this.impostorDvm.dumpLogs()}>
           </h2>
           <real-list></real-list>

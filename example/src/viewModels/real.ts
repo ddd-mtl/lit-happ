@@ -1,5 +1,5 @@
-import { CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel } from "@ddd-qc/dna-client";
-import { EntryHash, RoleId, ZomeName } from "@holochain/client";
+import {areCellsEqual, CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import {AppSignal, EntryHash, RoleId, ZomeName} from "@holochain/client";
 import { LabelZomeProxy, LabelZvm } from "./label";
 
 
@@ -76,11 +76,12 @@ export class RealDvm extends DnaViewModel {
 
   static readonly DEFAULT_ROLE_ID = "rReal";
   static readonly ZVM_DEFS = [RealZvm, LabelZvm]
+  readonly signalHandler = this.handleRealSignal;
 
   /** QoL Helpers */
   get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
   get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm }
- 
+
 
   /** -- ViewModel Interface -- */
 
@@ -88,7 +89,14 @@ export class RealDvm extends DnaViewModel {
 
   get perspective(): number { return 3.1418 }
 
-
+  /** methods */
+  handleRealSignal(appSignal: AppSignal): void {
+    if (!areCellsEqual(this._cellProxy.cellId, appSignal.data.cellId)) {
+      console.warn("Rejected Signal not for this Cell");
+      return
+    }
+    console.warn("RealSignal received:", appSignal);
+  }
 
 }
 

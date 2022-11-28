@@ -1,5 +1,15 @@
 import { serializeHash } from "@holochain-open-dev/utils";
+import {CellId} from "@holochain/client";
 
+/** */
+export function areArraysEqual(first: Uint8Array, second: Uint8Array) {
+  return first.length === second.length && first.every((value, index) => value === second[index])
+}
+
+/** */
+export function areCellsEqual(cellA: CellId, cellB: CellId) {
+  return areArraysEqual(cellA[0], cellB[0]) && areArraysEqual(cellA[1], cellB[1])
+}
 
 /**  */
 export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -33,8 +43,25 @@ export function anyToB64(obj: any): any {
 }
 
 
+const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
+
+export function prettyDuration(date: Date): string {
+  return date.getSeconds() + "." + zeroPad(date.getMilliseconds(), 3)
+}
+
+/** */
+export function prettyDate(date: Date): string {
+  return ""
+    + zeroPad(date.getHours(), 2)
+    + ":" + zeroPad(date.getMinutes(), 2)
+    + ":" + zeroPad(date.getSeconds(), 2)
+    + "." + zeroPad(date.getMilliseconds(), 3);
+}
+
+
+
 /**
- * 
+ *
  */
 export class Queue<T> {
   private _store: T[] = [];

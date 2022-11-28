@@ -36,6 +36,12 @@ fn create_real(value: f32)  -> ExternResult<EntryHash> {
   let eh = hash_entry(entry.clone())?;
   let _ah = create_entry(RealEntry::Real(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), RealLink::Default, LinkTag::from(()))?;
+
+  let payload = "I hate oranges";
+  debug!("emit_signal() {:?}", payload);
+  emit_signal(payload)?;
+
+  /// Done
   Ok(eh)
 }
 

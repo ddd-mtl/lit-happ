@@ -5,14 +5,14 @@ import {ContextConsumer, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {ICellDef} from "./definitions";
+import {IInstalledCell} from "./definitions";
 import { RoleSpecificMixin } from "./mixins";
 
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
-export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements ICellDef {
+export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements IInstalledCell {
 
   /** if roleId is not provided, subclass must call requestDvm() in its Ctor */
   constructor(roleId?: RoleId) {
