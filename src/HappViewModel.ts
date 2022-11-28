@@ -1,12 +1,12 @@
 import {Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
-import {InstalledAppInfo, InstalledAppId, RoleId} from "@holochain/client";
+import {RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
-import {CellIdStr, HvmDef} from "./definitions";
+import {HvmDef} from "./definitions";
 import {DnaViewModel} from "./DnaViewModel";
 
 
-export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
+//export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
 
 /**
  * "ViewModel" of a hApp
@@ -21,7 +21,7 @@ export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel
   }
 
   /** Ctor */
-  constructor(
+  private constructor(
     host: ReactiveElement, /* VIEW */
     conductorAppProxy: ConductorAppProxy, /* MODEL */
     hvmDef: HvmDef,

@@ -24,7 +24,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
   }
 
   /** Provided by Context depending on roleId */
-  protected _dvm!: DVM;
+  @state() protected _dvm!: DVM;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
@@ -56,5 +56,8 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
     //console.log({consumer})
   }
 
-
+  /** */
+  shouldUpdate() {
+    return !!this._dvm;
+  }
 }

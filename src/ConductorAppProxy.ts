@@ -127,7 +127,7 @@ export class ConductorAppProxy implements AppApi {
     const hcl = Hcl(installedAppId, roleId);
     let maybeProxy = this._cellProxies[hcl];
     if (!maybeProxy) {
-      throw Error(`getCellProxy() failed: No Cell found for RoleId "${roleId}" in happ ${installedAppId}`);
+      throw Error(`getCellProxy() failed: No Cell found for RoleId "${roleId}" in happ "${installedAppId}"`);
     }
     return maybeProxy;
   }

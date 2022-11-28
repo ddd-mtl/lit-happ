@@ -23,7 +23,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   installedCell!: InstalledCell;
 
   /** Provided by Context depending on cellData.dnaHash */
-  protected _zvm!: ZVM;
+  @state() protected _zvm!: ZVM;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
