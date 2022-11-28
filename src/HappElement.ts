@@ -7,7 +7,6 @@ import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import { AppWebsocket } from "@holochain/client";
 
 
-
 /**
  *
  */
@@ -17,7 +16,7 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   static HVM_DEF: HvmDef;
 
   conductorAppProxy!: ConductorAppProxy;
-  hvm!: HappViewModel;
+  @state() hvm!: HappViewModel;
 
   /** Ctor */
   protected constructor(port_or_socket: number | AppWebsocket) {
@@ -34,7 +33,6 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
       throw Error("HVM_DEF static field undefined in HappElement subclass " + this.constructor.name);
     }
     this.hvm = await HappViewModel.new(this, this.conductorAppProxy, hvmDef);
-    this.requestUpdate();
   }
 
 
@@ -42,11 +40,5 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   shouldUpdate() {
     return !!this.hvm;
   }
-
-
-  // /** */
-  // async probeAll() {
-  //   await this.hvm.probeAll();
-  // }
 
 }
