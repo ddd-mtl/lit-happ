@@ -17,12 +17,13 @@ export class CellContext extends ScopedElementsMixin(LitElement) {
 
   /** */
   firstUpdated() {
+    if (!this.installedCell) throw Error("installedCell property nopt defined in CellContext")
     this._provider.setValue(this.installedCell);
   }
 
   /** */
   render() {
-    console.log(`CellContext set "${this.installedCell.role_id}"`)
+    console.log(`Cell context set to "${this.installedCell}"`)
     return html`<slot></slot>`;
   }
 }

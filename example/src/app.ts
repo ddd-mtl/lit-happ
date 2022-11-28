@@ -1,6 +1,5 @@
-import { LitElement, html, ReactiveElement } from "lit";
+import { html } from "lit";
 import { state } from "lit/decorators.js";
-import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
 import { DummyDvm } from "./viewModels/dummy";
 import { RealDvm } from "./viewModels/real";
@@ -157,6 +156,8 @@ export class PlaygroundApp extends HappElement {
     `
   }
 
+
+  /** */
   static get scopedElements() {
     return {
       "entry-def-select": EntryDefSelect,

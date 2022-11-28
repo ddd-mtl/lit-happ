@@ -99,7 +99,7 @@ export class ConductorAppProxy implements AppApi {
     try {
       let conductor = new ConductorAppProxy(appWebsocket.defaultTimeout);
       conductor._appWs = appWebsocket;
-      console.log("Using pre-existing AppWebsocket. ConductorAppProxy's 'onSignal()' SignalHandler needs to be set by the provider of the AppWebsocket.")
+      console.warn("Using pre-existing AppWebsocket. ConductorAppProxy's 'onSignal()' SignalHandler needs to be set by the provider of the AppWebsocket.")
       return conductor;
     } catch (e) {
       console.error("ConductorAppProxy initialization failed", e)
@@ -162,7 +162,7 @@ export class ConductorAppProxy implements AppApi {
   }
 
   /** */
-  private onSignal(signal: AppSignal): void {
+  onSignal(signal: AppSignal): void {
     for (const [cellIdStr, handler] of Object.entries(this._signalHandlers)) {
       if (cellIdStr !== "" && !areCellsEqual(str2CellId(cellIdStr), signal.data.cellId)) {
         continue;

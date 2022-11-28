@@ -3,7 +3,6 @@ import { property } from "lit/decorators.js";
 import {DummyDvm, DummyZomePerspective} from "../viewModels/dummy";
 import {DnaElement} from "@ddd-qc/dna-client";
 import { RealDvm, RealZomePerspective } from "../viewModels/real";
-import { RoleId } from "@holochain/client";
 
 
 /**
