@@ -39,6 +39,9 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
 
   /** Request zvm from Context based on current CellId */
   private requestZvm() {
+    if (!this.installedCell) {
+      throw Error(`"cellContext" not found in ZomeElement for zome "${this.zomeName}"`)
+    }
     const contextType = createContext<ZVM>('zvm/'+ this.zomeName + '/' + this.dnaHash)
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
