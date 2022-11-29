@@ -117,11 +117,17 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   }
 
 
-  /** Useless since the entry defs are in the integrity zome which is not represented here */
+  /** Maybe useless since the entry defs are in the integrity zome which is not represented here */
   async fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
-      const zomeName =  zvm.zomeName;
-      this._allEntryDefs[zomeName] = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize
+      const zomeName = zvm.zomeName;
+      try {
+        const defs = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize
+        this._allEntryDefs[zomeName] = defs
+      } catch (e) {
+        console.warn(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`)
+        this._allEntryDefs[zomeName] = [];
+      }
     }
     return this._allEntryDefs;
   }
