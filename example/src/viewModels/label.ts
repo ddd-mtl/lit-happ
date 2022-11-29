@@ -1,5 +1,5 @@
-import {CellProxy, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import { EntryHash, ZomeName } from "@holochain/client";
+import {ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import { EntryHash } from "@holochain/client";
 
 
 /**

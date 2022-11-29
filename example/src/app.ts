@@ -1,6 +1,7 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
+import {PLAYGROUND_DEF} from "./defs";
 import { DummyDvm } from "./viewModels/dummy";
 import { RealDvm } from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -73,10 +74,7 @@ export class PlaygroundApp extends HappElement {
   }
 
   /** HvmDef */
-  static HVM_DEF: HvmDef = {
-    id: "playground",
-    dvmDefs: [DummyDvm, RealDvm, [RealDvm, "rImpostor"]],
-  };
+  static HVM_DEF = PLAYGROUND_DEF;
 
   /** QoL */
   get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }
@@ -135,18 +133,18 @@ export class PlaygroundApp extends HappElement {
           <label-list></label-list>
         </cell-context>
         <cell-context .installedCell="${this.realDvm.installedCell}">
-          <hr class="solid">          
+          <hr class="solid">
           <h2>
-            Real Cell: ${this.realDvm.hcl} 
+            Real Cell: ${this.realDvm.hcl}
             <input type="button" value="dump logs" @click=${(e: any) => this.realDvm.dumpLogs()}>
           </h2>
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>
         <cell-context .installedCell="${this.impostorDvm.installedCell}">
-          <hr class="solid">          
+          <hr class="solid">
           <h2>
-            Impostor Cell: ${this.impostorDvm.hcl} 
+            Impostor Cell: ${this.impostorDvm.hcl}
             <input type="button" value="dump logs" @click=${(e: any) => this.impostorDvm.dumpLogs()}>
           </h2>
           <real-list></real-list>

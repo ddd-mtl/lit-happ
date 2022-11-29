@@ -16,7 +16,7 @@ coordinator:
       bundled: ../target/wasm32-unknown-unknown/release/zDummy.wasm
       dependencies:
         - name: dummy_integrity
-    - name: zLabel
+    - name: zDummyLabel
       bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
         - name: label_integrity

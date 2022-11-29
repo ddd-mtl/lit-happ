@@ -16,7 +16,7 @@ coordinator:
       bundled: ../target/wasm32-unknown-unknown/release/zReal.wasm
       dependencies:
         - name: real_integrity
-    - name: zLabel
+    - name: zRealLabel
       bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
         - name: label_integrity

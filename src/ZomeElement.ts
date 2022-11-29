@@ -14,13 +14,20 @@ import { ZomeViewModel } from "./ZomeViewModel";
  */
 export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMixin(LitElement) {
 
-  constructor(public readonly zomeName: ZomeName) {
+  constructor(public readonly defaultZomeName: ZomeName) {
     super();
+    // const nameAttr = this.getAttribute("zomeName");
+    // if (nameAttr) {
+    //   this.zomeName = nameAttr;
+    // }
   }
 
   @contextProvided({ context: cellContext, subscribe: true})
   @property({type: Object})
   installedCell!: InstalledCell;
+
+  protected _zomeName!: ZomeName;
+  get zomeName(): ZomeName {return this._zomeName};
 
   /** Provided by Context depending on cellData.dnaHash */
   @state() protected _zvm!: ZVM;
@@ -40,15 +47,16 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   /** Request zvm from Context based on current CellId */
   private requestZvm() {
     if (!this.installedCell) {
-      throw Error(`"cellContext" not found in ZomeElement for zome "${this.zomeName}"`)
+      throw Error(`"cellContext" not found in ZomeElement "${this.constructor.name}"`)
     }
-    const contextType = createContext<ZVM>('zvm/'+ this.zomeName + '/' + this.dnaHash)
+    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
     console.log(`Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
       (value: ZVM, dispose?: () => void): void => {
         this._zvm = value;
+        this._zomeName = this._zvm.zomeName;
         this._zvm.subscribe(this, 'perspective');
       },
       false, // true will call twice at init

@@ -1,7 +1,6 @@
-import {areCellsEqual, CellProxy, DnaViewModel, HappViewModel, ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
-import {AppSignal, EntryHash, RoleId, ZomeName} from "@holochain/client";
+import {areCellsEqual, DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/dna-client";
+import {AppSignal, EntryHash} from "@holochain/client";
 import { LabelZomeProxy, LabelZvm } from "./label";
-
 
 /**
  *
@@ -67,6 +66,8 @@ export class RealZvm extends ZomeViewModel {
 }
 
 
+export const REAL_DEF: ZvmDef[] = [RealZvm, [LabelZvm, "zRealLabel"]];
+
 /**
  *
  */
@@ -75,12 +76,12 @@ export class RealDvm extends DnaViewModel {
   /** -- DnaViewModel Interface -- */
 
   static readonly DEFAULT_ROLE_ID = "rReal";
-  static readonly ZVM_DEFS = [RealZvm, LabelZvm]
+  static readonly ZVM_DEFS = REAL_DEF;
   readonly signalHandler = this.handleRealSignal;
 
   /** QoL Helpers */
   get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
-  get labelZvm(): LabelZvm { return this.getZomeViewModel(LabelZvm.DEFAULT_ZOME_NAME) as LabelZvm }
+  get labelZvm(): LabelZvm { return this.getZomeViewModel("zRealLabel") as LabelZvm }
 
 
   /** -- ViewModel Interface -- */

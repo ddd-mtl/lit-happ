@@ -9,7 +9,7 @@ import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
-/** Class Decorator */
+/** (EXPERIMENTAL) Class Decorator */
 export function zvm(zProxyCtor: typeof ZomeProxy) {
     return (ctor: Function) => {
         //let zvmCtor = (ctor as typeof ZomeViewModel);
@@ -73,7 +73,8 @@ export abstract class ZomeViewModel extends ViewModel implements IInstalledCell 
 
     /** */
     getContext(): any {
-        const context = createContext<typeof this>('zvm/'+ this.zomeName +'/' + this.dnaHash)
+        const defaultZomeName = this._zomeProxy.getDefaultZomeName();
+        const context = createContext<typeof this>('zvm/'+ defaultZomeName +'/' + this.dnaHash)
         //console.log({contextType: typeof context})
         return context
     }

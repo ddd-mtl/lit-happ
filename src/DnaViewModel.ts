@@ -61,6 +61,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
       }
       // TODO check zvm.zomeName exists in _cellProxy
       this._zomeViewModels[zvm.zomeName] = zvm;
+      this._zomeNames[zvmDef.constructor.name] = zvm.zomeName;
     }
     this.hcl = conductorAppProxy.getCellLocation(this.cellId)!;
     this.provideContext(host); // TODO move this to host.connectedCallback? e.g. change ViewModel to a ReactiveController
@@ -71,6 +72,8 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   protected _cellProxy: CellProxy;
   protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
+  /* ZvmCtorName -> ZomeName */
+  protected _zomeNames: Dictionary<ZomeName> = {};
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
   public readonly hcl: HCL;
@@ -88,6 +91,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
 
+  getZomeName(zvm: typeof ZomeViewModel): ZomeName | undefined { return this._zomeNames[zvm.constructor.name]}
 
   /** -- Methods -- */
 
@@ -114,7 +118,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
 
   /** Useless since the entry defs are in the integrity zome which is not represented here */
-  async fetchAllEntryDefs(): Promise< Dictionary<[string, boolean][]>> {
+  async fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
       const zomeName =  zvm.zomeName;
       this._allEntryDefs[zomeName] = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize

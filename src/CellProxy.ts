@@ -112,6 +112,7 @@ export class CellProxy implements IInstalledCell {
     const respLog = await this.executeZomeCall(log);
     this._canCallBlocking = true;
     if (respLog.failure) {
+      this.dumpSignals();
       this.dumpLogs(zome_name);
       return Promise.reject(respLog.failure)
     }
@@ -129,6 +130,7 @@ export class CellProxy implements IInstalledCell {
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     const respLog = await this.executeZomeCall(log);
     if (respLog.failure) {
+      this.dumpSignals();
       this.dumpLogs(zome_name);
       return Promise.reject(respLog.failure)
     }
@@ -186,9 +188,9 @@ export class CellProxy implements IInstalledCell {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn("Dumping logs for Cell", this._conductor.getCellLocation(this.cellId))
+    console.warn(`Dumping logs for cell "${this._conductor.getCellLocation(this.cellId)}"`)
     if (zomeName) {
-      console.warn(" - For Zome " + zomeName);
+      console.warn(` - For zome "${zomeName}"`);
     }
     console.table(result)
   }

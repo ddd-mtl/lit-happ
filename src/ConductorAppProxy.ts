@@ -142,6 +142,9 @@ export class ConductorAppProxy implements AppApi {
       return;
     }
     const installedAppInfo = await this.appInfo({installed_app_id: installedAppId});
+    if (installedAppInfo == null) {
+      Promise.reject(`createCellProxy() failed. App "${installedAppId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
+    }
     this._installedHapps[installedAppId] = installedAppInfo.cell_data;
     const installedCell = this.getInstalledCell(installedAppId, roleId);
     const cellProxy = new CellProxy(this, installedCell, this.defaultTimeout);
@@ -149,6 +152,8 @@ export class ConductorAppProxy implements AppApi {
     this._cellReverseMap[CellIdStr(cellProxy.cellId)] = hcl;
   }
 
+
+  /** */
   async createCellProxies(hvmDef: HvmDef): Promise<void> {
     for (const dvmDef of hvmDef.dvmDefs) {
       let roleId;
