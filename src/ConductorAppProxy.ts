@@ -78,7 +78,7 @@ export class ConductorAppProxy implements AppApi {
 
   /** async Factory */
   static async new(port_or_socket: number | AppWebsocket, defaultTimeout?: number): Promise<ConductorAppProxy> {
-    if (port_or_socket instanceof AppWebsocket) {
+    if (typeof port_or_socket == 'object') {
       return  ConductorAppProxy.fromSocket(port_or_socket);
     } else {
       const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
