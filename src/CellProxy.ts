@@ -2,7 +2,7 @@ import {AppSignalCb, CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId, 
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
-import {CellIdStr, IInstalledCell} from "./definitions";
+import {IInstalledCell} from "./definitions";
 import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
 
 

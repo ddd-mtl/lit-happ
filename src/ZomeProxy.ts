@@ -1,8 +1,7 @@
 import {CapSecret, CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
-import {CellProxy} from "./CellProxy";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {ZomeSpecific } from "./mixins";
-
+import {ZomeSpecific} from "./mixins";
+import {CellProxy} from "./CellProxy";
 
 export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
