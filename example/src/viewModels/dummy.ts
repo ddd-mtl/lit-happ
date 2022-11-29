@@ -73,8 +73,6 @@ export class DummyZvm extends ZomeViewModel {
  */
 export class DummyDvm extends DnaViewModel {
 
-  whatever = "I'm bob";
-
   /** -- DnaViewModel Interface -- */
 
   static readonly DEFAULT_ROLE_ID = "rDummy";

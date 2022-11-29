@@ -41,20 +41,21 @@ export function Hcl(loc_or_appId: InstalledAppId | CellLocation, roleId?: RoleId
   return "hcl://" + loc_or_appId + "/" + roleId!;
 }
 
+const CELL_ID_SEPARATOR = "||"
 
 export function CellIdStr(hash_or_id: DnaHash | CellId, key?: AgentPubKey): string {
   if (Array.isArray(hash_or_id)) {
-    return "" + serializeHash(hash_or_id[0]) + "__" + serializeHash(hash_or_id[1]);
+    return "" + serializeHash(hash_or_id[0]) + CELL_ID_SEPARATOR + serializeHash(hash_or_id[1]);
   }
   if (!key) {
     throw Error("CellIdStr() failed. AgentPubKey not provided");
   }
-  return "" + serializeHash(hash_or_id) + "__" + serializeHash(key);
+  return "" + serializeHash(hash_or_id) + CELL_ID_SEPARATOR + serializeHash(key);
 }
 
 /** */
 export function str2CellId(str: string): CellId {
-  const subs = str.split("__")
+  const subs = str.split(CELL_ID_SEPARATOR);
   if (subs.length != 2) {
     throw Error("str2CellId() failed. Bad input string format");
   }

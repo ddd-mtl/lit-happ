@@ -43,19 +43,14 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   abstract signalHandler?: AppSignalCb;
 
   /** Ctor */
-  constructor(
-    host: ReactiveElement,
-    installedAppId: InstalledAppId,
-    conductorAppProxy: ConductorAppProxy,
-    roleId?: RoleId,
-    ) {
+  constructor(host: ReactiveElement, appId: InstalledAppId, conductorAppProxy: ConductorAppProxy, roleId?: RoleId) {
     super();
     if (roleId) {
       this.roleId = roleId;
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
-    this._cellProxy = conductorAppProxy.getCellProxy(installedAppId, this.roleId); // WARN can throw error
+    this._cellProxy = conductorAppProxy.getCellProxy(appId, this.roleId); // WARN can throw error
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;
@@ -68,16 +63,17 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
       this._zomeViewModels[zvm.zomeName] = zvm;
     }
     this.hcl = conductorAppProxy.getCellLocation(this.cellId)!;
-    this.provideContext(host);
+    this.provideContext(host); // TODO move this to host.connectedCallback? e.g. change ViewModel to a ReactiveController
   }
 
-  public readonly hcl: HCL;
 
   /** -- Fields -- */
+
   protected _cellProxy: CellProxy;
   protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
+  public readonly hcl: HCL;
 
   /** CellDef interface */
   get installedCell(): InstalledCell {return this._cellProxy.installedCell}

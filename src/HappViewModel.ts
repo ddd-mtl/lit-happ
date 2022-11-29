@@ -1,5 +1,5 @@
-import {Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
-import {RoleId} from "@holochain/client";
+import {Dictionary} from "@holochain-open-dev/core-types";
+import {InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import { ConductorAppProxy } from "./ConductorAppProxy";
 import {HvmDef} from "./definitions";
@@ -14,13 +14,23 @@ import {DnaViewModel} from "./DnaViewModel";
  */
  export class HappViewModel {
 
+  /** -- Fields -- */
+  protected _dvms: Dictionary<DnaViewModel> = {};
+  readonly installedAppId: InstalledAppId;
+
+  /** -- Getters -- */
+  getDvm(name: RoleId): DnaViewModel | undefined {return this._dvms[name]}
+
+
+  /** -- Create -- */
+
   /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
-  static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, happDef: HvmDef): Promise<HappViewModel> {
-    await conductorAppProxy.createCellProxies(happDef);
-    return new HappViewModel(host, conductorAppProxy, happDef);
+  static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
+    await conductorAppProxy.createCellProxies(hvmDef);
+    return new HappViewModel(host, conductorAppProxy, hvmDef);
   }
 
-  /** Ctor */
+  /** */
   private constructor(
     host: ReactiveElement, /* VIEW */
     conductorAppProxy: ConductorAppProxy, /* MODEL */
@@ -47,19 +57,12 @@ import {DnaViewModel} from "./DnaViewModel";
       }
       this._dvms[dvm.roleId] = dvm;
     }
+    this.installedAppId = hvmDef.id;
   }
-
-
-  protected _dvms: Dictionary<DnaViewModel> = {};
-
-  getDvm(name: RoleId): DnaViewModel | undefined {return this._dvms[name]}
-
-  getDnaHash(name: RoleId): DnaHashB64 {return this._dvms[name].dnaHash}
 
   // addCloneDvm(roleId: RoleId) {
   //   //this._dvms[dvm.roleId] = dvm
   // }
-
 
   /** */
   async probeAll(): Promise<void> {
@@ -70,6 +73,19 @@ import {DnaViewModel} from "./DnaViewModel";
   }
 
 
-  /** QoL Helpers */
-  //get installedAppId(): InstalledAppId {return this.appInfo.installed_app_id}
+  /** */
+  dumpLogs(roleId?: RoleId): void {
+    if (roleId) {
+      const dvm = this.getDvm(roleId);
+      if (dvm) {
+        dvm.dumpLogs();
+      } else {
+        console.error(`dumpLogs() failed. Role "${roleId}" not found in happ "${this.installedAppId}"`)
+      }
+    } else {
+      for (const dvm of Object.values(this._dvms)) {
+        dvm.dumpLogs();
+      }
+    }
+  }
  }
