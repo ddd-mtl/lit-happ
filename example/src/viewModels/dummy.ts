@@ -1,4 +1,4 @@
-import {areCellsEqual, DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/dna-client";
+import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/dna-client";
 import {AppSignal, EntryHash, AppSignalCb} from "@holochain/client";
 import {LabelZvm} from "./label";
 
@@ -93,10 +93,6 @@ export class DummyDvm extends DnaViewModel {
 
   /** methods */
   handleSignal(appSignal: AppSignal): void {
-    if (!areCellsEqual(this._cellProxy.cellId, appSignal.data.cellId)) {
-      console.warn("Rejected Signal not for this Cell");
-      return
-    }
     console.warn("DummySignal received:", appSignal);
   }
 

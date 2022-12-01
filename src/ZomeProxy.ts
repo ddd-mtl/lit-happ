@@ -2,6 +2,7 @@ import {CapSecret, CellId, InstalledCell, RoleId, ZomeName} from "@holochain/cli
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ZomeSpecific} from "./mixins";
 import {CellProxy} from "./CellProxy";
+import {IInstalledCell} from "./definitions";
 
 export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
@@ -10,7 +11,7 @@ export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeNam
  * ABC for representing the zome function bindings of a Zome.
  * It holds the zomeName and reference to a CellProxy.
  */
-export abstract class ZomeProxy extends ZomeSpecific {
+export abstract class ZomeProxy extends ZomeSpecific implements IInstalledCell {
 
   /** Ctor */
   constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
@@ -23,7 +24,7 @@ export abstract class ZomeProxy extends ZomeSpecific {
       }
   }
 
-  /** CellDef interface */
+  /** InstalledCell interface */
   get installedCell(): InstalledCell { return this._cellProxy.installedCell }
   get roleId(): RoleId { return this._cellProxy.roleId }
   get cellId(): CellId { return this._cellProxy.cellId }

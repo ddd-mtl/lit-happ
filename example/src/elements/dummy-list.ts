@@ -1,5 +1,5 @@
 import {html} from "lit";
-import {DummyZomePerspective, DummyZomeProxy, DummyZvm} from "../viewModels/dummy";
+import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
 import {ZomeElement} from "@ddd-qc/dna-client";
 
 

@@ -1,4 +1,3 @@
-
 import {InstalledAppId, RoleId, ZomeName} from "@holochain/client";
 
 type Constructor<T> = {new (): T};
@@ -15,7 +14,7 @@ class Empty {
 export function ZomeSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class AZomeSpecific extends Base {
     constructor(...args: any[]){
-      super(args); 
+      super(args);
       this.zomeName = (this.constructor as any).DEFAULT_ZOME_NAME
     }
     getDefaultZomeName(): ZomeName {
@@ -50,9 +49,9 @@ export const RoleSpecific = RoleSpecificMixin(Empty);
 
 export function HappSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class AHappSpecific extends Base {
-    static readonly happId: InstalledAppId;
-    get happId(): InstalledAppId {return (this.constructor as any).happId}
-    setHappId(id: InstalledAppId): void {(this.constructor as any).happId = id}
+    constructor(...args: any[]){super(); this.happId = (this.constructor as any).DEFAULT_HAPP_ID}
+    static readonly DEFAULT_HAPP_ID: InstalledAppId;
+    happId: InstalledAppId;
   };
   return AHappSpecific;
 }

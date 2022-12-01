@@ -7,12 +7,13 @@ import {serializeHash} from "@holochain-open-dev/utils";
 import {cellContext} from "./elements/cell-context";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ZomeViewModel } from "./ZomeViewModel";
+import {IInstalledCell} from "./definitions";
 
 
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMixin(LitElement) {
+export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMixin(LitElement) implements IInstalledCell {
 
   constructor(public readonly defaultZomeName: ZomeName) {
     super();
@@ -35,7 +36,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
-  /** CellDef interface */
+  /** InstalledCell interface */
   get roleId(): RoleId { return this.installedCell.role_id }
   get cellId(): CellId { return this.installedCell.cell_id }
   get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }

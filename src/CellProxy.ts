@@ -51,7 +51,7 @@ export class CellProxy implements IInstalledCell {
   private _canCallBlocking: boolean = true;
 
 
-  /** -- CellDef interface -- */
+  /** -- InstalledCell interface -- */
 
   get roleId(): RoleId { return this.installedCell.role_id }
   get cellId(): CellId { return this.installedCell.cell_id }

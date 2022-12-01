@@ -29,7 +29,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
-  /** CellDef interface */
+  /** InstalledCell interface */
   get installedCell(): InstalledCell {return this._dvm.installedCell}
   //get roleId(): RoleId { return this._dvm.roleId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._dvm.cellId }

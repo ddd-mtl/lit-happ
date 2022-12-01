@@ -64,7 +64,7 @@ export abstract class ZomeViewModel extends ViewModel implements IInstalledCell 
     }
 
 
-    /** CellDef interface */
+    /** InstalledCell interface */
     get installedCell(): InstalledCell { return this._zomeProxy.installedCell }
     get roleId(): RoleId { return this._zomeProxy.roleId }
     get cellId(): CellId { return this._zomeProxy.cellId }

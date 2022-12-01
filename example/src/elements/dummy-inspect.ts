@@ -14,6 +14,7 @@ export class DummyInspect extends DnaElement<DummyZomePerspective, DummyDvm> {
     super(DummyDvm.DEFAULT_ROLE_ID)
   }
 
+
   /** */
   render() {
     //console.log("<dummy-inspect> render()", this._dvm)

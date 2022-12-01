@@ -134,12 +134,12 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** */
-  async createCellProxy(installedAppId: InstalledAppId, roleId: RoleId): Promise<void> {
+  async createCellProxy(installedAppId: InstalledAppId, roleId: RoleId): Promise<CellProxy> {
     const hcl = Hcl(installedAppId, roleId);
     let maybeProxy = this._cellProxies[hcl];
     if (maybeProxy) {
       console.warn("Cell already created", hcl);
-      return;
+      return maybeProxy;
     }
     const installedAppInfo = await this.appInfo({installed_app_id: installedAppId});
     if (installedAppInfo == null) {
@@ -150,6 +150,7 @@ export class ConductorAppProxy implements AppApi {
     const cellProxy = new CellProxy(this, installedCell, this.defaultTimeout);
     this._cellProxies[hcl] = cellProxy;
     this._cellReverseMap[CellIdStr(cellProxy.cellId)] = hcl;
+    return cellProxy;
   }
 
 
@@ -181,7 +182,7 @@ export class ConductorAppProxy implements AppApi {
   dumpSignals(cellId?: CellId) {
     if (cellId) {
       const cellStr = CellIdStr(cellId);
-      console.warn("Dumping signal logs for cell", this._cellReverseMap[cellStr])
+      console.warn(`Dumping signal logs for cell "${this._cellReverseMap[cellStr]}"`)
       const logs = this._signalLogs
         .filter((log) => log[1] == cellStr)
         .map((log) => {

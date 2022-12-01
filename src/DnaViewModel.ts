@@ -78,7 +78,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   public readonly hcl: HCL;
 
-  /** CellDef interface */
+  /** InstalledCell interface */
   get installedCell(): InstalledCell {return this._cellProxy.installedCell}
   //get roleId(): RoleId { return this._cellProxy.roleId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._cellProxy.cellId }
