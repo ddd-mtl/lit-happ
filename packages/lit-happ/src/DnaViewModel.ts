@@ -3,9 +3,17 @@ import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ViewModel} from "./ViewModel";
 import {AppSignalCb, CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
-import {ZvmDef} from "./definitions";
+import {DnaModifiersOptions, ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
-import {CellProxy, RoleSpecific, RoleSpecificMixin, ConductorAppProxy, HCL, IInstalledCell } from "@ddd-qc/cell-proxy";
+import {
+  CellProxy,
+  RoleSpecific,
+  RoleSpecificMixin,
+  ConductorAppProxy,
+  HCL,
+  IInstalledCell,
+  CellIndex
+} from "@ddd-qc/cell-proxy";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
@@ -19,12 +27,13 @@ interface IDnaViewModel {
   //getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined
 }
 
-export type DvmConstructor = typeof RoleSpecific & {
+export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersOptions} & {
   new(
     host: ReactiveElement,
     installedAppId: InstalledAppId,
     conductorAppProxy: ConductorAppProxy,
     roleId?: RoleId,
+    cellIndex?: CellIndex,
     ): DnaViewModel;
 };
 
@@ -37,18 +46,21 @@ export type DvmConstructor = typeof RoleSpecific & {
 export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IInstalledCell, IDnaViewModel {
 
   /* private */ static ZVM_DEFS: ZvmDef[];
+  static DNA_MODIFIERS: DnaModifiersOptions;
 
   abstract signalHandler?: AppSignalCb;
 
+  public cloneName?: string;
+
   /** Ctor */
-  constructor(host: ReactiveElement, appId: InstalledAppId, conductorAppProxy: ConductorAppProxy, roleId?: RoleId) {
+  constructor(host: ReactiveElement, appId: InstalledAppId, conductorAppProxy: ConductorAppProxy, roleId?: RoleId, public readonly cellIndex?: CellIndex) {
     super();
     if (roleId) {
       this.roleId = roleId;
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
-    this._cellProxy = conductorAppProxy.getCellProxy(appId, this.roleId); // WARN can throw error
+    this._cellProxy = conductorAppProxy.getCellProxy(appId, this.roleId, cellIndex); // WARN can throw error
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;

@@ -46,7 +46,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
 
   /** */
   render() {
-    console.log("<entry-def-select> render()", this.dnaViewModel)
+    //console.log("<entry-def-select> render()", this.dnaViewModel)
     // if (!this.dnaViewModel) {
     //   return html`<span>Loading...</span>`;
     // }

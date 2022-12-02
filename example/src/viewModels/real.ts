@@ -1,4 +1,4 @@
-import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
+import {CellDef, DnaModifiersOptions, DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
 import {AppSignal, EntryHash} from "@holochain/client";
 import { LabelZvm } from "./label";
 
@@ -97,3 +97,38 @@ export class RealDvm extends DnaViewModel {
 
 }
 
+
+
+export const REAL_DNA_MODIFIERS: DnaModifiersOptions = {};
+
+
+/**
+ *
+ */
+export class RealCloneDvm extends DnaViewModel {
+
+  /** -- DnaViewModel Interface -- */
+
+  static readonly DEFAULT_ROLE_ID = "rReal";
+  static readonly ZVM_DEFS = REAL_DEF;
+  static readonly DNA_MODIFIERS = REAL_DNA_MODIFIERS;
+
+  readonly signalHandler = this.handleRealSignal;
+
+  /** QoL Helpers */
+  get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
+  get labelZvm(): LabelZvm { return this.getZomeViewModel("zRealLabel") as LabelZvm }
+
+
+  /** -- ViewModel Interface -- */
+
+  protected hasChanged(): boolean { return true }
+
+  get perspective(): number { return 3.1418 }
+
+  /** methods */
+  handleRealSignal(appSignal: AppSignal): void {
+    //console.warn("RealSignal received:", appSignal);
+  }
+
+}

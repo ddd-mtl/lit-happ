@@ -2,7 +2,7 @@ import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
 import {ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
-import { HvmDef } from "./definitions";
+import {CellDef, DvmDef, HvmDef} from "./definitions";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import {AppWebsocket, InstalledAppId} from "@holochain/client";
 
@@ -38,6 +38,14 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
     }
     this.hvm = await HappViewModel.new(this, this.conductorAppProxy, hvmDef);
   }
+
+
+  /** */
+  async createClone(dvmDef: DvmDef, cellDef?: CellDef): Promise<void> {
+    const [index, dvm] = await this.hvm.addCloneDvm(dvmDef, cellDef);
+  }
+
+
 
 
   /** */

@@ -4,6 +4,7 @@ import {ZomeSpecific} from "./mixins";
 import {CellProxy} from "./CellProxy";
 import {IInstalledCell} from "./types";
 
+
 export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
 

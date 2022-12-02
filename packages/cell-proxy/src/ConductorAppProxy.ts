@@ -4,7 +4,7 @@ import {
 } from "@holochain/client";
 import { Dictionary } from "@holochain-open-dev/core-types";
 import { CellProxy } from "./CellProxy";
-import {Hcl, CellIdStr, str2CellId, HCL} from "./types";
+import {Hcl, CellIdStr, str2CellId, HCL, CellIndex, CellLocation, CellMap, destructureRoleInstanceId} from "./types";
 import {areCellsEqual, prettyDate} from "./utils";
 import {
   ArchiveCloneCellRequest, ArchiveCloneCellResponse,
@@ -33,8 +33,8 @@ export class ConductorAppProxy implements AppApi {
   private _signalHandlers: Dictionary<AppSignalCb> = {};
   /** [Timestamp, CellId, Signal] */
   private _signalLogs: [number, string, AppSignal][] = [];
-  /** InstalledAppId -> [RoleId] */
-  private _installedHapps: Dictionary<Array<InstalledCell>> = {};
+  /** InstalledAppId -> (RoleId -> InstalledCell) */
+  private _installedCells: Dictionary<CellMap> = {};
   /** HCL -> CellProxy */
   private _cellProxies: Dictionary<CellProxy> = {};
 
@@ -45,24 +45,24 @@ export class ConductorAppProxy implements AppApi {
   /** -- Getters -- */
 
   getRoles(installedAppId: InstalledAppId): RoleId[] | undefined {
-    if (!this._installedHapps[installedAppId]) return undefined;
-    return Object.values(this._installedHapps[installedAppId]).map((installedCell) => {
-      return installedCell.role_id;
+    if (!this._installedCells[installedAppId]) return undefined;
+    return Object.values(this._installedCells[installedAppId]).map((installedCells) => {
+      return installedCells[0].role_id;
     });
   }
 
   /** */
-  getInstalledCell(installedAppId: InstalledAppId, roleId: RoleId): InstalledCell {
-    const maybeAppInfo = this._installedHapps[installedAppId];
-    if (!maybeAppInfo) throw Error("No hApp found with ID " + installedAppId);
-    for (const cellData of maybeAppInfo) {
-      if (cellData.role_id == roleId) {
-        return cellData;
-      }
+  getInstalledCell(installedAppId: InstalledAppId, roleId: RoleId, cellIndex?: CellIndex): InstalledCell {
+    const roles = this._installedCells[installedAppId];
+    if (!roles) throw Error(`getInstalledCell() failed. No hApp with ID "${installedAppId}" found.`);
+    const cells = roles[roleId];
+    if (!cells) throw Error(`getInstalledCell() failed: RoleId "${roleId}" not found in happ "${installedAppId}"`);
+    if (cellIndex) {
+      if (cellIndex >= cells.length) throw Error(`getInstalledCell() failed: cellIndex "${cellIndex}" not found for role "${installedAppId}/${roleId}"`);
+      return cells[cellIndex];
     }
-    throw Error(`getInstalledCell() failed: RoleId "${roleId}" not found in happ ${installedAppId}`);
+    return cells[0];
   }
-
 
   /** -- AppApi (Passthrough to appWebsocket) -- */
 
@@ -133,31 +133,68 @@ export class ConductorAppProxy implements AppApi {
   }
 
   /** Get stored CellProxy or attempt to create it */
-   getCellProxy(installedAppId: InstalledAppId, roleId: RoleId): CellProxy {
-    const hcl = Hcl(installedAppId, roleId);
-    let maybeProxy = this._cellProxies[hcl];
-    if (!maybeProxy) {
-      throw Error(`getCellProxy() failed: No Cell found for RoleId "${roleId}" in happ "${installedAppId}"`);
-    }
-    return maybeProxy;
+   getCellProxy(installedAppId: InstalledAppId, roleId: RoleId, cellIndex?: CellIndex): CellProxy {
+     const hcl = Hcl([installedAppId, roleId, cellIndex? cellIndex : 0]);
+     let maybeProxy = this._cellProxies[hcl];
+     if (!maybeProxy) {
+       throw Error(`getCellProxy() failed: No Cell found at "${hcl}"`);
+     }
+     return maybeProxy;
   }
 
 
   /** */
-  async createCellProxy(installedAppId: InstalledAppId, roleId: RoleId): Promise<CellProxy> {
-    const hcl = Hcl(installedAppId, roleId);
+  async createCellProxy(installedAppId: InstalledAppId, roleId: RoleId, cellIndex?: CellIndex): Promise<CellProxy> {
+
+    /** Set default cellIndex */
+    if (!cellIndex) {
+      cellIndex = 0;
+    }
+
+    /** Build HCL */
+    const location: CellLocation = [installedAppId, roleId, cellIndex];
+    const hcl = Hcl(location);
+
+    /** Bail if already have proxy for this cell */
     let maybeProxy = this._cellProxies[hcl];
     if (maybeProxy) {
-      console.warn("Cell already created", hcl);
+      console.warn("Cell proxy already created for", hcl);
       return maybeProxy;
     }
+
+    /** Make sure hApp exists */
     const installedAppInfo = await this.appInfo({installed_app_id: installedAppId});
     if (installedAppInfo == null) {
       Promise.reject(`createCellProxy() failed. App "${installedAppId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
-    this._installedHapps[installedAppId] = installedAppInfo.cell_data;
-    const installedCell = this.getInstalledCell(installedAppId, roleId);
-    const cellProxy = new CellProxy(this, installedCell, this.defaultTimeout);
+
+    /** Create starting roleMap */
+    if (!this._installedCells[installedAppId]) {
+      this._installedCells[installedAppId] = {};
+    }
+
+    /** Create starting cellMap */
+    //let roleCells = this._installedCells[installedAppId][roleId]
+    //if (!roleCells) {
+      let roleCells = [];
+      for (const installedCell of installedAppInfo.cell_data) {
+        const [curRoleId, curCellIndex] = destructureRoleInstanceId(installedCell.role_id);
+        if (curRoleId == roleId) {
+          roleCells.push(installedCell);
+        }
+     // }
+      this._installedCells[installedAppId][roleId] = roleCells;
+    }
+
+    /** Make sure cell exists */
+    if (cellIndex >= roleCells.length) {
+      Promise.reject(`createCellProxy() failed. Cell "${hcl}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
+    }
+
+    console.log({_installedCells: this._installedCells})
+
+    /** Create and store Proxy */
+    const cellProxy = new CellProxy(this, roleCells[cellIndex], this.defaultTimeout);
     this._cellProxies[hcl] = cellProxy;
     this._cellReverseMap[CellIdStr(cellProxy.cellId)] = hcl;
     return cellProxy;

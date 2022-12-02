@@ -1,5 +1,5 @@
 import {CellId, InstalledAppId, InstalledCell, RoleId} from "@holochain/client";
-import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
+import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {deserializeHash, serializeHash} from "@holochain-open-dev/utils";
 
@@ -12,14 +12,36 @@ export interface IInstalledCell {
   get dnaHash(): DnaHashB64;
   get agentPubKey(): AgentPubKeyB64;
   get cellId(): CellId;
+
+  // get cloneName(): string;
+  //get cellIndex(): CellIndex;
 }
 
 
-export type CellLocation = [InstalledAppId, RoleId];
+export type CellIndex = number;
 
+export type CellMap = Dictionary<InstalledCell[]>;
+//export type CellMap = Dictionary<InstalledCell>;
+
+export type CellLocation = [InstalledAppId, RoleId, CellIndex];
+//export type CellLocation = [InstalledAppId, RoleId]
 
 export function CellLocation(installedAppId: InstalledAppId, roleId: RoleId): CellLocation {
-  return [installedAppId, roleId];
+  return [installedAppId, roleId, 0];
+}
+
+export type RoleInstanceId = string;
+export function RoleInstanceId(roleId: RoleId, cellIndex: CellIndex) {
+  return "" + roleId + "." + cellIndex
+}
+
+export function destructureRoleInstanceId(id: RoleInstanceId): [RoleId, CellIndex] {
+  const subs = id.split(".");
+  if (subs.length == 2) {
+    //throw Error(`Bad RoleInstance id format: "${id}"`);
+    return [id, 0];
+  }
+  return [subs[0] as RoleId, Number(subs[1]) as CellIndex];
 }
 
 
@@ -27,7 +49,11 @@ export function CellLocation(installedAppId: InstalledAppId, roleId: RoleId): Ce
 export type HCL = string;
 export function Hcl(loc_or_appId: InstalledAppId | CellLocation, roleId?: RoleId): HCL {
   if (Array.isArray(loc_or_appId)) {
-    return "hcl://" + loc_or_appId[0] + "/" + loc_or_appId[1];
+    let hcl = "hcl://" + loc_or_appId[0] + "/" + loc_or_appId[1];
+    //if (loc_or_appId[2] > 0) {
+      hcl += "/" + loc_or_appId[2];
+    //}
+    return hcl;
   }
   if (!roleId) {
     throw Error("Hcl() failed. RoleId not provided");

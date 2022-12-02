@@ -2,6 +2,8 @@
 <html lang="en-GB">
   <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>lit-happ Playground</title>
     <style>
       body {
         background: #fafafa;
@@ -16,8 +18,17 @@
   <body style="margin:0px;background: #FAF1EA;height:100vh;">
     <playground-app></playground-app>
     <script type="module">
-      import { PlaygroundApp } from "./dist";
-      customElements.define("playground-app", PlaygroundApp);
+      import {AdminWebsocket} from "@holochain/client";
+      import { PlaygroundApp, PlaygroundCloneApp } from "./dist";
+      const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+      const apps = await adminWs.listApps({});
+      console.log("Installed apps:", apps);
+
+      if (apps[0].installed_app_id == "playground") {
+        customElements.define("playground-app", PlaygroundApp);
+      } else {
+        customElements.define("playground-app", PlaygroundCloneApp);
+      }
     </script>
   </body>
 </html>

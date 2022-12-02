@@ -9,13 +9,17 @@
     "version"         : "hc --version && holochain --version && lair-keystore --version",
     "ci:tsc"          : "tsc --version",
 
-    "build:happ"      : "npm run build:happ -w example",
+    "build:happ"      : "npm run build:happ -w example && npm run build:happ:clone -w example",
     "build:example"   : "npm run build:happ && npm run build -w example",
+
     "build:libs"      : "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ",
 
     "start"           : "npm run start -w example",
+    "start:clone"     : "npm run start:clone -w example",
 
     "devtest"         : "npm run build:libs && npm run build:example && npm run start",
+    "devtest:clone"   : "npm run build:libs && npm run build:example && npm run start:clone",
+
 
     "clean"           : "bash scripts/clean.sh",
     "clean:npm"       : "bash scripts/clean-npm.sh",

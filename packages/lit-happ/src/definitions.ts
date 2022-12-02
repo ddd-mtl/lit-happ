@@ -1,14 +1,46 @@
-import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
-import {CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {
+  DnaProperties,
+  InstalledAppId, InstalledCell,
+  MembraneProof,
+  NetworkSeed,
+  RoleId,
+  Timestamp,
+  ZomeName
+} from "@holochain/client";
 import { DvmConstructor } from "./DnaViewModel";
 import { ZvmConstructor } from "./ZomeViewModel";
-import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
-import {deserializeHash, serializeHash} from "@holochain-open-dev/utils";
+import {Dictionary} from "@holochain-open-dev/core-types";
+
+
 
 
 export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional ZomeName override
 
-export type DvmDef = DvmConstructor | [DvmConstructor, RoleId] // optional roleId override
+// export type DvmDef = DvmConstructor
+//   | [DvmConstructor, RoleId]
+//   //| [DvmConstructor, RoleId, DnaModifiers] // optional roleId override
+
+
+export interface DvmDef {
+  ctor: DvmConstructor,
+  roleId?: RoleId,
+  isClonable: boolean,
+}
+
+
+export interface DnaModifiersOptions {
+  network_seed?: NetworkSeed;
+  properties?: DnaProperties;
+  origin_time?: Timestamp;
+}
+
+
+
+export interface CellDef {
+  modifiers: DnaModifiersOptions,
+  membraneProof?: MembraneProof,
+  cloneName?: string,
+}
 
 
 // export interface DnaDef {

@@ -61,7 +61,6 @@ interface IHapp {
 // }
 
 
-
 /**
  *
  */
@@ -75,8 +74,24 @@ export class PlaygroundApp extends HappElement {
   /** HvmDef */
   static HVM_DEF: HvmDef = {
     id: "playground",
-    dvmDefs: [DummyDvm, RealDvm, [RealDvm, "rImpostor"]],
+    dvmDefs: [
+      {
+        ctor: DummyDvm,
+        isClonable: false,
+      },
+      {
+        ctor: RealDvm,
+        isClonable: false,
+      },
+      {
+        ctor: RealDvm,
+        roleId: "rImpostor",
+        isClonable: false,
+      }
+    ],
   };
+
+
 
   /** QoL */
   get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }
@@ -108,7 +123,7 @@ export class PlaygroundApp extends HappElement {
 
   /** */
   render() {
-    console.log("<dummy-app> render()", this.hvm);
+    console.log("<playground-app> render()", this.hvm);
 
     return html`
       <div style="margin:10px;">
