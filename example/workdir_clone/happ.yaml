@@ -16,7 +16,7 @@ roles:
       clone_limit: 0
   - id: rReal
     provisioning:
-      strategy: create
+      strategy: create_clone
       deferred: true
     dna:
       bundled: ../../artifacts/real.dna

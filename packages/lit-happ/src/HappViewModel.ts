@@ -110,7 +110,7 @@ import {AppSignal} from "@holochain/client/lib/api/app/types";
       app_id: this.installedAppId,
       role_id: roleId,
       modifiers: {
-        network_seed: "" + index,
+        //network_seed: "" + index,
       },
     }
     if (cellDef) {
