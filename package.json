@@ -1,21 +1,26 @@
 {
-  "name": "@ddd-qc/dna-client",
-  "version": "0.8.10",
-  "description": "MVVM Framework for holochain apps using Lit",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "type": "module",
-  "files": [
-    "dist"
+  "name": "@ddd-qc/lit-happ-root",
+  "workspaces": [
+    "example",
+    "packages/cell-proxy",
+    "packages/lit-happ"
   ],
   "scripts": {
-    "tsc": "tsc",
-    "tsc:example": "cd example && npm run build",
-    "tsc:all": "tsc && npm run tsc:example",
-    "start": "cd example && npm run start",
-    "build:happ": "cd example && npm run build:happ",
-    "devtest": "npm run build:happ && npm run tsc:all && npm run start",
-    "publish-to-branch": "npm run build && rm -rf node_modules && gh-pages -d ./ -b build && npm i"
+    "version"         : "hc --version && holochain --version && lair-keystore --version",
+    "ci:tsc"          : "tsc --version",
+
+    "build:happ"      : "npm run build:happ -w example",
+    "build:example"   : "npm run build:happ && npm run build -w example",
+    "build:libs"      : "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ",
+
+    "start"           : "npm run start -w example",
+
+    "devtest"         : "npm run build:libs && npm run build:example && npm run start",
+
+    "clean"           : "bash scripts/clean.sh",
+    "clean:npm"       : "bash scripts/clean-npm.sh",
+    "clean:hc"        : "rm -rf .hc* && rm -rf we-applet/.hc*",
+    "clean:all"       : "npm run clean:hc && npm run clean:npm && npm run clean"
   },
   "repository": {
     "type": "git",

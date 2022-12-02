@@ -4,8 +4,13 @@ import {
 } from "@holochain/client";
 import { Dictionary } from "@holochain-open-dev/core-types";
 import { CellProxy } from "./CellProxy";
-import {Hcl, CellIdStr, HvmDef, str2CellId, HCL} from "./definitions";
+import {Hcl, CellIdStr, str2CellId, HCL} from "./types";
 import {areCellsEqual, prettyDate} from "./utils";
+import {
+  ArchiveCloneCellRequest, ArchiveCloneCellResponse,
+  CreateCloneCellRequest,
+  CreateCloneCellResponse
+} from "@holochain/client/lib/api/app/types";
 
 /** */
 export interface SignalUnsubscriber {
@@ -59,15 +64,20 @@ export class ConductorAppProxy implements AppApi {
   }
 
 
-  /** -- AppApi -- */
+  /** -- AppApi (Passthrough to appWebsocket) -- */
 
-  // cloneCell
-  // archiveCell
+  async createCloneCell(request: CreateCloneCellRequest): Promise<InstalledCell> {
+    return this._appWs!.createCloneCell(request);
+  }
+
+  async archiveCloneCell(request: ArchiveCloneCellRequest): Promise<void> {
+    this._appWs!.archiveCloneCell(request);
+  }
+
   async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
     return this._appWs!.appInfo(args);
   }
 
-  /** Passthrough with default timeout */
   async callZome(req: CallZomeRequest, timeout?: number): Promise<any> {
     timeout = timeout ? timeout : this.defaultTimeout
     return this._appWs.callZome(req, timeout)
@@ -154,18 +164,7 @@ export class ConductorAppProxy implements AppApi {
   }
 
 
-  /** */
-  async createCellProxies(hvmDef: HvmDef): Promise<void> {
-    for (const dvmDef of hvmDef.dvmDefs) {
-      let roleId;
-      if (Array.isArray(dvmDef)) {
-        roleId = dvmDef[1];
-      } else {
-        roleId = dvmDef.DEFAULT_ROLE_ID;
-      }
-      await this.createCellProxy(hvmDef.id, roleId);
-    }
-  }
+
 
   /** */
   onSignal(signal: AppSignal): void {

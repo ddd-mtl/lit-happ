@@ -1,0 +1,38 @@
+{
+  "name": "@ddd-qc/lit-happ",
+  "version": "0.8.10",
+  "description": "MVVM Framework for holochain apps using Lit",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint --ext .ts .",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddd-mtl/dna-client.git"
+  },
+  "author": "",
+  "license": "CAL-1.0",
+  "bugs": {
+    "url": "https://github.com/ddd-mtl/dna-client/issues"
+  },
+  "homepage": "https://github.com/ddd-mtl/dna-client#readme",
+  "dependencies": {
+    "@ddd-qc/cell-proxy": "file:../cell-proxy",
+    "@holochain-open-dev/core-types": "^0.5.0",
+    "@holochain-open-dev/utils": "0.4.0",
+    "@holochain/client": "^0.9.3",
+    "@lit-labs/context": "^0.1.2",
+    "@open-wc/scoped-elements": "^2.1.1",
+    "lit": "^2.2.0"
+  },
+  "devDependencies": {
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.5"
+  }
+}

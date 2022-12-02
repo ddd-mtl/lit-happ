@@ -1,12 +1,14 @@
 import {Dictionary} from "@holochain-open-dev/core-types";
 import {InstalledAppId, RoleId} from "@holochain/client";
 import { ReactiveElement } from "lit";
-import { ConductorAppProxy } from "./ConductorAppProxy";
+import { ConductorAppProxy } from "@ddd-qc/cell-proxy";
 import {HvmDef} from "./definitions";
 import {DnaViewModel} from "./DnaViewModel";
+import {AppSignal} from "@holochain/client/lib/api/app/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
+
 
 /**
  * "ViewModel" of a hApp
@@ -26,9 +28,19 @@ import {DnaViewModel} from "./DnaViewModel";
 
   /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
   static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
-    await conductorAppProxy.createCellProxies(hvmDef);
+    /** Create all Cell Proxies in the definition */
+    for (const dvmDef of hvmDef.dvmDefs) {
+      let roleId;
+      if (Array.isArray(dvmDef)) {
+        roleId = dvmDef[1];
+      } else {
+        roleId = dvmDef.DEFAULT_ROLE_ID;
+      }
+      await conductorAppProxy.createCellProxy(hvmDef.id, roleId);
+    }
     return new HappViewModel(host, conductorAppProxy, hvmDef);
   }
+
 
   /** */
   private constructor(
@@ -48,7 +60,7 @@ import {DnaViewModel} from "./DnaViewModel";
         //console.log(`"${dvm.roleId}" signalHandler added`, dvm.signalHandler);
         //conductorAppProxy.addSignalHandler(dvm.signalHandler});
         try {
-          conductorAppProxy.addSignalHandler((sig) => {
+          conductorAppProxy.addSignalHandler((sig: AppSignal) => {
             dvm.signalHandler!(sig)
           }, dvm.cellId);
         } catch (e) {

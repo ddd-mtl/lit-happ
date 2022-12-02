@@ -8,7 +8,7 @@ import builtins from "rollup-plugin-node-builtins";
 import babel from "@rollup/plugin-babel";
 import html from "@web/rollup-plugin-html";
 import { importMetaAssets } from "@web/rollup-plugin-import-meta-assets";
-import { terser } from "rollup-plugin-terser";
+//import { terser } from "rollup-plugin-terser";
 import { generateSW } from "rollup-plugin-workbox";
 import path from "path";
 
@@ -32,8 +32,8 @@ export default {
     /** Enable using HTML as rollup entrypoint */
     html({
       minify: true,
-      injectServiceWorker: true,
-      serviceWorkerPath: "dist/sw.js",
+      //injectServiceWorker: true,
+      //serviceWorkerPath: "dist/sw.js",
     }),
     /** Resolve bare module imports */
     nodeResolve({
@@ -51,7 +51,7 @@ export default {
     commonjs({}),
     //globals(), // removed because it cause build error
     /** Minify JS */
-    terser(),
+    //terser(),
     /** Bundle assets references via import.meta.url */
     importMetaAssets(),
     /** Compile JS to a lower language target */
@@ -94,19 +94,19 @@ export default {
         ],
       ],
     }),
-    /** Create and inject a service worker */
-    generateSW({
-      globIgnores: ["polyfills/*.js", "nomodule-*.js"],
-      navigateFallback: "/index.html",
-      // where to output the generated sw
-      swDest: path.join(DIST_FOLDER, "sw.js"),
-      // directory to match patterns against to be precached
-      globDirectory: path.join(DIST_FOLDER),
-      // cache any html js and css by default
-      globPatterns: ["**/*.{html,js,css,webmanifest}"],
-      skipWaiting: true,
-      clientsClaim: true,
-      runtimeCaching: [{ urlPattern: "polyfills/*.js", handler: "CacheFirst" }],
-    }),
+    // /** Create and inject a service worker */
+    // generateSW({
+    //   globIgnores: ["polyfills/*.js", "nomodule-*.js"],
+    //   navigateFallback: "/index.html",
+    //   // where to output the generated sw
+    //   swDest: path.join(DIST_FOLDER, "sw.js"),
+    //   // directory to match patterns against to be precached
+    //   globDirectory: path.join(DIST_FOLDER),
+    //   // cache any html js and css by default
+    //   globPatterns: ["**/*.{html,js,css,webmanifest}"],
+    //   skipWaiting: true,
+    //   clientsClaim: true,
+    //   runtimeCaching: [{ urlPattern: "polyfills/*.js", handler: "CacheFirst" }],
+    // }),
   ],
 };

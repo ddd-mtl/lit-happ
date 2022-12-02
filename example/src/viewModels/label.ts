@@ -1,4 +1,4 @@
-import {ZomeProxy, ZomeViewModel} from "@ddd-qc/dna-client";
+import {ZomeProxy, ZomeViewModel} from "@ddd-qc/lit-happ";
 import { EntryHash } from "@holochain/client";
 
 

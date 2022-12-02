@@ -1,7 +1,7 @@
 import {html} from "lit";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {ZomeElement} from "@ddd-qc/dna-client";
+import {ZomeElement} from "@ddd-qc/lit-happ";
 
 /**
  *

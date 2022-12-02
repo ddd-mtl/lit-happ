@@ -1,4 +1,4 @@
-import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/dna-client";
+import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
 import {AppSignal, EntryHash} from "@holochain/client";
 import { LabelZvm } from "./label";
 

@@ -1,7 +1,6 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
-import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/dna-client";
-import {PLAYGROUND_DEF} from "./defs";
+import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/lit-happ";
 import { DummyDvm } from "./viewModels/dummy";
 import { RealDvm } from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -74,7 +73,10 @@ export class PlaygroundApp extends HappElement {
   }
 
   /** HvmDef */
-  static HVM_DEF = PLAYGROUND_DEF;
+  static HVM_DEF: HvmDef = {
+    id: "playground",
+    dvmDefs: [DummyDvm, RealDvm, [RealDvm, "rImpostor"]],
+  };
 
   /** QoL */
   get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }

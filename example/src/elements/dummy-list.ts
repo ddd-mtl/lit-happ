@@ -1,6 +1,6 @@
 import {html} from "lit";
 import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
-import {ZomeElement} from "@ddd-qc/dna-client";
+import {ZomeElement} from "@ddd-qc/lit-happ";
 
 
 /**

@@ -1,8 +1,6 @@
 import {createContext} from "@lit-labs/context";
-import {ZomeProxy, ZomeProxyConstructor} from "./ZomeProxy";
+import {CellProxy, ZomeProxy, ZomeProxyConstructor, IInstalledCell} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import { CellProxy } from "./CellProxy";
-import {IInstalledCell} from "./definitions";
 import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 

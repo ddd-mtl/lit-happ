@@ -1,6 +1,6 @@
 import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
-import {ConductorAppProxy} from "./ConductorAppProxy";
+import {ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import { HvmDef } from "./definitions";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";

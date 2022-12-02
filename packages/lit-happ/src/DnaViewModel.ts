@@ -1,13 +1,11 @@
-import {CellProxy} from "./CellProxy";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ViewModel} from "./ViewModel";
 import {AppSignalCb, CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
-import {HCL, IInstalledCell, ZvmDef} from "./definitions";
+import {ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
-import {RoleSpecific, RoleSpecificMixin } from "./mixins";
-import { ConductorAppProxy } from "./ConductorAppProxy";
+import {CellProxy, RoleSpecific, RoleSpecificMixin, ConductorAppProxy, HCL, IInstalledCell } from "@ddd-qc/cell-proxy";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;

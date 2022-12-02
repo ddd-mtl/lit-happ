@@ -7,7 +7,7 @@ import {serializeHash} from "@holochain-open-dev/utils";
 import {cellContext} from "./elements/cell-context";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ZomeViewModel } from "./ZomeViewModel";
-import {IInstalledCell} from "./definitions";
+import {IInstalledCell} from "@ddd-qc/cell-proxy";
 
 
 /**

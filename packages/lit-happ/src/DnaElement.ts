@@ -5,9 +5,7 @@ import {ContextConsumer, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
 import {CellId, InstalledCell, RoleId} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {IInstalledCell} from "./definitions";
-import { RoleSpecificMixin } from "./mixins";
-
+import {IInstalledCell, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel

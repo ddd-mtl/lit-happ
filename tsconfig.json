@@ -11,12 +11,6 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "sourceMap": true,
-    "inlineSources": true,
-    "outDir": "dist",
-    "declarationDir": "dist",
-    "rootDir": "./src",
-    "declaration": true
+    "allowJs": true
   },
-
-  "include": ["src/**/*.ts"]
 }
