@@ -1,0 +1,22 @@
+---
+manifest_version: "1"
+name: dReal
+uuid: ~
+properties: ~
+integrity:
+  origin_time: 2022-09-25T13:55:49.200Z
+  zomes:
+    - name: real_integrity
+      bundled: ../target/wasm32-unknown-unknown/release/real_integrity.wasm
+    - name: label_integrity
+      bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
+coordinator:
+  zomes:
+    - name: zReal
+      bundled: ../target/wasm32-unknown-unknown/release/zReal.wasm
+      dependencies:
+        - name: real_integrity
+    - name: zRealLabel
+      bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
+      dependencies:
+        - name: label_integrity

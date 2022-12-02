@@ -1,0 +1,22 @@
+---
+manifest_version: "1"
+name: dDummy
+uuid: ~
+properties: ~
+integrity:
+  origin_time: 2022-09-25T13:55:49.200Z
+  zomes:
+    - name: dummy_integrity
+      bundled: ../target/wasm32-unknown-unknown/release/dummy_integrity.wasm
+    - name: label_integrity
+      bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
+coordinator:
+  zomes:
+    - name: zDummy
+      bundled: ../target/wasm32-unknown-unknown/release/zDummy.wasm
+      dependencies:
+        - name: dummy_integrity
+    - name: zDummyLabel
+      bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
+      dependencies:
+        - name: label_integrity

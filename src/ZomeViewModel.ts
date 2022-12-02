@@ -1,97 +1,82 @@
-import {ContextProvider} from "@lit-labs/context";
-import {ZomeBridge} from "./ZomeBridge";
-import {ReactiveElement} from "lit";
+import {createContext} from "@lit-labs/context";
+import {ZomeProxy, ZomeProxyConstructor} from "./ZomeProxy";
+import {ViewModel} from "./ViewModel";
+import { CellProxy } from "./CellProxy";
+import {IInstalledCell} from "./definitions";
+import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 
-/** Interface for the generic-less ZomeViewModel class */
-export interface IZomeViewModel {
-    provideContext(host: ReactiveElement): void;
-    probeDht(): Promise<void>;
-    getEntryDefs(): Promise<[string, boolean][]>;
-    get zomeName(): string;
-    getContext(): any; // FIXME: use context type
+export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
-    //get perspective(): any;
+/** (EXPERIMENTAL) Class Decorator */
+export function zvm(zProxyCtor: typeof ZomeProxy) {
+    return (ctor: Function) => {
+        //let zvmCtor = (ctor as typeof ZomeViewModel);
+        (ctor as any).ZOME_PROXY = zProxyCtor;
+        //get zomeProxy(): DummyZomeProxy {return this._zomeProxy as DummyZomeProxy;}
+        //(ctor as any).zomeProxy = function() {return (ctor as any)._zomeProxy as typeof zProxyFactory;}
+        //(ctor as any).zomeProxy = (ctor as any)._zomeProxy as typeof zProxyFactory;
+    }
 }
 
 
 /**
- * Represents the ViewModel of a Zome.
- * Views (i.e. CustomElements) are required to use this in order to interact with a Zome / DNA.
- * It is an Observable meant to be a singleton passed around by a (Lit) Context.
- * It holds a ZomeBridge and a perspective.
- * The perspective is the probed data from the Zome that is transformed and enhanced in order to be comsumed by a View.
- * Many CustomElement hosts can subscribe to it in order to get updated when the perspective changes.
- * Hosts can also trigger the probing in order to get an updated perspective.
- * The perspective can be automatically updated by Signals from other Agents or the Zome Scheduler.
+ * Abstract ViewModel for a Zome.
+ * It extends a ViewModel by adding a ZomeProxy.
+ * Views are required to use this in order to interact with the ZomeProxy.
+ * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
+ * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel<P, B extends ZomeBridge> implements IZomeViewModel {
+export abstract class ZomeViewModel extends ViewModel implements IInstalledCell {
 
-    protected constructor(protected _bridge: B) {}
-
-    /** -- Fields -- */
-    protected _previousPerspective?: P;
-    protected _hosts: [any, PropertyKey][] = [];
-
-    /** Make sure provideContext is only called once */
-    //static _isContextProvided = false;
-    provideContext(host: ReactiveElement): void {
-        // if (ZomeViewModel._isContextProvided) {
-        //     console.error("Context already provided for", typeof this)
-        //     return;
-        // }
-        new ContextProvider(host, this.getContext(), this);
-        //ZomeViewModel._isContextProvided = true;
+    /** Zome proxy constructor */
+    static ZOME_PROXY: ZomeProxyConstructor;
+    protected _zomeProxy: ZomeProxy;
+    /* Child class should implement with child proxy class as return type */
+    abstract get zomeProxy(): ZomeProxy;
+    getProxyConstructor(): ZomeProxyConstructor {
+        return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
 
 
-    /** -- Methods that children must implement  --*/
-    /**
-     * Return true if the perspective has changed. This will trigger an update on the observers
-     * Child classes are expected to compare their latest constructed perspective (the one returned by this.perspective())
-     * with this._previousPerspective.
-     */
-    protected abstract hasChanged(): boolean;
-    /* Returns the latest perspective */
-    abstract get perspective(): P;
-    abstract getContext(): any;
-    /* (optional) Lets the observer trigger probing of the DHT in order to get an updated perspective */
-    async probeDht(): Promise<void> {}
-
-
-    /** -- Final methods (Observer pattern) -- */
-
-    /** */
-    subscribe(host: any, propName: PropertyKey) {
-        host[propName] = this.perspective;
-        this._hosts.push([host, propName])
+    /** Zome name */
+    static get DEFAULT_ZOME_NAME(): string {
+        return this.ZOME_PROXY.DEFAULT_ZOME_NAME;
     }
+    zomeName!: ZomeName;
 
-    /** */
-    unsubscribe(candidat: any) {
-        let index  = 0;
-        for (const [host, _propName] of this._hosts) {
-            if (host === candidat) break;
-            index += 1;
+
+    /** Ctor */
+    constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
+        super();
+        const zProxyCtor = this.getProxyConstructor();
+        if (!zProxyCtor) {
+            throw Error("ZOME_PROXY static field undefined in ZVM subclass " + this.constructor.name);
         }
-        if (index > -1) {
-            this._hosts.splice(index, 1);
+        if (zomeName) {
+            this.zomeName = zomeName;
+            this._zomeProxy = new zProxyCtor(cellProxy, this.zomeName);
+        } else {
+            this._zomeProxy = new zProxyCtor(cellProxy);
+            this.zomeName = this._zomeProxy.getDefaultZomeName();
         }
     }
 
-    /** */
-    protected notify() {
-        if (!this.hasChanged()) return;
-        for (const [host, propName] of this._hosts) {
-            host[propName] = this.perspective;
-        }
-        this._previousPerspective = this.perspective
-    }
+
+    /** InstalledCell interface */
+    get installedCell(): InstalledCell { return this._zomeProxy.installedCell }
+    get roleId(): RoleId { return this._zomeProxy.roleId }
+    get cellId(): CellId { return this._zomeProxy.cellId }
+    get dnaHash(): EntryHashB64 { return this._zomeProxy.dnaHash}
+    get agentPubKey(): AgentPubKeyB64 { return this._zomeProxy.agentPubKey }
 
     /** */
-    async getEntryDefs(): Promise<[string, boolean][]> {
-        return this._bridge.getEntryDefs()
+    getContext(): any {
+        const defaultZomeName = this._zomeProxy.getDefaultZomeName();
+        const context = createContext<typeof this>('zvm/'+ defaultZomeName +'/' + this.dnaHash)
+        //console.log({contextType: typeof context})
+        return context
     }
-
-    get zomeName(): string {return this._bridge.zomeName}
 }
+

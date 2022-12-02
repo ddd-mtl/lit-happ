@@ -1,0 +1,12 @@
+[package]
+name = "label_integrity"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = [ "cdylib", "rlib" ]
+
+[dependencies]
+serde.workspace = true
+hdi.workspace = true

@@ -1,6 +1,6 @@
-# Cell Client
+# lit-happ
 
-Temporary wrapper around `@holochain-open-dev/cell-client`.
+A MVVM framework for building holochain apps web UI with Lit.
 
 
 ## Installing
