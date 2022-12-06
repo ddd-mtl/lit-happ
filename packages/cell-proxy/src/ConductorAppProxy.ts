@@ -275,19 +275,6 @@ export class ConductorAppProxy implements AppApi {
   }
 
 
-
-
-  /** */
-  onSignal(signal: AppSignal): void {
-    const hcls = this.getHcls(signal.data.cellId);
-    if (!hcls) return;
-    const handlers = hcls.map((hcl) => this._signalHandlers[hcl]);
-    for (const handler of handlers) {
-      handler(signal);
-    }
-  }
-
-
   /** */
   dumpSignals(cellId?: CellId) {
     if (cellId) {
@@ -312,16 +299,32 @@ export class ConductorAppProxy implements AppApi {
   /** Log all signals received */
   private logSignal(signal: AppSignal): void {
     this._signalLogs.push([Date.now(), CellIdStr(signal.data.cellId), signal])
-    //console.log("signal logged", this._signalLogs)
+    console.log("signal logged", this._signalLogs)
+  }
+
+
+
+  /** */
+  onSignal(signal: AppSignal): void {
+    /** Grabe cell specific handlers */
+    const hcls = this.getHcls(signal.data.cellId);
+    const handlers = hcls? hcls.map((hcl) => this._signalHandlers[hcl]) : [];
+    /** Grab common handler  */
+    const allHandler = this._signalHandlers["__all"];
+    if (allHandler) handlers.push(allHandler);
+    /** Send to all handlers */
+    for (const handler of handlers) {
+      handler(signal);
+    }
   }
 
 
   /** Store signalHandler to internal handler array */
   addSignalHandler(handler: AppSignalCb, hcl?: HCL): SignalUnsubscriber {
-    hcl = hcl? hcl: "";
+    hcl = hcl? hcl: "__all";
     console.log("addSignalHandler()", hcl, Object.keys(this._signalHandlers));
     //const maybeHandler = this._signalHandlers[cellIdStr]
-    if (hcl != "") {
+    if (hcl != "__all") {
       const maybeHandler = Object.getOwnPropertyDescriptor(this._signalHandlers, hcl);
       if (maybeHandler && maybeHandler.value) {
         throw new Error(`SignalHandler already added for "${hcl}"`);

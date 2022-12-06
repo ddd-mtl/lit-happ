@@ -76,7 +76,7 @@ export class PlaygroundCloneApp extends HappElement {
           <hr style="border-style:dotted;">
           <cell-context .installedCell="${realDvm.installedCell}">
               <h3>
-                  Real Cell: ${realDvm.hcl} | ${realDvm.cloneName}
+                  Real: ${realDvm.hcl} | ${realDvm.cloneName}
                   <input type="button" value="dump logs" @click=${(e: any) => realDvm.dumpLogs()}>
               </h3>
               <real-list></real-list>
@@ -105,7 +105,7 @@ export class PlaygroundCloneApp extends HappElement {
         <hr style="border-style:solid;">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
-            Dummy Cell: ${this.dummyDvm.hcl} 
+            Dummy: ${this.dummyDvm.hcl} 
             <input type="button" value="dump logs" @click=${(e: any) => this.dummyDvm.dumpLogs()}>
           </h2>
           <dummy-list></dummy-list>

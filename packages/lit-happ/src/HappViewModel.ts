@@ -34,7 +34,7 @@ export type RoleDvms = {
   /** -- Fields -- */
   readonly installedAppId: InstalledAppId;
   /** CellIdStr -> DnaViewModel */
-  protected _dvmMap: Dictionary<DnaViewModel> = {};
+  protected _dvmMap: Dictionary<DnaViewModel[]> = {};
   /** BaseRoleName -> DvmDef */
   protected _defMap: Dictionary<DvmDef> = {};
 
@@ -48,7 +48,7 @@ export type RoleDvms = {
 
 
   /** */
-  getDvmByCellId(cellId: CellId): DnaViewModel | undefined {
+  getCellDvms(cellId: CellId): DnaViewModel[] | undefined {
     return this._dvmMap[CellIdStr(cellId)];
   }
 
@@ -57,7 +57,14 @@ export type RoleDvms = {
     const cellLoc = new CellLocation(this.installedAppId, id);
     const maybeCell = this._conductorAppProxy.getInstalledCellByLocation(cellLoc);
     if (!maybeCell) return undefined;
-    return this.getDvmByCellId(maybeCell.cell_id);
+    const dvms = this.getCellDvms(maybeCell.cell_id);
+    if (!dvms) return undefined;
+    for (const dvm of dvms) {
+      if (dvm.roleInstanceId == id) {
+        return dvm;
+      }
+    }
+    return undefined;
   }
 
   /** */
@@ -65,40 +72,21 @@ export type RoleDvms = {
     const cloneIds: InstalledCell[] = this._conductorAppProxy.getClones(this.installedAppId, baseRoleName);
     let clones = []
     for (const installedCell of cloneIds) {
-      const maybeDvm = this.getDvmByCellId(installedCell.cell_id)
-      if (!maybeDvm) {
+      const maybeDvms = this.getCellDvms(installedCell.cell_id)
+      if (!maybeDvms) {
         console.warn("DVM not found for", CellIdStr(installedCell.cell_id), baseRoleName);
         continue;
       }
-        clones.push(maybeDvm);
+      for (const dvm of maybeDvms) {
+        const maybePair = destructureRoleInstanceId(dvm.roleInstanceId)
+        const curBaseName = maybePair? maybePair[0] : dvm.roleInstanceId;
+        if (curBaseName == baseRoleName) {
+          clones.push(dvm);
+        }
+      }
     }
     return clones;
   }
-
-
-  /** */
-  // getDvm(baseRoleName: BaseRoleName, name_or_index?: string | number): DnaViewModel | undefined {
-  //   const dvm = this._dvmMap[baseRoleName];
-  //   if (!dvm) {
-  //     return undefined;
-  //   }
-  //   if (!name_or_index) {
-  //     return this._dvmMap[baseRoleName];
-  //   }
-  //   // FIXME handle clone name
-  //   // if (typeof name_or_index == 'string') {
-  //   //   const name = name_or_index as string;
-  //   //   for (const dvm of dvm) {
-  //   //     if (dvm.cloneName && dvm.cloneName == name) {
-  //   //       return dvm;
-  //   //     }
-  //   //   }
-  //   //   return undefined;
-  //   // }
-  //   const index = name_or_index as number;
-  //   if (dvm.length <= index) return undefined;
-  //   return dvm[index];
-  // }
 
 
   /** -- Create -- */
@@ -171,7 +159,10 @@ export type RoleDvms = {
       }
     }
     /** Store and index it */
-    this._dvmMap[cellIdStr] = dvm;
+    if (!this._dvmMap[cellIdStr]) {
+      this._dvmMap[cellIdStr] = []
+    }
+    this._dvmMap[cellIdStr].push(dvm);
     /** Done */
     return dvm;
   }
@@ -244,8 +235,9 @@ export type RoleDvms = {
 
   /** */
   async probeAll(): Promise<void> {
-    for (const dvm of Object.values(this._dvmMap)) {
-      await dvm.probeAll();
+    for (const dvms of Object.values(this._dvmMap)) {
+      if (dvms.length <= 0) continue;
+      await dvms[0].probeAll();
     }
   }
 
@@ -260,8 +252,9 @@ export type RoleDvms = {
         console.error(`dumpLogs() failed. Role "${roleInstanceId}" not found in happ "${this.installedAppId}"`)
       }
     } else {
-      for (const dvm of Object.values(this._dvmMap)) {
-        dvm.dumpLogs();
+      for (const dvms of Object.values(this._dvmMap)) {
+        if (dvms.length <= 0) continue;
+        dvms[0].dumpLogs();
       }
     }
   }

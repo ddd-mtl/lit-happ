@@ -43,6 +43,7 @@ export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersO
  * Abstract ViewModel for a DNA.
  * It holds the CellProxy and all the ZomeViewModels of the DNA.
  * A DNA is expected to derive this class and add extra logic at the DNA level.
+ * TODO: Split into RoleViewModel and CellViewModel (e.g. have call logs separated by role)
  */
 export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IInstalledCell, IDnaViewModel {
 
@@ -80,7 +81,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
       this._zomeViewModels[zvm.zomeName] = zvm;
       this._zomeNames[zvmDef.constructor.name] = zvm.zomeName;
     }
-    this.hcl = CellLocation.from(appId, this.baseRoleName, cloneIndex).asHcl();
+    this.cellLocation = CellLocation.from(appId, this.baseRoleName, cloneIndex);
     this.provideContext(host); // TODO move this to host.connectedCallback? e.g. change ViewModel to a ReactiveController
   }
 
@@ -93,11 +94,13 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   protected _zomeNames: Dictionary<ZomeName> = {};
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
-  public readonly hcl: HCL;
+  public readonly cellLocation: CellLocation;
+
+  get hcl(): HCL {return this.cellLocation.asHcl()}
 
   /** InstalledCell interface */
   get installedCell(): InstalledCell {return this._cellProxy.installedCell}
-  get roleInstanceId(): RoleInstanceId { return this._cellProxy.roleInstanceId }
+  get roleInstanceId(): RoleInstanceId { return this.cellLocation.roleInstanceId }
   get cellId(): CellId { return this._cellProxy.cellId }
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }

@@ -2,9 +2,6 @@ import {DnaProperties, InstalledAppId, MembraneProof, NetworkSeed, Timestamp, Zo
 import { DvmConstructor } from "./DnaViewModel";
 import { ZvmConstructor } from "./ZomeViewModel";
 import {BaseRoleName} from "@ddd-qc/cell-proxy";
-//import {Dictionary} from "@holochain-open-dev/core-types";
-
-
 
 
 export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional ZomeName override
