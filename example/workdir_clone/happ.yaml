@@ -8,7 +8,7 @@ roles:
   - id: rDummy
     provisioning:
       strategy: create
-      deferred: false
+      deferred: true
     dna:
       bundled: ../../artifacts/dummy.dna
       uuid: ~
@@ -16,7 +16,7 @@ roles:
       clone_limit: 0
   - id: rReal
     provisioning:
-      strategy: create_clone
+      strategy: create
       deferred: true
     dna:
       bundled: ../../artifacts/real.dna

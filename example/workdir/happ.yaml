@@ -8,7 +8,7 @@ roles:
   - id: rDummy
     provisioning:
       strategy: create
-      deferred: false
+      deferred: true
     dna:
       bundled: ../../artifacts/dummy.dna
       uuid: ~
@@ -17,7 +17,7 @@ roles:
   - id: rReal
     provisioning:
       strategy: create
-      deferred: false
+      deferred: true
     dna:
       bundled: ../../artifacts/real.dna
       uuid: ~
@@ -26,7 +26,7 @@ roles:
   - id: rImpostor
     provisioning:
       strategy: create
-      deferred: false
+      deferred: true
     dna:
       bundled: ../../artifacts/real.dna
       uuid: ~

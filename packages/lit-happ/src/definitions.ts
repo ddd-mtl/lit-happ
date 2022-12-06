@@ -1,15 +1,8 @@
-import {
-  DnaProperties,
-  InstalledAppId, InstalledCell,
-  MembraneProof,
-  NetworkSeed,
-  RoleId,
-  Timestamp,
-  ZomeName
-} from "@holochain/client";
+import {DnaProperties, InstalledAppId, MembraneProof, NetworkSeed, Timestamp, ZomeName} from "@holochain/client";
 import { DvmConstructor } from "./DnaViewModel";
 import { ZvmConstructor } from "./ZomeViewModel";
-import {Dictionary} from "@holochain-open-dev/core-types";
+import {BaseRoleName} from "@ddd-qc/cell-proxy";
+//import {Dictionary} from "@holochain-open-dev/core-types";
 
 
 
@@ -17,14 +10,15 @@ import {Dictionary} from "@holochain-open-dev/core-types";
 export type ZvmDef = ZvmConstructor | [ZvmConstructor, ZomeName]; // optional ZomeName override
 
 // export type DvmDef = DvmConstructor
-//   | [DvmConstructor, RoleId]
-//   //| [DvmConstructor, RoleId, DnaModifiers] // optional roleId override
+//   | [DvmConstructor, BaseRoleName]
+//   //| [DvmConstructor, BaseRoleName, DnaModifiers] // optional overrides
 
 
 export interface DvmDef {
   ctor: DvmConstructor,
-  roleId?: RoleId,
+  baseRoleName?: BaseRoleName, // optional BaseRoleName override
   isClonable: boolean,
+  //canCreateOnInstall: boolean,
 }
 
 

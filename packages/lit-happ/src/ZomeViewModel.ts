@@ -1,7 +1,7 @@
 import {createContext} from "@lit-labs/context";
-import {CellProxy, ZomeProxy, ZomeProxyConstructor, IInstalledCell} from "@ddd-qc/cell-proxy";
+import {CellProxy, ZomeProxy, ZomeProxyConstructor, IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {CellId, InstalledCell, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 
 
@@ -64,7 +64,7 @@ export abstract class ZomeViewModel extends ViewModel implements IInstalledCell 
 
     /** InstalledCell interface */
     get installedCell(): InstalledCell { return this._zomeProxy.installedCell }
-    get roleId(): RoleId { return this._zomeProxy.roleId }
+    get roleInstanceId(): RoleInstanceId { return this._zomeProxy.roleInstanceId }
     get cellId(): CellId { return this._zomeProxy.cellId }
     get dnaHash(): EntryHashB64 { return this._zomeProxy.dnaHash}
     get agentPubKey(): AgentPubKeyB64 { return this._zomeProxy.agentPubKey }

@@ -1,5 +1,6 @@
 import { serializeHash } from "@holochain-open-dev/utils";
-import {CellId} from "@holochain/client";
+import {CellId, InstalledAppInfo} from "@holochain/client";
+import {CellIdStr, IInstalledCell} from "./types";
 
 /** */
 export function areArraysEqual(first: Uint8Array, second: Uint8Array) {
@@ -42,6 +43,7 @@ export function anyToB64(obj: any): any {
   return obj;
 }
 
+/** -- Pretty print -- */
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
@@ -59,6 +61,25 @@ export function prettyDate(date: Date): string {
 }
 
 
+
+
+/** */
+export function printAppInfo(appInfo: InstalledAppInfo): string {
+  let print = `Happ "${appInfo.installed_app_id}" info: (status: ${JSON.stringify(appInfo.status)})`;
+  for (const installedCell of appInfo.cell_data) {
+    print += "\n - " + installedCell.role_id + ": " + CellIdStr(installedCell.cell_id);
+  }
+  return print;
+}
+
+
+/** */
+export function printInstalledCell(installedCell: IInstalledCell): string {
+  return `InstalledCell "${installedCell.roleInstanceId}": ${installedCell.dnaHash}`;
+}
+
+
+/** -- Experimental -- */
 
 /**
  *

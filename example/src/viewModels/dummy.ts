@@ -76,7 +76,7 @@ export class DummyDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_ROLE_ID = "rDummy";
+  static readonly DEFAULT_BASE_ROLE_NAME = "rDummy";
   static readonly ZVM_DEFS = DUMMY_DEF;
   readonly signalHandler: AppSignalCb = this.handleSignal;
 

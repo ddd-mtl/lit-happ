@@ -22,9 +22,9 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 
 
   /** -- Abstract methods -- */
-  
+
   abstract getContext(): any;
-  /* Child class should implement with specific type */  
+  /* Child class should implement with specific type */
   abstract get perspective(): any;
   /* (optional) Lets the observer trigger probing in order to get an updated perspective */
   async probeAll(): Promise<void> {}
@@ -41,7 +41,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 
   /** Set ContextProvider for host */
   provideContext(providerHost: ReactiveElement): void {
-    console.log(`Providing context "${this.getContext()}" | in host `, providerHost);
+    console.log(`\t\tProviding context "${this.getContext()}" | in host `, providerHost);
     this._provider = new ContextProvider(providerHost, this.getContext(), this);
   }
 

@@ -1,6 +1,6 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
-import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/lit-happ";
+import {EntryDefSelect, HvmDef, CellContext, HappElement, RoleInstanceId, CloneIndex} from "@ddd-qc/lit-happ";
 import { DummyDvm } from "./viewModels/dummy";
 import {RealCloneDvm, RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -25,32 +25,35 @@ export class PlaygroundCloneApp extends HappElement {
       {
         ctor: DummyDvm,
         isClonable: false,
+        //canCreateOnInstall: true,
       },
       {
         ctor: RealCloneDvm,
         isClonable: true,
+        //canCreateOnInstall: false,
       }
     ],
   };
 
   /** QoL */
-  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }
-  get realDvms(): RealCloneDvm[] {return this.hvm.getDvms(RealDvm.DEFAULT_ROLE_ID)! as RealCloneDvm[]}
-  realDvmClone(name_or_index: number | string): RealDvm { return this.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID, name_or_index)! as RealDvm }
+  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_BASE_ROLE_NAME)! as DummyDvm }
+  get realDvmClones(): RealCloneDvm[] {return this.hvm.getClones(RealDvm.DEFAULT_BASE_ROLE_NAME)! as RealCloneDvm[]}
+  realDvmClone(index: CloneIndex): RealDvm { return this.hvm.getDvm(RoleInstanceId(RealDvm.DEFAULT_BASE_ROLE_NAME, index))! as RealDvm }
 
 
+  /** override */
+  async happInitialized(): Promise<void> {
+    await this.hvm.probeAll();
+  }
 
   /** */
   async onProbe(e: any) {
-    this.hvm.probeAll();
+    await this.hvm.probeAll();
   }
 
   /** */
   async onAddClone(e: any) {
-    await this.hvm.addCloneDvm(    {
-      ctor: RealCloneDvm,
-      isClonable: true,
-    })
+    await this.hvm.cloneDvm(RealCloneDvm.DEFAULT_BASE_ROLE_NAME)
     this.requestUpdate();
   }
 
@@ -68,7 +71,7 @@ export class PlaygroundCloneApp extends HappElement {
     //console.log("<playground-clone-app> render()", this.hvm);
 
     /** render all clones */
-    const clones = Object.values(this.realDvms).map((realDvm) => {
+    const clones = Object.values(this.realDvmClones).map((realDvm) => {
       return html`
           <hr style="border-style:dotted;">
           <cell-context .installedCell="${realDvm.installedCell}">
@@ -97,7 +100,7 @@ export class PlaygroundCloneApp extends HappElement {
         <!-- INSPECTORS -->
         <hr style="border-style:solid;">
         <dummy-inspect></dummy-inspect> 
-        <!-- <real-inspect></real-inspect> -->
+        <real-inspect></real-inspect> 
         <!-- DUMMY -->          
         <hr style="border-style:solid;">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
@@ -110,7 +113,7 @@ export class PlaygroundCloneApp extends HappElement {
         </cell-context>
         <!-- Clones -->
         <hr style="border-style:solid;">
-        <h2>Clones of "${RealCloneDvm.DEFAULT_ROLE_ID}": ${this.realDvms.length}</h2>
+        <h2>Clones of "${RealCloneDvm.DEFAULT_BASE_ROLE_NAME}": ${this.realDvmClones.length}</h2>
         <input type="button" value="Add" @click=${this.onAddClone}>
         ${clones}
       </div>

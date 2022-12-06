@@ -2,12 +2,12 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
-import {CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {CellId, InstalledCell, ZomeName} from "@holochain/client";
 import {serializeHash} from "@holochain-open-dev/utils";
 import {cellContext} from "./elements/cell-context";
 import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ZomeViewModel } from "./ZomeViewModel";
-import {IInstalledCell} from "@ddd-qc/cell-proxy";
+import {IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -37,7 +37,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   perspective!: P;
 
   /** InstalledCell interface */
-  get roleId(): RoleId { return this.installedCell.role_id }
+  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_id }
   get cellId(): CellId { return this.installedCell.cell_id }
   get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }
   get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.installedCell.cell_id[1]) }
@@ -51,7 +51,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
       throw Error(`"cellContext" not found in ZomeElement "${this.constructor.name}"`)
     }
     const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
-    console.log(`Requesting context "${contextType}"`)
+    console.log(`\t\tRequesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,

@@ -1,7 +1,7 @@
 import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {serializeHash} from "@holochain-open-dev/utils";
-import { ZomeElement } from "@ddd-qc/lit-happ";
+import { ZomeElement, printInstalledCell } from "@ddd-qc/lit-happ";
 
 /**
  *
@@ -30,7 +30,8 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   /** */
   render() {
-    //console.log("<real-list> render()", this._zvm)
+    console.log("<real-list> render(): " + printInstalledCell(this._zvm));
+
     //console.log("real-list:", this.perspective.floats)
 
     const dummyLi = Object.values(this.perspective.floats).map(

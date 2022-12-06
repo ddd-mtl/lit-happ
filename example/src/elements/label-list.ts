@@ -1,7 +1,8 @@
 import {html} from "lit";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {serializeHash} from "@holochain-open-dev/utils";
-import {ZomeElement} from "@ddd-qc/lit-happ";
+import {ZomeElement, printInstalledCell} from "@ddd-qc/lit-happ";
+
 
 /**
  *
@@ -29,7 +30,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   /** */
   render() {
-    //console.log("<label-list> render()", this.cellData, this._loaded)
+    console.log("<label-list> render(): " + printInstalledCell(this._zvm));
     //console.log("label-list:", this.perspective.names)
 
     const dummyLi = Object.values(this.perspective.names).map(

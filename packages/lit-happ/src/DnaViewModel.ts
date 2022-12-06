@@ -2,7 +2,7 @@ import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {AgentPubKeyB64, Dictionary, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ViewModel} from "./ViewModel";
-import {AppSignalCb, CellId, InstalledAppId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {AppSignalCb, CellId, InstalledAppId, InstalledCell, ZomeName} from "@holochain/client";
 import {DnaModifiersOptions, ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
 import {
@@ -12,7 +12,8 @@ import {
   ConductorAppProxy,
   HCL,
   IInstalledCell,
-  CellIndex
+  CloneIndex,
+  BaseRoleName, RoleInstanceId, CellLocation
 } from "@ddd-qc/cell-proxy";
 
 
@@ -32,8 +33,8 @@ export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersO
     host: ReactiveElement,
     installedAppId: InstalledAppId,
     conductorAppProxy: ConductorAppProxy,
-    roleId?: RoleId,
-    cellIndex?: CellIndex,
+    baseRoleName?: BaseRoleName,
+    cloneIndex?: CloneIndex,
     ): DnaViewModel;
 };
 
@@ -53,14 +54,20 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   public cloneName?: string;
 
   /** Ctor */
-  constructor(host: ReactiveElement, appId: InstalledAppId, conductorAppProxy: ConductorAppProxy, roleId?: RoleId, public readonly cellIndex?: CellIndex) {
+  constructor(host: ReactiveElement,
+              appId: InstalledAppId,
+              conductorAppProxy: ConductorAppProxy,
+              baseRoleName?: BaseRoleName,
+              public readonly cloneIndex?: CloneIndex,
+  ) {
     super();
-    if (roleId) {
-      this.roleId = roleId;
+    if (baseRoleName) {
+      this.baseRoleName = baseRoleName;
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
-    this._cellProxy = conductorAppProxy.getCellProxy(appId, this.roleId, cellIndex); // WARN can throw error
+    const cellLocation = CellLocation.from(appId, this.baseRoleName, cloneIndex)
+    this._cellProxy = conductorAppProxy.getCellProxyByLocation(cellLocation); // WARN can throw error
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;
@@ -73,7 +80,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
       this._zomeViewModels[zvm.zomeName] = zvm;
       this._zomeNames[zvmDef.constructor.name] = zvm.zomeName;
     }
-    this.hcl = conductorAppProxy.getCellLocation(this.cellId)!;
+    this.hcl = CellLocation.from(appId, this.baseRoleName, cloneIndex).asHcl();
     this.provideContext(host); // TODO move this to host.connectedCallback? e.g. change ViewModel to a ReactiveController
   }
 
@@ -90,7 +97,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   /** InstalledCell interface */
   get installedCell(): InstalledCell {return this._cellProxy.installedCell}
-  //get roleId(): RoleId { return this._cellProxy.roleId } // Already defined in RoleSpecificMixin
+  get roleInstanceId(): RoleInstanceId { return this._cellProxy.roleInstanceId }
   get cellId(): CellId { return this._cellProxy.cellId }
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
@@ -100,7 +107,6 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
-
   getZomeName(zvm: typeof ZomeViewModel): ZomeName | undefined { return this._zomeNames[zvm.constructor.name]}
 
   /** -- Methods -- */
@@ -115,7 +121,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   }
 
 
-  getContext():any {return createContext<typeof this>('dvm/' + this.roleId)};
+  getContext():any {return createContext<typeof this>('dvm/' + this.baseRoleName)};
 
 
   /** */

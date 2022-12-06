@@ -75,7 +75,7 @@ export class RealDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_ROLE_ID = "rReal";
+  static readonly DEFAULT_BASE_ROLE_NAME = "rReal";
   static readonly ZVM_DEFS = REAL_DEF;
   readonly signalHandler = this.handleRealSignal;
 
@@ -109,7 +109,7 @@ export class RealCloneDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_ROLE_ID = "rReal";
+  static readonly DEFAULT_BASE_ROLE_NAME = "rReal";
   static readonly ZVM_DEFS = REAL_DEF;
   static readonly DNA_MODIFIERS = REAL_DNA_MODIFIERS;
 

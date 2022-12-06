@@ -1,6 +1,6 @@
 import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
-import {ConductorAppProxy} from "@ddd-qc/cell-proxy";
+import {BaseRoleName, ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {CellDef, DvmDef, HvmDef} from "./definitions";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
@@ -18,12 +18,15 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   conductorAppProxy!: ConductorAppProxy;
   @state() hvm!: HappViewModel;
 
+
   /** Ctor */
   protected constructor(port_or_socket: number | AppWebsocket, appId?: InstalledAppId) {
     super();
     /* await */ this.initHapp(port_or_socket, appId);
   }
 
+
+  async happInitialized(): Promise<void> {}
 
   /** */
   protected async initHapp(port_or_socket: number | AppWebsocket, appId?: InstalledAppId): Promise<void> {
@@ -37,12 +40,13 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
       hvmDef.id = appId;
     }
     this.hvm = await HappViewModel.new(this, this.conductorAppProxy, hvmDef);
+    await this.happInitialized();
   }
 
 
   /** */
-  async createClone(dvmDef: DvmDef, cellDef?: CellDef): Promise<void> {
-    const [index, dvm] = await this.hvm.addCloneDvm(dvmDef, cellDef);
+  async createClone(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<void> {
+    const [index, dvm] = await this.hvm.cloneDvm(baseRoleName, cellDef);
   }
 
 

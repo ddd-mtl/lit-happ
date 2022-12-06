@@ -1,8 +1,8 @@
-import {CapSecret, CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {CapSecret, CellId, InstalledCell, ZomeName} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
 import {ZomeSpecific} from "./mixins";
 import {CellProxy} from "./CellProxy";
-import {IInstalledCell} from "./types";
+import {IInstalledCell, RoleInstanceId} from "./types";
 
 
 export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
@@ -27,7 +27,7 @@ export abstract class ZomeProxy extends ZomeSpecific implements IInstalledCell {
 
   /** InstalledCell interface */
   get installedCell(): InstalledCell { return this._cellProxy.installedCell }
-  get roleId(): RoleId { return this._cellProxy.roleId }
+  get roleInstanceId(): RoleInstanceId { return this._cellProxy.roleInstanceId }
   get cellId(): CellId { return this._cellProxy.cellId }
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }

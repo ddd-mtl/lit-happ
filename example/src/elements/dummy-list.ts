@@ -1,6 +1,6 @@
 import {html} from "lit";
 import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
-import {ZomeElement} from "@ddd-qc/lit-happ";
+import {ZomeElement, printInstalledCell} from "@ddd-qc/lit-happ";
 
 
 /**
@@ -31,7 +31,8 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
   /** */
   render() {
-    //console.log("<dummy-list> render()", this._zvm)
+    console.log("<dummy-list> render(): " + printInstalledCell(this._zvm));
+
     //console.log("dummy-list:", this.perspective.values)
 
     const dummyLi = Object.values(this.perspective.values).map(

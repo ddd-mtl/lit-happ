@@ -1,4 +1,5 @@
-import {InstalledAppId, RoleId, ZomeName} from "@holochain/client";
+import {InstalledAppId, ZomeName} from "@holochain/client";
+import {BaseRoleName} from "./types";
 
 type Constructor<T> = {new (): T};
 type GConstructor<T = {}> = new (...args: any[]) => T;
@@ -33,11 +34,9 @@ export const ZomeSpecific = ZomeSpecificMixin(Empty);
 
 export function RoleSpecificMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class ARoleSpecific extends Base {
-    constructor(...args: any[]){super(); this.roleId = (this.constructor as any).DEFAULT_ROLE_ID}
-    static readonly DEFAULT_ROLE_ID: RoleId;
-    roleId: RoleId;
-    //get roleId(): RoleId {return (this.constructor as any).ROLE_ID}
-    //setRoleId(name: RoleId): void {(this.constructor as any).ROLE_ID = name}
+    constructor(...args: any[]){super(); this.baseRoleName = (this.constructor as any).DEFAULT_BASE_ROLE_NAME}
+    static readonly DEFAULT_BASE_ROLE_NAME: BaseRoleName;
+    baseRoleName: BaseRoleName;
   };
   return ARoleSpecific;
 }

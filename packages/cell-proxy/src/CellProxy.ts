@@ -1,8 +1,8 @@
-import {AppSignalCb, CallZomeRequest, CapSecret, CellId, InstalledCell, RoleId, ZomeName} from "@holochain/client";
+import {CallZomeRequest, CapSecret, CellId, InstalledCell, ZomeName} from "@holochain/client";
 import { serializeHash } from "@holochain-open-dev/utils";
 import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
-import {IInstalledCell} from "./types";
+import {IInstalledCell, RoleInstanceId} from "./types";
 import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
 
 
@@ -53,7 +53,7 @@ export class CellProxy implements IInstalledCell {
 
   /** -- InstalledCell interface -- */
 
-  get roleId(): RoleId { return this.installedCell.role_id }
+  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_id}
   get cellId(): CellId { return this.installedCell.cell_id }
   get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }
   get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.installedCell.cell_id[1]) }
@@ -61,10 +61,10 @@ export class CellProxy implements IInstalledCell {
 
   /** -- Methods -- */
 
-  /** */
-  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
-    return this._conductor.addSignalHandler(handler, this.cellId);
-  }
+  // /** */
+  // addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
+  //   return this._conductor.addSignalHandler(handler, this.cellId);
+  // }
 
   dumpSignals() {
     this._conductor.dumpSignals(this.cellId);
@@ -188,7 +188,7 @@ export class CellProxy implements IInstalledCell {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn(`Dumping logs for cell "${this._conductor.getCellLocation(this.cellId)}"`)
+    console.warn(`Dumping logs for cell "${this._conductor.getHcls(this.cellId)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }

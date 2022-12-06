@@ -23,7 +23,7 @@
 
     "clean"           : "bash scripts/clean.sh",
     "clean:npm"       : "bash scripts/clean-npm.sh",
-    "clean:hc"        : "rm -rf .hc* && rm -rf we-applet/.hc*",
+    "clean:hc"        : "cd example && hc s clean",
     "clean:all"       : "npm run clean:hc && npm run clean:npm && npm run clean"
   },
   "repository": {

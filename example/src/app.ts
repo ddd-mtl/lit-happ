@@ -85,18 +85,17 @@ export class PlaygroundApp extends HappElement {
       },
       {
         ctor: RealDvm,
-        roleId: "rImpostor",
+        baseRoleName: "rImpostor",
         isClonable: false,
       }
     ],
   };
 
 
-
   /** QoL */
-  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_ROLE_ID)! as DummyDvm }
+  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_BASE_ROLE_NAME)! as DummyDvm }
   get impostorDvm(): RealDvm { return this.hvm.getDvm("rImpostor")! as RealDvm }
-  get realDvm(): RealDvm { return this.hvm.getDvm(RealDvm.DEFAULT_ROLE_ID)! as RealDvm }
+  get realDvm(): RealDvm { return this.hvm.getDvm(RealDvm.DEFAULT_BASE_ROLE_NAME)! as RealDvm }
 
 
   //@happy _happ!: HappElement;
@@ -125,6 +124,20 @@ export class PlaygroundApp extends HappElement {
   render() {
     console.log("<playground-app> render()", this.hvm);
 
+
+    //const maybeImpostor = html``;
+    const maybeImpostor = html`
+      <cell-context .installedCell="${this.impostorDvm.installedCell}">
+          <hr class="solid">
+          <h2>
+              Impostor Cell: ${this.impostorDvm.hcl}
+              <input type="button" value="dump logs" @click=${(e: any) => this.impostorDvm.dumpLogs()}>
+          </h2>
+          <real-list></real-list>
+          <label-list></label-list>
+      </cell-context>
+    `;
+
     return html`
       <div style="margin:10px;">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
@@ -139,7 +152,7 @@ export class PlaygroundApp extends HappElement {
         <hr class="solid">
         <dummy-inspect></dummy-inspect> 
         <real-inspect></real-inspect>
-        <real-inspect roleId="rImpostor"></real-inspect>   
+        <real-inspect baseRoleName="rImpostor"></real-inspect>   
         <hr class="solid">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
@@ -158,15 +171,7 @@ export class PlaygroundApp extends HappElement {
           <real-list></real-list>
           <label-list></label-list>
         </cell-context>
-        <cell-context .installedCell="${this.impostorDvm.installedCell}">
-          <hr class="solid">
-          <h2>
-            Impostor Cell: ${this.impostorDvm.hcl}
-            <input type="button" value="dump logs" @click=${(e: any) => this.impostorDvm.dumpLogs()}>
-          </h2>
-          <real-list></real-list>
-          <label-list></label-list>
-        </cell-context>
+        ${maybeImpostor}
       </div>
     `
   }

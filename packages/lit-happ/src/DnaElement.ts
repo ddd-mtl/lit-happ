@@ -3,25 +3,25 @@ import {LitElement} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
-import {CellId, InstalledCell, RoleId} from "@holochain/client";
+import {CellId, InstalledCell} from "@holochain/client";
 import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-import {IInstalledCell, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
+import {BaseRoleName, IInstalledCell, RoleInstanceId, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
 export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(ScopedElementsMixin(LitElement)) implements IInstalledCell {
 
-  /** if roleId is not provided, subclass must call requestDvm() in its Ctor */
-  constructor(roleId?: RoleId) {
+  /** if BaseRoleName is not provided, subclass must call requestDvm() in its Ctor */
+  constructor(baseRoleName?: BaseRoleName) {
     super();
-    if (roleId) {
-      this.roleId = roleId;
+    if (baseRoleName) {
+      this.baseRoleName = baseRoleName;
       this.requestDvm();
     }
   }
 
-  /** Provided by Context depending on roleId */
+  /** Provided by Context depending on BaseRoleName */
   @state() protected _dvm!: DVM;
 
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
@@ -29,7 +29,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
 
   /** InstalledCell interface */
   get installedCell(): InstalledCell {return this._dvm.installedCell}
-  //get roleId(): RoleId { return this._dvm.roleId } // Already defined in RoleSpecificMixin
+  get roleInstanceId(): RoleInstanceId { return this._dvm.roleInstanceId } // Already defined in RoleSpecificMixin
   get cellId(): CellId { return this._dvm.cellId }
   get dnaHash(): EntryHashB64 { return this._dvm.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._dvm.agentPubKey }
@@ -40,8 +40,8 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
   /** */
   protected requestDvm() {
     /** Consume Context based on given dnaHash */
-    const contextType = createContext<DVM>('dvm/'+ this.roleId);
-    console.log(`Requesting context "${contextType}"`)
+    const contextType = createContext<DVM>('dvm/'+ this.baseRoleName);
+    console.log(`\t\tRequesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
