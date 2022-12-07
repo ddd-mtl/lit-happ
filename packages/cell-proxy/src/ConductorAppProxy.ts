@@ -182,7 +182,7 @@ export class ConductorAppProxy implements AppApi {
     if (installedAppInfo == null) {
       Promise.reject(`fetchCells() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
-    console.log("fetchCells() installedAppInfo:\n", printAppInfo(installedAppInfo));
+    //console.log("fetchCells() installedAppInfo:\n", printAppInfo(installedAppInfo));
     /** Make sure app Object exists */
     if (!this._installedCellsByApp[appId]) {
       this._installedCellsByApp[appId] = {};

@@ -14,23 +14,22 @@ npm i @ddd-qc/cell-proxy
 
 ### Holochain Cell Locator
 
-A running Holochain cell can be refered by its `CellId`, but Holochain's API does not provide a way for refering to a cell based on its intended use by a happ.
-A cell is typically created from a Role in a `AppManifest`. It can also be created as a clone of an existing cell.
-This package propose the `Holochain Cell Locator`, a way to refer to a cell by its AppId, RoleName and CloneIndex.
+In Holochain, a running Holochain cell can be refered to by its `CellId`, but Holochain's does not provide a way for refering to a cell based on its intended use by a happ. A cell is typically created from a Role in a `AppManifest`, as a clone or not.
+This package propose the `Holochain Cell Locator`, a way to refer to a cell by its AppId, RoleName and CloneIndex or CloneName.
 The format is:
-`hcl://<InstalledAppId>/<BaseRoleName>/<CloneName | CloneIndex>`
-
-Example:
-`cell:/where/profiles`
-`cell:/chatApp/channel/europe`
-`cell:/chatApp/channel/2`
+`cell:/<InstalledAppId>/<BaseRoleName>/<CloneName | CloneIndex>/<CloneIndex>`
 
 The `BaseRoleName` is the `RoleName` as defined in the `AppManifest`, without the appended cloneIndex (if it is clonable).
 The `RoleName` with the appended cloneIndex is refered as `RoleInstanceId`.
 
-This way of addresssing clones makes it straightforward for querying all the cells of an happ or all the cells of a particular role for example.
+Examples:
+`cell:/where/profiles`
+`cell:/chatApp/channel/2`
+`cell:/chatApp/channel/europe/0`
 
-The HCL string is named `HCL`, whereas the HCL object is named `CellLocation`.
+This way of addresssing clones makes it straightforward for querying all the cells of a happ or all the cells of a particular role for example.
+
+The HCL string is named `HCLString`, whereas the HCL object is named `HCL`.
 
 
 ### ConductorAppProxy
@@ -69,11 +68,7 @@ const profilesHcl = new HCL("where", "profiles");
 /** Create AppProxy from provided local port */
 const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
 /** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
-const cellMap = await conductorAppProxy.mapInstalledCells(profilesHcl);
-/** Make sure a cell for this role exists */
-if (!cellMap.includes(profilesHcl.baseRoleName)) {
-  throw Error("Profiles role not installed in happ");
-}
+await conductorAppProxy.fetchCells(profilesHcl);
 /** Create a CellProxy for the "profiles" role */
 const profilesCellProxy = conductorAppProxy.createCellProxy(profilesHcl);
 /** Call zome function on the "profiles" zome */

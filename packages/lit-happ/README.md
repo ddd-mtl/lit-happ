@@ -35,9 +35,9 @@ The exact shape of a perspective is dependent on the ViewModel implementation fo
 
 On one side, the API defines a `ViewModel` abstract base class and abstract implementations for Zomes and Dnas.
 On the other, it provides `LitElement` abstract subclasses that make uses of `ViewModel` for Zomes, Dnas and Happs.
-Finally it provides two useful finalized `LitElement`:
- - `cell-context`: Provide the cell context to its children
- - `entry-defs-select`: A selector for picking an entryDef in the cell. 
+Finaly it provides two useful `LitElement`:
+ - `cell-context`: Provide the installed cell context to its children.
+ - `entry-defs-select`: A selector for picking an entryDef in the current cell. 
 
 ### ViewModel Definition
 
