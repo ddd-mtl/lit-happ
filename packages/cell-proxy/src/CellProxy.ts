@@ -188,7 +188,7 @@ export class CellProxy implements IInstalledCell {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn(`Dumping logs for cell "${this._conductor.getHcls(this.cellId)}"`)
+    console.warn(`Dumping logs for cell "${this._conductor.getLocations(this.cellId)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }

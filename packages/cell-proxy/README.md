@@ -21,8 +21,9 @@ The format is:
 `hcl://<InstalledAppId>/<BaseRoleName>/<CloneName | CloneIndex>`
 
 Example:
-`hcl://where/profiles`
-`hcl://where/ludotheque/europe`
+`cell:/where/profiles`
+`cell:/chatApp/channel/europe`
+`cell:/chatApp/channel/2`
 
 The `BaseRoleName` is the `RoleName` as defined in the `AppManifest`, without the appended cloneIndex (if it is clonable).
 The `RoleName` with the appended cloneIndex is refered as `RoleInstanceId`.

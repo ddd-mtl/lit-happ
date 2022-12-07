@@ -1,13 +1,7 @@
 import {Dictionary} from "@holochain-open-dev/core-types";
-import {CreateCloneCellRequest, InstalledAppId, InstalledCell} from "@holochain/client";
+import {CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
 import { ReactiveElement } from "lit";
-import {
-  BaseRoleName, CellIdStr, CellLocation,
-  CloneIndex,
-  ConductorAppProxy,
-  destructureRoleInstanceId, InstalledCellsMap,
-  RoleInstanceId
-} from "@ddd-qc/cell-proxy";
+import {BaseRoleName, CellIdStr, CellsMap, CloneIndex, ConductorAppProxy, HCL, RoleInstanceId} from "@ddd-qc/cell-proxy";
 import {CellDef, DvmDef, HvmDef} from "./definitions";
 import {DnaViewModel} from "./DnaViewModel";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
@@ -17,14 +11,6 @@ import {CellId} from "@holochain/client/lib/types";
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
 
 
-export type RoleDvms = {
-  def: DvmDef,
-  original: CellId,
-  /** CloneName / Index -> CellId */
-  clones: Dictionary<CellId>,
-}
-
-
 /**
  * "ViewModel" of a hApp
  * Creates and stores all the DnaViewModels from the happDef.
@@ -32,9 +18,9 @@ export type RoleDvms = {
  export class HappViewModel {
 
   /** -- Fields -- */
-  readonly installedAppId: InstalledAppId;
-  /** CellIdStr -> DnaViewModel */
-  protected _dvmMap: Dictionary<DnaViewModel[]> = {};
+  readonly appId: InstalledAppId;
+  /** HCLString -> DnaViewModel */
+  protected _dvmMap: Dictionary<DnaViewModel> = {};
   /** BaseRoleName -> DvmDef */
   protected _defMap: Dictionary<DvmDef> = {};
 
@@ -46,43 +32,37 @@ export type RoleDvms = {
     return this._defMap[name];
   }
 
-
   /** */
-  getCellDvms(cellId: CellId): DnaViewModel[] | undefined {
-    return this._dvmMap[CellIdStr(cellId)];
+  getCellDvms(cellId: CellId): Dictionary<DnaViewModel> | undefined {
+    const hcls = this._conductorAppProxy.getLocations(cellId);
+    if (hcls === undefined) return undefined;
+    let dict: Dictionary<DnaViewModel> = {};
+    for (const hcl of hcls) {
+      const maybe = this.getDvm(hcl);
+      if (maybe) {
+        dict[hcl.toString()] = maybe;
+      }
+    }
+    return dict;
   }
 
   /** */
-  getDvm(id: RoleInstanceId): DnaViewModel | undefined {
-    const cellLoc = new CellLocation(this.installedAppId, id);
-    const maybeCell = this._conductorAppProxy.getInstalledCellByLocation(cellLoc);
-    if (!maybeCell) return undefined;
-    const dvms = this.getCellDvms(maybeCell.cell_id);
-    if (!dvms) return undefined;
-    for (const dvm of dvms) {
-      if (dvm.roleInstanceId == id) {
-        return dvm;
-      }
+  getDvm(hclOrId: HCL | RoleInstanceId): DnaViewModel | undefined {
+    if (typeof  hclOrId === 'string') {
+      hclOrId = new HCL(this.appId, hclOrId);
     }
-    return undefined;
+    return this._dvmMap[hclOrId.toString()];
   }
 
   /** */
   getClones(baseRoleName: BaseRoleName): DnaViewModel[] {
-    const cloneIds: InstalledCell[] = this._conductorAppProxy.getClones(this.installedAppId, baseRoleName);
-    let clones = []
-    for (const installedCell of cloneIds) {
-      const maybeDvms = this.getCellDvms(installedCell.cell_id)
-      if (!maybeDvms) {
-        console.warn("DVM not found for", CellIdStr(installedCell.cell_id), baseRoleName);
-        continue;
-      }
-      for (const dvm of maybeDvms) {
-        const maybePair = destructureRoleInstanceId(dvm.roleInstanceId)
-        const curBaseName = maybePair? maybePair[0] : dvm.roleInstanceId;
-        if (curBaseName == baseRoleName) {
-          clones.push(dvm);
-        }
+    const searchHcl = new HCL(this.appId, baseRoleName);
+    let clones = [];
+    //console.log("getClones()", baseRoleName, this._dvmMap);
+    for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
+      const hcl = HCL.parse(sHcl);
+      if (hcl.isClone() && hcl.match(searchHcl)) {
+        clones.push(dvm);
       }
     }
     return clones;
@@ -93,14 +73,15 @@ export type RoleDvms = {
 
   /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
   static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
-    console.log("HappViewModel.new()", hvmDef.id)
+    //console.log("HappViewModel.new()", hvmDef.id)
     /** Create all Cell Proxies in the definition */
     for (const dvmDef of hvmDef.dvmDefs) {
       const baseRoleName = dvmDef.baseRoleName
         ? dvmDef.baseRoleName
         : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
-      await conductorAppProxy.mapInstalledCells(hvmDef.id, baseRoleName);
-      conductorAppProxy.createCellProxy(hvmDef.id, baseRoleName);
+      await conductorAppProxy.fetchCells(hvmDef.id, baseRoleName);
+      const hcl = new HCL(hvmDef.id, baseRoleName);
+      conductorAppProxy.createCellProxy(hcl);
     }
     return new HappViewModel(host, conductorAppProxy, hvmDef);
   }
@@ -110,83 +91,79 @@ export type RoleDvms = {
   private constructor(
     protected _host: ReactiveElement, /* VIEW */
     protected _conductorAppProxy: ConductorAppProxy, /* MODEL */
-    hvmDef: HvmDef, /* VIEW-MODEL */
+    hvmDef: HvmDef, /* VIEW-MODEL definition */
     ) {
-    this.installedAppId = hvmDef.id;
+    this.appId = hvmDef.id;
     /** Create all non-deferred DVMs for this Happ */
     for (const dvmDef of hvmDef.dvmDefs) {
-      // let baseRoleName = dvmDef.baseRoleName
-      //   ? dvmDef.baseRoleName
-      //   : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
       this.createOriginalDvm(dvmDef);
     }
     this.createStartingClonesDvm();
-    console.log("HappViewModel created", this._dvmMap)
+    //console.log("HappViewModel created", this._dvmMap)
   }
 
 
   /** -- Methods -- */
 
+  /** */
   private createStartingClonesDvm(): void {
-    const appInstalledCells: InstalledCellsMap = this._conductorAppProxy.getAppCells(this.installedAppId)!;
-    for (const [baseRoleName, roleInstalledCells] of Object.entries(appInstalledCells)) {
+    const appInstalledCells: CellsMap = this._conductorAppProxy.getAppCells(this.appId)!;
+    for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
-      for (const name_or_index of Object.keys(roleInstalledCells.clones)) {
+      for (const name_or_index of Object.keys(roleCells.clones)) {
         const cloneIndex: CloneIndex = Number(name_or_index); // TODO: Change this when supporting cloneNames
-        this._conductorAppProxy.createCellProxy(this.installedAppId, baseRoleName, cloneIndex);
-        this.createDvm(def, baseRoleName, cloneIndex);
+        const hcl = new HCL(this.appId, baseRoleName, cloneIndex);
+        this._conductorAppProxy.createCellProxy(hcl);
+        this.createDvm(def, hcl);
       }
     }
   }
 
 
   /** */
-  private createDvm(dvmDef: DvmDef, baseRoleName: BaseRoleName, cloneIndex?: CloneIndex, cellDef?: CellDef,  cloneName?: string): DnaViewModel {
-    let dvm: DnaViewModel = new dvmDef.ctor(this._host, this.installedAppId, this._conductorAppProxy, baseRoleName, cloneIndex); // WARN this can throw an error
-    const cellIdStr = CellIdStr(dvm.cellId);
-    const cellLoc = CellLocation.from(this.installedAppId, baseRoleName, cloneIndex);
-    console.log(`  createDvm() for "${cellLoc.asHcl()}" ; cellId: ${cellIdStr}`);
+  private createDvm(dvmDef: DvmDef, hcl: HCL): DnaViewModel {
+    const dvm: DnaViewModel = new dvmDef.ctor(this._host, this._conductorAppProxy, hcl); // WARN this can throw an error
+    //console.log(`  createDvm() for "${hcl.toString()}" ; cellId: ${CellIdStr(dvm.cellId)}`);
     /** Setup signalHandler */
     if (dvm.signalHandler) {
       //console.log(`"${dvm.baseRoleName}" signalHandler added`, dvm.signalHandler);
-      //conductorAppProxy.addSignalHandler(dvm.signalHandler});
       try {
         this._conductorAppProxy.addSignalHandler((sig: AppSignal) => {
           dvm.signalHandler!(sig)
-        }, cellLoc.asHcl());
+        }, hcl.toString());
       } catch (e) {
         console.error(e)
       }
     }
-    /** Store and index it */
-    if (!this._dvmMap[cellIdStr]) {
-      this._dvmMap[cellIdStr] = []
+    /** Store it */
+    if (this._dvmMap[hcl.toString()]) {
+      throw Error("DVM already exists for " + hcl.toString());
     }
-    this._dvmMap[cellIdStr].push(dvm);
+    this._dvmMap[hcl.toString()] = dvm;
     /** Done */
     return dvm;
   }
 
 
   /** */
-  private createOriginalDvm(dvmDef: DvmDef, cellDef?: CellDef): void {
-    /** Determine params */
+  private createOriginalDvm(dvmDef: DvmDef): void {
+    /** Determine baseRoleName */
     const baseRoleName = dvmDef.baseRoleName
       ? dvmDef.baseRoleName
       : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
-    console.log("createOriginalDvm() for ", baseRoleName);
-    if (this._dvmMap[baseRoleName]) {
-      Promise.reject(`createOriginalDvm() failed. DVM for original cell of ${baseRoleName} already exists.`);
+    //console.log("createOriginalDvm() for ", baseRoleName);
+    if (this._defMap[baseRoleName]) {
+      throw Error(`createOriginalDvm() failed. DVM for original cell of ${baseRoleName} already exists.`);
     }
-    this.createDvm(dvmDef, baseRoleName/*, cellDef*/);
+    const hcl = new HCL(this.appId, baseRoleName as RoleInstanceId);
+    this.createDvm(dvmDef, hcl);
     this._defMap[baseRoleName] = dvmDef;
   }
 
 
-
   /** */
   async cloneDvm(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[number, DnaViewModel]> {
-    console.log("createCloneDvm()", baseRoleName);
+    //console.log("createCloneDvm()", baseRoleName);
     /** Check preconditions */
     const def = this._defMap[baseRoleName];
     if (!def) {
@@ -195,49 +172,51 @@ export type RoleDvms = {
     if (!def.isClonable) {
       Promise.reject(`createCloneDvm() failed. Role "${baseRoleName}" is not clonable.`)
     }
-    /** */
-    //await this._conductorAppProxy.mapInstalledCells(this.installedAppId, baseRoleName);
+    /** Get cloneIndex */
     const clones = this.getClones(baseRoleName);
     const cloneIndex: CloneIndex = clones.length;
-    let cloneName = "" + cloneIndex;
-    /** Create Cell if it's a clone */
+    let hcl = new HCL(this.appId, baseRoleName, cloneIndex);
+    /** Build default request */
     let request: CreateCloneCellRequest = {
-      app_id: this.installedAppId,
+      app_id: this.appId,
       role_id: baseRoleName,
       modifiers: {
-        network_seed: "" + cloneIndex,
+        network_seed: String(cloneIndex),
       },
     }
+    /** Modify hcl & request according to CellDef */
     if (cellDef) {
       request.modifiers = cellDef.modifiers;
       request.membrane_proof = cellDef.membraneProof;
       request.name = cellDef.cloneName;
       if (cellDef.cloneName) {
-        cloneName = cellDef.cloneName;
+        hcl = new HCL(this.appId, baseRoleName, cloneIndex, cellDef.cloneName);
       }
     }
     /** Create Cell */
-    const cloneInstalledCell = await this._conductorAppProxy.createCloneCell(request);
-    console.log("cloneInstalledCell", CellIdStr(cloneInstalledCell.cell_id));
+    const cloneCell = await this._conductorAppProxy.createCloneCell(request);
+    //console.log("clone created:", CellIdStr(cloneCell.cell_id));
     /** Get created cell */
-    const cellLoc = CellLocation.from(this.installedAppId, baseRoleName, cloneIndex);
-    this._conductorAppProxy.addCloneInstalledCell(cellLoc, cloneInstalledCell);
-    //await this._conductorAppProxy.mapInstalledCells(this.installedAppId, baseRoleName);
+    this._conductorAppProxy.addClone(hcl, cloneCell);
     /** Create CellProxy */
-    this._conductorAppProxy.createCellProxy(this.installedAppId, baseRoleName, cloneIndex);
+    this._conductorAppProxy.createCellProxy(hcl);
     /** Create DVM */
-    console.log({dvmMapBefore: this._dvmMap})
-    const dvm = this.createDvm(def, baseRoleName, cloneIndex, cellDef, cloneName);
-    console.log({dvmMapAfter: this._dvmMap})
+    const dvm = this.createDvm(def, hcl);
     return [cloneIndex, dvm];
   }
 
 
   /** */
   async probeAll(): Promise<void> {
-    for (const dvms of Object.values(this._dvmMap)) {
-      if (dvms.length <= 0) continue;
-      await dvms[0].probeAll();
+    for (const dvm of Object.values(this._dvmMap)) {
+      await dvm.probeAll();
+    }
+  }
+
+  /** */
+  async initialProbe(): Promise<void> {
+    for (const dvm of Object.values(this._dvmMap)) {
+      await dvm.initialProbe();
     }
   }
 
@@ -249,12 +228,11 @@ export type RoleDvms = {
       if (dvm) {
         dvm.dumpLogs();
       } else {
-        console.error(`dumpLogs() failed. Role "${roleInstanceId}" not found in happ "${this.installedAppId}"`)
+        console.error(`dumpLogs() failed. Role "${roleInstanceId}" not found in happ "${this.appId}"`)
       }
     } else {
-      for (const dvms of Object.values(this._dvmMap)) {
-        if (dvms.length <= 0) continue;
-        dvms[0].dumpLogs();
+      for (const dvm of Object.values(this._dvmMap)) {
+        dvm.dumpLogs();
       }
     }
   }

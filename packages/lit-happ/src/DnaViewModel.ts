@@ -13,7 +13,7 @@ import {
   HCL,
   IInstalledCell,
   CloneIndex,
-  BaseRoleName, RoleInstanceId, CellLocation
+  BaseRoleName, RoleInstanceId,
 } from "@ddd-qc/cell-proxy";
 
 
@@ -29,13 +29,7 @@ interface IDnaViewModel {
 }
 
 export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersOptions} & {
-  new(
-    host: ReactiveElement,
-    installedAppId: InstalledAppId,
-    conductorAppProxy: ConductorAppProxy,
-    baseRoleName?: BaseRoleName,
-    cloneIndex?: CloneIndex,
-    ): DnaViewModel;
+  new(host: ReactiveElement, proxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId): DnaViewModel;
 };
 
 
@@ -52,23 +46,19 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   abstract signalHandler?: AppSignalCb;
 
-  public cloneName?: string;
 
   /** Ctor */
-  constructor(host: ReactiveElement,
-              appId: InstalledAppId,
-              conductorAppProxy: ConductorAppProxy,
-              baseRoleName?: BaseRoleName,
-              public readonly cloneIndex?: CloneIndex,
-  ) {
+  constructor(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId) {
     super();
-    if (baseRoleName) {
-      this.baseRoleName = baseRoleName;
+    if (typeof idOrHcl === 'object') {
+      this.baseRoleName = idOrHcl.baseRoleName;
+      this.hcl = idOrHcl;
+    } else {
+      this.hcl = new HCL(idOrHcl, this.baseRoleName as RoleInstanceId);
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
-    const cellLocation = CellLocation.from(appId, this.baseRoleName, cloneIndex)
-    this._cellProxy = conductorAppProxy.getCellProxyByLocation(cellLocation); // WARN can throw error
+    this._cellProxy = conductorAppProxy.getCellProxy(this.hcl); // WARN can throw error
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;
@@ -81,7 +71,6 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
       this._zomeViewModels[zvm.zomeName] = zvm;
       this._zomeNames[zvmDef.constructor.name] = zvm.zomeName;
     }
-    this.cellLocation = CellLocation.from(appId, this.baseRoleName, cloneIndex);
     this.provideContext(host); // TODO move this to host.connectedCallback? e.g. change ViewModel to a ReactiveController
   }
 
@@ -94,13 +83,11 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   protected _zomeNames: Dictionary<ZomeName> = {};
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
-  public readonly cellLocation: CellLocation;
-
-  get hcl(): HCL {return this.cellLocation.asHcl()}
+  public readonly hcl: HCL;
 
   /** InstalledCell interface */
   get installedCell(): InstalledCell {return this._cellProxy.installedCell}
-  get roleInstanceId(): RoleInstanceId { return this.cellLocation.roleInstanceId }
+  get roleInstanceId(): RoleInstanceId { return this.hcl.roleInstanceId }
   get cellId(): CellId { return this._cellProxy.cellId }
   get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
   get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }

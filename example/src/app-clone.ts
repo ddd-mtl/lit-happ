@@ -1,6 +1,15 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
-import {EntryDefSelect, HvmDef, CellContext, HappElement, RoleInstanceId, CloneIndex} from "@ddd-qc/lit-happ";
+import {
+  EntryDefSelect,
+  HvmDef,
+  CellContext,
+  HappElement,
+  RoleInstanceId,
+  CloneIndex,
+  CellDef,
+  HCL
+} from "@ddd-qc/lit-happ";
 import { DummyDvm } from "./viewModels/dummy";
 import {RealCloneDvm, RealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
@@ -38,7 +47,7 @@ export class PlaygroundCloneApp extends HappElement {
   /** QoL */
   get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_BASE_ROLE_NAME)! as DummyDvm }
   get realDvmClones(): RealCloneDvm[] {return this.hvm.getClones(RealDvm.DEFAULT_BASE_ROLE_NAME)! as RealCloneDvm[]}
-  realDvmClone(index: CloneIndex): RealDvm { return this.hvm.getDvm(RoleInstanceId(RealDvm.DEFAULT_BASE_ROLE_NAME, index))! as RealDvm }
+  realDvmClone(index: CloneIndex): RealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, RealDvm.DEFAULT_BASE_ROLE_NAME, index))! as RealDvm }
 
 
   /** override */
@@ -54,6 +63,16 @@ export class PlaygroundCloneApp extends HappElement {
   /** */
   async onAddClone(e: any) {
     await this.hvm.cloneDvm(RealCloneDvm.DEFAULT_BASE_ROLE_NAME)
+    this.requestUpdate();
+  }
+
+  /** */
+  async onAddNamedClone(e: any) {
+    const input = this.shadowRoot!.getElementById("namedInput") as HTMLInputElement;
+    const name = String(input.value);
+    const cellDef: CellDef = {modifiers: {network_seed: name}, cloneName: name};
+    await this.hvm.cloneDvm(RealCloneDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
+    input.value = "";
     this.requestUpdate();
   }
 
@@ -76,8 +95,8 @@ export class PlaygroundCloneApp extends HappElement {
           <hr style="border-style:dotted;">
           <cell-context .installedCell="${realDvm.installedCell}">
               <h3>
-                  Real: ${realDvm.hcl} | ${realDvm.cloneName}
-                  <input type="button" value="dump logs" @click=${(e: any) => realDvm.dumpLogs()}>
+                ${realDvm.hcl.toString()}
+                <input type="button" value="dump logs" @click=${(e: any) => realDvm.dumpLogs()}>
               </h3>
               <real-list></real-list>
               <label-list></label-list>
@@ -105,7 +124,7 @@ export class PlaygroundCloneApp extends HappElement {
         <hr style="border-style:solid;">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
-            Dummy: ${this.dummyDvm.hcl} 
+            Dummy: ${this.dummyDvm.hcl.toString()} 
             <input type="button" value="dump logs" @click=${(e: any) => this.dummyDvm.dumpLogs()}>
           </h2>
           <dummy-list></dummy-list>
@@ -114,7 +133,10 @@ export class PlaygroundCloneApp extends HappElement {
         <!-- Clones -->
         <hr style="border-style:solid;">
         <h2>Clones of "${RealCloneDvm.DEFAULT_BASE_ROLE_NAME}": ${this.realDvmClones.length}</h2>
-        <input type="button" value="Add" @click=${this.onAddClone}>
+        <input type="button" value="Add nameless clone" @click=${this.onAddClone}>
+        <br/>        <br/>
+        <input type="text" id="namedInput" name="Value">
+        <input type="button" value="Add named clone" @click=${this.onAddNamedClone}>
         ${clones}
       </div>
     `

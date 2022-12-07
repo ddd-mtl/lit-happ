@@ -1,4 +1,4 @@
-import {CellId, InstalledAppId, InstalledAppInfo, InstalledCell} from "@holochain/client";
+import {CellId, InstalledCell} from "@holochain/client";
 import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {deserializeHash, serializeHash} from "@holochain-open-dev/utils";
@@ -22,14 +22,14 @@ export interface IInstalledCell {
 export type BaseRoleName = string;
 export type CloneIndex = number;
 
-export type RoleInstalledCells = {
+export type RoleCells = {
   original: InstalledCell,
   /** CloneName / Index -> InstalledCell */
   clones: Dictionary<InstalledCell>,
 }
 
-/** BaseRoleName -> RoleInstalledCells */
-export type InstalledCellsMap = Dictionary<RoleInstalledCells>;
+/** BaseRoleName -> RoleCells */
+export type CellsMap = Dictionary<RoleCells>;
 //export type CellMap = Dictionary<InstalledCell>;
 
 
@@ -53,64 +53,6 @@ export function destructureRoleInstanceId(id: RoleInstanceId): [BaseRoleName, Cl
 }
 
 
-
-/** -- HCL & Cell Location -- */
-
-/** HCL: Holochain Cell Location */
-export type HCL = string;
-
-/** */
-export class CellLocation {
-  constructor(
-  public readonly appId: InstalledAppId,
-  public readonly roleInstanceId: RoleInstanceId,
-  ){}
-
-  /** */
-  static from(appId: InstalledAppId, baseRoleName: BaseRoleName, cloneIndex?: CloneIndex): CellLocation {
-    const instanceId: RoleInstanceId = cloneIndex === undefined
-      ? baseRoleName as RoleInstanceId
-      : baseRoleName + "." + cloneIndex;
-    return new CellLocation(appId, instanceId);
-  }
-
-  // TODO
-  //static fromHcl(hcl: HCL): CellLocation {}
-
-  get baseRoleName(): BaseRoleName {
-    const maybe = destructureRoleInstanceId(this.roleInstanceId);
-    return maybe? maybe[0] : this.roleInstanceId as BaseRoleName
-  }
-
-  get cloneIndex(): CloneIndex | undefined {
-    const maybe = destructureRoleInstanceId(this.roleInstanceId);
-    return maybe? maybe[1] : undefined;
-  }
-
-  asHcl(): HCL {
-    let hcl = "hcl://" + this.appId + "/" + this.baseRoleName
-    const maybeCloneIndex = this.cloneIndex;
-    if (maybeCloneIndex !== undefined) {
-      hcl += "/" + maybeCloneIndex
-    }
-    return hcl;
-  }
-}
-
-
-// export function Hcl(loc_or_appId: InstalledAppId | CellLocation, baseRoleName?: BaseRoleName): HCL {
-//   if (Array.isArray(loc_or_appId)) {
-//     let hcl = "hcl://" + loc_or_appId[0] + "/" + loc_or_appId[1];
-//     if (loc_or_appId[2] >= 0) {
-//       hcl += "/" + loc_or_appId[2];
-//     }
-//     return hcl;
-//   }
-//   if (!baseRoleName) {
-//     throw Error("Hcl() failed. baseRoleName not provided");
-//   }
-//   return "hcl://" + loc_or_appId + "/" + baseRoleName!;
-// }
 
 
 /** -- CellIdStr -- */
