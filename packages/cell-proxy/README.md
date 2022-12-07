@@ -32,7 +32,7 @@ This way of addresssing clones makes it straightforward for querying all the cel
 The HCL string is named `HCL`, whereas the HCL object is named `CellLocation`.
 
 
-### `ConductorAppProxy`
+### ConductorAppProxy
 `ConductorAppProxy` is the main class that wraps an AppWebsocket and represents the conductor.
 
  - It keeps track of all the created cells by storing the `InstalledCells` in a retrievable way using `HCL` addresssing.
@@ -42,7 +42,7 @@ The HCL string is named `HCL`, whereas the HCL object is named `CellLocation`.
 A `ConductorAppProxy` can be created by providing an already existing `AppWebSocket` or by providing a local port where it will try to create an `AppWebSocket` internally by connecting to that port.
 
 
-### `CellProxy` 
+### CellProxy 
 
 `CellProxy` represents a running Cell, it provides a simple API for calling zome functions.
 
@@ -53,7 +53,7 @@ A `ConductorAppProxy` can be created by providing an already existing `AppWebSoc
  Zome calls that write to the source-chain should use the entry point `CellProxy.callZomeBlocking()`, that guarantees that no other blocking call runs in parallel, so to ensure there is no "source-chain" head rewrite errors.
 
 
-### `ZomeProxy` 
+### ZomeProxy 
 
 `ZomeProxy` is an abstract base class that makes use of a `CellProxy` for a specific zome.
 A subclass is expected to provide all the zome functions of a zome as directly callable methods.
@@ -62,18 +62,20 @@ Example: `profilesProxy.fetchAllProfiles()`
 
 ## Example use
 
-```=typescript
+```typescript
+/** HCL of the cell we want to use */
 const profilesHcl = new HCL("where", "profiles");
 /** Create AppProxy from provided local port */
 const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-/** Query and map out all the runnings cells for a Role in a happ */
+/** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
 const cellMap = await conductorAppProxy.mapInstalledCells(profilesHcl);
-if (!cellMap.include(profilesHcl.baseRoleName)) {
+/** Make sure a cell for this role exists */
+if (!cellMap.includes(profilesHcl.baseRoleName)) {
   throw Error("Profiles role not installed in happ");
 }
 /** Create a CellProxy for the "profiles" role */
 const profilesCellProxy = conductorAppProxy.createCellProxy(profilesHcl);
-/** Call zome function on the "profiles" zome" */
+/** Call zome function on the "profiles" zome */
 const profiles = await profilesCellProxy.callZome("profiles", "fetchAllProfiles", null);
 /** Dump all logs to console */
 conductorAppProxy.dumpLogs();
