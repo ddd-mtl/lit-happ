@@ -54,6 +54,7 @@ import {CellId} from "@holochain/client/lib/types";
     return this._dvmMap[hclOrId.toString()];
   }
 
+
   /** */
   getClones(baseRoleName: BaseRoleName): DnaViewModel[] {
     const searchHcl = new HCL(this.appId, baseRoleName);
@@ -76,6 +77,9 @@ import {CellId} from "@holochain/client/lib/types";
     //console.log("HappViewModel.new()", hvmDef.id)
     /** Create all Cell Proxies in the definition */
     for (const dvmDef of hvmDef.dvmDefs) {
+      if (dvmDef.ctor.DEFAULT_BASE_ROLE_NAME === undefined) {
+        Promise.reject("static field DEFAULT_BASE_ROLE_NAME not defined for class " + dvmDef.ctor.name);
+      }
       const baseRoleName = dvmDef.baseRoleName
         ? dvmDef.baseRoleName
         : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
@@ -83,7 +87,9 @@ import {CellId} from "@holochain/client/lib/types";
       const hcl = new HCL(hvmDef.id, baseRoleName);
       conductorAppProxy.createCellProxy(hcl);
     }
-    return new HappViewModel(host, conductorAppProxy, hvmDef);
+    const hvm = new HappViewModel(host, conductorAppProxy, hvmDef);
+    await hvm.initialProbe();
+    return hvm;
   }
 
 
@@ -214,7 +220,7 @@ import {CellId} from "@holochain/client/lib/types";
   }
 
   /** */
-  async initialProbe(): Promise<void> {
+  private async initialProbe(): Promise<void> {
     for (const dvm of Object.values(this._dvmMap)) {
       await dvm.initialProbe();
     }

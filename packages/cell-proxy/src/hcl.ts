@@ -7,11 +7,11 @@ import {BaseRoleName, CloneIndex, destructureRoleInstanceId, RoleInstanceId} fro
 export type HCLString = string;
 
 /**
- * Even when a clone is named the HCL must know its cloneIndex
+ * Even when a clone is named the HCL must know its cloneIndex. It is however not displayed when in string form.
  * Examples
  * `cell:/where/profiles`
  * `cell:/chatApp/channel/2`
- * `cell:/chatApp/channel/europe/0`
+ * `cell:/chatApp/channel/europe`
  */
 export class HCL {
 
@@ -73,10 +73,11 @@ export class HCL {
     const maybeCloneName = this.cloneName;
     if (maybeCloneName !== undefined) {
       hcl += "/" + maybeCloneName
-    }
-    const maybeCloneIndex = this.cloneIndex;
-    if (maybeCloneIndex !== undefined) {
-      hcl += "/" + maybeCloneIndex
+    } else {
+      const maybeCloneIndex = this.cloneIndex;
+      if (maybeCloneIndex !== undefined) {
+        hcl += "/" + maybeCloneIndex
+      }
     }
     return hcl;
   }

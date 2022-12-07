@@ -28,6 +28,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
   abstract get perspective(): any;
   /* (optional) Lets the observer trigger probing in order to get an updated perspective */
   async probeAll(): Promise<void> {}
+  /* (optional) Define the probing to do at startup (should get data on source-chain only) */
   async initialProbe(): Promise<void> {}
 
   /**

@@ -7,6 +7,7 @@ Builds on the `cell-proxy` package to provide a MVVM framework for building web-
 
 ```bash
 npm i @ddd-qc/lit-happ
+npm i @ddd-qc/cell-proxy
 ```
 
 ## Design
@@ -80,12 +81,13 @@ Initialize the Happ UI:
 init() {
   /** Create AppProxy from provided local port */
   this._conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-  /** Create HappViewModel from definition and AppProxy */   
+  /** Create HappViewModel from definition and AppProxy. Does the initial probe in background */   
   this._hvm = await HappViewModel.new(this, this._conductorAppProxy, playgroundDef);
-  await this._hvm.probeAll();
+  /** Grab the profiles ZomeViewModel */
   const profileZvm = (this._hvm.getDvm(ProfilesDvm.DEFAULT_ROLE_ID)! as ProfilesDvm).profilesZvm;
-  const me = await profileZvm.probeProfile(profileZvm.agentPubKey);
+  const me = profileZvm.perspective.myProfile;
   console.log({me});
+  /** Subscribe to updates from the "profiles" ZomeViewModel and bind it to a reactive property */
   profileZvm.subscribe(this, "profilesPerspective");   
 }
 ```

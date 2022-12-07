@@ -1,8 +1,6 @@
 ---
 manifest_version: "1"
 name: dDummy
-uuid: ~
-properties: ~
 integrity:
   origin_time: 2022-09-25T13:55:49.200Z
   zomes:

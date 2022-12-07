@@ -1,9 +1,7 @@
 ---
 manifest_version: "1"
-
 name: playground-clone
 description: Playground happ for testing lit-happ cloning features
-
 roles:
   - id: rDummy
     provisioning:
@@ -11,8 +9,6 @@ roles:
       deferred: true
     dna:
       bundled: ../../artifacts/dummy.dna
-      uuid: ~
-      properties: ~
       clone_limit: 0
   - id: rReal
     provisioning:
@@ -20,6 +16,4 @@ roles:
       deferred: true
     dna:
       bundled: ../../artifacts/real.dna
-      uuid: ~
-      properties: ~
       clone_limit: 10

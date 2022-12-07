@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/cell-proxy",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Wrapper for AppWebsocket",
   "main": "dist/index.js",
   "module": "dist/index.js",
