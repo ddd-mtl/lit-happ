@@ -1,6 +1,6 @@
 # cell-proxy
 
-Proxy classes and helpers for managing a Holochain AppWebsocket.
+Proxy classes and helpers for managing a Holochain AppWebsocket and calling zome functions on cells.
 The intent is to make the development of web UI of Holochain apps in javascript / typescript faster & easier by providing a straightforward API for communicating with a Conductor, and some basic logging features.
 
 
