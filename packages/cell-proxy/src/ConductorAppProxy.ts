@@ -181,13 +181,13 @@ export class ConductorAppProxy implements AppApi {
 
   /** -- Methods -- */
 
-  async createRoleInstalledCells(installed_app_id: InstalledAppId, baseRoleName: BaseRoleName): Promise<RoleInstalledCells> {
+  async mapInstalledCells(installed_app_id: InstalledAppId, baseRoleName: BaseRoleName): Promise<RoleInstalledCells> {
     /** Make sure hApp exists */
     const installedAppInfo: any = await this.appInfo({installed_app_id});
     if (installedAppInfo == null) {
       Promise.reject(`createCellProxy() failed. App "${installed_app_id}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
-    console.log("createRoleInstalledCells() installedAppInfo:\n", printAppInfo(installedAppInfo));
+    console.log("mapInstalledCells() installedAppInfo:\n", printAppInfo(installedAppInfo));
     /** Make sure app Object exists */
     if (!this._installedCellsByApp[installed_app_id]) {
       this._installedCellsByApp[installed_app_id] = {};
@@ -204,7 +204,7 @@ export class ConductorAppProxy implements AppApi {
       }
       if (maybePair) {
         if (clones["" + maybePair[1]]) {
-          console.error(`createRoleInstalledCells() Proxy already exist for clone: "${maybePair[0]}/${maybePair[1]}"`)
+          console.error(`mapInstalledCells() Proxy already exist for clone: "${maybePair[0]}/${maybePair[1]}"`)
         }
         clones["" + maybePair[1]] = curCell;
       } else {

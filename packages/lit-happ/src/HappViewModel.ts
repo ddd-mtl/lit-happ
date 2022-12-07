@@ -99,7 +99,7 @@ export type RoleDvms = {
       const baseRoleName = dvmDef.baseRoleName
         ? dvmDef.baseRoleName
         : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
-      await conductorAppProxy.createRoleInstalledCells(hvmDef.id, baseRoleName);
+      await conductorAppProxy.mapInstalledCells(hvmDef.id, baseRoleName);
       conductorAppProxy.createCellProxy(hvmDef.id, baseRoleName);
     }
     return new HappViewModel(host, conductorAppProxy, hvmDef);
@@ -196,7 +196,7 @@ export type RoleDvms = {
       Promise.reject(`createCloneDvm() failed. Role "${baseRoleName}" is not clonable.`)
     }
     /** */
-    //await this._conductorAppProxy.createRoleInstalledCells(this.installedAppId, baseRoleName);
+    //await this._conductorAppProxy.mapInstalledCells(this.installedAppId, baseRoleName);
     const clones = this.getClones(baseRoleName);
     const cloneIndex: CloneIndex = clones.length;
     let cloneName = "" + cloneIndex;
@@ -222,7 +222,7 @@ export type RoleDvms = {
     /** Get created cell */
     const cellLoc = CellLocation.from(this.installedAppId, baseRoleName, cloneIndex);
     this._conductorAppProxy.addCloneInstalledCell(cellLoc, cloneInstalledCell);
-    //await this._conductorAppProxy.createRoleInstalledCells(this.installedAppId, baseRoleName);
+    //await this._conductorAppProxy.mapInstalledCells(this.installedAppId, baseRoleName);
     /** Create CellProxy */
     this._conductorAppProxy.createCellProxy(this.installedAppId, baseRoleName, cloneIndex);
     /** Create DVM */
