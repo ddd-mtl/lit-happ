@@ -66,13 +66,13 @@ Example: `profilesProxy.fetchAllProfiles()`
 /** HCL of the cell we want to use */
 const profilesHcl = new HCL("where", "profiles");
 /** Create AppProxy from provided local port */
-const conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+const appProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
 /** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
-await conductorAppProxy.fetchCells(profilesHcl);
+await appProxy.fetchCells(profilesHcl);
 /** Create a CellProxy for the "profiles" role */
-const profilesCellProxy = conductorAppProxy.createCellProxy(profilesHcl);
+const profilesCellProxy = appProxy.createCellProxy(profilesHcl);
 /** Call zome function on the "profiles" zome */
 const profiles = await profilesCellProxy.callZome("profiles", "fetchAllProfiles", null);
 /** Dump all logs to console */
-conductorAppProxy.dumpLogs();
+appProxy.dumpLogs();
 ```
