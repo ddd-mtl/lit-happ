@@ -72,11 +72,11 @@ export const DUMMY_DEF: ZvmDef[] = [DummyZvm, [LabelZvm, "zDummyLabel"]];
 /**
  *
  */
-export class DummyDvm extends DnaViewModel {
+export class NamedIntegerDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "rDummy";
+  static readonly DEFAULT_BASE_ROLE_NAME = "rNamedInteger";
   static readonly ZVM_DEFS = DUMMY_DEF;
   readonly signalHandler: AppSignalCb = this.handleSignal;
 

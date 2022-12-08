@@ -8,14 +8,14 @@ import {
   RoleInstanceId,
   CloneIndex,
   CellDef,
-  HCL
+  HCL, ViewCellContext
 } from "@ddd-qc/lit-happ";
-import { DummyDvm } from "./viewModels/dummy";
-import {RealCloneDvm, RealDvm} from "./viewModels/real";
+import { NamedIntegerDvm } from "./viewModels/dummy";
+import {NamedRealCloneDvm, NamedRealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
-import { DummyInspect, RealInspect } from "./elements/dummy-inspect";
+import { NamedRealInspect } from "./elements/named-inspect";
 
 /**
  *
@@ -32,12 +32,12 @@ export class PlaygroundCloneApp extends HappElement {
     id: "playground-clone",
     dvmDefs: [
       {
-        ctor: DummyDvm,
+        ctor: NamedIntegerDvm,
         isClonable: false,
         //canCreateOnInstall: true,
       },
       {
-        ctor: RealCloneDvm,
+        ctor: NamedRealCloneDvm,
         isClonable: true,
         //canCreateOnInstall: false,
       }
@@ -45,10 +45,12 @@ export class PlaygroundCloneApp extends HappElement {
   };
 
   /** QoL */
-  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_BASE_ROLE_NAME)! as DummyDvm }
-  get realDvmClones(): RealCloneDvm[] {return this.hvm.getClones(RealDvm.DEFAULT_BASE_ROLE_NAME)! as RealCloneDvm[]}
-  realDvmClone(index: CloneIndex): RealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, RealDvm.DEFAULT_BASE_ROLE_NAME, index))! as RealDvm }
+  get dummyDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
+  get realDvmClones(): NamedRealCloneDvm[] {return this.hvm.getClones(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealCloneDvm[]}
+  realDvmClone(index: CloneIndex): NamedRealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedRealDvm.DEFAULT_BASE_ROLE_NAME, index))! as NamedRealDvm }
 
+
+  @state() private _selectedClone: HCL = new HCL("playground-clone", NamedRealDvm.DEFAULT_BASE_ROLE_NAME)
 
   /** override */
   async happInitialized(): Promise<void> {
@@ -62,7 +64,7 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** */
   async onAddClone(e: any) {
-    await this.hvm.cloneDvm(RealCloneDvm.DEFAULT_BASE_ROLE_NAME)
+    await this.hvm.cloneDvm(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME)
     this.requestUpdate();
   }
 
@@ -71,11 +73,19 @@ export class PlaygroundCloneApp extends HappElement {
     const input = this.shadowRoot!.getElementById("namedInput") as HTMLInputElement;
     const name = String(input.value);
     const cellDef: CellDef = {modifiers: {network_seed: name}, cloneName: name};
-    await this.hvm.cloneDvm(RealCloneDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
+    await this.hvm.cloneDvm(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
     input.value = "";
     this.requestUpdate();
   }
 
+
+  /** */
+  async onCloneSelect(e: any) {
+    const input = this.shadowRoot!.getElementById("cloneSelector") as HTMLInputElement;
+    console.log("onCloneSelect()", input.value);
+    this._selectedClone = HCL.parse(String(input.value));
+
+  }
 
   /** */
   async onEntrySelect(e: any) {
@@ -87,7 +97,17 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** */
   render() {
-    //console.log("<playground-clone-app> render()", this.hvm);
+    console.log("<playground-clone-app> render()", this._selectedClone);
+
+    /** Clone list */
+    const cloneLis = Object.values(this.realDvmClones).map((realDvm) => {
+      return html`<option>${realDvm.hcl.toString()}</option>`;
+    });
+
+
+    /** Render selected clone */
+    const selectedDvm = this.hvm.getDvm(this._selectedClone)!;
+    console.log("selectedDvm", selectedDvm, selectedDvm.cellId);
 
     /** render all clones */
     const clones = Object.values(this.realDvmClones).map((realDvm) => {
@@ -116,10 +136,6 @@ export class PlaygroundCloneApp extends HappElement {
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>
         </div>
-        <!-- INSPECTORS -->
-        <hr style="border-style:solid;">
-        <dummy-inspect></dummy-inspect> 
-        <real-inspect></real-inspect> 
         <!-- DUMMY -->          
         <hr style="border-style:solid;">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
@@ -130,13 +146,30 @@ export class PlaygroundCloneApp extends HappElement {
           <dummy-list></dummy-list>
           <label-list></label-list>
         </cell-context>
-        <!-- Clones -->
+        <!-- CLONE -->
         <hr style="border-style:solid;">
-        <h2>Clones of "${RealCloneDvm.DEFAULT_BASE_ROLE_NAME}": ${this.realDvmClones.length}</h2>
+        <h2>Clones of "${NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME}": ${this.realDvmClones.length}</h2>
         <input type="button" value="Add nameless clone" @click=${this.onAddClone}>
         <br/>        <br/>
         <input type="text" id="namedInput" name="Value">
         <input type="button" value="Add named clone" @click=${this.onAddNamedClone}>
+        <select id="cloneSelector" @click=${this.onCloneSelect}>
+          ${cloneLis}
+        </select>
+        <!-- Selected Clone -->          
+        <hr style="border-style:dotted;">
+        <cell-context .installedCell="${selectedDvm.installedCell}">
+            <view-cell-context></view-cell-context>
+            <h3>
+                Selected: ${selectedDvm.hcl.toString()}
+                <input type="button" value="dump logs" @click=${(e: any) => selectedDvm.dumpLogs()}>
+            </h3>
+            <named-real-inspect></named-real-inspect>
+            <real-list></real-list>
+            <label-list></label-list>
+        </cell-context>
+        <!-- All Clones -->
+        <hr style="border-style:solid;">
         ${clones}
       </div>
     `
@@ -147,12 +180,12 @@ export class PlaygroundCloneApp extends HappElement {
   static get scopedElements() {
     return {
       "entry-def-select": EntryDefSelect,
-      "dummy-inspect": DummyInspect,
-      "real-inspect": RealInspect,
+      "named-real-inspect": NamedRealInspect,
       "dummy-list": DummyList,
       "real-list": RealList,
       "label-list": LabelList,
       "cell-context": CellContext,
+      "view-cell-context": ViewCellContext,
     };
   }
 }

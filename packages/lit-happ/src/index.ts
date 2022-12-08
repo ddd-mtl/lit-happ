@@ -9,6 +9,7 @@ export * from "./definitions";
 
 export * from "./elements/entry-def-select";
 export * from "./elements/cell-context";
+export * from "./elements/view-cell-context";
 
 /* Include all from cell-proxy */
 export * from "@ddd-qc/cell-proxy"

@@ -1,12 +1,12 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/lit-happ";
-import { DummyDvm } from "./viewModels/dummy";
-import { RealDvm } from "./viewModels/real";
+import { NamedIntegerDvm } from "./viewModels/dummy";
+import { NamedRealDvm } from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
-import { DummyInspect, RealInspect } from "./elements/dummy-inspect";
+import {NamedNumberInspect, NamedRealInspect} from "./elements/named-inspect";
 
 
 /** TESTING Decorator for better init */
@@ -76,15 +76,15 @@ export class PlaygroundApp extends HappElement {
     id: "playground",
     dvmDefs: [
       {
-        ctor: DummyDvm,
+        ctor: NamedIntegerDvm,
         isClonable: false,
       },
       {
-        ctor: RealDvm,
+        ctor: NamedRealDvm,
         isClonable: false,
       },
       {
-        ctor: RealDvm,
+        ctor: NamedRealDvm,
         baseRoleName: "rImpostor",
         isClonable: false,
       }
@@ -93,9 +93,9 @@ export class PlaygroundApp extends HappElement {
 
 
   /** QoL */
-  get dummyDvm(): DummyDvm { return this.hvm.getDvm(DummyDvm.DEFAULT_BASE_ROLE_NAME)! as DummyDvm }
-  get impostorDvm(): RealDvm { return this.hvm.getDvm("rImpostor")! as RealDvm }
-  get realDvm(): RealDvm { return this.hvm.getDvm(RealDvm.DEFAULT_BASE_ROLE_NAME)! as RealDvm }
+  get dummyDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
+  get impostorDvm(): NamedRealDvm { return this.hvm.getDvm("rImpostor")! as NamedRealDvm }
+  get realDvm(): NamedRealDvm { return this.hvm.getDvm(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealDvm }
 
 
   //@happy _happ!: HappElement;
@@ -154,9 +154,9 @@ export class PlaygroundApp extends HappElement {
             <span><span id="entryLabel">none</span></span>
         </div>
         <hr class="solid">
-        <dummy-inspect></dummy-inspect> 
-        <real-inspect></real-inspect>
-        <real-inspect baseRoleName="rImpostor"></real-inspect>   
+        <named-number-inspect></named-number-inspect> 
+        <named-real-inspect></named-real-inspect>
+        <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>   
         <hr class="solid">
         <cell-context .installedCell="${this.dummyDvm.installedCell}">
           <h2>
@@ -185,8 +185,8 @@ export class PlaygroundApp extends HappElement {
   static get scopedElements() {
     return {
       "entry-def-select": EntryDefSelect,
-      "dummy-inspect": DummyInspect,
-      "real-inspect": RealInspect,
+      "named-number-inspect": NamedNumberInspect,
+      "named-real-inspect": NamedRealInspect,
       "dummy-list": DummyList,
       "real-list": RealList,
       "label-list": LabelList,

@@ -50,18 +50,23 @@ export class HCL {
       : role + "." + cloneIndex;
   }
 
+
   /** */
-  static parse(hcl: HCLString): HCL {
-    const subs = hcl.split('/');
+  static parse(sHcl: HCLString): HCL {
+    const subs = sHcl.split('/');
     //console.log({subs});
-    if (subs[0] !== "cell:") throw Error("Bad string format");
-    if (subs.length < 3) throw Error("Bad string format. Too few components");
-    if (subs.length > 5) throw Error("Bad string format. Too many components");
+    if (subs[0] !== "cell:") throw Error("HCL.parse() Bad string format: " + sHcl);
+    if (subs.length < 3) throw Error("HCL.parse() Bad string format. Too few components: " + sHcl);
+    if (subs.length > 5) throw Error("HCL.parse() Bad string format. Too many components: " + sHcl);
     if (subs.length == 5) {
-      return new HCL(subs[1], subs[2], Number(subs[4]), subs[3]);
+      const index = Number(subs[3]);
+      if (isNaN(index) || index < 0) throw Error("HCL.parse() Invalid clone Index:" + index);
+      return new HCL(subs[1], subs[2], index, subs[3]);
     }
     if (subs.length == 4) {
-      return new HCL(subs[1], subs[2], Number(subs[3]));
+      const index = Number(subs[3]);
+      if (isNaN(index) || index < 0) throw Error("HCL.parse() Missing clone Index when cloneName is provided: " + sHcl);
+      return new HCL(subs[1], subs[2], index);
     }
     return new HCL(subs[1], subs[2]);
   }

@@ -1,6 +1,6 @@
 ---
 manifest_version: "1"
-name: dReal
+name: NamedReal
 integrity:
   origin_time: 2022-09-25T13:55:49.200Z
   zomes:

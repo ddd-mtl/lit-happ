@@ -111,7 +111,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   }
 
 
-  getContext():any {return createContext<typeof this>('dvm/' + this.baseRoleName)};
+  getContext():any {return createContext<typeof this>('dvm/' + this.roleInstanceId)};
 
 
   /** */

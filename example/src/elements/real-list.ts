@@ -30,7 +30,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   /** */
   render() {
-    console.log("<real-list> render(): " + printInstalledCell(this._zvm));
+    console.log(`<label-list> render(): ${printInstalledCell(this._zvm)}" | ${this.installedCell.role_id}`);
 
     //console.log("real-list:", this.perspective.floats)
 

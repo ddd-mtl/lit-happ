@@ -71,11 +71,11 @@ export const REAL_DEF: ZvmDef[] = [RealZvm, [LabelZvm, "zRealLabel"]];
 /**
  *
  */
-export class RealDvm extends DnaViewModel {
+export class NamedRealDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "rReal";
+  static readonly DEFAULT_BASE_ROLE_NAME = "rNamedReal";
   static readonly ZVM_DEFS = REAL_DEF;
   readonly signalHandler = this.handleRealSignal;
 
@@ -105,11 +105,11 @@ export const REAL_DNA_MODIFIERS: DnaModifiersOptions = {};
 /**
  *
  */
-export class RealCloneDvm extends DnaViewModel {
+export class NamedRealCloneDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "rReal";
+  static readonly DEFAULT_BASE_ROLE_NAME = "rNamedReal";
   static readonly ZVM_DEFS = REAL_DEF;
   static readonly DNA_MODIFIERS = REAL_DNA_MODIFIERS;
 

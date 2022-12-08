@@ -1,5 +1,5 @@
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
-import {LitElement} from "lit";
+import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {CellId, InstalledCell, ZomeName} from "@holochain/client";
@@ -48,7 +48,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   /** Request zvm from Context based on current CellId */
   private requestZvm() {
     if (!this.installedCell) {
-      throw Error(`"cellContext" not found in ZomeElement "${this.constructor.name}"`)
+      throw Error(`"installedCell" from context "${cellContext}" not found in ZomeElement "${this.constructor.name}"`)
     }
     const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
     console.log(`\t\tRequesting context "${contextType}"`)
@@ -56,6 +56,9 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
       this,
       contextType,
       (value: ZVM, dispose?: () => void): void => {
+        if (this._zvm) {
+          this._zvm.unsubscribe(this);
+        }
         this._zvm = value;
         this._zomeName = this._zvm.zomeName;
         this._zvm.subscribe(this, 'perspective');
@@ -72,6 +75,16 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
       this.requestZvm();
     }
     return !!this._zvm;
+  }
+
+
+  /** */
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    //console.log("ZomeElement.willUpdate()", changedProperties)
+    if (changedProperties.has("installedCell")) {
+      //console.log("ZomeElement.willUpdate() installedCell in this element", this)
+      this.requestZvm();
+    }
   }
 
 }

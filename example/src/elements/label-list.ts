@@ -10,7 +10,8 @@ import {ZomeElement, printInstalledCell} from "@ddd-qc/lit-happ";
 export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   constructor() {
-    super(LabelZvm.DEFAULT_ZOME_NAME)
+    super(LabelZvm.DEFAULT_ZOME_NAME);
+    console.log("<label-list>.ctor()")
   }
 
   /** */
@@ -21,7 +22,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   /** */
   async onCreate(e: any) {
-    const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
+    const input = this.shadowRoot!.getElementById("labelInput") as HTMLInputElement;
     let res = await this._zvm.createLabel(input.value);
     console.log("onCreate() res =", serializeHash(res))
     input.value = "";
@@ -30,7 +31,8 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   /** */
   render() {
-    console.log("<label-list> render(): " + printInstalledCell(this._zvm));
+    console.log(`<label-list> render(): ${printInstalledCell(this._zvm)}" | ${this.installedCell.role_id}`);
+
     //console.log("label-list:", this.perspective.names)
 
     const dummyLi = Object.values(this.perspective.names).map(
@@ -42,8 +44,8 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
     /** render all */
     return html`
         <h3>Label List <input type="button" value="Probe" @click=${this.onProbe}></h3>
-        <label for="dummyInput">New label:</label>
-        <input type="text" id="dummyInput" name="Value">
+        <label for="labelInput">New label:</label>
+        <input type="text" id="labelInput" name="Value">
         <input type="button" value="create" @click=${this.onCreate}>
       <ul>
           ${dummyLi}

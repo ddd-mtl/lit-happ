@@ -17,7 +17,7 @@ npm i @ddd-qc/cell-proxy
 In Holochain, a running Holochain cell can be refered to by its `CellId`, but Holochain's does not provide a way for refering to a cell based on its intended use by a happ. A cell is typically created from a Role in a `AppManifest`, as a clone or not.
 This package propose the `Holochain Cell Locator`, a way to refer to a cell by its AppId, RoleName and CloneIndex or CloneName.
 The format is:
-`cell:/<InstalledAppId>/<BaseRoleName>/<CloneName | CloneIndex>/<CloneIndex>`
+`cell:/<InstalledAppId>/<BaseRoleName>/<CloneName | CloneIndex>`
 
 The `BaseRoleName` is the `RoleName` as defined in the `AppManifest`, without the appended cloneIndex (if it is clonable).
 The `RoleName` with the appended cloneIndex is refered as `RoleInstanceId`.

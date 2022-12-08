@@ -3,17 +3,17 @@ manifest_version: "1"
 name: playground-clone
 description: Playground happ for testing lit-happ cloning features
 roles:
-  - id: rDummy
+  - id: rNamedInteger
     provisioning:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/dummy.dna
+      bundled: ../../artifacts/named_integer.dna
       clone_limit: 0
-  - id: rReal
+  - id: rNamedReal
     provisioning:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/real.dna
+      bundled: ../../artifacts/named_real.dna
       clone_limit: 10
