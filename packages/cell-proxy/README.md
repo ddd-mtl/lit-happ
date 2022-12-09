@@ -59,20 +59,64 @@ A `ConductorAppProxy` can be created by providing an already existing `AppWebSoc
 A subclass is expected to provide all the zome functions of a zome as directly callable methods.
 Example: `profilesProxy.fetchAllProfiles()`
 
+A `ZomeProxy` subclass must define the static field `DEFAULT_ZOME_NAME` which is the way to know at runtime for what zome this subclass is for.
 
-## Example use
 
+# Example
+
+Imagine you have a happ that has a dna that uses a profile zome.
+
+## Example without subclassing ZomeProxy
 ```typescript
-/** HCL of the cell we want to use */
-const profilesHcl = new HCL("where", "profiles");
+/** HCL of the role we want to use */
+const hcl = new HCL("myHapp", "myRole");
 /** Create AppProxy from provided local port */
 const appProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
 /** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
-await appProxy.fetchCells(profilesHcl);
-/** Create a CellProxy for the "profiles" role */
-const profilesCellProxy = appProxy.createCellProxy(profilesHcl);
-/** Call zome function on the "profiles" zome */
-const profiles = await profilesCellProxy.callZome("profiles", "fetchAllProfiles", null);
+await appProxy.fetchCells(hcl);
+/** Create a CellProxy for the "myRole" role */
+const profilesCellProxy = appProxy.createCellProxy(hcl);
+/** Call zome function on the "profiles" zome  */
+const handles = await profilesCellProxy.callZome("profiles", "fetch_all_handles", null);
 /** Dump all logs to console */
 appProxy.dumpLogs();
+```
+
+
+## Example with ZomeProxy subclass
+
+#### ZomeProxy subclass
+
+```typescript
+export class ProfileZomeProxy extends ZomeProxy {
+
+  static readonly DEFAULT_ZOME_NAME: string = "profiles";
+
+  async getMyHandle(): Promise<string> {
+    return this.call('get_my_handle', null);
+  }
+  async setMyHandle(value: string): Promise<EntryHash> {
+    return this.callBlocking('set_my_handle', value);
+  }
+  async fetchAllHandles(): Promise<string[]> {
+    return this.call('fetch_all_handles', null);
+  }
+}
+```
+
+#### Use
+
+```typescript
+/** HCL of the cell we want to use */
+const hcl = new HCL("myHapp", "myRole");
+/** Create AppProxy from provided local port */
+const appProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+/** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
+await appProxy.fetchCells(hcl);
+/** Create a CellProxy for the "profiles" role */
+const cellProxy = appProxy.createCellProxy(hcl);
+/** Create ZomeProxy */
+const zomeProxy = ProfileZomeProxy(cellProxy);
+/** Call zome function on the "profiles" zome */
+const handles = await zomeProxy.fetchAllHandles();
 ```

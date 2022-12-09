@@ -2,9 +2,10 @@ import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
 import {BaseRoleName, ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
-import {CellDef, DvmDef, HvmDef} from "./definitions";
+import {CellDef, HvmDef} from "./definitions";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import {AppWebsocket, InstalledAppId} from "@holochain/client";
+import {DnaViewModel} from "./DnaViewModel";
 
 
 /**
@@ -47,8 +48,8 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
 
 
   /** */
-  async createClone(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<void> {
-    const [index, dvm] = await this.hvm.cloneDvm(baseRoleName, cellDef);
+  async createClone(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[number, DnaViewModel]> {
+    return this.hvm.cloneDvm(baseRoleName, cellDef);
   }
 
 

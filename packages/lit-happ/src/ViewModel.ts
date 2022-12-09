@@ -68,7 +68,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
   }
 
   /** */
-  protected notifySubscribers() {
+  protected notifySubscribers(): void {
       if (!this.hasChanged()) return;
       for (const [host, propName] of this._providedHosts) {
           (host as any)[propName] = this.perspective;

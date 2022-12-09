@@ -5,16 +5,7 @@ import {ViewModel} from "./ViewModel";
 import {AppSignalCb, CellId, InstalledAppId, InstalledCell, ZomeName} from "@holochain/client";
 import {DnaModifiersOptions, ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
-import {
-  CellProxy,
-  RoleSpecific,
-  RoleSpecificMixin,
-  ConductorAppProxy,
-  HCL,
-  IInstalledCell,
-  CloneIndex,
-  BaseRoleName, RoleInstanceId,
-} from "@ddd-qc/cell-proxy";
+import {CellProxy, RoleSpecific, RoleSpecificMixin, ConductorAppProxy, HCL, IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
