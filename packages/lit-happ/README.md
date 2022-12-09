@@ -1,6 +1,6 @@
 # lit-happ
 
-Builds on the `cell-proxy` package to provide a MVVM framework for building web-UI in Lit for holochain apps.
+Builds on the [cell-proxy](https://www.npmjs.com/package/@ddd-qc/cell-proxy) package to provide a MVVM framework for building web-UI in [Lit](https://www.npmjs.com/package/lit) for [holochain](https://www.npmjs.com/package/@holochain/client) apps.
 
 
 ## Installing
@@ -12,13 +12,13 @@ npm i @ddd-qc/cell-proxy
 
 ## Design
 
-Rhe Model-View-ViewModel ("MVVM") architectural pattern can be used for build holochain web apps by considering Holochain DNAs as the "Model" and LitElements as the "View".
+The Model-View-ViewModel ("MVVM") architectural pattern can be used for build holochain web apps by considering Holochain DNAs as the "Model" and LitElements as the "View".
 What is missing is the "ViewModel", the categorie of objects that formats data from the model in a way that it can be consumed and updated by the view (without actually knowing the exact implementations of Views).
 This package provides this categorie of objects.
 
 To achieve this, the package makes use of Lit's reactive properties to perform the data-binding between the View and the ViewModel.
 On the other end, the ViewModel makes use of `cell-proxy` to communicate with the Model.
-`@lit-labs/context` is used to pass around the ViewModels to all the different `LitElements`.
+[@lit-labs/context](https://www.npmjs.com/package/@lit-labs/context) is used to pass around the ViewModels to all the different `LitElements`.
 This means that ViewModels are bound to a `ReactiveElement`.
 
 The host `ReactiveElement` that holds the `ConductorAppProxy` **should** also hold the ViewModels and thus be the provider of those contexts.
@@ -262,8 +262,8 @@ render() {
 ## Implementation
 
 To make full use of the framework, a DNA developer should implement:
- - A `ZomeProxy` subclass for each of their zome (and input & output type bindings from Rust).
- - A `ZomeViewModel` subclass for each of their zome, and its respective perspective type.
+ - A `ZomeProxy` subclass for each zome in the DNA (and input & output type bindings from Rust).
+ - A `ZomeViewModel` subclass for each zome in the DNA, and its respective perspective type.
  - A `DnaViewModel` subclass for their DNA and its respective perspective type.
 
  A developer could also provide abstract subclasses to `ZomeElement` and `DnaElement` which add specific code for using their DNA.
