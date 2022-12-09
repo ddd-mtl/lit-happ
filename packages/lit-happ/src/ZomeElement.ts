@@ -56,6 +56,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
       this,
       contextType,
       (value: ZVM, dispose?: () => void): void => {
+        this.zvmUpdated(value, this._zvm);
         if (this._zvm) {
           this._zvm.unsubscribe(this);
         }
@@ -66,6 +67,10 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
       false, // true will call twice at init
     );
   }
+
+
+  /** To be overriden by subclasses */
+  protected zvmUpdated(newZvm: ZVM, oldZvm?: ZVM) {}
 
 
   /** RequestZvm on first "shouldUpdate" */

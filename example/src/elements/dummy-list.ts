@@ -13,6 +13,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
     super(DummyZvm.DEFAULT_ZOME_NAME)
   }
 
+  
   /** */
   async onProbe(e: any) {
     await this._zvm.probeAll();

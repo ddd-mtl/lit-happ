@@ -26,7 +26,9 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   }
 
 
+  /** */
   async happInitialized(): Promise<void> {}
+
 
   /** */
   protected async initHapp(port_or_socket: number | AppWebsocket, appId?: InstalledAppId): Promise<void> {

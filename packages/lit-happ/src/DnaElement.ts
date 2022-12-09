@@ -52,6 +52,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
       this,
       contextType,
       (value: DVM, dispose?: () => void): void => {
+        this.dvmUpdated(value, this._dvm);
         if (this._dvm) {
           this._dvm.unsubscribe(this);
         }
@@ -62,6 +63,14 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
     );
     //console.log({consumer})
   }
+
+  
+  /** 
+   * To be overriden by subclasses 
+   * Example: Have a subclass unsubscribe to oldDvm's zvms and subsctibe to the new ones 
+   */
+  protected dvmUpdated(newDvm: DVM, oldDvm?: DVM) {}
+
 
   /** */
   shouldUpdate() {

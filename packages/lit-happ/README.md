@@ -36,13 +36,11 @@ The exact shape of a perspective is dependent on the ViewModel implementation fo
 
 On one side, the API defines a `ViewModel` abstract base class and abstract implementations for Zomes and Dnas.
 On the other, it provides `LitElement` abstract subclasses that make uses of `ViewModel` for Zomes, Dnas and Happs.
-Finaly it provides two useful `LitElement`:
- - `cell-context`: Provide the installed cell context to its children.
- - `entry-defs-select`: A selector for picking an entryDef in the current cell. 
+Finaly it provides these `LitElement`:
+ - `entry-defs-select`: A selector for picking an `EntryDef` in the current cell.
+ - `cell-context`: Provide the `InstalledCell` context to its children. 
+ - `view-cell-context`: Display the `InstalledCell` received from context (useful for debugging)
 
-### ViewModel Definition
-
-A Happ 
 
 ### HappViewModel
 
@@ -67,6 +65,23 @@ const playgroundDef: HvmDef = {
     ],
 }
 ```
+
+### DnaViewModel
+
+FIXME
+`DEFAULT_BASE_ROLE_NAME`
+`ZVM_DEFS`
+`DNA_MODIFIERS`
+
+
+### ZvmViewModel
+
+FIXME
+An abstract subclass of `ViewModel` designed to be inheretered by each Zome.
+In relation to a `ZomeProxy`.
+
+`ZOME_PROXY`
+`DEFAULT_ZOME_NAME`
 
 ## Example use
 
