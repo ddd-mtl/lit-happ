@@ -23,6 +23,7 @@ export class CellContext extends ScopedElementsMixin(LitElement) {
     //this._provider = new ContextProvider(this, cellContext, this.installedCell);
     this._provider.setValue(this.installedCell);
     this._initialized = true;
+    console.log(`\t Cell context set to "${this.installedCell.role_id}"`)
   }
 
 
@@ -32,6 +33,7 @@ export class CellContext extends ScopedElementsMixin(LitElement) {
     if (changedProperties.has("installedCell")) {
       //console.log("<cell-context>.willUpdate() changed installed cell", this.installedCell.role_id)
       this._provider.setValue(this.installedCell);
+      console.log(`\t Cell context changed to "${this.installedCell.role_id}"`)
     }
   }
 
@@ -41,7 +43,6 @@ export class CellContext extends ScopedElementsMixin(LitElement) {
     if (!this._initialized) {
       return html``;
     }
-    console.log(`Cell context set to "${this.installedCell.role_id}"`)
     return html`<slot></slot>`;
   }
 }

@@ -13,11 +13,18 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
     super(DummyZvm.DEFAULT_ZOME_NAME)
   }
 
-  
+
   /** */
   async onProbe(e: any) {
     await this._zvm.probeAll();
   }
+
+
+
+  protected async zvmUpdated(newDvm: DummyZvm, oldDvm?: DummyZvm): Promise<void> {
+    console.log(`\t\t DummyList zvmUpdated() called`)
+  }
+
 
 
   /** */

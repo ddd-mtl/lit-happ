@@ -51,11 +51,12 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
       throw Error(`"installedCell" from context "${cellContext}" not found in ZomeElement "${this.constructor.name}"`)
     }
     const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
-    console.log(`\t\tRequesting context "${contextType}"`)
+    console.log(`\t\t Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
       (value: ZVM, dispose?: () => void): void => {
+        console.log(`\t\t Received value for context "${contextType}"`)
         this.zvmUpdated(value, this._zvm);
         if (this._zvm) {
           this._zvm.unsubscribe(this);
@@ -70,11 +71,13 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
 
 
   /** To be overriden by subclasses */
-  protected zvmUpdated(newZvm: ZVM, oldZvm?: ZVM) {}
+  protected async zvmUpdated(newZvm: ZVM, oldZvm?: ZVM): Promise<void> {
+    console.log(`\t\t Default zvmUpdated() called`)
+  }
 
 
   /** RequestZvm on first "shouldUpdate" */
-  shouldUpdate() {
+  shouldUpdate(_changedProperties: PropertyValues<this>) {
     //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.installedCell);
     if (!this._zvm) {
       this.requestZvm();

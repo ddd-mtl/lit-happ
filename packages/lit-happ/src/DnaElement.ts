@@ -47,11 +47,12 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
     /** Consume Context based on given dnaHash */
     const roleInstanceId = this.installedCell? this.installedCell.role_id : this.baseRoleName;
     const contextType = createContext<DVM>('dvm/'+ roleInstanceId);
-    console.log(`\t\tRequesting context "${contextType}"`)
+    console.log(`\t\t Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
       (value: DVM, dispose?: () => void): void => {
+        console.log(`\t\t Received value for context "${contextType}"`)
         this.dvmUpdated(value, this._dvm);
         if (this._dvm) {
           this._dvm.unsubscribe(this);
@@ -64,16 +65,18 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
     //console.log({consumer})
   }
 
-  
-  /** 
-   * To be overriden by subclasses 
-   * Example: Have a subclass unsubscribe to oldDvm's zvms and subsctibe to the new ones 
+
+  /**
+   * To be overriden by subclasses
+   * Example: Have a subclass unsubscribe to oldDvm's zvms and subscribe to the new ones
    */
-  protected dvmUpdated(newDvm: DVM, oldDvm?: DVM) {}
+  protected async dvmUpdated(newDvm: DVM, oldDvm?: DVM): Promise<void> {
+    console.log(`\t\t Default dvmUpdated() called`)
+  }
 
 
   /** */
-  shouldUpdate() {
+  shouldUpdate(_changedProperties: PropertyValues<this>) {
     return !!this._dvm;
   }
 

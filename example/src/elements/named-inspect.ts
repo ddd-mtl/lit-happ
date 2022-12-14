@@ -1,6 +1,6 @@
 import {html} from "lit";
 import { property } from "lit/decorators.js";
-import {NamedIntegerDvm, DummyZomePerspective} from "../viewModels/dummy";
+import {NamedIntegerDvm, DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
 import {DnaElement} from "@ddd-qc/lit-happ";
 import { NamedRealDvm, RealZomePerspective } from "../viewModels/real";
 import {printInstalledCell} from "@ddd-qc/cell-proxy";
@@ -45,6 +45,10 @@ export class NamedNumberInspect extends DnaElement<DummyZomePerspective, NamedIn
     this.requestDvm();
   }
 
+
+  protected async dvmUpdated(newDvm: NamedRealDvm, oldDvm?: NamedRealDvm): Promise<void> {
+    console.log(`\t\t NamedRealInspect dvmUpdated() called`)
+  }
 
   /** */
   render() {

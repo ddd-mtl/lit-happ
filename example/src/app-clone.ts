@@ -1,21 +1,14 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  EntryDefSelect,
-  HvmDef,
-  CellContext,
-  HappElement,
-  RoleInstanceId,
-  CloneIndex,
-  CellDef,
-  HCL, ViewCellContext
-} from "@ddd-qc/lit-happ";
+  EntryDefSelect, HvmDef, CellContext, HappElement, CloneIndex, CellDef, HCL, ViewCellContext} from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/dummy";
 import {NamedRealCloneDvm, NamedRealDvm} from "./viewModels/real";
 import { DummyList } from "./elements/dummy-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import { NamedRealInspect } from "./elements/named-inspect";
+import {InstalledCell} from "@holochain/client";
 
 /**
  *
@@ -33,7 +26,7 @@ export class PlaygroundCloneApp extends HappElement {
     dvmDefs: [
       {
         ctor: NamedIntegerDvm,
-        isClonable: false,
+        isClonable: true,
         //canCreateOnInstall: true,
       },
       {
@@ -44,8 +37,15 @@ export class PlaygroundCloneApp extends HappElement {
     ],
   };
 
+  @state() private _integerCell?: InstalledCell;
+
   /** QoL */
-  get dummyDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
+  get integerDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
+  get integerDvmCount(): number {return this.hvm.getClones(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)!.length}
+
+
+  integerDvmClone(index: CloneIndex): NamedIntegerDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, index))! as NamedIntegerDvm }
+
   get realDvmClones(): NamedRealCloneDvm[] {return this.hvm.getClones(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealCloneDvm[]}
   realDvmClone(index: CloneIndex): NamedRealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedRealDvm.DEFAULT_BASE_ROLE_NAME, index))! as NamedRealDvm }
 
@@ -54,6 +54,7 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** override */
   async happInitialized(): Promise<void> {
+    this._integerCell = this.integerDvm.installedCell;
     await this.hvm.probeAll();
   }
 
@@ -61,6 +62,23 @@ export class PlaygroundCloneApp extends HappElement {
   async onProbe(e: any) {
     await this.hvm.probeAll();
   }
+
+  /** */
+  async cloneInteger() {
+    const count = this.integerDvmCount
+    const cellDef: CellDef = {
+      modifiers: {
+        network_seed: "integerClone_" + count,
+        properties: {},
+        },
+      }
+    ;
+    await this.createClone(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
+    const myWorldDvm = this.integerDvmClone(count);
+    this._integerCell = myWorldDvm.installedCell;
+    console.log("IntegerDvm cloned: ", myWorldDvm.installedCell, count);
+  }
+
 
   /** */
   async onAddClone(e: any) {
@@ -132,16 +150,17 @@ export class PlaygroundCloneApp extends HappElement {
         <input type="button" value="Dump signals" @click=${(e:any) => {this.conductorAppProxy.dumpSignals()}}>
         <br/>
         <span>Select AppEntryType:</span>
-        <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>
         </div>
+        <input type="button" value="Clone Integer ${this.integerDvmCount}" @click=${() => {this.cloneInteger()}}>
         <!-- DUMMY -->          
         <hr style="border-style:solid;">
-        <cell-context .installedCell="${this.dummyDvm.installedCell}">
+        <cell-context .installedCell="${this._integerCell}">
           <h2>
-            Dummy: ${this.dummyDvm.hcl.toString()} 
-            <input type="button" value="dump logs" @click=${(e: any) => this.dummyDvm.dumpLogs()}>
+            Dummy: ${this.integerDvm.hcl.toString()} 
+            <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
           </h2>
           <dummy-list></dummy-list>
           <label-list></label-list>
