@@ -7,7 +7,6 @@
   ],
   "scripts": {
     "version"         : "hc --version && holochain --version && lair-keystore --version",
-    "ci:tsc"          : "tsc --version",
 
     "postinstall"     : "mkdir -p artifacts",
 

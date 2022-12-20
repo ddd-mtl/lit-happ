@@ -9,6 +9,7 @@
     "dist"
   ],
   "scripts": {
+    "ci:tsc" : "tsc --version",
     "lint": "eslint --ext .ts .",
     "build": "tsc"
   },
@@ -31,6 +32,6 @@
   },
   "devDependencies": {
     "tslib": "^2.3.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.9.0"
   }
 }
