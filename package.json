@@ -9,7 +9,7 @@
     "version"         : "hc --version && holochain --version && lair-keystore --version",
     "ci:tsc"          : "tsc --version",
 
-    "postinstall"     : "mkdir artifacts",
+    "postinstall"     : "mkdir -p artifacts",
 
     "build:happ"      : "npm run build:happ -w example && npm run build:happ:clone -w example",
     "build:example"   : "npm run build:happ && npm run build -w example",
