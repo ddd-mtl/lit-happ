@@ -16,7 +16,7 @@ export class ViewCellContext extends ScopedElementsMixin(LitElement) {
   installedCell!: InstalledCell;
 
   render() {
-    const roleId = this.installedCell === undefined? "undefined" : this.installedCell.role_id;
+    const roleId = this.installedCell === undefined? "undefined" : this.installedCell.role_name;
     return html`
     <div>
         <span><b>(InstalledCell set to: "${roleId}")</b></span>

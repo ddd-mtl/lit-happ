@@ -2,10 +2,8 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
-import {CellId, InstalledCell, ZomeName} from "@holochain/client";
-import {serializeHash} from "@holochain-open-dev/utils";
+import {CellId, encodeHashToBase64, InstalledCell, ZomeName, AgentPubKeyB64, DnaHashB64} from "@holochain/client";
 import {cellContext} from "./elements/cell-context";
-import {AgentPubKeyB64, DnaHashB64} from "@holochain-open-dev/core-types";
 import { ZomeViewModel } from "./ZomeViewModel";
 import {IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
 
@@ -37,10 +35,10 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   perspective!: P;
 
   /** InstalledCell interface */
-  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_id }
+  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_name }
   get cellId(): CellId { return this.installedCell.cell_id }
-  get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.installedCell.cell_id[1]) }
+  get dnaHash(): DnaHashB64 { return encodeHashToBase64(this.installedCell.cell_id[0]) }
+  get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this.installedCell.cell_id[1]) }
 
 
   /** -- Methods -- */

@@ -1,8 +1,8 @@
 # lit-happ
 
 **Compatible with:**
-- **HDK v0.0.154** & **HDI v0.1.3**
-- **@holochain/client v0.9.3**
+- **HDK v0.1.0-beta-rc.1** & **HDI v0.2.0-beta-rc.2**
+- **@holochain/client v0.11.2**
 
 A MVVM framework for building holochain apps web UI with Lit.
 

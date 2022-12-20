@@ -1,6 +1,11 @@
-import { serializeHash } from "@holochain-open-dev/utils";
-import {CellId, InstalledAppInfo} from "@holochain/client";
-import {CellIdStr, IInstalledCell} from "./types";
+import {CellId, AppInfo, CellInfo, Cell, encodeHashToBase64} from "@holochain/client";
+import {IInstalledCell} from "./types";
+import {CellType, DnaModifiers} from "@holochain/client";
+
+
+export declare type Dictionary<T> = {
+  [key: string]: T;
+};
 
 /** */
 export function areArraysEqual(first: Uint8Array, second: Uint8Array) {
@@ -22,7 +27,7 @@ export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
 export function anyToB64(obj: any): any {
   /** Check if it's a hash */
   if (obj instanceof Uint8Array) {
-    return serializeHash(obj);
+    return encodeHashToBase64(obj);
   } else {
     /** Check if its an array of hashes */
     if (Array.isArray(obj)) {
@@ -34,7 +39,7 @@ export function anyToB64(obj: any): any {
       if (isUint8Array) {
         let result = [];
         for (const cur of obj) {
-          result.push(serializeHash(cur));
+          result.push(encodeHashToBase64(cur));
         }
         return result;
       }
@@ -61,13 +66,33 @@ export function prettyDate(date: Date): string {
 }
 
 
+/** ... */
+export function intoCell(cellInfo: CellInfo): Cell | undefined {
+  if (CellType.Stem in cellInfo) {
+    return undefined;
+  }
+  if (CellType.Cloned in cellInfo) {
+    return cellInfo.Cloned;
+  }
+  if (CellType.Cloned in cellInfo) {
+    return cellInfo.Provisioned;
+  }
+  return undefined;
+}
 
 
 /** */
-export function printAppInfo(appInfo: InstalledAppInfo): string {
+export function printAppInfo(appInfo: AppInfo): string {
   let print = `Happ "${appInfo.installed_app_id}" info: (status: ${JSON.stringify(appInfo.status)})`;
-  for (const installedCell of appInfo.cell_data) {
-    print += "\n - " + installedCell.role_id + ": " + CellIdStr(installedCell.cell_id);
+  for (const [role_name, cellInfos] of Object.values(appInfo.cell_info)) {
+    for (const cellInfo of  Object.values(cellInfos)) {
+      if (CellType.Stem in cellInfo) {
+        print += `\n - ${role_name}.${cellInfo.name? cellInfo.name : "unnamed"} : ${encodeHashToBase64(cellInfo.dna)} (stem)`;
+        continue;
+      }
+      const cell = intoCell(cellInfo)!;
+      print += `\n - ${role_name}.${cell.name}${cell.name? "."+cell.name : ""} : ${encodeHashToBase64(cell.cell_id[0])}`;
+    }
   }
   return print;
 }

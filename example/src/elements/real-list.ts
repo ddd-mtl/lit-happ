@@ -1,7 +1,7 @@
 import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
-import {serializeHash} from "@holochain-open-dev/utils";
 import { ZomeElement, printInstalledCell } from "@ddd-qc/lit-happ";
+import {encodeHashToBase64} from "@holochain/client";
 
 /**
  *
@@ -23,14 +23,14 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
     const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
     const value = Number(input.value);
     let res = await this._zvm.createReal(value);
-    console.log("onCreate() res =", serializeHash(res))
+    console.log("onCreate() res =", encodeHashToBase64(res))
     input.value = "";
   }
 
 
   /** */
   render() {
-    console.log(`<label-list> render(): ${printInstalledCell(this._zvm)}" | ${this.installedCell.role_id}`);
+    console.log(`<label-list> render(): ${printInstalledCell(this._zvm)}" | ${this.installedCell.role_name}`);
 
     //console.log("real-list:", this.perspective.floats)
 

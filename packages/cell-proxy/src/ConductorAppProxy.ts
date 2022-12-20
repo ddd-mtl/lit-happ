@@ -1,12 +1,11 @@
 import {
   AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId,
   InstalledAppId, InstalledCell,
+  CreateCloneCellRequest, DisableCloneCellRequest, EnableCloneCellRequest,
 } from "@holochain/client";
-import { Dictionary } from "@holochain-open-dev/core-types";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, destructureRoleInstanceId, CellsMap, BaseRoleName, RoleInstanceId, RoleCells} from "./types";
-import {prettyDate} from "./utils";
-import {ArchiveCloneCellRequest, CreateCloneCellRequest} from "@holochain/client/lib/api/app/types";
+import {Dictionary, prettyDate} from "./utils";
 import {HCL, HCLString} from "./hcl";
 
 
@@ -96,7 +95,7 @@ export class ConductorAppProxy implements AppApi {
   getAppRoleInstanceIds(installedAppId: InstalledAppId): RoleInstanceId[] | undefined {
     if (!this._installedCellsByApp[installedAppId]) return undefined;
     return Object.values(this._installedCellsByApp[installedAppId]).map((roleCells) => {
-      return roleCells.original.role_id;
+      return roleCells.original.role_name;
     });
   }
 
@@ -111,16 +110,22 @@ export class ConductorAppProxy implements AppApi {
   }
 
 
-  /** -- AppApi (Passthrough to appWebsocket) -- */
 
   async createCloneCell(request: CreateCloneCellRequest): Promise<InstalledCell> {
     //console.log("createCloneCell() called:", request)
     return this._appWs!.createCloneCell(request);
   }
 
-  async archiveCloneCell(request: ArchiveCloneCellRequest): Promise<void> {
-    //console.log("archiveCloneCell() called:", request)
-    this._appWs!.archiveCloneCell(request);
+  /** -- AppApi (Passthrough to appWebsocket) -- */
+
+  async enableCloneCell(request: EnableCloneCellRequest): Promise<InstalledCell> {
+    //console.log("enableCloneCell() called:", request)
+    return this._appWs!.enableCloneCell(request);
+  }
+
+  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
+    //console.log("disableCloneCell() called:", request)
+    this._appWs!.disableCloneCell(request);
   }
 
   async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {

@@ -3,21 +3,21 @@ manifest_version: "1"
 name: playground
 description: Playground happ for testing lit-happ framework
 roles:
-  - id: rNamedInteger
+  - name: rNamedInteger
     provisioning:
       strategy: create
       deferred: true
     dna:
       bundled: ../../artifacts/named_integer.dna
       clone_limit: 0
-  - id: rNamedReal
+  - name: rNamedReal
     provisioning:
       strategy: create
       deferred: true
     dna:
       bundled: ../../artifacts/named_real.dna
       clone_limit: 0
-  - id: rImpostor
+  - name: rImpostor
     provisioning:
       strategy: create
       deferred: true

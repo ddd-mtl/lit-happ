@@ -1,7 +1,6 @@
-import {CellId, InstalledCell} from "@holochain/client";
-import {AgentPubKeyB64, Dictionary, DnaHashB64} from "@holochain-open-dev/core-types";
+import {CellId, decodeHashFromBase64, encodeHashToBase64, InstalledCell, AgentPubKeyB64, DnaHashB64} from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
-import {deserializeHash, serializeHash} from "@holochain-open-dev/utils";
+import {Dictionary} from "./utils";
 
 /**
  *
@@ -63,12 +62,12 @@ const CELL_ID_SEPARATOR = "||"
 
 export function CellIdStr(hash_or_id: DnaHash | CellId, key?: AgentPubKey): CellIdStr {
   if (Array.isArray(hash_or_id)) {
-    return "" + serializeHash(hash_or_id[0]) + CELL_ID_SEPARATOR + serializeHash(hash_or_id[1]);
+    return "" + encodeHashToBase64(hash_or_id[0]) + CELL_ID_SEPARATOR + encodeHashToBase64(hash_or_id[1]);
   }
   if (!key) {
     throw Error("CellIdStr() failed. AgentPubKey not provided");
   }
-  return "" + serializeHash(hash_or_id) + CELL_ID_SEPARATOR + serializeHash(key);
+  return "" + encodeHashToBase64(hash_or_id) + CELL_ID_SEPARATOR + encodeHashToBase64(key);
 }
 
 /** */
@@ -77,5 +76,5 @@ export function str2CellId(str: CellIdStr): CellId {
   if (subs.length != 2) {
     throw Error("str2CellId() failed. Bad input string format");
   }
-  return [deserializeHash(subs[0]), deserializeHash(subs[1])]
+  return [decodeHashFromBase64(subs[0]), decodeHashFromBase64(subs[1])]
 }

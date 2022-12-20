@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "18.0.0",
+    "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-replace": "^2.4.2",
     "@rollup/plugin-typescript": "^8.2.1",

@@ -1,6 +1,6 @@
-import {CallZomeRequest, CapSecret, CellId, InstalledCell, ZomeName} from "@holochain/client";
-import { serializeHash } from "@holochain-open-dev/utils";
-import { AgentPubKeyB64, DnaHashB64 } from "@holochain-open-dev/core-types";
+import {CallZomeRequest, CapSecret, CellId, encodeHashToBase64, InstalledCell, ZomeName,
+  AgentPubKeyB64, DnaHashB64,
+} from "@holochain/client";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
 import {IInstalledCell, RoleInstanceId} from "./types";
 import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
@@ -53,10 +53,10 @@ export class CellProxy implements IInstalledCell {
 
   /** -- InstalledCell interface -- */
 
-  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_id}
+  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_name}
   get cellId(): CellId { return this.installedCell.cell_id }
-  get dnaHash(): DnaHashB64 { return serializeHash(this.installedCell.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return serializeHash(this.installedCell.cell_id[1]) }
+  get dnaHash(): DnaHashB64 { return encodeHashToBase64(this.installedCell.cell_id[0]) }
+  get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this.installedCell.cell_id[1]) }
 
 
   /** -- Methods -- */
@@ -181,7 +181,7 @@ export class CellProxy implements IInstalledCell {
       const startTime = prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
-      const input = requestLog.request.payload instanceof Uint8Array ? serializeHash(requestLog.request.payload) : requestLog.request.payload;
+      const input = requestLog.request.payload instanceof Uint8Array ? encodeHashToBase64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName
         ? { startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }

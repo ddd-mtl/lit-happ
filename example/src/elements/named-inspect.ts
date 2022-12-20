@@ -18,7 +18,7 @@ export class NamedNumberInspect extends DnaElement<IntegerZomePerspective, Named
 
   /** */
   render() {
-    console.log(`<named-number-inspect> render(): ${printInstalledCell(this._dvm)}" | ${this.installedCell.role_id}`);
+    console.log(`<named-number-inspect> render(): ${printInstalledCell(this._dvm)}" | ${this.installedCell.role_name}`);
     /** render all */
     return html`
     <div>
@@ -52,7 +52,7 @@ export class NamedNumberInspect extends DnaElement<IntegerZomePerspective, Named
 
   /** */
   render() {
-    console.log(`<named-real-inspect> render(): ${printInstalledCell(this._dvm)}" | ${this.installedCell.role_id}`);
+    console.log(`<named-real-inspect> render(): ${printInstalledCell(this._dvm)}" | ${this.installedCell.role_name}`);
     /** render all */
     return html`
     <div>

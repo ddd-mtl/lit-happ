@@ -2,7 +2,7 @@ import { LitElement, html } from "lit";
 import { state, property } from "lit/decorators.js";
 import { DnaViewModel } from "../DnaViewModel";
 import { ScopedElementsMixin } from "@open-wc/scoped-elements";
-import { Dictionary } from "@holochain-open-dev/core-types";
+import {Dictionary} from "@ddd-qc/cell-proxy";
 
 
 /**

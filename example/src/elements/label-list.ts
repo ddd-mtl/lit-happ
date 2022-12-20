@@ -1,7 +1,7 @@
 import {html} from "lit";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
-import {serializeHash} from "@holochain-open-dev/utils";
 import {ZomeElement, printInstalledCell} from "@ddd-qc/lit-happ";
+import {encodeHashToBase64} from "@holochain/client";
 
 
 /**
@@ -24,14 +24,14 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
   async onCreate(e: any) {
     const input = this.shadowRoot!.getElementById("labelInput") as HTMLInputElement;
     let res = await this._zvm.createLabel(input.value);
-    console.log("onCreate() res =", serializeHash(res))
+    console.log("onCreate() res =", encodeHashToBase64(res))
     input.value = "";
   }
 
 
   /** */
   render() {
-    console.log(`<label-list> render(): ${printInstalledCell(this._zvm)}" | ${this.installedCell.role_id}`);
+    console.log(`<label-list> render(): ${printInstalledCell(this._zvm)}" | ${this.installedCell.role_name}`);
 
     //console.log("label-list:", this.perspective.names)
 

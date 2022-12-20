@@ -16,19 +16,21 @@
     </script>
   </head>
   <body style="margin:0px;background: #FAF1EA;height:100vh;">
-    <playground-app></playground-app>
+    <!-- <playground-app></playground-app> -->
     <script type="module">
       import {AdminWebsocket} from "@holochain/client";
-      import { PlaygroundApp, PlaygroundCloneApp } from "./dist";
+      import {PlaygroundApp, PlaygroundCloneApp} from "./dist";
+
+      console.log("ADMIN_PORT:", process.env.ADMIN_PORT);
       const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
       const apps = await adminWs.listApps({});
       console.log("Installed apps:", apps);
 
-      if (apps[0].installed_app_id == "playground") {
-        customElements.define("playground-app", PlaygroundApp);
-      } else {
-        customElements.define("playground-app", PlaygroundCloneApp);
-      }
+      // if (apps[0].installed_app_id == "playground") {
+      //   customElements.define("playground-app", PlaygroundApp);
+      // } else {
+      //   customElements.define("playground-app", PlaygroundCloneApp);
+      // }
     </script>
   </body>
 </html>

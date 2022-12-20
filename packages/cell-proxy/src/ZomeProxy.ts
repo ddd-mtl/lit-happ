@@ -1,5 +1,4 @@
-import {CapSecret, CellId, InstalledCell, ZomeName} from "@holochain/client";
-import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
+import {CapSecret, CellId, InstalledCell, ZomeName, AgentPubKeyB64, EntryHashB64} from "@holochain/client";
 import {ZomeSpecific} from "./mixins";
 import {CellProxy} from "./CellProxy";
 import {IInstalledCell, RoleInstanceId} from "./types";

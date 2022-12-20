@@ -1,7 +1,15 @@
-import {Dictionary} from "@holochain-open-dev/core-types";
 import {CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
 import { ReactiveElement } from "lit";
-import {BaseRoleName, CellIdStr, CellsMap, CloneIndex, ConductorAppProxy, HCL, RoleInstanceId} from "@ddd-qc/cell-proxy";
+import {
+  BaseRoleName,
+  CellIdStr,
+  CellsMap,
+  CloneIndex,
+  ConductorAppProxy,
+  Dictionary,
+  HCL,
+  RoleInstanceId
+} from "@ddd-qc/cell-proxy";
 import {CellDef, DvmDef, HvmDef} from "./definitions";
 import {DnaViewModel} from "./DnaViewModel";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
@@ -185,7 +193,7 @@ import {CellId} from "@holochain/client/lib/types";
     /** Build default request */
     let request: CreateCloneCellRequest = {
       app_id: this.appId,
-      role_id: baseRoleName,
+      role_name: baseRoleName,
       modifiers: {
         network_seed: String(cloneIndex),
       },

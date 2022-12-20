@@ -3,8 +3,7 @@ import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
-import {CellId, InstalledCell} from "@holochain/client";
-import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
+import {CellId, InstalledCell, AgentPubKeyB64, EntryHashB64} from "@holochain/client";
 import {BaseRoleName, IInstalledCell, RoleInstanceId, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
 import {cellContext} from "./elements/cell-context";
 
@@ -45,7 +44,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
   /** */
   protected requestDvm() {
     /** Consume Context based on given dnaHash */
-    const roleInstanceId = this.installedCell? this.installedCell.role_id : this.baseRoleName;
+    const roleInstanceId = this.installedCell? this.installedCell.role_name : this.baseRoleName;
     const contextType = createContext<DVM>('dvm/'+ roleInstanceId);
     console.log(`\t\t Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(

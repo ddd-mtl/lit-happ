@@ -1,9 +1,7 @@
 import {createContext} from "@lit-labs/context";
 import {CellProxy, ZomeProxy, ZomeProxyConstructor, IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {CellId, InstalledCell, ZomeName} from "@holochain/client";
-import {AgentPubKeyB64, EntryHashB64} from "@holochain-open-dev/core-types";
-
+import {CellId, InstalledCell, ZomeName, AgentPubKeyB64, EntryHashB64} from "@holochain/client";
 
 export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
