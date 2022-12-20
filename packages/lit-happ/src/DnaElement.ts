@@ -71,7 +71,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends RoleSpecificMixin(S
    * Example: Have a subclass unsubscribe to oldDvm's zvms and subscribe to the new ones
    */
   protected async dvmUpdated(newDvm: DVM, oldDvm?: DVM): Promise<void> {
-    console.log(`\t\t Default dvmUpdated() called`)
+    //console.log(`\t\t Default dvmUpdated() called`)
   }
 
 

@@ -72,7 +72,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
 
   /** To be overriden by subclasses */
   protected async zvmUpdated(newZvm: ZVM, oldZvm?: ZVM): Promise<void> {
-    console.log(`\t\t Default zvmUpdated() called`)
+    //console.log(`\t\t Default zvmUpdated() called`)
   }
 
 

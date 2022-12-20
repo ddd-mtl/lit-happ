@@ -93,7 +93,7 @@ export class PlaygroundApp extends HappElement {
 
 
   /** QoL */
-  get dummyDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
+  get integerDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
   get impostorDvm(): NamedRealDvm { return this.hvm.getDvm("rImpostor")! as NamedRealDvm }
   get realDvm(): NamedRealDvm { return this.hvm.getDvm(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealDvm }
 
@@ -148,24 +148,34 @@ export class PlaygroundApp extends HappElement {
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(e:any) => {this.conductorAppProxy.dumpSignals()}}>
         <br/>
+        <!-- SELECT ENTRY TYPE -->
         <span>Select AppEntryType:</span>
-        <entry-def-select .dnaViewModel="${this.dummyDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>
         </div>
+        <!-- INSPECTORS -->
         <hr class="solid">
-        <named-number-inspect></named-number-inspect> 
-        <named-real-inspect></named-real-inspect>
-        <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>   
+        <cell-context .installedCell="${this.integerDvm.installedCell}">
+            <named-number-inspect></named-number-inspect>
+        </cell-context>
+        <cell-context .installedCell="${this.realDvm.installedCell}">
+          <named-real-inspect></named-real-inspect>
+        </cell-context>
+        <cell-context .installedCell="${this.impostorDvm.installedCell}">
+          <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>
+        </cell-context>
+        <!-- Integer cell -->          
         <hr class="solid">
-        <cell-context .installedCell="${this.dummyDvm.installedCell}">
+        <cell-context .installedCell="${this.integerDvm.installedCell}">
           <h2>
-            Dummy Role: ${this.dummyDvm.hcl.toString()} 
-            <input type="button" value="dump logs" @click=${(e: any) => this.dummyDvm.dumpLogs()}>
+            Dummy Role: ${this.integerDvm.hcl.toString()} 
+            <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
           </h2>
           <dummy-list></dummy-list>
           <label-list></label-list>
         </cell-context>
+        <!-- Real cells -->
         <cell-context .installedCell="${this.realDvm.installedCell}">
           <hr class="solid">
           <h2>
