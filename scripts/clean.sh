@@ -15,3 +15,6 @@ rm -rf example/target/
 rm example/.hc*
 rm example/tsconfig.tsbuildinfo
 rm example/Cargo.lock
+rm artifacts/*.dna
+rm artifacts/*.happ
+

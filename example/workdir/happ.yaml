@@ -22,5 +22,5 @@ roles:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/real.dna
+      bundled: ../../artifacts/named_real.dna
       clone_limit: 0
