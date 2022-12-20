@@ -74,7 +74,7 @@ export function intoCell(cellInfo: CellInfo): Cell | undefined {
   if (CellType.Cloned in cellInfo) {
     return cellInfo.Cloned;
   }
-  if (CellType.Cloned in cellInfo) {
+  if (CellType.Provisioned in cellInfo) {
     return cellInfo.Provisioned;
   }
   return undefined;
