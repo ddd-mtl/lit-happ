@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ddd-mtl/dna-client.git"
+    "url": "git+https://github.com/ddd-mtl/lit-happ.git"
   },
   "author": "",
   "license": "CAL-1.0",
   "bugs": {
-    "url": "https://github.com/ddd-mtl/dna-client/issues"
+    "url": "https://github.com/ddd-mtl/lit-happ/issues"
   },
-  "homepage": "https://github.com/ddd-mtl/dna-client#readme",
+  "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "dependencies": {
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@holochain-open-dev/core-types": "^0.6.1",
