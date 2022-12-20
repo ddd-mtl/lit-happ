@@ -37,7 +37,7 @@ fn create_real(value: f32)  -> ExternResult<EntryHash> {
   let _ah = create_entry(RealEntry::Real(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), RealLink::Default, LinkTag::from(()))?;
 
-  let payload = "I hate oranges";
+  let payload = "I hate floats";
   debug!("emit_signal() {:?}", payload);
   emit_signal(payload)?;
 

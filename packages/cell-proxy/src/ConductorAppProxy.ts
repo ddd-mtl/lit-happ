@@ -5,7 +5,7 @@ import {
 import { Dictionary } from "@holochain-open-dev/core-types";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, destructureRoleInstanceId, CellsMap, BaseRoleName, RoleInstanceId, RoleCells} from "./types";
-import {prettyDate, printAppInfo} from "./utils";
+import {prettyDate} from "./utils";
 import {ArchiveCloneCellRequest, CreateCloneCellRequest} from "@holochain/client/lib/api/app/types";
 import {HCL, HCLString} from "./hcl";
 

@@ -5,16 +5,16 @@ integrity:
   origin_time: 2022-09-25T13:55:49.200Z
   zomes:
     - name: dummy_integrity
-      bundled: ../target/wasm32-unknown-unknown/release/dummy_integrity.wasm
+      bundled: ../target/wasm32-unknown-unknown/release/integer_integrity.wasm
     - name: label_integrity
       bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
 coordinator:
   zomes:
-    - name: zDummy
-      bundled: ../target/wasm32-unknown-unknown/release/zDummy.wasm
+    - name: zInteger
+      bundled: ../target/wasm32-unknown-unknown/release/zInteger.wasm
       dependencies:
         - name: dummy_integrity
-    - name: zDummyLabel
+    - name: zIntegerLabel
       bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
         - name: label_integrity

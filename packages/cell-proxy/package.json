@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/cell-proxy",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Proxy classes and helpers for managing a Holochain AppWebsocket",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -23,8 +23,8 @@
   },
   "homepage": "https://github.com/ddd-mtl/dna-client#readme",
   "dependencies": {
-    "@holochain-open-dev/core-types": "^0.5.0",
-    "@holochain-open-dev/utils": "0.4.0",
+    "@holochain-open-dev/core-types": "^0.6.2",
+    "@holochain-open-dev/utils": "0.6.2",
     "@holochain/client": "^0.9.3"
   },
   "devDependencies": {

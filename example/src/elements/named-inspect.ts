@@ -1,6 +1,6 @@
 import {html} from "lit";
 import { property } from "lit/decorators.js";
-import {NamedIntegerDvm, DummyZomePerspective} from "../viewModels/dummy";
+import {IntegerZomePerspective, NamedIntegerDvm} from "../viewModels/integer";
 import {DnaElement} from "@ddd-qc/lit-happ";
 import { NamedRealDvm, RealZomePerspective } from "../viewModels/real";
 import {printInstalledCell} from "@ddd-qc/cell-proxy";
@@ -9,7 +9,7 @@ import {printInstalledCell} from "@ddd-qc/cell-proxy";
 /**
  *
  */
-export class NamedNumberInspect extends DnaElement<DummyZomePerspective, NamedIntegerDvm> {
+export class NamedNumberInspect extends DnaElement<IntegerZomePerspective, NamedIntegerDvm> {
 
   constructor() {
     super(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)
@@ -23,7 +23,7 @@ export class NamedNumberInspect extends DnaElement<DummyZomePerspective, NamedIn
     return html`
     <div>
       <span><b>Inspection of cell "${this.baseRoleName}":</b></span>
-      <span>dummyZvm: ${this._dvm.dummyZvm.zomeName}</span> |
+      <span>dummyZvm: ${this._dvm.integerZvm.zomeName}</span> |
       <span>labelZvm: ${this._dvm.labelZvm.zomeName}</span>
     </div>
     `

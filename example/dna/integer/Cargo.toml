@@ -1,5 +1,5 @@
 [package]
-name = "zDummy"
+name = "zInteger"
 version.workspace = true
 rust-version.workspace = true
 edition.workspace = true
@@ -10,4 +10,4 @@ crate-type = [ "cdylib", "rlib" ]
 [dependencies]
 serde.workspace = true
 hdk.workspace = true
-dummy_integrity = { path = "../dummy_integrity" }
+integer_integrity = { path = "../integer_integrity" }

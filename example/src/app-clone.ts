@@ -2,13 +2,14 @@ import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
   EntryDefSelect, HvmDef, CellContext, HappElement, CloneIndex, CellDef, HCL, ViewCellContext} from "@ddd-qc/lit-happ";
-import { NamedIntegerDvm } from "./viewModels/dummy";
+import { NamedIntegerDvm } from "./viewModels/integer";
 import {NamedRealCloneDvm, NamedRealDvm} from "./viewModels/real";
-import { DummyList } from "./elements/dummy-list";
+import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import { NamedRealInspect } from "./elements/named-inspect";
 import {InstalledCell} from "@holochain/client";
+
 
 /**
  *
@@ -200,7 +201,7 @@ export class PlaygroundCloneApp extends HappElement {
     return {
       "entry-def-select": EntryDefSelect,
       "named-real-inspect": NamedRealInspect,
-      "dummy-list": DummyList,
+      "dummy-list": IntegerList,
       "real-list": RealList,
       "label-list": LabelList,
       "cell-context": CellContext,

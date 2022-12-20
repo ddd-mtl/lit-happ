@@ -1,16 +1,15 @@
 import {html} from "lit";
-import {DummyZomePerspective, DummyZvm} from "../viewModels/dummy";
+import {IntegerZomePerspective, IntegerZvm} from "../viewModels/integer";
 import {ZomeElement, printInstalledCell} from "@ddd-qc/lit-happ";
-
 
 /**
  *
  */
-export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
+export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm> {
 
   /** */
   constructor() {
-    super(DummyZvm.DEFAULT_ZOME_NAME)
+    super(IntegerZvm.DEFAULT_ZOME_NAME)
   }
 
 
@@ -21,7 +20,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
 
 
 
-  protected async zvmUpdated(newDvm: DummyZvm, oldDvm?: DummyZvm): Promise<void> {
+  protected async zvmUpdated(newDvm: IntegerZvm, oldDvm?: IntegerZvm): Promise<void> {
     console.log(`\t\t DummyList zvmUpdated() called`)
   }
 
@@ -31,7 +30,7 @@ export class DummyList extends ZomeElement<DummyZomePerspective, DummyZvm> {
   async onCreateDummy(e: any) {
     const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
     const value = Number(input.value);
-    let res = await this._zvm.createDummy(value);
+    let res = await this._zvm.createInteger(value);
     //console.log("onCreateDummy() res =", serializeHash(res))
     input.value = "";
   }

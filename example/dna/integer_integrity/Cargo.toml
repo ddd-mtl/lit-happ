@@ -1,5 +1,5 @@
 [package]
-name = "dummy_integrity"
+name = "integer_integrity"
 version.workspace = true
 rust-version.workspace = true
 edition.workspace = true

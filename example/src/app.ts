@@ -1,9 +1,9 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/lit-happ";
-import { NamedIntegerDvm } from "./viewModels/dummy";
+import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
-import { DummyList } from "./elements/dummy-list";
+import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import {NamedNumberInspect, NamedRealInspect} from "./elements/named-inspect";
@@ -104,9 +104,11 @@ export class PlaygroundApp extends HappElement {
   @state() private _selectedZomeName = ""
 
 
+  /** */
   async happInitialized(): Promise<void> {
     await this.hvm.probeAll();
   }
+
 
   /** */
   async onProbe(e: any) {
@@ -197,7 +199,7 @@ export class PlaygroundApp extends HappElement {
       "entry-def-select": EntryDefSelect,
       "named-number-inspect": NamedNumberInspect,
       "named-real-inspect": NamedRealInspect,
-      "dummy-list": DummyList,
+      "dummy-list": IntegerList,
       "real-list": RealList,
       "label-list": LabelList,
       "cell-context": CellContext,
