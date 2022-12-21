@@ -1,9 +1,13 @@
 import rollupReplace from '@rollup/plugin-replace';
 import rollupCommonjs from '@rollup/plugin-commonjs';
 import { fromRollup } from '@web/dev-server-rollup';
+import rollupBuiltins from 'rollup-plugin-node-builtins';
+import rollupGlobals from 'rollup-plugin-node-globals';
 
 const replace = fromRollup(rollupReplace);
 const commonjs = fromRollup(rollupCommonjs);
+const builtins = fromRollup(rollupBuiltins);
+const globals = fromRollup(rollupGlobals);
 
 /** Use Hot Module replacement by adding --hmr to the start command */
 const hmr = process.argv.includes('--hmr');
@@ -32,6 +36,8 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
       '  COMB =': 'window.COMB =',
       delimiters: ['', ''],
     }),
+    builtins(),
+    globals(),
     commonjs({}),
   ],
 

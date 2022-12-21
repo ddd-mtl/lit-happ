@@ -2,16 +2,16 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
-import {CellId, encodeHashToBase64, InstalledCell, ZomeName, AgentPubKeyB64, DnaHashB64} from "@holochain/client";
+import {CellId, encodeHashToBase64, InstalledCell, ZomeName, AgentPubKeyB64, DnaHashB64, Cell} from "@holochain/client";
 import {cellContext} from "./elements/cell-context";
 import { ZomeViewModel } from "./ZomeViewModel";
-import {IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
+import {CellMixin, ICell, RoleInstanceId} from "@ddd-qc/cell-proxy";
 
 
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMixin(LitElement) implements IInstalledCell {
+export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedElementsMixin(LitElement)) {
 
   constructor(public readonly defaultZomeName: ZomeName) {
     super();
@@ -22,8 +22,8 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   }
 
   @contextProvided({ context: cellContext, subscribe: true})
-  @property({type: Object})
-  installedCell!: InstalledCell;
+  @property({type: Object, attribute: false})
+  _cell_via_context!: Cell;
 
   protected _zomeName!: ZomeName;
   get zomeName(): ZomeName {return this._zomeName};
@@ -34,18 +34,18 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
-  /** InstalledCell interface */
-  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_name }
-  get cellId(): CellId { return this.installedCell.cell_id }
-  get dnaHash(): DnaHashB64 { return encodeHashToBase64(this.installedCell.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this.installedCell.cell_id[1]) }
-
+  // /** InstalledCell interface */
+  // get roleInstanceId(): RoleInstanceId { return this._cell_via_context.name }
+  // get cellId(): CellId { return this._cell_via_context.cell_id }
+  // get dnaHash(): DnaHashB64 { return encodeHashToBase64(this._cell_via_context.cell_id[0]) }
+  // get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this._cell_via_context.cell_id[1]) }
+  //
 
   /** -- Methods -- */
 
   /** Request zvm from Context based on current CellId */
   private requestZvm() {
-    if (!this.installedCell) {
+    if (!this._cell_via_context) {
       throw Error(`"installedCell" from context "${cellContext}" not found in ZomeElement "${this.constructor.name}"`)
     }
     const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
@@ -87,8 +87,9 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends ScopedElementsMix
   /** */
   protected willUpdate(changedProperties: PropertyValues<this>) {
     //console.log("ZomeElement.willUpdate()", changedProperties)
-    if (changedProperties.has("installedCell")) {
+    if (changedProperties.has("_cell_via_context")) {
       //console.log("ZomeElement.willUpdate() installedCell in this element", this)
+      this._cell = this._cell_via_context;
       this.requestZvm();
     }
   }

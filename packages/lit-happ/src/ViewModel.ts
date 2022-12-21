@@ -1,5 +1,6 @@
 import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
+import {ICell} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -13,7 +14,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
  * Hosts can trigger probing in order to get an updated perspective.
  * The perspective can be automatically updated by internal events.
  */
- export abstract class ViewModel /*implements IViewModel*/ {
+ export abstract class ViewModel {
 
   /** -- Fields -- */
   protected _previousPerspective?: any;

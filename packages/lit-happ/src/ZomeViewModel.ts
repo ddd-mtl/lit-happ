@@ -1,5 +1,5 @@
 import {createContext} from "@lit-labs/context";
-import {CellProxy, ZomeProxy, ZomeProxyConstructor, IInstalledCell, RoleInstanceId} from "@ddd-qc/cell-proxy";
+import {CellProxy, ZomeProxy, ZomeProxyConstructor, RoleInstanceId, CellMixin} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
 import {CellId, InstalledCell, ZomeName, AgentPubKeyB64, EntryHashB64} from "@holochain/client";
 
@@ -24,7 +24,7 @@ export function zvm(zProxyCtor: typeof ZomeProxy) {
  * The perspective is the data from the Zome that is transformed and enhanced in order to be consumed by a View.
  * It can be automatically updated by Signals or the Zome Scheduler.
  */
-export abstract class ZomeViewModel extends ViewModel implements IInstalledCell {
+export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
     /** Zome proxy constructor */
     static ZOME_PROXY: ZomeProxyConstructor;
@@ -57,15 +57,9 @@ export abstract class ZomeViewModel extends ViewModel implements IInstalledCell 
             this._zomeProxy = new zProxyCtor(cellProxy);
             this.zomeName = this._zomeProxy.getDefaultZomeName();
         }
+        this._cell = cellProxy.cell;
     }
 
-
-    /** InstalledCell interface */
-    get installedCell(): InstalledCell { return this._zomeProxy.installedCell }
-    get roleInstanceId(): RoleInstanceId { return this._zomeProxy.roleInstanceId }
-    get cellId(): CellId { return this._zomeProxy.cellId }
-    get dnaHash(): EntryHashB64 { return this._zomeProxy.dnaHash}
-    get agentPubKey(): AgentPubKeyB64 { return this._zomeProxy.agentPubKey }
 
     /** */
     getContext(): any {

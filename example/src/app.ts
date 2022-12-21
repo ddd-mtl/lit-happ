@@ -133,7 +133,7 @@ export class PlaygroundApp extends HappElement {
 
     //const maybeImpostor = html``;
     const maybeImpostor = html`
-      <cell-context .installedCell="${this.impostorDvm.installedCell}">
+      <cell-context .installedCell="${this.impostorDvm.cell}">
           <hr class="solid">
           <h2>
               Impostor Role: ${this.impostorDvm.hcl.toString()}
@@ -158,18 +158,18 @@ export class PlaygroundApp extends HappElement {
         </div>
         <!-- INSPECTORS -->
         <hr class="solid">
-        <cell-context .installedCell="${this.integerDvm.installedCell}">
+        <cell-context .cell="${this.integerDvm.cell}">
             <named-number-inspect></named-number-inspect>
         </cell-context>
-        <cell-context .installedCell="${this.realDvm.installedCell}">
+        <cell-context .cell="${this.realDvm.cell}">
           <named-real-inspect></named-real-inspect>
         </cell-context>
-        <cell-context .installedCell="${this.impostorDvm.installedCell}">
+        <cell-context .cell="${this.impostorDvm.cell}">
           <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>
         </cell-context>
         <!-- Integer cell -->          
         <hr class="solid">
-        <cell-context .installedCell="${this.integerDvm.installedCell}">
+        <cell-context .cell="${this.integerDvm.cell}">
           <h2>
             Dummy Role: ${this.integerDvm.hcl.toString()} 
             <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
@@ -178,7 +178,7 @@ export class PlaygroundApp extends HappElement {
           <label-list></label-list>
         </cell-context>
         <!-- Real cells -->
-        <cell-context .installedCell="${this.realDvm.installedCell}">
+        <cell-context .cell="${this.realDvm.cell}">
           <hr class="solid">
           <h2>
             Real Role: ${this.realDvm.hcl.toString()}

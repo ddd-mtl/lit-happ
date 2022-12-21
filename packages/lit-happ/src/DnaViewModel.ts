@@ -10,9 +10,9 @@ import {
   RoleSpecificMixin,
   ConductorAppProxy,
   HCL,
-  IInstalledCell,
+  ICell,
   RoleInstanceId,
-  Dictionary
+  Dictionary, CellMixin
 } from "@ddd-qc/cell-proxy";
 
 
@@ -38,7 +38,7 @@ export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersO
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  * TODO: Split into RoleViewModel and CellViewModel (e.g. have call logs separated by role)
  */
-export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implements IInstalledCell, IDnaViewModel {
+export abstract class DnaViewModel extends CellMixin(RoleSpecificMixin(ViewModel)) implements IDnaViewModel {
 
   /* private */ static ZVM_DEFS: ZvmDef[];
   static DNA_MODIFIERS: DnaModifiersOptions;
@@ -58,6 +58,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
     this._cellProxy = conductorAppProxy.getCellProxy(this.hcl); // WARN can throw error
+    this._cell = this._cellProxy.cell;
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;
@@ -84,12 +85,12 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
 
   public readonly hcl: HCL;
 
-  /** InstalledCell interface */
-  get installedCell(): InstalledCell {return this._cellProxy.installedCell}
-  get roleInstanceId(): RoleInstanceId { return this.hcl.roleInstanceId }
-  get cellId(): CellId { return this._cellProxy.cellId }
-  get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
-  get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
+  // /** InstalledCell interface */
+  // //get installedCell(): InstalledCell {return this._cellProxy.installedCell}
+  // get roleInstanceId(): RoleInstanceId { return this.hcl.roleInstanceId }
+  // get cellId(): CellId { return this._cellProxy.cellId }
+  // get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
+  // get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
 
 
   /** -- Getters -- */
@@ -110,7 +111,7 @@ export abstract class DnaViewModel extends RoleSpecificMixin(ViewModel) implemen
   }
 
 
-  getContext():any {return createContext<typeof this>('dvm/' + this.roleInstanceId)};
+  getContext():any {return createContext<typeof this>('dvm/' + this.cell.name)};
 
 
   /** */

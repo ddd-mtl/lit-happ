@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "declaration": true,
     "noEmitOnError": true,
+    "lib": ["es2017", "dom"],
     "strict": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "useUnknownInCatchVariables": false,
     "importHelpers": true,
     "sourceMap": true,
     "allowJs": true

@@ -1,12 +1,13 @@
 import {
   AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId,
   InstalledAppId, InstalledCell,
-  CreateCloneCellRequest, DisableCloneCellRequest, EnableCloneCellRequest,
+  CreateCloneCellRequest, DisableCloneCellRequest, EnableCloneCellRequest, Cell,
 } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, destructureRoleInstanceId, CellsMap, BaseRoleName, RoleInstanceId, RoleCells} from "./types";
-import {Dictionary, prettyDate} from "./utils";
+import {Dictionary, intoCell, prettyDate} from "./utils";
 import {HCL, HCLString} from "./hcl";
+import {AppInfo} from "@holochain/client/lib/api/admin";
 
 
 /** */
@@ -31,7 +32,7 @@ export class ConductorAppProxy implements AppApi {
   /** [Timestamp, CellIdStr, Signal] */
   private _signalLogs: [number, CellIdStr, AppSignal][] = [];
   /** InstalledAppId -> (BaseRoleName -> RoleInstalledCells) */
-  private _installedCellsByApp: Dictionary<CellsMap> = {};
+  private _cellsByApp: Dictionary<CellsMap> = {};
   /** CellIdStr -> HCL[] */
   private _hclMap: Dictionary<HCL[]> = {};
   /** HCLString -> AppSignalCb */
@@ -44,7 +45,7 @@ export class ConductorAppProxy implements AppApi {
 
   /** */
   getAppCells(appId: InstalledAppId): CellsMap | undefined {
-    return this._installedCellsByApp[appId];
+    return this._cellsByApp[appId];
   }
 
   /** */
@@ -53,26 +54,26 @@ export class ConductorAppProxy implements AppApi {
   }
 
   /** */
-  getCell(hcl: HCL): InstalledCell {
-    const roleCellsMap = this._installedCellsByApp[hcl.appId];
+  getCell(hcl: HCL): Cell {
+    const roleCellsMap = this._cellsByApp[hcl.appId];
     if (!roleCellsMap) throw Error(`getCell() failed. No hApp with ID "${hcl.appId}" found.`);
     const roleCells = roleCellsMap[hcl.baseRoleName];
     if (!roleCells) throw Error(`getCell() failed: BaseRoleName "${hcl.baseRoleName}" not found in happ "${hcl.appId}"`);
-    let installedCell = roleCells.original;
+    let cell = roleCells.provisioned;
     if (hcl.cloneName !== undefined) {
-      installedCell = roleCells.clones[hcl.cloneName];
-      if (!installedCell) {
+      cell = roleCells.clones[hcl.cloneName];
+      if (!cell) {
         throw Error(`getCell() failed: clone "${hcl.cloneName}" not found for role "${hcl.appId}/${hcl.baseRoleName}"`);
       }
     } else {
       if (hcl.cloneIndex !== undefined) {
-        installedCell = roleCells.clones[String(hcl.cloneIndex)];
-        if (!installedCell) {
+        cell = roleCells.clones[String(hcl.cloneIndex)];
+        if (!cell) {
           throw Error(`getCell() failed: clone "${hcl.cloneIndex}" not found for role "${hcl.appId}/${hcl.baseRoleName}"`);
         }
       }
     }
-    return installedCell;
+    return cell;
   }
 
 
@@ -93,16 +94,16 @@ export class ConductorAppProxy implements AppApi {
 
   /** */
   getAppRoleInstanceIds(installedAppId: InstalledAppId): RoleInstanceId[] | undefined {
-    if (!this._installedCellsByApp[installedAppId]) return undefined;
-    return Object.values(this._installedCellsByApp[installedAppId]).map((roleCells) => {
-      return roleCells.original.role_name;
+    if (!this._cellsByApp[installedAppId]) return undefined;
+    return Object.values(this._cellsByApp[installedAppId]).map((roleCells) => {
+      return roleCells.provisioned.name;
     });
   }
 
 
   /** */
-  getClones(appId: InstalledAppId, baseRoleName: BaseRoleName): InstalledCell[] {
-    const maybeApp = this._installedCellsByApp[appId]
+  getClones(appId: InstalledAppId, baseRoleName: BaseRoleName): Cell[] {
+    const maybeApp = this._cellsByApp[appId]
     if (!maybeApp) return [];
     const roleInstalledCells = maybeApp[baseRoleName];
     if (!roleInstalledCells) return [];
@@ -179,58 +180,86 @@ export class ConductorAppProxy implements AppApi {
   }
 
 
+
   /** -- Methods -- */
 
+  // @ts-ignore
+  async fetchCell(appId: InstalledAppId, cellId: CellId): Promise<Cell> {
+    const appInfo = await this.appInfo({installed_app_id: appId});
+    if (appInfo == null) {
+      Promise.reject(`getCell() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
+    }
+    for (const cellInfos of Object.values(appInfo.cell_info)) {
+      for (const cellInfo of Object.values(cellInfos)) {
+        const cell = intoCell(cellInfo);
+        if (cell === undefined) {
+          continue;
+        }
+        if (cell.cell_id == cellId) {
+          return cell;
+        }
+      }
+    }
+    Promise.reject("getCell() failed. Cell not found for app.")
+  }
+
+  /** */
   async fetchCells(appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<RoleCells> {
     /** Make sure hApp exists */
-    const installedAppInfo: any = await this.appInfo({installed_app_id: appId});
-    if (installedAppInfo == null) {
+    const appInfo = await this.appInfo({installed_app_id: appId});
+    if (appInfo == null) {
       Promise.reject(`fetchCells() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
     //console.log("fetchCells() installedAppInfo:\n", printAppInfo(installedAppInfo));
     /** Make sure app Object exists */
-    if (!this._installedCellsByApp[appId]) {
-      this._installedCellsByApp[appId] = {};
+    if (!this._cellsByApp[appId]) {
+      this._cellsByApp[appId] = {};
     }
     /** Get all cells with that baseRoleName */
-    let original;
-    let clones: Dictionary<InstalledCell> = {};
-    for (const curCell of installedAppInfo.cell_data) {
-      //console.log(`CreateCellProxy(): Found cell "${installedCell.role_id}":`, CellIdStr(installedCell.cell_id));
-      const maybePair = destructureRoleInstanceId(curCell.role_id);
-      const curBaseName = maybePair ? maybePair[0] : curCell.role_id;
-      if (curBaseName !== baseRoleName) {
-        continue;
-      }
-      if (maybePair) {
-        if (clones["" + maybePair[1]]) {
-          console.error(`fetchCells() Proxy already exist for clone: "${maybePair[0]}/${maybePair[1]}"`)
+    let provisioned: Cell | undefined;
+    let clones: Dictionary<Cell> = {};
+    for (const [roleName, cellInfos] of Object.entries(appInfo.cell_info)) {
+      for (const cellInfo of Object.values(cellInfos)) {
+        const cell = intoCell(cellInfo);
+        if (cell === undefined) {
+          continue;
         }
-        clones["" + maybePair[1]] = curCell;
-      } else {
-        original = curCell;
+        //console.log(`CreateCellProxy(): Found cell "${installedCell.role_id}":`, CellIdStr(installedCell.cell_id));
+        const maybePair = destructureRoleInstanceId(roleName);
+        const curBaseName = maybePair ? maybePair[0] : roleName;
+        if (curBaseName !== baseRoleName) {
+          continue;
+        }
+        if (maybePair) {
+          if (clones["" + maybePair[1]]) {
+            console.error(`fetchCells() Proxy already exist for clone: "${maybePair[0]}/${maybePair[1]}"`)
+          }
+          clones["" + maybePair[1]] = cell;
+        } else {
+          provisioned = cell;
+        }
       }
     }
-    if (!original) {
-      Promise.reject("Original cell not found for role " + baseRoleName);
+    if (typeof provisioned === 'undefined') {
+      Promise.reject("Provisioned cell not found for role " + baseRoleName);
     }
-    let roleInstalledCells = {original, clones}
+    let roleInstalledCells: RoleCells = {provisioned: provisioned!, clones}
     /** Store it*/
-    this._installedCellsByApp[appId][baseRoleName] = roleInstalledCells;
+    this._cellsByApp[appId][baseRoleName] = roleInstalledCells;
     return roleInstalledCells;
   }
 
 
   /** */
-  addClone(hcl: HCL, cloneCell: InstalledCell): void {
-    if (!this._installedCellsByApp[hcl.appId]) throw Error("addCloneInstalledCell() failed. no appId. " + hcl.toString());
-    if (!this._installedCellsByApp[hcl.appId][hcl.baseRoleName]) throw Error("addCloneInstalledCell() failed. no baseRoleName. " + hcl.toString());
+  addClone(hcl: HCL, cloneCell: Cell): void {
+    if (!this._cellsByApp[hcl.appId]) throw Error("addCloneInstalledCell() failed. no appId. " + hcl.toString());
+    if (!this._cellsByApp[hcl.appId][hcl.baseRoleName]) throw Error("addCloneInstalledCell() failed. no baseRoleName. " + hcl.toString());
     if (hcl.cloneName !== undefined) {
-      this._installedCellsByApp[hcl.appId][hcl.baseRoleName].clones[hcl.cloneName] = cloneCell;
+      this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[hcl.cloneName] = cloneCell;
       return;
     }
     if (hcl.cloneIndex === undefined) throw Error("addCloneInstalledCell() failed. Missing cloneIndex " + hcl.toString());
-    this._installedCellsByApp[hcl.appId][hcl.baseRoleName].clones[String(hcl.cloneIndex)] = cloneCell;
+    this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[String(hcl.cloneIndex)] = cloneCell;
     // const sCellId = CellIdStr(cloneCell.cell_id);
     // console.log("CreateCellProxy() adding to hclMap", sCellId, cellLoc.asHcl())
     // if (this._hclMap[sCellId]) {
@@ -245,13 +274,13 @@ export class ConductorAppProxy implements AppApi {
   createCellProxy(hcl: HCL): CellProxy {
     //console.log("createCellProxy() for", hcl.toString());
     /** Make sure cell exists */
-    const installedCell = this.getCell(hcl);
-    const sCellId = CellIdStr(installedCell.cell_id);
+    const cell = this.getCell(hcl);
+    const sCellId = CellIdStr(cell.cell_id);
     /** Create proxy for this cell if none exist yet, otherwise reuse */
     let cellProxy = this._cellProxies[sCellId];
     if (!cellProxy) {
       /** Create and store Proxy */
-      cellProxy = new CellProxy(this, installedCell, this.defaultTimeout);
+      cellProxy = new CellProxy(this, cell, this.defaultTimeout);
       this._cellProxies[sCellId] = cellProxy;
     }
     /** Create CellId -> HCL mapping */

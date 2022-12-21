@@ -1,16 +1,25 @@
-import {CellId, decodeHashFromBase64, encodeHashToBase64, InstalledCell, AgentPubKeyB64, DnaHashB64} from "@holochain/client";
+import {
+  CellId,
+  decodeHashFromBase64,
+  encodeHashToBase64,
+  InstalledCell,
+  AgentPubKeyB64,
+  DnaHashB64,
+  Cell
+} from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
 
 /**
  *
  */
-export interface IInstalledCell {
-  get installedCell(): InstalledCell;
-  get roleInstanceId(): RoleInstanceId;
+export interface ICell {
+  //get installedCell(): InstalledCell;
+  get cell(): Cell;
+  //get name(): string;
   get dnaHash(): DnaHashB64;
   get agentPubKey(): AgentPubKeyB64;
-  get cellId(): CellId;
+  //get cellId(): CellId;
 
   //get isClone(): boolean;
   //get baseRoleName(): BaseRoleName;
@@ -22,9 +31,10 @@ export type BaseRoleName = string;
 export type CloneIndex = number;
 
 export type RoleCells = {
-  original: InstalledCell,
+  //roleName: RoleInstanceId,
+  provisioned: Cell,
   /** CloneName / Index -> InstalledCell */
-  clones: Dictionary<InstalledCell>,
+  clones: Dictionary<Cell>,
 }
 
 /** BaseRoleName -> RoleCells */

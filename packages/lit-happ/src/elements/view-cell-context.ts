@@ -1,7 +1,7 @@
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, html} from "lit";
 import {property} from "lit/decorators.js";
-import {InstalledCell} from "@holochain/client";
+import {Cell} from "@holochain/client";
 import {contextProvided} from "@lit-labs/context";
 import {cellContext} from "./cell-context";
 
@@ -13,13 +13,13 @@ export class ViewCellContext extends ScopedElementsMixin(LitElement) {
 
   @contextProvided({ context: cellContext, subscribe: true})
   @property({type: Object})
-  installedCell!: InstalledCell;
+  cell!: Cell;
 
   render() {
-    const roleId = this.installedCell === undefined? "undefined" : this.installedCell.role_name;
+    const cellName = this.cell === undefined? "undefined" : this.cell.name;
     return html`
     <div>
-        <span><b>(InstalledCell set to: "${roleId}")</b></span>
+        <span><b>(InstalledCell set to: "${cellName}")</b></span>
     </div>
     `;
   }

@@ -1,4 +1,4 @@
-import {CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
+import {Cell, CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
@@ -13,7 +13,8 @@ import {
 import {CellDef, DvmDef, HvmDef} from "./definitions";
 import {DnaViewModel} from "./DnaViewModel";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
-import {CellId} from "@holochain/client/lib/types";
+import {CellId, RoleName} from "@holochain/client/lib/types";
+import {DnaModifiers} from "@holochain/client/lib/api/admin/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -208,8 +209,19 @@ import {CellId} from "@holochain/client/lib/types";
       }
     }
     /** Create Cell */
-    const cloneCell = await this._conductorAppProxy.createCloneCell(request);
-    //console.log("clone created:", CellIdStr(cloneCell.cell_id));
+    const cloneInstalledCell = await this._conductorAppProxy.createCloneCell(request);
+    //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
+    const cloneCell = await this._conductorAppProxy.fetchCell(this.appId, cloneInstalledCell.cell_id);
+    console.log("clone created:", cloneCell);
+
+    // const cloneCell: Cell = {
+    //   cell_id: cloneInstalledCell.cell_id,
+    //   //clone_id?: RoleName;
+    //   dna_modifiers: request.modifiers,
+    //   name: cellDef && cellDef.cloneName? cellDef.cloneName : "noname",
+    //   enabled: true,
+    // };
+
     /** Get created cell */
     this._conductorAppProxy.addClone(hcl, cloneCell);
     /** Create CellProxy */

@@ -8,7 +8,7 @@ import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import { NamedRealInspect } from "./elements/named-inspect";
-import {InstalledCell} from "@holochain/client";
+import {Cell, InstalledCell} from "@holochain/client";
 
 
 /**
@@ -38,7 +38,7 @@ export class PlaygroundCloneApp extends HappElement {
     ],
   };
 
-  @state() private _integerCell?: InstalledCell;
+  @state() private _integerCell?: Cell;
 
   /** QoL */
   get integerDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
@@ -55,7 +55,7 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** override */
   async happInitialized(): Promise<void> {
-    this._integerCell = this.integerDvm.installedCell;
+    this._integerCell = this.integerDvm.cell;
     await this.hvm.probeAll();
   }
 
@@ -76,8 +76,8 @@ export class PlaygroundCloneApp extends HappElement {
     ;
     await this.createClone(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
     const myWorldDvm = this.integerDvmClone(count);
-    this._integerCell = myWorldDvm.installedCell;
-    console.log("IntegerDvm cloned: ", myWorldDvm.installedCell, count);
+    this._integerCell = myWorldDvm.cell;
+    console.log("IntegerDvm cloned: ", myWorldDvm.cell, count);
   }
 
 
@@ -132,7 +132,7 @@ export class PlaygroundCloneApp extends HappElement {
     const clones = Object.values(this.realDvmClones).map((realDvm) => {
       return html`
           <hr style="border-style:dotted;">
-          <cell-context .installedCell="${realDvm.installedCell}">
+          <cell-context .cell="${realDvm.cell}">
               <h3>
                 ${realDvm.hcl.toString()}
                 <input type="button" value="dump logs" @click=${(e: any) => realDvm.dumpLogs()}>
@@ -178,7 +178,7 @@ export class PlaygroundCloneApp extends HappElement {
         </select>
         <!-- Selected Clone -->          
         <hr style="border-style:dotted;">
-        <cell-context .installedCell="${selectedDvm.installedCell}">
+        <cell-context .cell="${selectedDvm.cell}">
             <view-cell-context></view-cell-context>
             <h3>
                 Selected: ${selectedDvm.hcl.toString()}

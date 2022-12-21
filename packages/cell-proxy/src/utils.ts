@@ -1,6 +1,7 @@
 import {CellId, AppInfo, CellInfo, Cell, encodeHashToBase64} from "@holochain/client";
-import {IInstalledCell} from "./types";
+import {ICell} from "./types";
 import {CellType, DnaModifiers} from "@holochain/client";
+import {StemCell} from "@holochain/client/lib/api/admin/types";
 
 
 export declare type Dictionary<T> = {
@@ -29,7 +30,7 @@ export function anyToB64(obj: any): any {
   if (obj instanceof Uint8Array) {
     return encodeHashToBase64(obj);
   } else {
-    /** Check if its an array of hashes */
+    /** Check if it's an array of hashes */
     if (Array.isArray(obj)) {
       const isUint8Array =
         obj.length > 0 &&
@@ -67,6 +68,14 @@ export function prettyDate(date: Date): string {
 
 
 /** ... */
+export function intoStem(cellInfo: CellInfo): StemCell | undefined {
+  if (CellType.Stem in cellInfo) {
+    return cellInfo.Stem;
+  }
+  return undefined
+}
+
+/** ... */
 export function intoCell(cellInfo: CellInfo): Cell | undefined {
   if (CellType.Stem in cellInfo) {
     return undefined;
@@ -84,14 +93,15 @@ export function intoCell(cellInfo: CellInfo): Cell | undefined {
 /** */
 export function printAppInfo(appInfo: AppInfo): string {
   let print = `Happ "${appInfo.installed_app_id}" info: (status: ${JSON.stringify(appInfo.status)})`;
-  for (const [role_name, cellInfos] of Object.values(appInfo.cell_info)) {
+  for (const [roleName, cellInfos] of Object.entries(appInfo.cell_info)) {
     for (const cellInfo of  Object.values(cellInfos)) {
       if (CellType.Stem in cellInfo) {
-        print += `\n - ${role_name}.${cellInfo.name? cellInfo.name : "unnamed"} : ${encodeHashToBase64(cellInfo.dna)} (stem)`;
+        const stem = intoStem(cellInfo)!;
+        print += `\n - ${roleName}.${stem.name? stem.name : "unnamed"} : ${encodeHashToBase64(stem.dna)} (stem)`;
         continue;
       }
       const cell = intoCell(cellInfo)!;
-      print += `\n - ${role_name}.${cell.name}${cell.name? "."+cell.name : ""} : ${encodeHashToBase64(cell.cell_id[0])}`;
+      print += `\n - ${roleName}.${cell.name}${cell.name? "."+cell.name : ""} : ${encodeHashToBase64(cell.cell_id[0])}`;
     }
   }
   return print;
@@ -99,8 +109,8 @@ export function printAppInfo(appInfo: AppInfo): string {
 
 
 /** */
-export function printInstalledCell(installedCell: IInstalledCell): string {
-  return `InstalledCell "${installedCell.roleInstanceId}": ${installedCell.dnaHash}`;
+export function printCell(cell: Cell): string {
+  return `Cell "${cell.name}${cell.clone_id? "."+ cell.clone_id: ""}": ${encodeHashToBase64(cell.cell_id[0])}`;
 }
 
 

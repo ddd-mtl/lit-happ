@@ -1,9 +1,7 @@
-import {CallZomeRequest, CapSecret, CellId, encodeHashToBase64, InstalledCell, ZomeName,
-  AgentPubKeyB64, DnaHashB64,
-} from "@holochain/client";
+import {CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName, Cell} from "@holochain/client";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
-import {IInstalledCell, RoleInstanceId} from "./types";
 import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
+import {CellSpecific} from "./mixins";
 
 
 export interface RequestLog {
@@ -27,14 +25,16 @@ export interface ResponseLog {
  * It holds a reference to its ConductorAppProxy and its InstalledCell.
  * This class is expected to be used by ZomeProxies.
  */
-export class CellProxy implements IInstalledCell {
+export class CellProxy extends CellSpecific {
 
   /** Ctor */
   constructor(
     private _conductor: ConductorAppProxy,
-    public readonly installedCell: InstalledCell,
+    cell: Cell,
     //public readonly dnaDef: MyDnaDef,
     defaultTimeout?: number) {
+    super();
+    this._cell = cell;
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
   }
 
@@ -51,12 +51,10 @@ export class CellProxy implements IInstalledCell {
   private _canCallBlocking: boolean = true;
 
 
-  /** -- InstalledCell interface -- */
-
-  get roleInstanceId(): RoleInstanceId { return this.installedCell.role_name}
-  get cellId(): CellId { return this.installedCell.cell_id }
-  get dnaHash(): DnaHashB64 { return encodeHashToBase64(this.installedCell.cell_id[0]) }
-  get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this.installedCell.cell_id[1]) }
+  // /** -- ICell interface -- */
+  //
+  // get dnaHash(): DnaHashB64 { return encodeHashToBase64(this.cell.cell_id[0]) }
+  // get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this.cell.cell_id[1]) }
 
 
   /** -- Methods -- */
@@ -67,7 +65,7 @@ export class CellProxy implements IInstalledCell {
   // }
 
   dumpSignals() {
-    this._conductor.dumpSignals(this.cellId);
+    this._conductor.dumpSignals(this.cell.cell_id);
   }
 
   /** Pass call request to conductor proxy and log it */
@@ -96,8 +94,8 @@ export class CellProxy implements IInstalledCell {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.installedCell.cell_id,
-      provenance: this.installedCell.cell_id[1],
+      cell_id: this.cell.cell_id,
+      provenance: this.cell.cell_id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
@@ -124,8 +122,8 @@ export class CellProxy implements IInstalledCell {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.installedCell.cell_id,
-      provenance: this.installedCell.cell_id[1],
+      cell_id: this.cell.cell_id,
+      provenance: this.cell.cell_id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     const respLog = await this.executeZomeCall(log);
