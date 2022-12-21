@@ -26,8 +26,14 @@
 
       console.log("ADMIN_PORT:", process.env.ADMIN_PORT);
       const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+      console.log({adminWs});
+
+      //await authorizeNewSigningKeyPair(adminWs, cellId!, profilesZomeFunctions);
+
       const apps = await adminWs.listApps({});
       console.log("Installed apps:", apps);
+
+      console.log("HC_PORT:", process.env.HC_PORT);
 
       if (apps[0].installed_app_id == "playground") {
         customElements.define("playground-app", PlaygroundApp);
