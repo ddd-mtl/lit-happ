@@ -20,19 +20,16 @@
     "build"            : "rm -rf dist && tsc && rollup -c rollup.config.js",
     "build:watch"      : "tsc -w --incremental --preserveWatchOutput",
 
-
-    "start"            : "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground.happ -w --ui-path ./dist network mdns",
-    "start:clone"      : "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground-clone.happ -w --ui-path ./dist network mdns",
-
-
     "start:happ"       : "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground.happ --run=$HC_PORT -a playground network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
     "start:happ:clone" : "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground-clone.happ --run=$HC_PORT -a playground-clone network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
 
     "start:ui"         : "concurrently --names tsc,dev-server \"npm run build:watch\" \"web-dev-server --config ./web-dev-server.config.mjs\"",
 
-    "start-old"        : "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ\" \"sleep 5 && npm run start:ui\"",
-    "start-old:clone"  : "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ:clone\" \"sleep 5 && npm run start:ui\"",
+    "start"            : "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ\" \"sleep 5 && npm run start:ui\"",
+    "start:clone"      : "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ:clone\" \"sleep 5 && npm run start:ui\"",
 
+    "launch"           : "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground.happ -w --ui-path ./dist network mdns",
+    "launch:clone"     : "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground-clone.happ -w --ui-path ./dist network mdns",
 
     "package": "rm -rf ui.zip && cd dist && bestzip ../ui.zip * && cd .. && hc web-app pack ./webhapp.workdir",
     "clean:hc": "hc s clean"

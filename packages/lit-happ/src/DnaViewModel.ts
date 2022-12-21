@@ -85,13 +85,6 @@ export abstract class DnaViewModel extends CellMixin(RoleSpecificMixin(ViewModel
 
   public readonly hcl: HCL;
 
-  // /** InstalledCell interface */
-  // //get installedCell(): InstalledCell {return this._cellProxy.installedCell}
-  // get roleInstanceId(): RoleInstanceId { return this.hcl.roleInstanceId }
-  // get cellId(): CellId { return this._cellProxy.cellId }
-  // get dnaHash(): EntryHashB64 { return this._cellProxy.dnaHash}
-  // get agentPubKey(): AgentPubKeyB64 { return this._cellProxy.agentPubKey }
-
 
   /** -- Getters -- */
 

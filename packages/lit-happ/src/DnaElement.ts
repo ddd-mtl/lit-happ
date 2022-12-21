@@ -3,8 +3,8 @@ import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
-import {CellId, InstalledCell, AgentPubKeyB64, EntryHashB64, Cell} from "@holochain/client";
-import {BaseRoleName, CellMixin, ICell, RoleInstanceId, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
+import {Cell} from "@holochain/client";
+import {BaseRoleName, CellMixin, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
 import {cellContext} from "./elements/cell-context";
 
 /**

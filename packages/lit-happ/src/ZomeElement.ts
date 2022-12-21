@@ -34,12 +34,6 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
-  // /** InstalledCell interface */
-  // get roleInstanceId(): RoleInstanceId { return this._cell_via_context.name }
-  // get cellId(): CellId { return this._cell_via_context.cell_id }
-  // get dnaHash(): DnaHashB64 { return encodeHashToBase64(this._cell_via_context.cell_id[0]) }
-  // get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this._cell_via_context.cell_id[1]) }
-  //
 
   /** -- Methods -- */
 

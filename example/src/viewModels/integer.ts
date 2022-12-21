@@ -1,6 +1,7 @@
 import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
 import {AppSignal, EntryHash, AppSignalCb} from "@holochain/client";
 import {LabelZvm} from "./label";
+import {integerZomeFunctions} from "../fn";
 
 /**
  *
@@ -8,6 +9,9 @@ import {LabelZvm} from "./label";
 export class IntegerZomeProxy extends ZomeProxy {
 
   static readonly DEFAULT_ZOME_NAME = "zInteger"
+
+  readonly FN_NAMES = integerZomeFunctions;
+
 
   async getInteger(eh: EntryHash): Promise<number> {
     return this.call('get_integer', eh);

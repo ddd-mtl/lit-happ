@@ -1,5 +1,6 @@
 import {ZomeProxy, ZomeViewModel} from "@ddd-qc/lit-happ";
 import { EntryHash } from "@holochain/client";
+import {labelZomeFunctions} from "../fn";
 
 
 /**
@@ -8,6 +9,9 @@ import { EntryHash } from "@holochain/client";
 export class LabelZomeProxy extends ZomeProxy {
 
   static readonly DEFAULT_ZOME_NAME: string = "zLabel";
+
+  readonly FN_NAMES = labelZomeFunctions;
+
 
   async getLabel(eh: EntryHash): Promise<string> {
     return this.call('get_label', eh);
