@@ -6,7 +6,7 @@ import { NamedRealDvm } from "./viewModels/real";
 import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
-import {NamedNumberInspect, NamedRealInspect} from "./elements/named-inspect";
+import {NamedIntegerInspect, NamedRealInspect} from "./elements/named-inspect";
 import {AdminWebsocket, authorizeSigningCredentials} from "@holochain/client";
 import {integerZomeFunctions} from "./fn";
 
@@ -105,18 +105,21 @@ export class PlaygroundApp extends HappElement {
 
   @state() private _selectedZomeName = ""
 
+  @state() private _initialized = false;
 
   /** */
   async happInitialized(): Promise<void> {
     /** Authorize all zome calls */
     const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
     console.log({adminWs});
-    await this.integerDvm.authorizeZomes(adminWs);
-    await this.impostorDvm.authorizeZomes(adminWs);
-    await this.realDvm.authorizeZomes(adminWs);
+    await this.integerDvm.authorizeZomeCalls(adminWs);
+    await this.impostorDvm.authorizeZomeCalls(adminWs);
+    await this.realDvm.authorizeZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
-    /* Probe */
+    /** Probe */
     await this.hvm.probeAll();
+    /** Done */
+    this._initialized = true;
   }
 
 
@@ -139,11 +142,12 @@ export class PlaygroundApp extends HappElement {
   /** */
   render() {
     console.log("<playground-app> render()", this.hvm);
+    if (!this._initialized) {
+      return html`<span>Loading...</span>`;
+    }
 
-
-    //const maybeImpostor = html``;
     const maybeImpostor = html`
-      <cell-context .installedCell="${this.impostorDvm.cell}">
+      <cell-context .cell="${this.impostorDvm.cell}">
           <hr class="solid">
           <h2>
               Impostor Role: ${this.impostorDvm.hcl.toString()}
@@ -154,6 +158,7 @@ export class PlaygroundApp extends HappElement {
       </cell-context>
     `;
 
+    /** render all */
     return html`
       <div style="margin:10px;">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
@@ -169,36 +174,36 @@ export class PlaygroundApp extends HappElement {
         <!-- INSPECTORS -->
         <hr class="solid">
         <cell-context .cell="${this.integerDvm.cell}">
-            <named-number-inspect></named-number-inspect>
+            <named-integer-inspect></named-integer-inspect>
         </cell-context>
         <cell-context .cell="${this.realDvm.cell}">
-          <named-real-inspect></named-real-inspect>
+            <named-real-inspect></named-real-inspect>
         </cell-context>
         <cell-context .cell="${this.impostorDvm.cell}">
-          <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>
-        </cell-context>
-        <!-- Integer cell -->          
+            <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>
+        </cell-context>          
+        <!-- Integer cell -->
         <hr class="solid">
         <cell-context .cell="${this.integerDvm.cell}">
-          <h2>
-            Dummy Role: ${this.integerDvm.hcl.toString()} 
-            <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
-          </h2>
-          <dummy-list></dummy-list>
-          <label-list></label-list>
+            <h2>
+                Integer Role: ${this.integerDvm.hcl.toString()}
+                <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
+            </h2>
+            <integer-list></integer-list>
+            <label-list></label-list>
         </cell-context>
-        <!-- Real cells -->
+        <!-- Real cell -->
         <cell-context .cell="${this.realDvm.cell}">
-          <hr class="solid">
-          <h2>
-            Real Role: ${this.realDvm.hcl.toString()}
-            <input type="button" value="dump logs" @click=${(e: any) => this.realDvm.dumpLogs()}>
-          </h2>
-          <real-list></real-list>
-          <label-list></label-list>
+            <hr class="solid">
+            <h2>
+                Real Role: ${this.realDvm.hcl.toString()}
+                <input type="button" value="dump logs" @click=${(e: any) => this.realDvm.dumpLogs()}>
+            </h2>
+            <real-list></real-list>
+            <label-list></label-list>
         </cell-context>
-        ${maybeImpostor}
-      </div>
+        <!-- Impostor cell -->
+        ${maybeImpostor}          
     `
   }
 
@@ -207,9 +212,9 @@ export class PlaygroundApp extends HappElement {
   static get scopedElements() {
     return {
       "entry-def-select": EntryDefSelect,
-      "named-number-inspect": NamedNumberInspect,
+      "named-integer-inspect": NamedIntegerInspect,
       "named-real-inspect": NamedRealInspect,
-      "dummy-list": IntegerList,
+      "integer-list": IntegerList,
       "real-list": RealList,
       "label-list": LabelList,
       "cell-context": CellContext,

@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "dependencies": {
-    "@holochain/client": "^0.11.3"
+    "@holochain/client": "^0.11.8"
   },
   "devDependencies": {
     "tslib": "^2.4.0",

@@ -44,6 +44,6 @@ export const realZomeFunctions: FunctionName[] = [
 export const labelZomeFunctions: FunctionName[] = [
   "entry_defs",
   "get_label",
- "create_labels",
+  "create_label",
   "get_my_labels",
 ];

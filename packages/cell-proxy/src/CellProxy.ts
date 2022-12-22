@@ -35,6 +35,7 @@ export class CellProxy extends CellMixin(Empty) {
     defaultTimeout?: number) {
     super();
     this._cell = cell;
+    console.log(`CellProxy.ctor`, cell);
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
   }
 

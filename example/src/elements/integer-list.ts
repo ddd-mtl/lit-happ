@@ -21,14 +21,14 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
 
   protected async zvmUpdated(newDvm: IntegerZvm, oldDvm?: IntegerZvm): Promise<void> {
-    console.log(`\t\t DummyList zvmUpdated() called`)
+    console.log(`\t\t IntegerList zvmUpdated() called`)
   }
 
 
 
   /** */
-  async onCreateDummy(e: any) {
-    const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
+  async onCreateInteger(e: any) {
+    const input = this.shadowRoot!.getElementById("integerInput") as HTMLInputElement;
     const value = Number(input.value);
     let res = await this._zvm.createInteger(value);
     //console.log("onCreateDummy() res =", serializeHash(res))
@@ -38,11 +38,11 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
   /** */
   render() {
-    console.log("<dummy-list> render(): " + printCell(this.cell));
+    console.log("<integer-list> render(): " + printCell(this.cell));
 
-    //console.log("dummy-list:", this.perspective.values)
+    //console.log("integer-list:", this.perspective.values)
 
-    const dummyLi = Object.values(this.perspective.values).map(
+    const integerLi = Object.values(this.perspective.values).map(
       (value) => {
         return html`<li>${value}</li>`
       }
@@ -50,12 +50,12 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
     /** render all */
     return html`
-        <h3>Dummy List <input type="button" value="Probe" @click=${this.onProbe}></h3>
-        <label for="dummyInput">New dummy:</label>
-        <input type="number" id="dummyInput" name="Value">
-        <input type="button" value="create" @click=${this.onCreateDummy}>
+        <h3>Integer List <input type="button" value="Probe" @click=${this.onProbe}></h3>
+        <label for="integerInput">New integer:</label>
+        <input type="number" id="integerInput" name="Value">
+        <input type="button" value="create" @click=${this.onCreateInteger}>
       <ul>
-          ${dummyLi}
+          ${integerLi}
       </ul>
     `
 

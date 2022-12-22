@@ -10,7 +10,7 @@ export class LabelZomeProxy extends ZomeProxy {
 
   static readonly DEFAULT_ZOME_NAME: string = "zLabel";
 
-  readonly FN_NAMES = labelZomeFunctions;
+  static readonly FN_NAMES = labelZomeFunctions;
 
 
   async getLabel(eh: EntryHash): Promise<string> {

@@ -58,7 +58,7 @@ export class IntegerZvm extends ZomeViewModel {
   }
 
 
-  /** -- Dummy specific methods -- */
+  /** -- Integer specific methods -- */
 
   /**  */
   async createInteger(value: number): Promise<EntryHash> {

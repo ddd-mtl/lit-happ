@@ -1,7 +1,14 @@
 import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
-import {AdminWebsocket, AppSignalCb, authorizeSigningCredentials, InstalledAppId, ZomeName,} from "@holochain/client";
+import {
+  AdminWebsocket, AgentPubKey,
+  AppSignalCb,
+  authorizeSigningCredentials, CapSecret,
+  getSigningCredentials,
+  InstalledAppId,
+  ZomeName,
+} from "@holochain/client";
 import {DnaModifiersOptions, ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
 import {
@@ -57,6 +64,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     const zvmDefs = dvmCtor.ZVM_DEFS;
     this._cellProxy = conductorAppProxy.getCellProxy(this.hcl); // WARN can throw error
     this._cell = this._cellProxy.cell;
+    console.log(`DVM.ctor of ${this.baseRoleName}`, this._cellProxy.cell);
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
       let zvm;
@@ -102,15 +110,27 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     }
   }
 
-
   getContext(): any {return createContext<typeof this>('dvm/' + this.cell.name)};
 
 
   /** */
-  async authorizeZomes(adminWs: AdminWebsocket): Promise<void> {
+  async authorizeZomeCalls(adminWs: AdminWebsocket): Promise<void> {
+    let allFnNames = [];
     for (const [zomeName, zvm] of Object.entries(this._zomeViewModels)) {
-      authorizeSigningCredentials(adminWs, this.cellId, zvm.zomeProxy.fnNames);
+      allFnNames = allFnNames.concat(zvm.zomeProxy.fnNames)
     }
+    try {
+        console.log("authorizeSigningCredentials: " + this.baseRoleName, allFnNames);
+        await authorizeSigningCredentials(adminWs, this.cellId, allFnNames);
+    } catch(e) {
+      console.warn("authorizeSigningCredentials FAILED.", e);
+    }
+   // this._signingProps = getSigningCredentials(this.cellId);
+   //  console.log({signProps: this._signingProps})
+   //
+   //  for (const [zomeName, zvm] of Object.entries(this._zomeViewModels)) {
+   //    zvm.zomeProxy.setSigningProps(this._signingProps);
+   //  }
   }
 
 

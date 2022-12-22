@@ -31,7 +31,7 @@ export function CellMixin<TBase extends AbstractConstructor>(Base: TBase) {
     // }
     _cell?: Cell;
 
-    get cell(): Cell { return this._cell! }
+    get cell(): Cell { if (!this._cell) throw Error("Cell not set for object") ; return this._cell! }
     get cellId(): CellId { return this._cell!.cell_id }
     get dnaHash(): DnaHashB64 { return encodeHashToBase64(this._cell!.cell_id[0]) }
     get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this._cell!.cell_id[1]) }

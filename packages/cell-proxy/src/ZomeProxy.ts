@@ -11,8 +11,6 @@ export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeNam
  */
 export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
 
-  //abstract readonly FN_NAMES: FunctionName[];
-
   /** Ctor */
   constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
     super();
@@ -27,6 +25,14 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   }
 
 
+  // private _signingProps?: {
+  //   capSecret: CapSecret;
+  //   keyPair: nacl.SignKeyPair;
+  //   signingKey: AgentPubKey;
+  // };
+  // setSigningProps(signingProps: { capSecret: CapSecret; keyPair: nacl.SignKeyPair; signingKey: AgentPubKey}): void {
+  //   this._signingProps = signingProps;
+  // }
 
   /** Helper for calling a zome function on its zome */
   protected async call(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
@@ -34,7 +40,11 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
     if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
       Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
     }
-    const cap_secret = maybeSecret? maybeSecret : null;
+    const cap_secret = maybeSecret
+      ? maybeSecret
+      // : this._signingProps
+      //   ? this._signingProps.capSecret
+        : null;
     return this._cellProxy.callZome(this.zomeName, fnName, payload, cap_secret, timeout);
   }
 

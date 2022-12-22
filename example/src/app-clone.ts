@@ -156,14 +156,14 @@ export class PlaygroundCloneApp extends HappElement {
             <span><span id="entryLabel">none</span></span>
         </div>
         <input type="button" value="Clone Integer ${this.integerDvmCount}" @click=${() => {this.cloneInteger()}}>
-        <!-- DUMMY -->          
+        <!-- INTEGER -->          
         <hr style="border-style:solid;">
         <cell-context .installedCell="${this._integerCell}">
           <h2>
-            Dummy: ${this.integerDvm.hcl.toString()} 
+            Integer: ${this.integerDvm.hcl.toString()} 
             <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
           </h2>
-          <dummy-list></dummy-list>
+          <integer-list></integer-list>
           <label-list></label-list>
         </cell-context>
         <!-- CLONE -->
@@ -201,7 +201,7 @@ export class PlaygroundCloneApp extends HappElement {
     return {
       "entry-def-select": EntryDefSelect,
       "named-real-inspect": NamedRealInspect,
-      "dummy-list": IntegerList,
+      "integer-list": IntegerList,
       "real-list": RealList,
       "label-list": LabelList,
       "cell-context": CellContext,

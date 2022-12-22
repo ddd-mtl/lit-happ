@@ -25,7 +25,7 @@
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "dependencies": {
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
-    "@holochain/client": "^0.11.3",
+    "@holochain/client": "^0.11.8",
     "@lit-labs/context": "^0.1.2",
     "@open-wc/scoped-elements": "^2.1.1",
     "lit": "^2.3.0"

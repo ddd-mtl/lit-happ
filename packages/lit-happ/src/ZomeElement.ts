@@ -69,8 +69,12 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
 
 
   /** RequestZvm on first "shouldUpdate" */
-  shouldUpdate(_changedProperties: PropertyValues<this>) {
+  shouldUpdate(changedProperties: PropertyValues<this>) {
     //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.installedCell);
+    if (changedProperties.has("_cell_via_context")) {
+      //console.log("ZomeElement.shouldUpdate()", this._cell_via_context)
+      this._cell = this._cell_via_context;
+    }
     if (!this._zvm) {
       this.requestZvm();
     }
@@ -82,8 +86,6 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
   protected willUpdate(changedProperties: PropertyValues<this>) {
     //console.log("ZomeElement.willUpdate()", changedProperties)
     if (changedProperties.has("_cell_via_context")) {
-      //console.log("ZomeElement.willUpdate() installedCell in this element", this)
-      this._cell = this._cell_via_context;
       this.requestZvm();
     }
   }

@@ -10,7 +10,7 @@ export class RealZomeProxy extends ZomeProxy {
 
   static readonly DEFAULT_ZOME_NAME: string = "zReal";
 
-  readonly FN_NAMES = realZomeFunctions;
+  static readonly FN_NAMES = realZomeFunctions;
 
 
   async getReal(eh: EntryHash): Promise<number> {

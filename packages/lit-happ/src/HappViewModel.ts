@@ -1,8 +1,7 @@
-import {Cell, CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
+import {CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
-  CellIdStr,
   CellsMap,
   CloneIndex,
   ConductorAppProxy,
@@ -13,8 +12,7 @@ import {
 import {CellDef, DvmDef, HvmDef} from "./definitions";
 import {DnaViewModel} from "./DnaViewModel";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
-import {CellId, RoleName} from "@holochain/client/lib/types";
-import {DnaModifiers} from "@holochain/client/lib/api/admin/types";
+import {CellId} from "@holochain/client/lib/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};

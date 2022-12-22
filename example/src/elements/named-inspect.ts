@@ -9,7 +9,7 @@ import {printCell} from "@ddd-qc/cell-proxy";
 /**
  *
  */
-export class NamedNumberInspect extends DnaElement<IntegerZomePerspective, NamedIntegerDvm> {
+export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, NamedIntegerDvm> {
 
   constructor() {
     super(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)
@@ -18,12 +18,12 @@ export class NamedNumberInspect extends DnaElement<IntegerZomePerspective, Named
 
   /** */
   render() {
-    console.log(`<named-number-inspect> render(): ${printCell(this.cell)}`);
+    console.log(`<named-integer-inspect> render(): ${printCell(this.cell)}`);
     /** render all */
     return html`
     <div>
       <span><b>Inspection of cell "${this.baseRoleName}":</b></span>
-      <span>dummyZvm: ${this._dvm.integerZvm.zomeName}</span> |
+      <span>integerZvm: ${this._dvm.integerZvm.zomeName}</span> |
       <span>labelZvm: ${this._dvm.labelZvm.zomeName}</span>
     </div>
     `

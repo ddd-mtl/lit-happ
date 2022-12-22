@@ -32,13 +32,6 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
-  // /** InstalledCell interface */
-  // //get installedCell(): InstalledCell {return this._dvm.installedCell}
-  // get roleInstanceId(): RoleInstanceId { return this._dvm.roleInstanceId }
-  // get cellId(): CellId { return this._dvm.cellId }
-  // get dnaHash(): EntryHashB64 { return this._dvm.dnaHash}
-  // get agentPubKey(): AgentPubKeyB64 { return this._dvm.agentPubKey }
-
 
   /** -- Methods -- */
 
@@ -76,7 +69,10 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
 
 
   /** */
-  shouldUpdate(_changedProperties: PropertyValues<this>) {
+  shouldUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has("_cell_via_context")) {
+      this._cell = this._cell_via_context;
+    }
     return !!this._dvm;
   }
 
@@ -84,7 +80,6 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   /** */
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("_cell_via_context")) {
-      this._cell = this._cell_via_context;
       this.requestDvm();
     }
   }
