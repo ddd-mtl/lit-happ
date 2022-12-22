@@ -11,7 +11,7 @@ export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeNam
  */
 export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
 
-  abstract readonly FN_NAMES: FunctionName[];
+  //abstract readonly FN_NAMES: FunctionName[];
 
   /** Ctor */
   constructor(protected _cellProxy: CellProxy, zomeName?: ZomeName) {
@@ -19,7 +19,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
     if (zomeName) {
       this.zomeName = zomeName;
     } else {
-      if (!this.getDefaultZomeName()) {
+      if (!this.defaultZomeName) {
         throw Error("zomeName not defined in ZomeProxy subclass " + this.constructor.name);
       }
     }
@@ -27,18 +27,11 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   }
 
 
-  /** Tuple array with zome name */
-  get fnNames(): [ZomeName, FunctionName][] {
-    return this.FN_NAMES.map((fnName) => {
-      return [this.zomeName, fnName]
-    })
-  }
-
 
   /** Helper for calling a zome function on its zome */
   protected async call(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
     //console.log("ZomeProxy.call", this.zomeName)
-    if (!this.FN_NAMES.includes(fnName)) {
+    if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
       Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
     }
     const cap_secret = maybeSecret? maybeSecret : null;
@@ -48,7 +41,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   /** Helper for calling a zome function on its zome */
   protected async callBlocking(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
     //console.log("ZomeProxy.call", this.zomeName)
-    if (!this.FN_NAMES.includes(fnName)) {
+    if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
       Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
     }
     const cap_secret = maybeSecret? maybeSecret : null;

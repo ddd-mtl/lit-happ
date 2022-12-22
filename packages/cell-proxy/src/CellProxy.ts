@@ -1,7 +1,7 @@
 import {CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName, Cell} from "@holochain/client";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
 import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
-import {CellSpecific} from "./mixins";
+import {CellMixin, Empty} from "./mixins";
 
 
 export interface RequestLog {
@@ -25,7 +25,7 @@ export interface ResponseLog {
  * It holds a reference to its ConductorAppProxy and its InstalledCell.
  * This class is expected to be used by ZomeProxies.
  */
-export class CellProxy extends CellSpecific {
+export class CellProxy extends CellMixin(Empty) {
 
   /** Ctor */
   constructor(

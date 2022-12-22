@@ -6,25 +6,18 @@
     "packages/lit-happ"
   ],
   "scripts": {
-    "version"         : "hc --version && holochain --version && lair-keystore --version",
-
-    "postinstall"     : "mkdir -p artifacts",
-
-    "build:happ"      : "npm run build:happ -w example && npm run build:happ:clone -w example",
-
-    "build:libs"      : "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ",
-
-    "start"           : "npm run start -w example",
-    "start:clone"     : "npm run start:clone -w example",
-
-    "devtest"         : "npm run build:happ && npm run build:libs && npm run build -w example && npm run start",
-    "devtest:clone"   : "npm run build:happ && npm run build:libs && npm run build -w example && npm run start:clone",
-
-
-    "clean"           : "bash scripts/clean.sh",
-    "clean:npm"       : "bash scripts/clean-npm.sh",
-    "clean:hc"        : "cd example && hc s clean",
-    "clean:all"       : "npm run clean:hc & npm run clean:npm & npm run clean"
+    "version": "hc --version && holochain --version && lair-keystore --version",
+    "postinstall": "mkdir -p artifacts",
+    "build:happ": "npm run build:happ -w example && npm run build:happ:clone -w example",
+    "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ",
+    "start": "npm run start -w example",
+    "start:clone": "npm run start:clone -w example",
+    "devtest": "npm run build:happ && npm run build:libs && npm run build -w example && npm run start",
+    "devtest:clone": "npm run build:happ && npm run build:libs && npm run build -w example && npm run start:clone",
+    "clean": "bash scripts/clean.sh",
+    "clean:npm": "bash scripts/clean-npm.sh",
+    "clean:hc": "cd example && hc s clean",
+    "clean:all": "npm run clean:hc & npm run clean:npm & npm run clean"
   },
   "repository": {
     "type": "git",
@@ -37,6 +30,7 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
+    "@rollup/plugin-json": "^6.0.0",
     "@types/ws": "^8.5.3",
     "gh-pages": "^3.1.0"
   },

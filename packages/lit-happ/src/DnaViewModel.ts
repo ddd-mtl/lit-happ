@@ -1,19 +1,17 @@
 import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
-import {AppSignalCb, CellId, InstalledAppId, InstalledCell, ZomeName, AgentPubKeyB64, EntryHashB64} from "@holochain/client";
+import {AdminWebsocket, AppSignalCb, authorizeSigningCredentials, InstalledAppId, ZomeName,} from "@holochain/client";
 import {DnaModifiersOptions, ZvmDef} from "./definitions";
 import {createContext} from "@lit-labs/context";
 import {
   CellProxy,
-  RoleSpecific,
-  RoleSpecificMixin,
   ConductorAppProxy,
   HCL,
-  ICell,
   RoleInstanceId,
   Dictionary, CellMixin
 } from "@ddd-qc/cell-proxy";
+import {RoleMixin, RoleSpecific} from "./roleMixin";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
@@ -38,7 +36,7 @@ export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersO
  * A DNA is expected to derive this class and add extra logic at the DNA level.
  * TODO: Split into RoleViewModel and CellViewModel (e.g. have call logs separated by role)
  */
-export abstract class DnaViewModel extends CellMixin(RoleSpecificMixin(ViewModel)) implements IDnaViewModel {
+export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) implements IDnaViewModel {
 
   /* private */ static ZVM_DEFS: ZvmDef[];
   static DNA_MODIFIERS: DnaModifiersOptions;
@@ -78,6 +76,7 @@ export abstract class DnaViewModel extends CellMixin(RoleSpecificMixin(ViewModel
   /** -- Fields -- */
 
   protected _cellProxy: CellProxy;
+  /* ZomeName -> Zvm */
   protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
   /* ZvmCtorName -> ZomeName */
   protected _zomeNames: Dictionary<ZomeName> = {};
@@ -104,7 +103,15 @@ export abstract class DnaViewModel extends CellMixin(RoleSpecificMixin(ViewModel
   }
 
 
-  getContext():any {return createContext<typeof this>('dvm/' + this.cell.name)};
+  getContext(): any {return createContext<typeof this>('dvm/' + this.cell.name)};
+
+
+  /** */
+  async authorizeZomes(adminWs: AdminWebsocket): Promise<void> {
+    for (const [zomeName, zvm] of Object.entries(this._zomeViewModels)) {
+      authorizeSigningCredentials(adminWs, this.cellId, zvm.zomeProxy.fnNames);
+    }
+  }
 
 
   /** */

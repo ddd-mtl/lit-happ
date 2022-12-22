@@ -55,7 +55,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
             this._zomeProxy = new zProxyCtor(cellProxy, this.zomeName);
         } else {
             this._zomeProxy = new zProxyCtor(cellProxy);
-            this.zomeName = this._zomeProxy.getDefaultZomeName();
+            this.zomeName = this._zomeProxy.defaultZomeName;
         }
         this._cell = cellProxy.cell;
     }
@@ -63,8 +63,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
     /** */
     getContext(): any {
-        const defaultZomeName = this._zomeProxy.getDefaultZomeName();
-        const context = createContext<typeof this>('zvm/'+ defaultZomeName +'/' + this.dnaHash)
+        const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.dnaHash)
         //console.log({contextType: typeof context})
         return context
     }

@@ -4,13 +4,14 @@ import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
 import {Cell} from "@holochain/client";
-import {BaseRoleName, CellMixin, RoleSpecificMixin} from "@ddd-qc/cell-proxy";
+import {BaseRoleName, CellMixin} from "@ddd-qc/cell-proxy";
 import {cellContext} from "./elements/cell-context";
+import {RoleMixin} from "./roleMixin";
 
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
-export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleSpecificMixin(ScopedElementsMixin(LitElement))) {
+export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin(ScopedElementsMixin(LitElement))) {
 
   /** if BaseRoleName is not provided, subclass must call requestDvm() in its Ctor */
   constructor(baseRoleName?: BaseRoleName) {

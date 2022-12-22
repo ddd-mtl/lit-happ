@@ -10,36 +10,41 @@
       }
     </style>
     <script>
-      if (global === undefined) {
-        var global = window;
-      }
+      // if (global === undefined) {
+      //   var global = window;
+      // }
     </script>
   </head>
   <body style="margin:0px;background: #FAF1EA;height:100vh;">
-    <playground-app></playground-app>
+    <!--<playground-app></playground-app>-->
     <script type="module">
       console.log("hello..")
-      import {AdminWebsocket} from "@holochain/client";
+      //import {AdminWebsocket} from "@holochain/client";
       //import crypto from "crypto";
       //import nacl from "tweetnacl";
-      import {PlaygroundApp, PlaygroundCloneApp} from "./dist";
 
-      console.log("ADMIN_PORT:", process.env.ADMIN_PORT);
-      const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
-      console.log({adminWs});
+      // console.log("ADMIN_PORT:", process.env.ADMIN_PORT);
+      // const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+      // console.log({adminWs});
 
       //await authorizeNewSigningKeyPair(adminWs, cellId!, profilesZomeFunctions);
 
-      const apps = await adminWs.listApps({});
-      console.log("Installed apps:", apps);
+      // const apps = await adminWs.listApps({});
+      // console.log("Installed apps:", apps);
 
-      console.log("HC_PORT:", process.env.HC_PORT);
+      //console.log("HC_PORT:", process.env.HC_PORT);
+      //import {PlaygroundApp, PlaygroundCloneApp} from "./dist";
 
-      if (apps[0].installed_app_id == "playground") {
-        customElements.define("playground-app", PlaygroundApp);
-      } else {
-        customElements.define("playground-app", PlaygroundCloneApp);
-      }
+      // if (apps[0].installed_app_id == "playground") {
+      //   customElements.define("playground-app", PlaygroundApp);
+      // } else {
+      //   customElements.define("playground-app", PlaygroundCloneApp);
+      // }
+
+
+      import {v} from "./dist";
+
+      console.log({v})
     </script>
   </body>
 </html>

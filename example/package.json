@@ -9,28 +9,22 @@
     "dist"
   ],
   "scripts": {
-    "ci:tsc"           : "tsc --version",
-    "lint"             : "eslint --ext .ts .",
-    "tsc"              : "tsc",
-    "build:wasm"       : "CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
-    "build:dna"        : "npm run build:wasm && hc dna pack --output=../artifacts/named_real.dna workdir && hc dna pack --output=../artifacts/named_integer.dna workdir_named_integer",
-    "build:happ"       : "npm run build:dna && hc app pack --output=../artifacts/playground.happ workdir",
-    "build:happ:clone" : "npm run build:dna && hc app pack --output=../artifacts/playground-clone.happ workdir_clone",
-
-    "build"            : "rm -rf dist && tsc && rollup -c rollup.config.js",
-    "build:watch"      : "tsc -w --incremental --preserveWatchOutput",
-
-    "start:happ"       : "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground.happ --run=$HC_PORT -a playground network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
-    "start:happ:clone" : "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground-clone.happ --run=$HC_PORT -a playground-clone network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
-
-    "start:ui"         : "concurrently --names tsc,dev-server \"npm run build:watch\" \"web-dev-server --config ./web-dev-server.config.mjs\"",
-
-    "start"            : "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ\" \"sleep 5 && npm run start:ui\"",
-    "start:clone"      : "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ:clone\" \"sleep 5 && npm run start:ui\"",
-
-    "launch"           : "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground.happ -w --ui-path ./dist network mdns",
-    "launch:clone"     : "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground-clone.happ -w --ui-path ./dist network mdns",
-
+    "ci:tsc": "tsc --version",
+    "lint": "eslint --ext .ts .",
+    "tsc": "tsc",
+    "build:wasm": "CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
+    "build:dna": "npm run build:wasm && hc dna pack --output=../artifacts/named_real.dna workdir && hc dna pack --output=../artifacts/named_integer.dna workdir_named_integer",
+    "build:happ": "npm run build:dna && hc app pack --output=../artifacts/playground.happ workdir",
+    "build:happ:clone": "npm run build:dna && hc app pack --output=../artifacts/playground-clone.happ workdir_clone",
+    "build": "rm -rf dist && tsc && rollup -c rollup.config.js",
+    "build:watch": "tsc -w --incremental --preserveWatchOutput",
+    "start:happ": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground.happ --run=$HC_PORT -a playground network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
+    "start:happ:clone": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground-clone.happ --run=$HC_PORT -a playground-clone network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
+    "start:ui": "concurrently --names tsc,dev-server \"npm run build:watch\" \"web-dev-server --config ./web-dev-server.config.mjs\"",
+    "start": "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ\" \"sleep 5 && npm run start:ui\"",
+    "start:clone": "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ:clone\" \"sleep 5 && npm run start:ui\"",
+    "launch": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground.happ -w --ui-path ./dist network mdns",
+    "launch:clone": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground-clone.happ -w --ui-path ./dist network mdns",
     "package": "rm -rf ui.zip && cd dist && bestzip ../ui.zip * && cd .. && hc web-app pack ./webhapp.workdir",
     "clean:hc": "hc s clean"
   },
@@ -41,30 +35,32 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-typescript": "^10.0.1",
-    "@web/dev-server": "^0.1.28",
-    "@web/dev-server-rollup": "^0.3.15",
+    "@web/dev-server": "^0.1.35",
+    "@web/dev-server-rollup": "^0.3.19",
     "@web/rollup-plugin-html": "^1.11.0",
     "@web/rollup-plugin-import-meta-assets": "^1.0.7",
     "babel-plugin-template-html-minifier": "^4.1.0",
     "bestzip": "^2.2.0",
     "concurrently": "^5.3.0",
     "cross-env": "^7.0.3",
-    "new-port-cli": "^1.0.0",
-    "run-singleton-cli": "^0.0.7",
     "deepmerge": "^4.2.2",
     "exits": "^2.0.1",
+    "new-port-cli": "^1.0.0",
     "path-exists-cli": "^2.0.0",
     "rollup": "^2.79.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-workbox": "^6.2.0",
+    "run-singleton-cli": "^0.0.7",
     "tslib": "^2.4.1",
     "typescript": "^4.9.0"
   },
   "dependencies": {
     "@ddd-qc/lit-happ": "file:../",
     "@holochain/client": "^0.11.3",
-    "@open-wc/scoped-elements": "^2.1.1",
     "@lit-labs/context": "^0.1.3",
-    "lit": "^2.3.0"
+    "@open-wc/scoped-elements": "^2.1.1",
+    "lit": "^2.3.0",
+    "tweetnacl": "^1.0.3"
   }
 }

@@ -10,7 +10,7 @@ export class IntegerZomeProxy extends ZomeProxy {
 
   static readonly DEFAULT_ZOME_NAME = "zInteger"
 
-  readonly FN_NAMES = integerZomeFunctions;
+  static readonly FN_NAMES = integerZomeFunctions;
 
 
   async getInteger(eh: EntryHash): Promise<number> {

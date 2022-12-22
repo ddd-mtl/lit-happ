@@ -7,6 +7,8 @@ import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import {NamedNumberInspect, NamedRealInspect} from "./elements/named-inspect";
+import {AdminWebsocket, authorizeSigningCredentials} from "@holochain/client";
+import {integerZomeFunctions} from "./fn";
 
 
 /** TESTING Decorator for better init */
@@ -106,6 +108,14 @@ export class PlaygroundApp extends HappElement {
 
   /** */
   async happInitialized(): Promise<void> {
+    /** Authorize all zome calls */
+    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+    console.log({adminWs});
+    await this.integerDvm.authorizeZomes(adminWs);
+    await this.impostorDvm.authorizeZomes(adminWs);
+    await this.realDvm.authorizeZomes(adminWs);
+    console.log("*** Zome call authorization complete");
+    /* Probe */
     await this.hvm.probeAll();
   }
 

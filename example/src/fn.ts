@@ -1,4 +1,4 @@
-import {ZomeName, FunctionName} from '@holochain/client';
+import {FunctionName/*, ZomeName*/} from '@holochain/client';
 
 
 // export const integerZomeFunctions: [ZomeName, FunctionName][] = [
