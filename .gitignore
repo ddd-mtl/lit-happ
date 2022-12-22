@@ -1,4 +1,5 @@
 node_modules/
 dist/
 artifacts/
+.idea/
 package-lock.json
