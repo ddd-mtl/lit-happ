@@ -13,19 +13,19 @@ import { importMetaAssets } from "@web/rollup-plugin-import-meta-assets";
 //import path from "path";
 
 
-const HC_PORT = process.env.HC_PORT || 8888;
+//const HC_PORT = process.env.HC_PORT || 8888;
 const DIST_FOLDER = "dist"
 
 export default {
   input: "index.html",
   output: {
     //dir: 'bundle.js',
-    //entryFileNames: "[hash].js",
-    //chunkFileNames: "[hash].js",
-    //assetFileNames: "[hash][extname]",
+    entryFileNames: "[hash].js",
+    chunkFileNames: "[hash].js",
+    assetFileNames: "[hash][extname]",
     //format: "cjs",
     format: "es",
-    dir: "dist",
+    dir: DIST_FOLDER,
     sourcemap: true,
   },
   watch: {
@@ -43,19 +43,19 @@ export default {
     nodeResolve({
       browser: true,
       preferBuiltins: false,
-      //exportConditions: ['node'],
+      //exportConditions: ['browser', 'development'],
     }),
-    replace({
-        "process.env.NODE_ENV": '"production"',
-             "process.env.ENV": `"${process.env.ENV}"`,
-         "process.env.HC_PORT": `"${HC_PORT}"`,
-      "process.env.ADMIN_PORT": `"${process.env.ADMIN_PORT}"`,
-             preventAssignment: true
-    }),
+    // replace({
+    //     "process.env.NODE_ENV": '"production"',
+    //          "process.env.ENV": `"${process.env.ENV}"`,
+    //      "process.env.HC_PORT": `"${HC_PORT}"`,
+    //   "process.env.ADMIN_PORT": `"${process.env.ADMIN_PORT}"`,
+    //          preventAssignment: true
+    // }),
     typescript({ experimentalDecorators: true, outDir: DIST_FOLDER }),
-    json(),
-    builtins({crypto: true}),
-    globals(),
+    //json(),
+    //builtins({crypto: false}),
+    //globals(),
     /** Bundle assets references via import.meta.url */
     //importMetaAssets(),
     /** Compile JS to a lower language target */
@@ -116,6 +116,4 @@ export default {
       //transformMixedEsModules: true
     }),
   ],
-  // https://stackoverflow.com/questions/50796458/crypto-createhmac-is-undefined-after-rollup
-  //external: ['crypto']
 };

@@ -2,7 +2,7 @@ import rollupReplace from '@rollup/plugin-replace';
 import rollupCommonjs from '@rollup/plugin-commonjs';
 import { fromRollup } from '@web/dev-server-rollup';
 import rollupBuiltins from 'rollup-plugin-node-builtins';
-//import rollupGlobals from 'rollup-plugin-node-globals';
+import rollupGlobals from 'rollup-plugin-node-globals';
 
 const replace = fromRollup(rollupReplace);
 const commonjs = fromRollup(rollupCommonjs);
@@ -18,14 +18,15 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   nodeResolve: {
     preferBuiltins: false,
     browser: true,
-    exportConditions: ['browser', 'development'],
+    //exportConditions: ['browser', 'development'],
     //exportConditions: ['node'],
   },
 
-  rootDir: './dist/',
+  //   rootDir: './dist/',
+  rootDir: '../',
 
   /** Set appIndex to enable SPA routing */
-  appIndex: './index.html',
+  appIndex: './dist/index.html',
 
   plugins: [
     replace({
@@ -36,8 +37,8 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
       '  COMB =': 'window.COMB =',
       delimiters: ['', ''],
     }),
-    //builtins({crypto:true}),
-    commonjs({}),
+    //builtins({crypto:false}),
+    //commonjs({}),
   ],
 
   // See documentation for all available options
