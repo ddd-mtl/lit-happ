@@ -1,12 +1,7 @@
-import rollupReplace from '@rollup/plugin-replace';
-import rollupCommonjs from '@rollup/plugin-commonjs';
 import { fromRollup } from '@web/dev-server-rollup';
-import rollupBuiltins from 'rollup-plugin-node-builtins';
-import rollupGlobals from 'rollup-plugin-node-globals';
-
+import rollupReplace from '@rollup/plugin-replace';
 const replace = fromRollup(rollupReplace);
-const commonjs = fromRollup(rollupCommonjs);
-const builtins = fromRollup(rollupBuiltins);
+
 
 /** Use Hot Module replacement by adding --hmr to the start command */
 const hmr = process.argv.includes('--hmr');
@@ -18,14 +13,9 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   nodeResolve: {
     preferBuiltins: false,
     browser: true,
-    //exportConditions: ['browser', 'development'],
-    //exportConditions: ['node'],
   },
 
-  //   rootDir: './dist/',
   rootDir: '../',
-
-  /** Set appIndex to enable SPA routing */
   appIndex: './dist/index.html',
 
   plugins: [
@@ -37,9 +27,6 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
       '  COMB =': 'window.COMB =',
       delimiters: ['', ''],
     }),
-    //builtins({crypto:false}),
-    //commonjs({}),
   ],
-
   // See documentation for all available options
 });

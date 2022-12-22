@@ -1,29 +1,18 @@
 import {nodeResolve} from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import commonjs from "@rollup/plugin-commonjs";
-import replace from "@rollup/plugin-replace";
 import babel from "@rollup/plugin-babel";
 import html from "@web/rollup-plugin-html";
-import { generateSW } from "rollup-plugin-workbox";
-import json from "@rollup/plugin-json"
-import builtins from "rollup-plugin-node-builtins";
-import path from "path";
-import globals from "rollup-plugin-node-globals";
-import { importMetaAssets } from "@web/rollup-plugin-import-meta-assets";
-//import path from "path";
 
 
-//const HC_PORT = process.env.HC_PORT || 8888;
 const DIST_FOLDER = "dist"
 
 export default {
   input: "index.html",
   output: {
-    //dir: 'bundle.js',
     entryFileNames: "[hash].js",
     chunkFileNames: "[hash].js",
     assetFileNames: "[hash][extname]",
-    //format: "cjs",
     format: "es",
     dir: DIST_FOLDER,
     sourcemap: true,
@@ -36,28 +25,14 @@ export default {
     /** Enable using HTML as rollup entrypoint */
     html({
       minify: false,
-      //injectServiceWorker: true,
-      //serviceWorkerPath: "dist/sw.js",
     }),
     /** Resolve bare module imports */
     nodeResolve({
       browser: true,
       preferBuiltins: false,
-      //exportConditions: ['browser', 'development'],
     }),
-    // replace({
-    //     "process.env.NODE_ENV": '"production"',
-    //          "process.env.ENV": `"${process.env.ENV}"`,
-    //      "process.env.HC_PORT": `"${HC_PORT}"`,
-    //   "process.env.ADMIN_PORT": `"${process.env.ADMIN_PORT}"`,
-    //          preventAssignment: true
-    // }),
+
     typescript({ experimentalDecorators: true, outDir: DIST_FOLDER }),
-    //json(),
-    //builtins({crypto: false}),
-    //globals(),
-    /** Bundle assets references via import.meta.url */
-    //importMetaAssets(),
     /** Compile JS to a lower language target */
     babel({
       exclude: /node_modules/,
@@ -98,22 +73,7 @@ export default {
         ],
       ],
     }),
-    // /** Create and inject a service worker */
-    // generateSW({
-    //   globIgnores: ["polyfills/*.js", "nomodule-*.js"],
-    //   navigateFallback: "/index.html",
-    //   // where to output the generated sw
-    //   swDest: path.join(DIST_FOLDER, "sw.js"),
-    //   // directory to match patterns against to be precached
-    //   globDirectory: path.join(DIST_FOLDER),
-    //   // cache any html js and css by default
-    //   globPatterns: ["**/*.{html,js,css,webmanifest}"],
-    //   skipWaiting: true,
-    //   clientsClaim: true,
-    //   runtimeCaching: [{ urlPattern: "polyfills/*.js", handler: "CacheFirst" }],
-    // }),
-    commonjs({
-      //transformMixedEsModules: true
-    }),
+
+    commonjs({}),
   ],
 };
