@@ -144,7 +144,8 @@ export class ConductorAppProxy implements AppApi {
       let wsUrl = `ws://localhost:${port_or_socket}`
       try {
         let conductor = new ConductorAppProxy(timeout);
-        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout, (sig) => {conductor.onSignal(sig)})
+        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout);
+        conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
         return conductor;
       } catch (e) {
         console.error("ConductorAppProxy initialization failed", e)
@@ -159,7 +160,7 @@ export class ConductorAppProxy implements AppApi {
     try {
       let conductor = new ConductorAppProxy(appWebsocket.defaultTimeout);
       conductor._appWs = appWebsocket;
-      console.warn("Using pre-existing AppWebsocket. ConductorAppProxy's 'onSignal()' SignalHandler needs to be set by the provider of the AppWebsocket.")
+      conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
       return conductor;
     } catch (e) {
       console.error("ConductorAppProxy initialization failed", e)
