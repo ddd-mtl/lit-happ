@@ -1,18 +1,20 @@
-import {CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
+import { AdminWebsocket, CreateCloneCellRequest, InstalledAppId } from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
+  CellIdStr,
   CellsMap,
   CloneIndex,
   ConductorAppProxy,
+  delay,
   Dictionary,
   HCL,
   RoleInstanceId
 } from "@ddd-qc/cell-proxy";
-import {CellDef, DvmDef, HvmDef} from "./definitions";
-import {DnaViewModel} from "./DnaViewModel";
-import {AppSignal} from "@holochain/client/lib/api/app/types";
-import {CellId} from "@holochain/client/lib/types";
+import { CellDef, DvmDef, HvmDef } from "./definitions";
+import { DnaViewModel } from "./DnaViewModel";
+import { AppSignal } from "@holochain/client/lib/api/app/types";
+import { CellId } from "@holochain/client/lib/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -22,7 +24,7 @@ import {CellId} from "@holochain/client/lib/types";
  * "ViewModel" of a hApp
  * Creates and stores all the DnaViewModels from the happDef.
  */
- export class HappViewModel {
+export class HappViewModel {
 
   /** -- Fields -- */
   readonly appId: InstalledAppId;
@@ -31,6 +33,8 @@ import {CellId} from "@holochain/client/lib/types";
   /** BaseRoleName -> DvmDef */
   protected _defMap: Dictionary<DvmDef> = {};
 
+
+  protected _adminWs?: AdminWebsocket;
 
   /** -- Getters -- */
 
@@ -55,7 +59,7 @@ import {CellId} from "@holochain/client/lib/types";
 
   /** */
   getDvm(hclOrId: HCL | RoleInstanceId): DnaViewModel | undefined {
-    if (typeof  hclOrId === 'string') {
+    if (typeof hclOrId === 'string') {
       hclOrId = new HCL(this.appId, hclOrId);
     }
     return this._dvmMap[hclOrId.toString()];
@@ -105,7 +109,7 @@ import {CellId} from "@holochain/client/lib/types";
     protected _host: ReactiveElement, /* VIEW */
     protected _conductorAppProxy: ConductorAppProxy, /* MODEL */
     hvmDef: HvmDef, /* VIEW-MODEL definition */
-    ) {
+  ) {
     this.appId = hvmDef.id;
     /** Create all non-deferred DVMs for this Happ */
     for (const dvmDef of hvmDef.dvmDefs) {
@@ -117,6 +121,14 @@ import {CellId} from "@holochain/client/lib/types";
 
 
   /** -- Methods -- */
+
+  async authorizeAllZomeCalls(adminWs: AdminWebsocket): Promise<void> {
+    for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
+      //console.log("Authorizing", sHcl);
+      await dvm.authorizeZomeCalls(adminWs);
+    }
+    this._adminWs = adminWs
+  }
 
   /** */
   private createStartingClonesDvm(): void {
@@ -224,8 +236,12 @@ import {CellId} from "@holochain/client/lib/types";
     this._conductorAppProxy.addClone(hcl, cloneCell);
     /** Create CellProxy */
     this._conductorAppProxy.createCellProxy(hcl);
-    /** Create DVM */
+    /** Create DVM and authorize */
     const dvm = this.createDvm(def, hcl);
+    if (this._adminWs) {
+      await dvm.authorizeZomeCalls(this._adminWs);
+    }
+    /** Done */
     return [cloneIndex, dvm];
   }
 
@@ -260,4 +276,4 @@ import {CellId} from "@holochain/client/lib/types";
       }
     }
   }
- }
+}

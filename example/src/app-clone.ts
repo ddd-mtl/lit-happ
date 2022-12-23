@@ -8,7 +8,7 @@ import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import { NamedRealInspect } from "./elements/named-inspect";
-import {Cell, InstalledCell} from "@holochain/client";
+import {AdminWebsocket, Cell} from "@holochain/client";
 
 
 /**
@@ -40,6 +40,9 @@ export class PlaygroundCloneApp extends HappElement {
 
   @state() private _integerCell?: Cell;
 
+  @state() private _initialized = false;
+
+
   /** QoL */
   get integerDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
   get integerDvmCount(): number {return this.hvm.getClones(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)!.length}
@@ -55,8 +58,16 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** override */
   async happInitialized(): Promise<void> {
+    /** Authorize all zome calls */
+    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+    console.log({adminWs});
+    await this.hvm.authorizeAllZomeCalls(adminWs);
+    console.log("*** Zome call authorization complete");
+    /** Probe */
     this._integerCell = this.integerDvm.cell;
     await this.hvm.probeAll();
+    /** Done */
+    this._initialized = true;
   }
 
   /** */
@@ -118,6 +129,10 @@ export class PlaygroundCloneApp extends HappElement {
   render() {
     console.log("<playground-clone-app> render()", this._selectedClone);
 
+    if (!this._initialized) {
+      return html`<span>Loading...</span>`;
+    }
+
     /** Clone list */
     const cloneLis = Object.values(this.realDvmClones).map((realDvm) => {
       return html`<option>${realDvm.hcl.toString()}</option>`;
@@ -158,7 +173,7 @@ export class PlaygroundCloneApp extends HappElement {
         <input type="button" value="Clone Integer ${this.integerDvmCount}" @click=${() => {this.cloneInteger()}}>
         <!-- INTEGER -->          
         <hr style="border-style:solid;">
-        <cell-context .installedCell="${this._integerCell}">
+        <cell-context .cell="${this._integerCell}">
           <h2>
             Integer: ${this.integerDvm.hcl.toString()} 
             <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
