@@ -2,14 +2,13 @@ import { AdminWebsocket, CreateCloneCellRequest, InstalledAppId } from "@holocha
 import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
-  CellIdStr,
-  CellsMap,
   CloneIndex,
+  CloneName,
   ConductorAppProxy,
-  delay,
+  createCloneName,
+  destructureCloneName,
   Dictionary,
   HCL,
-  RoleInstanceId
 } from "@ddd-qc/cell-proxy";
 import { CellDef, DvmDef, HvmDef } from "./definitions";
 import { DnaViewModel } from "./DnaViewModel";
@@ -58,7 +57,7 @@ export class HappViewModel {
   }
 
   /** */
-  getDvm(hclOrId: HCL | RoleInstanceId): DnaViewModel | undefined {
+  getDvm(hclOrId: HCL | BaseRoleName ): DnaViewModel | undefined {
     if (typeof hclOrId === 'string') {
       hclOrId = new HCL(this.appId, hclOrId);
     }
@@ -70,7 +69,6 @@ export class HappViewModel {
   getClones(baseRoleName: BaseRoleName): DnaViewModel[] {
     const searchHcl = new HCL(this.appId, baseRoleName);
     let clones = [];
-    //console.log("getClones()", baseRoleName, this._dvmMap);
     for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
       const hcl = HCL.parse(sHcl);
       if (hcl.isClone() && hcl.match(searchHcl)) {
@@ -132,12 +130,11 @@ export class HappViewModel {
 
   /** */
   private createStartingClonesDvm(): void {
-    const appInstalledCells: CellsMap = this._conductorAppProxy.getAppCells(this.appId)!;
+    const appInstalledCells = this._conductorAppProxy.getAppCells(this.appId)!;
     for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
-      for (const name_or_index of Object.keys(roleCells.clones)) {
-        const cloneIndex: CloneIndex = Number(name_or_index); // TODO: Change this when supporting cloneNames
-        const hcl = new HCL(this.appId, baseRoleName, cloneIndex);
+      for (const cellName of Object.keys(roleCells.clones)) {
+        const hcl = new HCL(this.appId, baseRoleName, cellName);
         this._conductorAppProxy.createCellProxy(hcl);
         this.createDvm(def, hcl);
       }
@@ -180,7 +177,7 @@ export class HappViewModel {
     if (this._defMap[baseRoleName]) {
       throw Error(`createOriginalDvm() failed. DVM for original cell of ${baseRoleName} already exists.`);
     }
-    const hcl = new HCL(this.appId, baseRoleName as RoleInstanceId);
+    const hcl = new HCL(this.appId, baseRoleName);
     this.createDvm(dvmDef, hcl);
     this._defMap[baseRoleName] = dvmDef;
   }
@@ -200,7 +197,10 @@ export class HappViewModel {
     /** Get cloneIndex */
     const clones = this.getClones(baseRoleName);
     const cloneIndex: CloneIndex = clones.length;
-    let hcl = new HCL(this.appId, baseRoleName, cloneIndex);
+    const cloneName = cellDef && cellDef.cloneName
+      ? cellDef.cloneName 
+      : createCloneName(baseRoleName, cloneIndex);
+    let hcl = new HCL(this.appId, baseRoleName, cloneName);
     /** Build default request */
     let request: CreateCloneCellRequest = {
       app_id: this.appId,
@@ -208,6 +208,7 @@ export class HappViewModel {
       modifiers: {
         network_seed: String(cloneIndex),
       },
+      name: cloneName,
     }
     /** Modify hcl & request according to CellDef */
     if (cellDef) {
@@ -215,7 +216,7 @@ export class HappViewModel {
       request.membrane_proof = cellDef.membraneProof;
       request.name = cellDef.cloneName;
       if (cellDef.cloneName) {
-        hcl = new HCL(this.appId, baseRoleName, cloneIndex, cellDef.cloneName);
+        hcl = new HCL(this.appId, baseRoleName, cellDef.cloneName);
       }
     }
     /** Create Cell */
@@ -262,13 +263,13 @@ export class HappViewModel {
 
 
   /** */
-  dumpLogs(roleInstanceId?: RoleInstanceId): void {
-    if (roleInstanceId) {
-      const dvm = this.getDvm(roleInstanceId);
+  dumpLogs(baseRoleName?: BaseRoleName): void {
+    if (baseRoleName) {
+      const dvm = this.getDvm(baseRoleName);
       if (dvm) {
         dvm.dumpLogs();
       } else {
-        console.error(`dumpLogs() failed. Role "${roleInstanceId}" not found in happ "${this.appId}"`)
+        console.error(`dumpLogs() failed. Role "${baseRoleName}" not found in happ "${this.appId}"`)
       }
     } else {
       for (const dvm of Object.values(this._dvmMap)) {

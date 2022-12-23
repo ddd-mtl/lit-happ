@@ -2,10 +2,10 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
-import {CellId, encodeHashToBase64, InstalledCell, ZomeName, AgentPubKeyB64, DnaHashB64, Cell} from "@holochain/client";
+import {ZomeName, Cell} from "@holochain/client";
 import {cellContext} from "./elements/cell-context";
 import { ZomeViewModel } from "./ZomeViewModel";
-import {CellMixin, ICell, RoleInstanceId} from "@ddd-qc/cell-proxy";
+import {CellMixin} from "@ddd-qc/cell-proxy";
 
 
 /**

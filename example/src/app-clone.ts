@@ -1,14 +1,15 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  EntryDefSelect, HvmDef, CellContext, HappElement, CloneIndex, CellDef, HCL, ViewCellContext} from "@ddd-qc/lit-happ";
+  EntryDefSelect, HvmDef, CellContext, HappElement, CloneIndex, CellDef, HCL, ViewCellContext, createCloneName
+} from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
-import {NamedRealCloneDvm, NamedRealDvm} from "./viewModels/real";
+import { NamedRealCloneDvm, NamedRealDvm } from "./viewModels/real";
 import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import { NamedRealInspect } from "./elements/named-inspect";
-import {AdminWebsocket, Cell} from "@holochain/client";
+import { AdminWebsocket, Cell } from "@holochain/client";
 
 
 /**
@@ -45,13 +46,13 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** QoL */
   get integerDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
-  get integerDvmCount(): number {return this.hvm.getClones(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)!.length}
+  get integerDvmCount(): number {return this.hvm.getClones(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME).length }
 
 
-  integerDvmClone(index: CloneIndex): NamedIntegerDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, index))! as NamedIntegerDvm }
+  integerDvmClone(cloneName: string): NamedIntegerDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, cloneName))! as NamedIntegerDvm }
 
-  get realDvmClones(): NamedRealCloneDvm[] {return this.hvm.getClones(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealCloneDvm[]}
-  realDvmClone(index: CloneIndex): NamedRealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedRealDvm.DEFAULT_BASE_ROLE_NAME, index))! as NamedRealDvm }
+  get realDvmClones(): NamedRealCloneDvm[] { return this.hvm.getClones(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealCloneDvm[] }
+  realDvmClone(cloneName: string): NamedRealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedRealDvm.DEFAULT_BASE_ROLE_NAME, cloneName))! as NamedRealDvm }
 
 
   @state() private _selectedClone: HCL = new HCL("playground-clone", NamedRealDvm.DEFAULT_BASE_ROLE_NAME)
@@ -60,7 +61,7 @@ export class PlaygroundCloneApp extends HappElement {
   async happInitialized(): Promise<void> {
     /** Authorize all zome calls */
     const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
-    console.log({adminWs});
+    console.log({ adminWs });
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
     /** Probe */
@@ -77,16 +78,18 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** */
   async cloneInteger() {
-    const count = this.integerDvmCount
+    const count = this.integerDvmCount;
+    const cloneName = createCloneName(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, count);
     const cellDef: CellDef = {
       modifiers: {
         network_seed: "integerClone_" + count,
         properties: {},
-        },
-      }
-    ;
+      },
+      cloneName,
+    }
+      ;
     await this.createClone(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
-    const myWorldDvm = this.integerDvmClone(count);
+    const myWorldDvm = this.integerDvmClone(cloneName);
     this._integerCell = myWorldDvm.cell;
     console.log("IntegerDvm cloned: ", myWorldDvm.cell, count);
   }
@@ -102,7 +105,7 @@ export class PlaygroundCloneApp extends HappElement {
   async onAddNamedClone(e: any) {
     const input = this.shadowRoot!.getElementById("namedInput") as HTMLInputElement;
     const name = String(input.value);
-    const cellDef: CellDef = {modifiers: {network_seed: name}, cloneName: name};
+    const cellDef: CellDef = { modifiers: { network_seed: name }, cloneName: name };
     await this.hvm.cloneDvm(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME, cellDef);
     input.value = "";
     this.requestUpdate();
@@ -163,14 +166,14 @@ export class PlaygroundCloneApp extends HappElement {
       <div style="margin:10px;">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
-        <input type="button" value="Dump signals" @click=${(e:any) => {this.conductorAppProxy.dumpSignals()}}>
+        <input type="button" value="Dump signals" @click=${(e: any) => { this.conductorAppProxy.dumpSignals() }}>
         <br/>
         <span>Select AppEntryType:</span>
         <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>
         </div>
-        <input type="button" value="Clone Integer ${this.integerDvmCount}" @click=${() => {this.cloneInteger()}}>
+        <input type="button" value="Clone Integer ${this.integerDvmCount}" @click=${() => { this.cloneInteger() }}>
         <!-- INTEGER -->          
         <hr style="border-style:solid;">
         <cell-context .cell="${this._integerCell}">
