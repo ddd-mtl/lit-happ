@@ -112,9 +112,7 @@ export class PlaygroundApp extends HappElement {
     /** Authorize all zome calls */
     const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
     console.log({adminWs});
-    await this.integerDvm.authorizeZomeCalls(adminWs);
-    await this.impostorDvm.authorizeZomeCalls(adminWs);
-    await this.realDvm.authorizeZomeCalls(adminWs);
+    await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
     /** Probe */
     await this.hvm.probeAll();
@@ -142,6 +140,7 @@ export class PlaygroundApp extends HappElement {
   /** */
   render() {
     console.log("<playground-app> render()", this.hvm);
+    
     if (!this._initialized) {
       return html`<span>Loading...</span>`;
     }

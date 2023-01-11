@@ -1,18 +1,19 @@
-import {CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
+import { AdminWebsocket, CreateCloneCellRequest, InstalledAppId } from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
-  CellsMap,
   CloneIndex,
+  CloneName,
   ConductorAppProxy,
+  createCloneName,
+  destructureCloneName,
   Dictionary,
   HCL,
-  RoleInstanceId
 } from "@ddd-qc/cell-proxy";
-import {CellDef, DvmDef, HvmDef} from "./definitions";
-import {DnaViewModel} from "./DnaViewModel";
-import {AppSignal} from "@holochain/client/lib/api/app/types";
-import {CellId} from "@holochain/client/lib/types";
+import { CellDef, DvmDef, HvmDef } from "./definitions";
+import { DnaViewModel } from "./DnaViewModel";
+import { AppSignal } from "@holochain/client/lib/api/app/types";
+import { CellId } from "@holochain/client/lib/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -22,7 +23,7 @@ import {CellId} from "@holochain/client/lib/types";
  * "ViewModel" of a hApp
  * Creates and stores all the DnaViewModels from the happDef.
  */
- export class HappViewModel {
+export class HappViewModel {
 
   /** -- Fields -- */
   readonly appId: InstalledAppId;
@@ -31,6 +32,8 @@ import {CellId} from "@holochain/client/lib/types";
   /** BaseRoleName -> DvmDef */
   protected _defMap: Dictionary<DvmDef> = {};
 
+
+  protected _adminWs?: AdminWebsocket;
 
   /** -- Getters -- */
 
@@ -54,8 +57,8 @@ import {CellId} from "@holochain/client/lib/types";
   }
 
   /** */
-  getDvm(hclOrId: HCL | RoleInstanceId): DnaViewModel | undefined {
-    if (typeof  hclOrId === 'string') {
+  getDvm(hclOrId: HCL | BaseRoleName ): DnaViewModel | undefined {
+    if (typeof hclOrId === 'string') {
       hclOrId = new HCL(this.appId, hclOrId);
     }
     return this._dvmMap[hclOrId.toString()];
@@ -66,7 +69,6 @@ import {CellId} from "@holochain/client/lib/types";
   getClones(baseRoleName: BaseRoleName): DnaViewModel[] {
     const searchHcl = new HCL(this.appId, baseRoleName);
     let clones = [];
-    //console.log("getClones()", baseRoleName, this._dvmMap);
     for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
       const hcl = HCL.parse(sHcl);
       if (hcl.isClone() && hcl.match(searchHcl)) {
@@ -105,7 +107,7 @@ import {CellId} from "@holochain/client/lib/types";
     protected _host: ReactiveElement, /* VIEW */
     protected _conductorAppProxy: ConductorAppProxy, /* MODEL */
     hvmDef: HvmDef, /* VIEW-MODEL definition */
-    ) {
+  ) {
     this.appId = hvmDef.id;
     /** Create all non-deferred DVMs for this Happ */
     for (const dvmDef of hvmDef.dvmDefs) {
@@ -118,14 +120,21 @@ import {CellId} from "@holochain/client/lib/types";
 
   /** -- Methods -- */
 
+  async authorizeAllZomeCalls(adminWs: AdminWebsocket): Promise<void> {
+    for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
+      //console.log("Authorizing", sHcl);
+      await dvm.authorizeZomeCalls(adminWs);
+    }
+    this._adminWs = adminWs
+  }
+
   /** */
   private createStartingClonesDvm(): void {
-    const appInstalledCells: CellsMap = this._conductorAppProxy.getAppCells(this.appId)!;
+    const appInstalledCells = this._conductorAppProxy.getAppCells(this.appId)!;
     for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
-      for (const name_or_index of Object.keys(roleCells.clones)) {
-        const cloneIndex: CloneIndex = Number(name_or_index); // TODO: Change this when supporting cloneNames
-        const hcl = new HCL(this.appId, baseRoleName, cloneIndex);
+      for (const cellName of Object.keys(roleCells.clones)) {
+        const hcl = new HCL(this.appId, baseRoleName, cellName);
         this._conductorAppProxy.createCellProxy(hcl);
         this.createDvm(def, hcl);
       }
@@ -168,7 +177,7 @@ import {CellId} from "@holochain/client/lib/types";
     if (this._defMap[baseRoleName]) {
       throw Error(`createOriginalDvm() failed. DVM for original cell of ${baseRoleName} already exists.`);
     }
-    const hcl = new HCL(this.appId, baseRoleName as RoleInstanceId);
+    const hcl = new HCL(this.appId, baseRoleName);
     this.createDvm(dvmDef, hcl);
     this._defMap[baseRoleName] = dvmDef;
   }
@@ -188,7 +197,10 @@ import {CellId} from "@holochain/client/lib/types";
     /** Get cloneIndex */
     const clones = this.getClones(baseRoleName);
     const cloneIndex: CloneIndex = clones.length;
-    let hcl = new HCL(this.appId, baseRoleName, cloneIndex);
+    const cloneName = cellDef && cellDef.cloneName
+      ? cellDef.cloneName 
+      : createCloneName(baseRoleName, cloneIndex);
+    let hcl = new HCL(this.appId, baseRoleName, cloneName);
     /** Build default request */
     let request: CreateCloneCellRequest = {
       app_id: this.appId,
@@ -196,6 +208,7 @@ import {CellId} from "@holochain/client/lib/types";
       modifiers: {
         network_seed: String(cloneIndex),
       },
+      name: cloneName,
     }
     /** Modify hcl & request according to CellDef */
     if (cellDef) {
@@ -203,7 +216,7 @@ import {CellId} from "@holochain/client/lib/types";
       request.membrane_proof = cellDef.membraneProof;
       request.name = cellDef.cloneName;
       if (cellDef.cloneName) {
-        hcl = new HCL(this.appId, baseRoleName, cloneIndex, cellDef.cloneName);
+        hcl = new HCL(this.appId, baseRoleName, cellDef.cloneName);
       }
     }
     /** Create Cell */
@@ -224,8 +237,12 @@ import {CellId} from "@holochain/client/lib/types";
     this._conductorAppProxy.addClone(hcl, cloneCell);
     /** Create CellProxy */
     this._conductorAppProxy.createCellProxy(hcl);
-    /** Create DVM */
+    /** Create DVM and authorize */
     const dvm = this.createDvm(def, hcl);
+    if (this._adminWs) {
+      await dvm.authorizeZomeCalls(this._adminWs);
+    }
+    /** Done */
     return [cloneIndex, dvm];
   }
 
@@ -246,13 +263,13 @@ import {CellId} from "@holochain/client/lib/types";
 
 
   /** */
-  dumpLogs(roleInstanceId?: RoleInstanceId): void {
-    if (roleInstanceId) {
-      const dvm = this.getDvm(roleInstanceId);
+  dumpLogs(baseRoleName?: BaseRoleName): void {
+    if (baseRoleName) {
+      const dvm = this.getDvm(baseRoleName);
       if (dvm) {
         dvm.dumpLogs();
       } else {
-        console.error(`dumpLogs() failed. Role "${roleInstanceId}" not found in happ "${this.appId}"`)
+        console.error(`dumpLogs() failed. Role "${baseRoleName}" not found in happ "${this.appId}"`)
       }
     } else {
       for (const dvm of Object.values(this._dvmMap)) {
@@ -260,4 +277,4 @@ import {CellId} from "@holochain/client/lib/types";
       }
     }
   }
- }
+}

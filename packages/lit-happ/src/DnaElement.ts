@@ -73,6 +73,9 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
     if (changedProperties.has("_cell_via_context")) {
       this._cell = this._cell_via_context;
     }
+    if (!this._dvm) {
+      this.requestDvm();
+    }
     return !!this._dvm;
   }
 

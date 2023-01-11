@@ -16,6 +16,7 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   /** Must be defined by subclass */
   static HVM_DEF: HvmDef;
 
+  /** Set during init triggered at ctor */
   conductorAppProxy!: ConductorAppProxy;
   @state() hvm!: HappViewModel;
 
@@ -51,8 +52,6 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   async createClone(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[number, DnaViewModel]> {
     return this.hvm.cloneDvm(baseRoleName, cellDef);
   }
-
-
 
 
   /** */

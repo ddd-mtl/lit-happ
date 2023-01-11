@@ -15,7 +15,6 @@ import {
   CellProxy,
   ConductorAppProxy,
   HCL,
-  RoleInstanceId,
   Dictionary, CellMixin
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
@@ -58,7 +57,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
       this.baseRoleName = idOrHcl.baseRoleName;
       this.hcl = idOrHcl;
     } else {
-      this.hcl = new HCL(idOrHcl, this.baseRoleName as RoleInstanceId);
+      this.hcl = new HCL(idOrHcl, this.baseRoleName);
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;

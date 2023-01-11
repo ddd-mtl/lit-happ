@@ -4,8 +4,8 @@ import {
   CreateCloneCellRequest, DisableCloneCellRequest, EnableCloneCellRequest, Cell,
 } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
-import {CellIdStr, destructureRoleInstanceId, CellsMap, BaseRoleName, RoleInstanceId, RoleCells} from "./types";
-import {Dictionary, intoCell, prettyDate} from "./utils";
+import {CellIdStr, destructureCloneName, RoleCellsMap, BaseRoleName, CloneName, CellsForRole, createCloneName} from "./types";
+import {areCellsEqual, Dictionary, intoCell, prettyDate} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {AppInfo} from "@holochain/client/lib/api/admin";
 
@@ -29,22 +29,23 @@ export class ConductorAppProxy implements AppApi {
   /** -- Fields -- */
 
   private _appWs!: AppWebsocket;
-  /** [Timestamp, CellIdStr, Signal] */
+
+  /** Signal log: [Timestamp, CellIdStr, Signal] */
   private _signalLogs: [number, CellIdStr, AppSignal][] = [];
-  /** InstalledAppId -> (BaseRoleName -> RoleInstalledCells) */
-  private _cellsByApp: Dictionary<CellsMap> = {};
-  /** CellIdStr -> HCL[] */
+  /** Map cells per App: InstalledAppId -> (BaseRoleName -> RoleInstalledCells) */
+  private _cellsByApp: Dictionary<RoleCellsMap> = {};
+  /** Map cell locations: CellIdStr -> HCL[] */
   private _hclMap: Dictionary<HCL[]> = {};
-  /** HCLString -> AppSignalCb */
+  /** Store handlers per cell locaiton: HCLString -> AppSignalCb */
   private _signalHandlers: Dictionary<AppSignalCb> = {};
-  /** CellIdStr -> CellProxy */
+  /** Store cell proxies per cell: CellIdStr -> CellProxy */
   private _cellProxies: Dictionary<CellProxy> = {};
 
 
   /** -- Getters -- */
 
   /** */
-  getAppCells(appId: InstalledAppId): CellsMap | undefined {
+  getAppCells(appId: InstalledAppId): RoleCellsMap | undefined {
     return this._cellsByApp[appId];
   }
 
@@ -60,17 +61,10 @@ export class ConductorAppProxy implements AppApi {
     const roleCells = roleCellsMap[hcl.baseRoleName];
     if (!roleCells) throw Error(`getCell() failed: BaseRoleName "${hcl.baseRoleName}" not found in happ "${hcl.appId}"`);
     let cell = roleCells.provisioned;
-    if (hcl.cloneName !== undefined) {
-      cell = roleCells.clones[hcl.cloneName];
+    if (hcl.cloneId !== undefined) {
+      cell = roleCells.clones[hcl.cloneId];
       if (!cell) {
-        throw Error(`getCell() failed: clone "${hcl.cloneName}" not found for role "${hcl.appId}/${hcl.baseRoleName}"`);
-      }
-    } else {
-      if (hcl.cloneIndex !== undefined) {
-        cell = roleCells.clones[String(hcl.cloneIndex)];
-        if (!cell) {
-          throw Error(`getCell() failed: clone "${hcl.cloneIndex}" not found for role "${hcl.appId}/${hcl.baseRoleName}"`);
-        }
+        throw Error(`getCell() failed: clone "${hcl.cloneId}" not found for role "${hcl.appId}/${hcl.baseRoleName}"`);
       }
     }
     return cell;
@@ -93,7 +87,7 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** */
-  getAppRoleInstanceIds(installedAppId: InstalledAppId): RoleInstanceId[] | undefined {
+  getAppRoles(installedAppId: InstalledAppId): BaseRoleName[] | undefined {
     if (!this._cellsByApp[installedAppId]) return undefined;
     return Object.values(this._cellsByApp[installedAppId]).map((roleCells) => {
       return roleCells.provisioned.name;
@@ -150,7 +144,8 @@ export class ConductorAppProxy implements AppApi {
       let wsUrl = `ws://localhost:${port_or_socket}`
       try {
         let conductor = new ConductorAppProxy(timeout);
-        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout, (sig) => {conductor.onSignal(sig)})
+        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout);
+        conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
         return conductor;
       } catch (e) {
         console.error("ConductorAppProxy initialization failed", e)
@@ -165,7 +160,7 @@ export class ConductorAppProxy implements AppApi {
     try {
       let conductor = new ConductorAppProxy(appWebsocket.defaultTimeout);
       conductor._appWs = appWebsocket;
-      console.warn("Using pre-existing AppWebsocket. ConductorAppProxy's 'onSignal()' SignalHandler needs to be set by the provider of the AppWebsocket.")
+      conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
       return conductor;
     } catch (e) {
       console.error("ConductorAppProxy initialization failed", e)
@@ -183,9 +178,10 @@ export class ConductorAppProxy implements AppApi {
 
   /** -- Methods -- */
 
-  // @ts-ignore
+  /** */
   async fetchCell(appId: InstalledAppId, cellId: CellId): Promise<Cell> {
     const appInfo = await this.appInfo({installed_app_id: appId});
+    //console.log("fetchCell", appInfo);
     if (appInfo == null) {
       Promise.reject(`getCell() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
@@ -195,7 +191,7 @@ export class ConductorAppProxy implements AppApi {
         if (cell === undefined) {
           continue;
         }
-        if (cell.cell_id == cellId) {
+        if (areCellsEqual(cell.cell_id, cellId)) {
           return cell;
         }
       }
@@ -203,8 +199,9 @@ export class ConductorAppProxy implements AppApi {
     Promise.reject("getCell() failed. Cell not found for app.")
   }
 
+
   /** */
-  async fetchCells(appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<RoleCells> {
+  async fetchCells(appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellsForRole> {
     /** Make sure hApp exists */
     const appInfo = await this.appInfo({installed_app_id: appId});
     if (appInfo == null) {
@@ -225,7 +222,7 @@ export class ConductorAppProxy implements AppApi {
           continue;
         }
         //console.log(`CreateCellProxy(): Found cell "${installedCell.role_id}":`, CellIdStr(installedCell.cell_id));
-        const maybePair = destructureRoleInstanceId(roleName);
+        const maybePair = destructureCloneName(roleName);
         const curBaseName = maybePair ? maybePair[0] : roleName;
         if (curBaseName !== baseRoleName) {
           continue;
@@ -243,7 +240,7 @@ export class ConductorAppProxy implements AppApi {
     if (typeof provisioned === 'undefined') {
       Promise.reject("Provisioned cell not found for role " + baseRoleName);
     }
-    let roleInstalledCells: RoleCells = {provisioned: provisioned!, clones}
+    let roleInstalledCells: CellsForRole = {provisioned: provisioned!, clones}
     /** Store it*/
     this._cellsByApp[appId][baseRoleName] = roleInstalledCells;
     return roleInstalledCells;
@@ -254,12 +251,12 @@ export class ConductorAppProxy implements AppApi {
   addClone(hcl: HCL, cloneCell: Cell): void {
     if (!this._cellsByApp[hcl.appId]) throw Error("addCloneInstalledCell() failed. no appId. " + hcl.toString());
     if (!this._cellsByApp[hcl.appId][hcl.baseRoleName]) throw Error("addCloneInstalledCell() failed. no baseRoleName. " + hcl.toString());
-    if (hcl.cloneName !== undefined) {
-      this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[hcl.cloneName] = cloneCell;
-      return;
+    let cloneName = hcl.cloneId;
+    if (hcl.cloneId === undefined) {
+      const cloneIndex: number = Object.keys(this._cellsByApp[hcl.appId][hcl.baseRoleName].clones).length;
+      cloneName = createCloneName(hcl.baseRoleName, cloneIndex);
     }
-    if (hcl.cloneIndex === undefined) throw Error("addCloneInstalledCell() failed. Missing cloneIndex " + hcl.toString());
-    this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[String(hcl.cloneIndex)] = cloneCell;
+    this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[cloneName] = cloneCell;
     // const sCellId = CellIdStr(cloneCell.cell_id);
     // console.log("CreateCellProxy() adding to hclMap", sCellId, cellLoc.asHcl())
     // if (this._hclMap[sCellId]) {
