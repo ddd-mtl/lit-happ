@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/cell-proxy",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Proxy classes and helpers for managing a Holochain AppWebsocket",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "dependencies": {
-    "@holochain/client": "^0.11.8"
+    "@holochain/client": "^0.11.9"
   },
   "devDependencies": {
     "tslib": "^2.4.0",

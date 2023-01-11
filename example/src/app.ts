@@ -7,7 +7,7 @@ import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import {NamedIntegerInspect, NamedRealInspect} from "./elements/named-inspect";
-import {AdminWebsocket, authorizeSigningCredentials} from "@holochain/client";
+import {AdminWebsocket} from "@holochain/client";
 import {integerZomeFunctions} from "./fn";
 
 
