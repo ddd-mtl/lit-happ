@@ -51,7 +51,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** Ctor */
-  constructor(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId) {
+  constructor(public readonly host: ReactiveElement, conductorAppProxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId) {
     super();
     if (typeof idOrHcl === 'object') {
       this.baseRoleName = idOrHcl.baseRoleName;

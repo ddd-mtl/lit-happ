@@ -18,7 +18,6 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
     super();
     if (baseRoleName) {
       this.baseRoleName = baseRoleName;
-      this.requestDvm();
     }
   }
 
@@ -38,8 +37,11 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   /** */
   protected requestDvm() {
     /** Consume Context based on given dnaHash */
-    const cellName = this._cell_via_context? this._cell_via_context.name : this.baseRoleName;
-    const contextType = createContext<DVM>('dvm/'+ cellName);
+    if (!this._cell_via_context) {
+      console.error("No Cell info found via context in a DnaElement for role ", this.baseRoleName)
+      return;
+    }
+    const contextType = createContext<DVM>('dvm/'+ this.cell.name);
     console.log(`\t\t Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,

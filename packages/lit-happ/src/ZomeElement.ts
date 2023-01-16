@@ -40,7 +40,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
   /** Request zvm from Context based on current CellId */
   private requestZvm() {
     if (!this._cell_via_context) {
-      throw Error(`"installedCell" from context "${cellContext}" not found in ZomeElement "${this.constructor.name}"`)
+      throw Error(`Context "${cellContext}" not found from ZomeElement "${this.constructor.name}"`)
     }
     const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
     console.log(`\t\t Requesting context "${contextType}"`)
