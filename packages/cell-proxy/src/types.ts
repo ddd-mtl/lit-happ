@@ -4,7 +4,7 @@ import {
   encodeHashToBase64,
   AgentPubKeyB64,
   DnaHashB64,
-  Cell
+  Cell, RoleName
 } from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
@@ -30,9 +30,9 @@ export type BaseRoleName = string;
 export type CloneIndex = number;
 
 export type CellsForRole = {
-  //roleName: RoleInstanceId,
+  //baseRoleName: BaseRoleName,
   provisioned: Cell,
-  /** CloneName -> Cell */
+  /** CloneId -> Cell */
   clones: Dictionary<Cell>,
 }
 
@@ -40,17 +40,16 @@ export type CellsForRole = {
 export type RoleCellsMap = Dictionary<CellsForRole>;
 
 
-/** -- RoleInstanceId -- */
-
+/** -- CloneId -- */
+export type CloneId = RoleName;
 /** type for string "<baseRoleName>.<cloneIndex>" */
-export type CloneName = string;
-export function createCloneName(baseRoleName: BaseRoleName, cloneIndex: CloneIndex): CloneName {
+export function createCloneName(baseRoleName: BaseRoleName, cloneIndex: CloneIndex): string {
   //if (!cloneIndex) return baseRoleName as CloneName;
   return "" + baseRoleName + "." + cloneIndex;
 }
 
-export function destructureCloneName(id: CloneName): [BaseRoleName, CloneIndex] | undefined {
-  const subs = id.split(".");
+export function destructureCloneId(cloneId: CloneId): [BaseRoleName, CloneIndex] | undefined {
+  const subs = cloneId.split(".");
   if (subs.length != 2) {
     //throw Error(`Bad RoleInstance id format: "${id}"`);
     return undefined;

@@ -199,7 +199,7 @@ export class PlaygroundCloneApp extends HappElement {
         <cell-context .cell="${selectedDvm.cell}">
             <view-cell-context></view-cell-context>
             <h3>
-                Selected: ${selectedDvm.hcl.toString()}
+                Selected: ${selectedDvm.cell.name} - ${selectedDvm.hcl.toString()}
                 <input type="button" value="dump logs" @click=${(e: any) => selectedDvm.dumpLogs()}>
             </h3>
             <named-real-inspect></named-real-inspect>

@@ -1,5 +1,5 @@
 import {InstalledAppId, RoleName} from "@holochain/client";
-import {BaseRoleName, CloneIndex, destructureCloneName, CloneName} from "./types";
+import {BaseRoleName, CloneId} from "./types";
 
 
 /** -- HCL: Holochain Cell Locator -- */
@@ -7,23 +7,20 @@ import {BaseRoleName, CloneIndex, destructureCloneName, CloneName} from "./types
 export type HCLString = string;
 
 /**
- * `cell:/<appId>/<BaseRoleName>/<cloneName>`
+ * `cell:/<appId>/<BaseRoleName>/<cloneId>`
  * Examples
  * `cell:/where/profiles`
  * `cell:/chatApp/channel/channel.2`
- * `cell:/chatApp/channel/europe`
  */
 export class HCL {
 
   public readonly appId: InstalledAppId;
-  //public readonly roleInstanceId: RoleInstanceId;
   public readonly baseRoleName: BaseRoleName;
-
-  /** A Cell can have a ncloneId */
-  public readonly cloneId?: string;
+  /** A Cell can have a cloneId if it's a cloneCell */
+  public readonly cloneId?: CloneId;
 
   /** Ctor */
-  constructor(appId: InstalledAppId, role: BaseRoleName, cloneId?: RoleName) {
+  constructor(appId: InstalledAppId, role: BaseRoleName, cloneId?: CloneId) {
     this.appId = appId;
     this.baseRoleName = role;
     this.cloneId = cloneId;

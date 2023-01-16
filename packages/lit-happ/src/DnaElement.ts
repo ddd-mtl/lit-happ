@@ -38,7 +38,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   protected requestDvm() {
     /** Consume Context based on given dnaHash */
     if (!this._cell_via_context) {
-      console.error("No Cell info found via context in a DnaElement for role ", this.baseRoleName)
+      console.error("No Cell info found via context in a DnaElement for role", this.baseRoleName)
       return;
     }
     const contextType = createContext<DVM>('dvm/'+ this.cell.name);

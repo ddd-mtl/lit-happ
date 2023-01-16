@@ -3,10 +3,8 @@ import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
   CloneIndex,
-  CloneName,
   ConductorAppProxy,
   createCloneName,
-  destructureCloneName,
   Dictionary,
   HCL,
 } from "@ddd-qc/cell-proxy";
@@ -68,14 +66,14 @@ export class HappViewModel {
   /** */
   getClones(baseRoleName: BaseRoleName): DnaViewModel[] {
     const searchHcl = new HCL(this.appId, baseRoleName);
-    let clones = [];
+    let cloneDvms = [];
     for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
       const hcl = HCL.parse(sHcl);
       if (hcl.isClone() && hcl.match(searchHcl)) {
-        clones.push(dvm);
+        cloneDvms.push(dvm);
       }
     }
-    return clones;
+    return cloneDvms;
   }
 
 
@@ -133,8 +131,8 @@ export class HappViewModel {
     const appInstalledCells = this._conductorAppProxy.getAppCells(this.appId)!;
     for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
-      for (const cellName of Object.keys(roleCells.clones)) {
-        const hcl = new HCL(this.appId, baseRoleName, cellName);
+      for (const cloneId of Object.keys(roleCells.clones)) {
+        const hcl = new HCL(this.appId, baseRoleName, cloneId);
         this._conductorAppProxy.createCellProxy(hcl);
         this.createDvm(def, hcl);
       }
@@ -198,9 +196,8 @@ export class HappViewModel {
     const clones = this.getClones(baseRoleName);
     const cloneIndex: CloneIndex = clones.length;
     const cloneName = cellDef && cellDef.cloneName
-      ? cellDef.cloneName 
+      ? cellDef.cloneName
       : createCloneName(baseRoleName, cloneIndex);
-    let hcl = new HCL(this.appId, baseRoleName, cloneName);
     /** Build default request */
     let request: CreateCloneCellRequest = {
       app_id: this.appId,
@@ -210,29 +207,18 @@ export class HappViewModel {
       },
       name: cloneName,
     }
-    /** Modify hcl & request according to CellDef */
+    /** Modify request according to CellDef */
     if (cellDef) {
       request.modifiers = cellDef.modifiers;
       request.membrane_proof = cellDef.membraneProof;
       request.name = cellDef.cloneName;
-      if (cellDef.cloneName) {
-        hcl = new HCL(this.appId, baseRoleName, cellDef.cloneName);
-      }
     }
     /** Create Cell */
     const cloneInstalledCell = await this._conductorAppProxy.createCloneCell(request);
     //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
     const cloneCell = await this._conductorAppProxy.fetchCell(this.appId, cloneInstalledCell.cell_id);
     console.log("clone created:", cloneCell);
-
-    // const cloneCell: Cell = {
-    //   cell_id: cloneInstalledCell.cell_id,
-    //   //clone_id?: RoleName;
-    //   dna_modifiers: request.modifiers,
-    //   name: cellDef && cellDef.cloneName? cellDef.cloneName : "noname",
-    //   enabled: true,
-    // };
-
+    const hcl = new HCL(this.appId, baseRoleName, cloneCell.clone_id);
     /** Get created cell */
     this._conductorAppProxy.addClone(hcl, cloneCell);
     /** Create CellProxy */
