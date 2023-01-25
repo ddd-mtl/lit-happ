@@ -2,10 +2,9 @@ import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
 import {
-  AdminWebsocket, AgentPubKey,
+  AdminWebsocket,
   AppSignalCb,
-  CapSecret,
-  getSigningCredentials, GrantedFunctionsType,
+  GrantedFunctionsType,
   InstalledAppId,
   ZomeName,
 } from "@holochain/client";
@@ -121,7 +120,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     const grantedFns = { [GrantedFunctionsType.Listed]: allFnNames }
     try {
         console.log("authorizeSigningCredentials: " + this.baseRoleName, allFnNames);
-        await adminWs.authorizeSigningCredentials(this.cellId, grantedFns);
+        await adminWs.authorizeSigningCredentials(this.cell.id, grantedFns);
     } catch(e) {
       console.warn("authorizeSigningCredentials FAILED.", e);
     }

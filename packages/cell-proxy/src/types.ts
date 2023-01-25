@@ -2,38 +2,21 @@ import {
   CellId,
   decodeHashFromBase64,
   encodeHashToBase64,
-  AgentPubKeyB64,
-  DnaHashB64,
-  Cell, RoleName
+  RoleName, ClonedCell, ProvisionedCell,
 } from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
 
-/**
- *
- */
-export interface ICell {
-  //get installedCell(): InstalledCell;
-  get cell(): Cell;
-  //get name(): string;
-  get dnaHash(): DnaHashB64;
-  get agentPubKey(): AgentPubKeyB64;
-  //get cellId(): CellId;
-
-  //get isClone(): boolean;
-  //get baseRoleName(): BaseRoleName;
-  //get cloneIndex(): CloneIndex;
-  //get cloneName(): string;
-}
 
 export type BaseRoleName = string;
 export type CloneIndex = number;
 
+/** */
 export type CellsForRole = {
   //baseRoleName: BaseRoleName,
-  provisioned: Cell,
+  provisioned: ProvisionedCell,
   /** CloneId -> Cell */
-  clones: Dictionary<Cell>,
+  clones: Dictionary<ClonedCell>,
 }
 
 /** BaseRoleName -> RoleCells */
@@ -48,6 +31,7 @@ export function createCloneName(baseRoleName: BaseRoleName, cloneIndex: CloneInd
   return "" + baseRoleName + "." + cloneIndex;
 }
 
+/** */
 export function destructureCloneId(cloneId: CloneId): [BaseRoleName, CloneIndex] | undefined {
   const subs = cloneId.split(".");
   if (subs.length != 2) {
@@ -56,8 +40,6 @@ export function destructureCloneId(cloneId: CloneId): [BaseRoleName, CloneIndex]
   }
   return [subs[0] as BaseRoleName, Number(subs[1]) as CloneIndex];
 }
-
-
 
 
 /** -- CellIdStr -- */

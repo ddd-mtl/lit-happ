@@ -2,10 +2,10 @@ import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
-import {ZomeName, Cell} from "@holochain/client";
+import {ZomeName} from "@holochain/client";
 import {cellContext} from "./elements/cell-context";
 import { ZomeViewModel } from "./ZomeViewModel";
-import {CellMixin} from "@ddd-qc/cell-proxy";
+import {Cell, CellMixin} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -42,7 +42,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
     if (!this._cell_via_context) {
       throw Error(`Context "${cellContext}" not found from ZomeElement "${this.constructor.name}"`)
     }
-    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.dnaHash)
+    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.cell.dnaHash)
     console.log(`\t\t Requesting context "${contextType}"`)
     /*const consumer =*/ new ContextConsumer(
       this,

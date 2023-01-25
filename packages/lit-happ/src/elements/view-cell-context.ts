@@ -1,9 +1,9 @@
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, html} from "lit";
 import {property} from "lit/decorators.js";
-import {Cell} from "@holochain/client";
 import {contextProvided} from "@lit-labs/context";
 import {cellContext} from "./cell-context";
+import {Cell} from "@ddd-qc/cell-proxy";
 
 /**
  * LitElement that shows the cellContext as a <div>

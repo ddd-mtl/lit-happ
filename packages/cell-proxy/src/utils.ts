@@ -1,7 +1,6 @@
-import {CellId, AppInfo, CellInfo, Cell, encodeHashToBase64} from "@holochain/client";
-import {ICell} from "./types";
-import {CellType, DnaModifiers} from "@holochain/client";
-import {StemCell} from "@holochain/client/lib/api/admin/types";
+import {CellId, AppInfo, encodeHashToBase64} from "@holochain/client";
+import {CellType} from "@holochain/client";
+import {Cell, intoStem} from "./cell";
 
 
 export declare type Dictionary<T> = {
@@ -67,28 +66,6 @@ export function prettyDate(date: Date): string {
 }
 
 
-/** ... */
-export function intoStem(cellInfo: CellInfo): StemCell | undefined {
-  if (CellType.Stem in cellInfo) {
-    return cellInfo.Stem;
-  }
-  return undefined
-}
-
-/** ... */
-export function intoCell(cellInfo: CellInfo): Cell | undefined {
-  if (CellType.Stem in cellInfo) {
-    return undefined;
-  }
-  if (CellType.Cloned in cellInfo) {
-    return cellInfo.Cloned;
-  }
-  if (CellType.Provisioned in cellInfo) {
-    return cellInfo.Provisioned;
-  }
-  return undefined;
-}
-
 
 /** */
 export function printAppInfo(appInfo: AppInfo): string {
@@ -100,36 +77,9 @@ export function printAppInfo(appInfo: AppInfo): string {
         print += `\n - ${roleName}.${stem.name? stem.name : "unnamed"} : ${encodeHashToBase64(stem.dna)} (stem)`;
         continue;
       }
-      const cell = intoCell(cellInfo)!;
-      print += `\n - ${roleName}.${cell.name}${cell.name? "."+cell.name : ""} : ${encodeHashToBase64(cell.cell_id[0])}`;
+      const cell = Cell.from(cellInfo);
+      print += `\n - ${roleName}.${cell.name}${cell.name? "."+cell.name : ""} : ${cell.dnaHash}`;
     }
   }
   return print;
-}
-
-
-/** */
-export function printCell(cell: Cell): string {
-  return `Cell "${cell.name}${cell.clone_id? "."+ cell.clone_id: ""}": ${encodeHashToBase64(cell.cell_id[0])}`;
-}
-
-
-/** -- Experimental -- */
-
-/**
- *
- */
-export class Queue<T> {
-  private _store: T[] = [];
-
-  get length(): number {return this._store.length}
-
-  push(val: T) {
-    this._store.push(val);
-  }
-  pop(): T | undefined {
-    return this._store.shift();
-  }
-
-  isEmpty(): boolean { return this._store.length == 0}
 }

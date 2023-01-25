@@ -1,12 +1,8 @@
 import {
-  AgentPubKeyB64,
-  Cell,
-  CellId,
-  DnaHashB64,
-  encodeHashToBase64,
   FunctionName,
   ZomeName
 } from "@holochain/client";
+import {Cell} from "./cell";
 
 type Constructor<T> = {new (): T};
 type GConstructor<T = {}> = new (...args: any[]) => T;
@@ -22,7 +18,7 @@ export class Empty {
 
 /**
  * Mixin for Cell bound classes.
- * A Cell bound class must have a "Cell" from @/holochain/client
+ * A Cell bound class must have a "Provisioned" or "Cloned" cell from @holochain/client
  */
 export function CellMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class ACell extends Base {
@@ -31,10 +27,8 @@ export function CellMixin<TBase extends AbstractConstructor>(Base: TBase) {
     // }
     _cell?: Cell;
 
-    get cell(): Cell { if (!this._cell) throw Error("Cell not set for object") ; return this._cell! }
-    get cellId(): CellId { return this._cell!.cell_id }
-    get dnaHash(): DnaHashB64 { return encodeHashToBase64(this._cell!.cell_id[0]) }
-    get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this._cell!.cell_id[1]) }
+    get cell(): Cell { if (!this._cell) throw Error("Cell field not set for object") ; return this._cell! }
+
   };
   return ACell;
 }

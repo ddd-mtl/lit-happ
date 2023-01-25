@@ -216,11 +216,11 @@ export class HappViewModel {
     /** Create Cell */
     const cloneInstalledCell = await this._conductorAppProxy.createCloneCell(request);
     //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
-    const cloneCell = await this._conductorAppProxy.fetchCell(this.appId, cloneInstalledCell.cell_id);
-    console.log("clone created:", cloneCell);
-    const hcl = new HCL(this.appId, baseRoleName, cloneCell.clone_id);
+    const cell = await this._conductorAppProxy.fetchCell(this.appId, cloneInstalledCell.cell_id);
+    console.log("clone created:", cell);
+    const hcl = new HCL(this.appId, baseRoleName, cell.cloneId);
     /** Get created cell */
-    this._conductorAppProxy.addClone(hcl, cloneCell);
+    this._conductorAppProxy.addClone(hcl, cell.asCloned()!);
     /** Create CellProxy */
     this._conductorAppProxy.createCellProxy(hcl);
     /** Create DVM and authorize */

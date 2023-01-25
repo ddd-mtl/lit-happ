@@ -3,7 +3,6 @@ import { property } from "lit/decorators.js";
 import {IntegerZomePerspective, NamedIntegerDvm} from "../viewModels/integer";
 import {DnaElement} from "@ddd-qc/lit-happ";
 import { NamedRealDvm, RealZomePerspective } from "../viewModels/real";
-import {printCell} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -18,11 +17,11 @@ export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, Name
 
   /** */
   render() {
-    console.log(`<named-integer-inspect> render(): ${printCell(this.cell)}`);
+    console.log(`<named-integer-inspect> render(): ${this.cell.print()}`);
     /** render all */
     return html`
     <div>
-      <span><b>Inspection of cell "${this.baseRoleName}":</b></span>
+      <span><b>Inspection of cell "${this.cell.name}":</b></span>
       <span>integerZvm: ${this._dvm.integerZvm.zomeName}</span> |
       <span>labelZvm: ${this._dvm.labelZvm.zomeName}</span>
     </div>
@@ -52,7 +51,7 @@ export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, Name
 
   /** */
   render() {
-    console.log(`<named-real-inspect> render(): ${printCell(this.cell)}`);
+    console.log(`<named-real-inspect> render(): ${this.cell.print()}`);
     /** render all */
     return html`
     <div>

@@ -63,7 +63,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
     /** */
     getContext(): any {
-        const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.dnaHash)
+        const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.cell.dnaHash)
         //console.log({contextType: typeof context})
         return context
     }

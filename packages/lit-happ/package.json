@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "MVVM Framework for holochain apps using Lit",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -25,8 +25,8 @@
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "dependencies": {
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
-    "@holochain/client": "^0.11.9",
-    "@lit-labs/context": "^0.1.2",
+    "@holochain/client": "^0.11.15",
+    "@lit-labs/context": "^0.1.3",
     "@open-wc/scoped-elements": "^2.1.1",
     "lit": "^2.3.0"
   },

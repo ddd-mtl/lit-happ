@@ -1,6 +1,6 @@
 import {html} from "lit";
 import {IntegerZomePerspective, IntegerZvm} from "../viewModels/integer";
-import {ZomeElement, printCell} from "@ddd-qc/lit-happ";
+import {ZomeElement} from "@ddd-qc/lit-happ";
 
 /**
  *
@@ -38,7 +38,7 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
   /** */
   render() {
-    console.log("<integer-list> render(): " + printCell(this.cell));
+    console.log("<integer-list> render(): " + this.cell.print());
 
     //console.log("integer-list:", this.perspective.values)
 

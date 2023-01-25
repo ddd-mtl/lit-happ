@@ -1,7 +1,8 @@
-import {CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName, Cell} from "@holochain/client";
+import {CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName} from "@holochain/client";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
-import {anyToB64, delay, prettyDate, prettyDuration, Queue} from "./utils";
+import {anyToB64, delay, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
+import {Cell} from "./cell";
 
 
 export interface RequestLog {
@@ -66,7 +67,7 @@ export class CellProxy extends CellMixin(Empty) {
   // }
 
   dumpSignals() {
-    this._conductor.dumpSignals(this.cell.cell_id);
+    this._conductor.dumpSignals(this.cell.id);
   }
 
   /** Pass call request to conductor proxy and log it */
@@ -95,8 +96,8 @@ export class CellProxy extends CellMixin(Empty) {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cell.cell_id,
-      provenance: this.cell.cell_id[1],
+      cell_id: this.cell.id,
+      provenance: this.cell.id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
@@ -123,8 +124,8 @@ export class CellProxy extends CellMixin(Empty) {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cell.cell_id,
-      provenance: this.cell.cell_id[1],
+      cell_id: this.cell.id,
+      provenance: this.cell.id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     const respLog = await this.executeZomeCall(log);
@@ -187,7 +188,7 @@ export class CellProxy extends CellMixin(Empty) {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn(`Dumping logs for cell "${this._conductor.getLocations(this.cellId)}"`)
+    console.warn(`Dumping logs for cell "${this._conductor.getLocations(this.cell.id)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }

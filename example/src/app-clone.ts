@@ -1,7 +1,7 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  EntryDefSelect, HvmDef, CellContext, HappElement, CloneIndex, CellDef, HCL, ViewCellContext, createCloneName
+  EntryDefSelect, HvmDef, CellContext, HappElement, CellDef, HCL, ViewCellContext, createCloneName, Cell
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealCloneDvm, NamedRealDvm } from "./viewModels/real";
@@ -9,7 +9,7 @@ import { IntegerList } from "./elements/integer-list";
 import { RealList } from "./elements/real-list";
 import { LabelList } from "./elements/label-list";
 import { NamedRealInspect } from "./elements/named-inspect";
-import { AdminWebsocket, Cell } from "@holochain/client";
+import { AdminWebsocket } from "@holochain/client";
 
 
 /**
@@ -144,7 +144,7 @@ export class PlaygroundCloneApp extends HappElement {
 
     /** Render selected clone */
     const selectedDvm = this.hvm.getDvm(this._selectedClone)!;
-    console.log("selectedDvm", selectedDvm, selectedDvm.cellId);
+    console.log("selectedDvm", selectedDvm, selectedDvm.cell.id);
 
     /** render all clones */
     const clones = Object.values(this.realDvmClones).map((realDvm) => {

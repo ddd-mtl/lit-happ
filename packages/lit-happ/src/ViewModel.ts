@@ -1,6 +1,5 @@
 import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
-import {ICell} from "@ddd-qc/cell-proxy";
 
 
 /**

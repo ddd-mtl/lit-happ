@@ -2,8 +2,7 @@ import {ContextProvider, createContext} from '@lit-labs/context';
 import {LitElement, html, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ScopedElementsMixin} from "@open-wc/scoped-elements";
-import {Cell} from "@holochain/client";
-
+import {Cell} from "@ddd-qc/cell-proxy";
 
 export const cellContext = createContext<Cell>('lit-happ/cell');
 
