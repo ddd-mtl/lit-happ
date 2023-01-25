@@ -74,11 +74,19 @@ export function printAppInfo(appInfo: AppInfo): string {
     for (const cellInfo of  Object.values(cellInfos)) {
       if (CellType.Stem in cellInfo) {
         const stem = intoStem(cellInfo)!;
-        print += `\n - ${roleName}.${stem.name? stem.name : "unnamed"} : ${encodeHashToBase64(stem.dna)} (stem)`;
+        print += `\n - ${roleName}.${stem.name? stem.name : "unnamed"}: ${encodeHashToBase64(stem.dna)} (stem)`;
         continue;
       }
-      const cell = Cell.from(cellInfo);
-      print += `\n - ${roleName}.${cell.name}${cell.name? "."+cell.name : ""} : ${cell.dnaHash}`;
+      if (CellType.Provisioned in cellInfo) {
+        const cell = this.provisioned;
+        print += `\n - ${roleName}.${cell.name}: ${encodeHashToBase64(cell.cell_id[0])}`;
+        continue;
+      }
+      if (CellType.Cloned in cellInfo) {
+        const cell = this.cloned;
+        print += `\n - ${roleName}.${cell.name}: ${encodeHashToBase64(cell.cell_id[0])}`;
+        continue;
+      }
     }
   }
   return print;

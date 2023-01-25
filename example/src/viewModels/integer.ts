@@ -48,6 +48,9 @@ export class IntegerZvm extends ZomeViewModel {
 
   private _values: number[] = [];
 
+  readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
+    console.warn("Signal for zInteger zome received:", appSignal);
+  }
 
   /** */
   async probeAll(): Promise<void> {

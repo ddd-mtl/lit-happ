@@ -1,5 +1,5 @@
 import {ZomeProxy, ZomeViewModel} from "@ddd-qc/lit-happ";
-import { EntryHash } from "@holochain/client";
+import {AppSignal, AppSignalCb, EntryHash} from "@holochain/client";
 import {labelZomeFunctions} from "../fn";
 
 
@@ -49,6 +49,9 @@ export class LabelZvm extends ZomeViewModel {
 
   private _values: string[] = [];
 
+  readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
+    console.warn("Signal for zLabel zome received:", appSignal);
+  }
 
   /** */
   async probeAll(): Promise<void> {

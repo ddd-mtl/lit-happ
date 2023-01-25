@@ -36,8 +36,8 @@ export class ConductorAppProxy implements AppApi {
   private _cellsByApp: Dictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */
   private _hclMap: Dictionary<HCL[]> = {};
-  /** Store handlers per cell locaiton: HCLString -> AppSignalCb */
-  private _signalHandlers: Dictionary<AppSignalCb> = {};
+  /** Store handlers per cell locaiton: HCLString -> AppSignalCb[] */
+  private _signalHandlers: Dictionary<AppSignalCb[]> = {};
   /** Store cell proxies per cell: CellIdStr -> CellProxy */
   private _cellProxies: Dictionary<CellProxy> = {};
 
@@ -67,7 +67,7 @@ export class ConductorAppProxy implements AppApi {
         throw Error(`getCell() failed: clone "${hcl.cloneId}" not found for role "${hcl.toString()}"`);
       }
     }
-    return new Cell(cell);
+    return new Cell(cell, hcl.appId, hcl.baseRoleName);
   }
 
 
@@ -185,10 +185,10 @@ export class ConductorAppProxy implements AppApi {
       Promise.reject(`getCell() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
     for (const cellInfos of Object.values(appInfo.cell_info)) {
-      for (const cellInfo of Object.values(cellInfos)) {
+      for (const [baseRoleName, cellInfo] of Object.entries(cellInfos)) {
         let cell: Cell;
         try {
-          cell = Cell.from(cellInfo);
+          cell = Cell.from(cellInfo, appId, baseRoleName);
         } catch(e:any) {
           // skip stem cell
           continue;
@@ -294,38 +294,41 @@ export class ConductorAppProxy implements AppApi {
   onSignal(signal: AppSignal): void {
     /** Grabe cell specific handlers */
     const hcls = this.getLocations(signal.cell_id);
-    const handlers = hcls? hcls.map((hcl) => this._signalHandlers[hcl.toString()]) : [];
+    const handlerss: AppSignalCb[][]  = hcls? hcls.map((hcl) => this._signalHandlers[hcl.toString()]) : [];
+    console.log("onSignal()", hcls.toString(), handlerss);
     /** Grab common handler  */
-    const allHandler = this._signalHandlers["__all"];
-    if (allHandler) handlers.push(allHandler);
+    const allHandlers = this._signalHandlers["__all"];
+    if (allHandlers) handlerss.push(allHandlers);
     /** Send to all handlers */
-    for (const handler of handlers) {
-      handler(signal);
+    for (const handlers of handlerss) {
+      for (const handler of handlers) {
+        handler(signal);
+      }
     }
   }
 
 
   /** Store signalHandler to internal handler array */
   addSignalHandler(handler: AppSignalCb, hcl?: HCLString): SignalUnsubscriber {
+    console.log("addSignalHandler()", hcl);
+
     hcl = hcl? hcl: "__all";
     //console.log("addSignalHandler()", hcl, Object.keys(this._signalHandlers));
-    //const maybeHandler = this._signalHandlers[cellIdStr]
-    if (hcl != "__all") {
-      const maybeHandler = Object.getOwnPropertyDescriptor(this._signalHandlers, hcl);
-      if (maybeHandler && maybeHandler.value) {
-        throw new Error(`SignalHandler already added for "${hcl}"`);
-      }
+    if (!this._signalHandlers[hcl]) {
+      this._signalHandlers[hcl] = [handler];
+    } else {
+      this._signalHandlers[hcl].push(handler);
     }
-    this._signalHandlers[hcl] = handler;
     /* return tailored unsubscribe function to the caller */
     return {
       unsubscribe: () => {
-        const maybeHandler = this._signalHandlers[hcl!]
-        if (!maybeHandler) {
-          console.warn("unsubscribe failed: Couldn't find signalHandler for", hcl)
-          return;
-        }
-        delete this._signalHandlers[hcl!];
+      // FIXME
+      //   const maybeHandler = this._signalHandlers[hcl!]
+      //   if (!maybeHandler) {
+      //     console.warn("unsubscribe failed: Couldn't find signalHandler for", hcl)
+      //     return;
+      //   }
+      //   delete this._signalHandlers[hcl!];
       }
     };
   }

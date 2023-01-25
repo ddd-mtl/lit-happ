@@ -1,7 +1,8 @@
 import {createContext} from "@lit-labs/context";
 import {CellProxy, ZomeProxy, ZomeProxyConstructor, CellMixin} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {FunctionName, ZomeName} from "@holochain/client";
+import {AppSignalCb, FunctionName, ZomeName} from "@holochain/client";
+import {AppSignal} from "@holochain/client/lib/api/app/types";
 
 export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
@@ -35,6 +36,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
         return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
 
+    signalHandler?: AppSignalCb;
 
     /** Zome name */
     static get DEFAULT_ZOME_NAME(): string {
@@ -58,8 +60,17 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
             this.zomeName = this._zomeProxy.defaultZomeName;
         }
         this._cell = cellProxy.cell;
+        cellProxy.addSignalHandler( (signal: AppSignal) => this.handleZomeSignal(signal));
     }
 
+
+    /** Filter signal by zome name */
+    private handleZomeSignal(signal: AppSignal) {
+        //console.log("handleZomeSignal()", this.signalHandler, this.zomeName, signal.zome_name)
+        if (this.signalHandler && signal.zome_name == this.zomeName) {
+            this.signalHandler(signal);
+        }
+    }
 
     /** */
     getContext(): any {

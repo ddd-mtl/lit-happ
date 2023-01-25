@@ -1,5 +1,6 @@
 import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
+import {AppSignalCb} from "@holochain/client";
 
 
 /**
@@ -19,6 +20,11 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
   protected _previousPerspective?: any;
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
   protected _provider?: any; // FIXME type: ContextProvider<this.getContext()>;
+
+
+  /** -- Abstract fields -- */
+
+  abstract signalHandler?: AppSignalCb;
 
 
   /** -- Abstract methods -- */

@@ -36,6 +36,11 @@ fn create_label(name: String)  -> ExternResult<EntryHash> {
   let eh = hash_entry(entry.clone())?;
   let _ah = create_entry(LabelEntry::Label(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), LabelLink::Default, LinkTag::from(()))?;
+
+  let payload = "I like labels";
+  debug!("emit_signal() {:?}", payload);
+  emit_signal(payload)?;
+
   Ok(eh)
 }
 

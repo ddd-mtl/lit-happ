@@ -1,4 +1,4 @@
-import {CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName} from "@holochain/client";
+import {AppSignalCb, CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName} from "@holochain/client";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
 import {anyToB64, delay, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
@@ -53,18 +53,12 @@ export class CellProxy extends CellMixin(Empty) {
   private _canCallBlocking: boolean = true;
 
 
-  // /** -- ICell interface -- */
-  //
-  // get dnaHash(): DnaHashB64 { return encodeHashToBase64(this.cell.cell_id[0]) }
-  // get agentPubKey(): AgentPubKeyB64 { return encodeHashToBase64(this.cell.cell_id[1]) }
-
-
   /** -- Methods -- */
 
-  // /** */
-  // addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
-  //   return this._conductor.addSignalHandler(handler, this.cellId);
-  // }
+  /** */
+  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
+    return this._conductor.addSignalHandler(handler, this.cell.hcl().toString());
+  }
 
 
   /** */

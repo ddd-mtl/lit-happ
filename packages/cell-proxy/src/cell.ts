@@ -6,9 +6,11 @@ import {
   DnaHashB64,
   DnaModifiers,
   encodeHashToBase64,
-  ProvisionedCell, StemCell, ClonedCell
+  ProvisionedCell, StemCell, ClonedCell, InstalledAppId
 } from "@holochain/client";
 import {RoleName} from "@holochain/client/lib/types";
+import {HCL} from "./hcl";
+import {BaseRoleName, destructureCloneId} from "./types";
 
 
 export type AnyCell = ProvisionedCell | ClonedCell;
@@ -20,20 +22,20 @@ export type AnyCell = ProvisionedCell | ClonedCell;
 export class Cell {
 
   /** */
-  static from(cellInfo: CellInfo): Cell {
+  static from(cellInfo: CellInfo, appId: InstalledAppId, baseRoleName: BaseRoleName): Cell {
     if (CellType.Stem in cellInfo) {
       const id = cellInfo.stem.name? cellInfo.stem.name : encodeHashToBase64(cellInfo.stem.dna);
       throw Error("StemCell cannot be converted to Cell: " + id);
     }
     if (CellType.Cloned in cellInfo) {
-      return new Cell(cellInfo.cloned);
+      return new Cell(cellInfo.cloned, appId, baseRoleName);
     }
-    return new Cell(cellInfo.provisioned);
+    return new Cell(cellInfo.provisioned, appId, baseRoleName);
   }
 
 
   /** Ctor */
-  constructor(private readonly _cell: AnyCell) {}
+  constructor(private readonly _cell: AnyCell, public readonly appId: InstalledAppId, public readonly baseRoleName: BaseRoleName) {}
 
 
   /** -- Getters -- */
@@ -44,11 +46,13 @@ export class Cell {
   get name(): string {return (this._cell as any).name}
   get dnaModifiers(): DnaModifiers {return (this._cell as any).dna_modifiers}
 
+  /** ex: rNamedInteger.0 */
   get cloneId(): RoleName | undefined { return (this._cell as any).clone_id }
 
 
   /** -- Methods -- */
 
+  hcl(): HCL {return new HCL(this.appId, this.baseRoleName, this.cloneId)}
 
   asCloned(): ClonedCell | null {
     if (!this.cloneId) { return null}
