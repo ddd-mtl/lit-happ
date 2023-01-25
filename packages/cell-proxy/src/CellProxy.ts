@@ -23,7 +23,7 @@ export interface ResponseLog {
 /**
  * Proxy for a running DNA.
  * It logs and queues ZomeCalls.
- * It holds a reference to its ConductorAppProxy and its InstalledCell.
+ * It holds a reference to its ConductorAppProxy and its Cell.
  * This class is expected to be used by ZomeProxies.
  */
 export class CellProxy extends CellMixin(Empty) {
@@ -66,6 +66,8 @@ export class CellProxy extends CellMixin(Empty) {
   //   return this._conductor.addSignalHandler(handler, this.cellId);
   // }
 
+
+  /** */
   dumpSignals() {
     this._conductor.dumpSignals(this.cell.id);
   }

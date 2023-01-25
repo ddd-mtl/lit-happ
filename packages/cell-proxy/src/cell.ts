@@ -8,7 +8,6 @@ import {
   encodeHashToBase64,
   ProvisionedCell, StemCell, ClonedCell
 } from "@holochain/client";
-import {CellProxy} from "./CellProxy";
 import {RoleName} from "@holochain/client/lib/types";
 
 

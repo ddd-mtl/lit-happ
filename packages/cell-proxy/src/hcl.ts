@@ -26,6 +26,9 @@ export class HCL {
     this.cloneId = cloneId;
   }
 
+  /** */
+  get roleName(): string { return this.isClone()? this.cloneId : this.baseRoleName };
+
 
   /** */
   static parse(sHcl: HCLString): HCL {
@@ -52,9 +55,8 @@ export class HCL {
   }
 
 
-  isClone(): boolean {
-    return this.cloneId !== undefined;
-  }
+  /** */
+  isClone(): boolean {return this.cloneId !== undefined;}
 
 
   /** */

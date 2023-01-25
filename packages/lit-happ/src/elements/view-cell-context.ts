@@ -19,7 +19,7 @@ export class ViewCellContext extends ScopedElementsMixin(LitElement) {
     const cellName = this.cell === undefined? "undefined" : this.cell.name;
     return html`
     <div>
-        <span><b>(InstalledCell set to: "${cellName}")</b></span>
+        <span><b>(Cell set to: "${cellName}")</b></span>
     </div>
     `;
   }

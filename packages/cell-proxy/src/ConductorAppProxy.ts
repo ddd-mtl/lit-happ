@@ -1,13 +1,13 @@
 import {
   AppApi, AppInfoRequest, AppInfoResponse, AppSignal, AppSignalCb, AppWebsocket, CallZomeRequest, CellId,
-  InstalledAppId, InstalledCell,
+  InstalledAppId,
   CreateCloneCellRequest, DisableCloneCellRequest, EnableCloneCellRequest, ClonedCell, CellType, ProvisionedCell,
 } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, RoleCellsMap, BaseRoleName, CellsForRole} from "./types";
 import {areCellsEqual, Dictionary, prettyDate} from "./utils";
 import {HCL, HCLString} from "./hcl";
-import {AnyCell, Cell} from "./cell";
+import {Cell} from "./cell";
 
 
 /** */
@@ -345,14 +345,16 @@ export class ConductorAppProxy implements AppApi {
       const logs = this._signalLogs
         .filter((log) => log[1] == cellStr)
         .map((log) => {
-          return { timestamp: prettyDate(new Date(log[0])), payload: log[2].payload}
+          return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload: log[2].payload}
         });
       console.table(logs);
     } else {
-      console.warn("Dumping all signal logs")
+      console.warn("Dumping all signal logs", )
       const logs = this._signalLogs
         .map((log) => {
-          return { timestamp: prettyDate(new Date(log[0])), cell: this._hclMap[log[1]], payload: log[2].payload}
+          const app = this._hclMap[log[1]][0].appId
+          const cell: string = this._hclMap[log[1]][0].roleName;
+          return { timestamp: prettyDate(new Date(log[0])), app, cell, zome: log[2].zome_name, payload: log[2].payload}
         });
       console.table(logs);
     }
