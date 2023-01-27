@@ -1,4 +1,4 @@
-import { AdminWebsocket, CreateCloneCellRequest, InstalledAppId } from "@holochain/client";
+import {AdminWebsocket, ClonedCell, CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
   BaseRoleName,
@@ -182,7 +182,7 @@ export class HappViewModel {
 
 
   /** */
-  async cloneDvm(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[number, DnaViewModel]> {
+  async cloneDvm(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[ClonedCell, DnaViewModel]> {
     //console.log("createCloneDvm()", baseRoleName);
     /** Check preconditions */
     const def = this._defMap[baseRoleName];
@@ -214,9 +214,9 @@ export class HappViewModel {
       request.name = cellDef.cloneName;
     }
     /** Create Cell */
-    const cloneInstalledCell = await this._conductorAppProxy.createCloneCell(request);
+    const clonedCell = await this._conductorAppProxy.createCloneCell(request);
     //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
-    const cell = await this._conductorAppProxy.fetchCell(this.appId, cloneInstalledCell.cell_id);
+    const cell = await this._conductorAppProxy.fetchCell(this.appId, clonedCell.cell_id);
     console.log("clone created:", cell);
     const hcl = new HCL(this.appId, baseRoleName, cell.cloneId);
     /** Get created cell */
@@ -229,7 +229,7 @@ export class HappViewModel {
       await dvm.authorizeZomeCalls(this._adminWs);
     }
     /** Done */
-    return [cloneIndex, dvm];
+    return [clonedCell, dvm];
   }
 
 
