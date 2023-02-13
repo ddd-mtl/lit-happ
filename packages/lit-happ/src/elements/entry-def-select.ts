@@ -64,7 +64,7 @@ export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
     let entryTypeOptions = null;
     if (zomeTypes.length > 0) {
       entryTypeOptions = Object.entries(zomeTypes[0]).map(
-        ([zomeName, pair]) => {
+        ([_zomeName, pair]) => {
           return html`<option>${pair[0]}</option>`;
         });
     }

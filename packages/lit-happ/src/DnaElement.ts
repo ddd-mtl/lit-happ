@@ -45,9 +45,9 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
-      (value: DVM, dispose?: () => void): void => {
+      async (value: DVM, dispose?: () => void): Promise<void> => {
         console.log(`\t\t Received value for context "${contextType}"`)
-        this.dvmUpdated(value, this._dvm);
+        await this.dvmUpdated(value, this._dvm);
         if (this._dvm) {
           this._dvm.unsubscribe(this);
         }

@@ -36,7 +36,7 @@ export class ConductorAppProxy implements AppApi {
   private _cellsByApp: Dictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */
   private _hclMap: Dictionary<HCL[]> = {};
-  /** Store handlers per cell locaiton: HCLString -> AppSignalCb[] */
+  /** Store handlers per cell location: HCLString -> AppSignalCb[] */
   private _signalHandlers: Dictionary<AppSignalCb[]> = {};
   /** Store cell proxies per cell: CellIdStr -> CellProxy */
   private _cellProxies: Dictionary<CellProxy> = {};
@@ -123,7 +123,7 @@ export class ConductorAppProxy implements AppApi {
 
   async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
     //console.log("disableCloneCell() called:", request)
-    this._appWs!.disableCloneCell(request);
+    return this._appWs!.disableCloneCell(request);
   }
 
   async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
@@ -174,7 +174,7 @@ export class ConductorAppProxy implements AppApi {
 
   /** Ctor */
   private constructor(public defaultTimeout: number) {
-    const _unsub = this.addSignalHandler((sig) => this.logSignal(sig));
+    /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
 
@@ -185,7 +185,7 @@ export class ConductorAppProxy implements AppApi {
     const appInfo = await this.appInfo({installed_app_id: appId});
     //console.log("fetchCell", appInfo);
     if (appInfo == null) {
-      Promise.reject(`getCell() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
+      return Promise.reject(`getCell() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`);
     }
     for (const cellInfos of Object.values(appInfo.cell_info)) {
       for (const [baseRoleName, cellInfo] of Object.entries(cellInfos)) {
@@ -201,7 +201,7 @@ export class ConductorAppProxy implements AppApi {
         }
       }
     }
-    Promise.reject("getCell() failed. Cell not found for app.")
+    return Promise.reject("getCell() failed. Cell not found for app.");
   }
 
 
@@ -210,7 +210,7 @@ export class ConductorAppProxy implements AppApi {
     /** Make sure hApp exists */
     const appInfo = await this.appInfo({installed_app_id: appId});
     if (appInfo == null) {
-      Promise.reject(`fetchCells() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
+      return Promise.reject(`fetchCells() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`);
     }
     console.log("fetchCells() installedAppInfo:\n", printAppInfo(appInfo));
 
@@ -237,7 +237,7 @@ export class ConductorAppProxy implements AppApi {
       }
     }
     if (typeof provisioned === 'undefined') {
-      Promise.reject("Provisioned cell not found for role " + baseRoleName);
+      return Promise.reject("Provisioned cell not found for role " + baseRoleName);
     }
     let roleInstalledCells: CellsForRole = {provisioned: provisioned!, clones}
     /** Store it*/
@@ -296,7 +296,7 @@ export class ConductorAppProxy implements AppApi {
 
   /** */
   onSignal(signal: AppSignal): void {
-    /** Grabe cell specific handlers */
+    /** Grab cell specific handlers */
     const hcls = this.getLocations(signal.cell_id);
     const handlerss: AppSignalCb[][]  = hcls? hcls.map((hcl) => this._signalHandlers[hcl.toString()]) : [];
     console.log("onSignal()", hcls.toString(), handlerss);

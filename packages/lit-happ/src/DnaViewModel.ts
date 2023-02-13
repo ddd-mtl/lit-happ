@@ -3,7 +3,6 @@ import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
 import {
   AdminWebsocket,
-  AppSignalCb,
   GrantedFunctionsType,
   InstalledAppId,
   ZomeName,
@@ -111,7 +110,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /** */
   async authorizeZomeCalls(adminWs: AdminWebsocket): Promise<void> {
     let allFnNames = [];
-    for (const [zomeName, zvm] of Object.entries(this._zomeViewModels)) {
+    for (const [_zomeName, zvm] of Object.entries(this._zomeViewModels)) {
       allFnNames = allFnNames.concat(zvm.zomeProxy.fnNames)
     }
     const grantedFns = { [GrantedFunctionsType.Listed]: allFnNames }
@@ -132,7 +131,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   /** */
   async probeAll(): Promise<void> {
-    for (const [name, zvm] of Object.entries(this._zomeViewModels)) {
+    for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
       await zvm.probeAll();
     }

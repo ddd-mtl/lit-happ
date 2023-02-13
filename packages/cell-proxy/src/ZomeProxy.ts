@@ -38,7 +38,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   protected async call(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
     //console.log("ZomeProxy.call", this.zomeName)
     if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
-      Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
+      return Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
     }
     const cap_secret = maybeSecret
       ? maybeSecret
@@ -52,7 +52,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   protected async callBlocking(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
     //console.log("ZomeProxy.call", this.zomeName)
     if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
-      Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
+      return Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
     }
     const cap_secret = maybeSecret? maybeSecret : null;
     return this._cellProxy.callZomeBlocking(this.zomeName, fnName, payload, cap_secret, timeout);

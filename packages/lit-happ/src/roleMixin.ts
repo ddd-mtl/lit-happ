@@ -16,7 +16,8 @@ export function RoleMixin<TBase extends AbstractConstructor>(Base: TBase) {
     }
     static readonly DEFAULT_BASE_ROLE_NAME: BaseRoleName;
     baseRoleName: BaseRoleName;
-  };
+  }
+
   return ARoleSpecific;
 }
 
@@ -34,7 +35,8 @@ export function HappMixin<TBase extends AbstractConstructor>(Base: TBase) {
     constructor(...args: any[]){super(); this.happId = (this.constructor as typeof AHappSpecific).DEFAULT_HAPP_ID}
     static readonly DEFAULT_HAPP_ID: InstalledAppId;
     happId: InstalledAppId;
-  };
+  }
+  
   return AHappSpecific;
 }
 

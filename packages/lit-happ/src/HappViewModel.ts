@@ -86,7 +86,7 @@ export class HappViewModel {
     /** Create all Cell Proxies in the definition */
     for (const dvmDef of hvmDef.dvmDefs) {
       if (dvmDef.ctor.DEFAULT_BASE_ROLE_NAME === undefined) {
-        Promise.reject("static field DEFAULT_BASE_ROLE_NAME not defined for class " + dvmDef.ctor.name);
+        return Promise.reject("static field DEFAULT_BASE_ROLE_NAME not defined for class " + dvmDef.ctor.name);
       }
       const baseRoleName = dvmDef.baseRoleName
         ? dvmDef.baseRoleName
@@ -120,7 +120,7 @@ export class HappViewModel {
   /** -- Methods -- */
 
   async authorizeAllZomeCalls(adminWs: AdminWebsocket): Promise<void> {
-    for (const [sHcl, dvm] of Object.entries(this._dvmMap)) {
+    for (const [_sHcl, dvm] of Object.entries(this._dvmMap)) {
       //console.log("Authorizing", sHcl);
       await dvm.authorizeZomeCalls(adminWs);
     }
@@ -188,10 +188,10 @@ export class HappViewModel {
     /** Check preconditions */
     const def = this._defMap[baseRoleName];
     if (!def) {
-      Promise.reject(`createCloneDvm() failed for ${baseRoleName}. No original DVM created.`)
+      return Promise.reject(`createCloneDvm() failed for ${baseRoleName}. No original DVM created.`)
     }
     if (!def.isClonable) {
-      Promise.reject(`createCloneDvm() failed. Role "${baseRoleName}" is not clonable.`)
+      return Promise.reject(`createCloneDvm() failed. Role "${baseRoleName}" is not clonable.`)
     }
     /** Get cloneIndex */
     const clones = this.getClones(baseRoleName);

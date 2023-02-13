@@ -10,7 +10,7 @@ import {
 } from "@holochain/client";
 import {RoleName} from "@holochain/client/lib/types";
 import {HCL} from "./hcl";
-import {BaseRoleName, destructureCloneId} from "./types";
+import {BaseRoleName} from "./types";
 
 
 export type AnyCell = ProvisionedCell | ClonedCell;

@@ -1,4 +1,4 @@
-import {InstalledAppId, RoleName} from "@holochain/client";
+import {InstalledAppId} from "@holochain/client";
 import {BaseRoleName, CloneId} from "./types";
 
 
@@ -47,7 +47,7 @@ export class HCL {
   /** */
   toString(): HCLString {
     let hcl = "cell:/" + this.appId + "/" + this.baseRoleName
-    const maybeCloneName = this.cloneId;
+    //const maybeCloneName = this.cloneId;
     if (this.isClone()) {
       hcl += "/" + this.cloneId
     }

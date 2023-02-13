@@ -1,6 +1,6 @@
 import {CellId, AppInfo, encodeHashToBase64} from "@holochain/client";
 import {CellType} from "@holochain/client";
-import {Cell, intoStem} from "./cell";
+import {intoStem} from "./cell";
 import {BaseRoleName, CellsForRole} from "./types";
 
 
@@ -80,12 +80,12 @@ export function printAppInfo(appInfo: AppInfo): string {
       }
       if (CellType.Provisioned in cellInfo) {
         const cell = cellInfo.provisioned;
-        print += `\n - ${roleName}.${cell.name}: ${encodeHashToBase64(cell.cell_id[0])}`;
+        print += `\n - ${roleName}: ${cell.name} | ${encodeHashToBase64(cell.cell_id[0])}`;
         continue;
       }
       if (CellType.Cloned in cellInfo) {
         const cell = cellInfo.cloned;
-        print += `\n - ${roleName}.${cell.name}: ${encodeHashToBase64(cell.cell_id[0])}`;
+        print += `\n - ${roleName}.${cell.clone_id}: ${cell.name} | ${encodeHashToBase64(cell.cell_id[0])}`;
         continue;
       }
     }
@@ -97,7 +97,7 @@ export function printAppInfo(appInfo: AppInfo): string {
 /** */
 export function printCellsForRole(baseRoleName: BaseRoleName, cells: CellsForRole): string {
   let print = `CellsForRole "${baseRoleName}": (${encodeHashToBase64(cells.provisioned.cell_id[1])})\n`;
-  print += `  - Provisionned: ${cells.provisioned.name} | ${encodeHashToBase64(cells.provisioned.cell_id[0])}\n`;
+  print += `  - Provisioned: ${cells.provisioned.name} | ${encodeHashToBase64(cells.provisioned.cell_id[0])}\n`;
   print += `  - Clones : ${Object.values(cells.clones).length}\n`;
   for (const [cloneId, clone] of Object.entries(cells.clones)) {
     print += `    - (${clone.enabled? "enabled" : "disabled"})${cloneId}: ${clone.name} | ${encodeHashToBase64(clone.cell_id[0])}\n`;

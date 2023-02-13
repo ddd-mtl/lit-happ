@@ -29,7 +29,8 @@ export function CellMixin<TBase extends AbstractConstructor>(Base: TBase) {
 
     get cell(): Cell { if (!this._cell) throw Error("Cell field not set for object") ; return this._cell! }
 
-  };
+  }
+
   return ACell;
 }
 
@@ -70,7 +71,8 @@ export function ZomeMixin<TBase extends AbstractConstructor>(Base: TBase) {
         return [this.zomeName, fnName]
       })
     }
-  };
+  }
+
   return AZomeSpecific;
 }
 

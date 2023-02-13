@@ -62,10 +62,10 @@ import {AppSignalCb} from "@holochain/client";
   }
 
   /** */
-  unsubscribe(candidat: ReactiveControllerHost): void {
+  unsubscribe(candidate: ReactiveControllerHost): void {
       let index  = 0;
       for (const [host, _propName] of this._providedHosts) {
-          if (host === candidat) break;
+          if (host === candidate) break;
           index += 1;
       }
       if (index > -1) {

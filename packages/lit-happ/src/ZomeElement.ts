@@ -47,9 +47,9 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
     /*const consumer =*/ new ContextConsumer(
       this,
       contextType,
-      (value: ZVM, dispose?: () => void): void => {
+      async (value: ZVM, dispose?: () => void): Promise<void> => {
         console.log(`\t\t Received value for context "${contextType}"`)
-        this.zvmUpdated(value, this._zvm);
+        await this.zvmUpdated(value, this._zvm);
         if (this._zvm) {
           this._zvm.unsubscribe(this);
         }
