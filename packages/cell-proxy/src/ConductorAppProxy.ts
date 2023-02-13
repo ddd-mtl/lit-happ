@@ -5,7 +5,7 @@ import {
 } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, RoleCellsMap, BaseRoleName, CellsForRole} from "./types";
-import {areCellsEqual, Dictionary, prettyDate} from "./utils";
+import {areCellsEqual, Dictionary, prettyDate, printAppInfo} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
 
@@ -209,7 +209,8 @@ export class ConductorAppProxy implements AppApi {
     if (appInfo == null) {
       Promise.reject(`fetchCells() failed. App "${appId}" not found on AppWebsocket "${this._appWs.client.socket.url}"`)
     }
-    //console.log("fetchCells() installedAppInfo:\n", printAppInfo(installedAppInfo));
+    console.log("fetchCells() installedAppInfo:\n", printAppInfo(appInfo));
+
     /** Make sure app Object exists */
     if (!this._cellsByApp[appId]) {
       this._cellsByApp[appId] = {};

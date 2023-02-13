@@ -116,7 +116,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     }
     const grantedFns = { [GrantedFunctionsType.Listed]: allFnNames }
     try {
-        console.log("authorizeSigningCredentials: " + this.baseRoleName, allFnNames);
+        console.log("authorizeSigningCredentials: " + this.cell.hcl().toString(), allFnNames);
         await adminWs.authorizeSigningCredentials(this.cell.id, grantedFns);
     } catch(e) {
       console.warn("authorizeSigningCredentials FAILED.", e);

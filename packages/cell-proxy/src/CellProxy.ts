@@ -115,6 +115,7 @@ export class CellProxy extends CellMixin(Empty) {
     return respLog.success;
   }
 
+
   /** */
   async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
     timeout = timeout? timeout : this.defaultTimeout;
