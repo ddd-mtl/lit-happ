@@ -44,6 +44,9 @@ export class ConductorAppProxy implements AppApi {
 
   /** -- Getters -- */
 
+  /** Check this after connecting since AppWebsocket can shamelessly override the provided args. */
+  get appIdOfShame(): InstalledAppId | undefined { return this._appWs.overrideInstalledAppId;}
+
   /** */
   getAppCells(appId: InstalledAppId): RoleCellsMap | undefined {
     return this._cellsByApp[appId];

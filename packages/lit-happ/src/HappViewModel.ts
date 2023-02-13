@@ -106,7 +106,7 @@ export class HappViewModel {
     protected _conductorAppProxy: ConductorAppProxy, /* MODEL */
     hvmDef: HvmDef, /* VIEW-MODEL definition */
   ) {
-    this.appId = hvmDef.id;
+    this.appId = this._conductorAppProxy.appIdOfShame? this._conductorAppProxy.appIdOfShame : hvmDef.id;
     /** Create all non-deferred DVMs for this Happ */
     for (const dvmDef of hvmDef.dvmDefs) {
       this.createOriginalDvm(dvmDef);
