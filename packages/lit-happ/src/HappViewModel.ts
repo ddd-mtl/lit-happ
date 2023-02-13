@@ -81,7 +81,8 @@ export class HappViewModel {
 
   /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
   static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
-    //console.log("HappViewModel.new()", hvmDef.id)
+    const appId = conductorAppProxy.appIdOfShame? conductorAppProxy.appIdOfShame : hvmDef.id;
+    console.log("HappViewModel.new()", hvmDef.id, appId)
     /** Create all Cell Proxies in the definition */
     for (const dvmDef of hvmDef.dvmDefs) {
       if (dvmDef.ctor.DEFAULT_BASE_ROLE_NAME === undefined) {
@@ -90,8 +91,8 @@ export class HappViewModel {
       const baseRoleName = dvmDef.baseRoleName
         ? dvmDef.baseRoleName
         : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
-      await conductorAppProxy.fetchCells(hvmDef.id, baseRoleName);
-      const hcl = new HCL(hvmDef.id, baseRoleName);
+      await conductorAppProxy.fetchCells(appId, baseRoleName);
+      const hcl = new HCL(appId, baseRoleName);
       conductorAppProxy.createCellProxy(hcl);
     }
     const hvm = new HappViewModel(host, conductorAppProxy, hvmDef);
