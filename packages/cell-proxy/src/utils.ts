@@ -79,12 +79,12 @@ export function printAppInfo(appInfo: AppInfo): string {
         continue;
       }
       if (CellType.Provisioned in cellInfo) {
-        const cell = this.provisioned;
+        const cell = cellInfo.provisioned;
         print += `\n - ${roleName}.${cell.name}: ${encodeHashToBase64(cell.cell_id[0])}`;
         continue;
       }
       if (CellType.Cloned in cellInfo) {
-        const cell = this.cloned;
+        const cell = cellInfo.cloned;
         print += `\n - ${roleName}.${cell.name}: ${encodeHashToBase64(cell.cell_id[0])}`;
         continue;
       }

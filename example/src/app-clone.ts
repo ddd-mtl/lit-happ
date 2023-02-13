@@ -1,7 +1,16 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  EntryDefSelect, HvmDef, CellContext, HappElement, CellDef, HCL, ViewCellContext, createCloneName, Cell
+  EntryDefSelect,
+  HvmDef,
+  CellContext,
+  HappElement,
+  CellDef,
+  HCL,
+  ViewCellContext,
+  createCloneName,
+  Cell,
+  printCellsForRole
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealCloneDvm, NamedRealDvm } from "./viewModels/real";
@@ -59,6 +68,10 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** override */
   async happInitialized(): Promise<void> {
+    /** Grab cells */
+    const cells = await this.conductorAppProxy.fetchCells(PlaygroundCloneApp.HVM_DEF.id, NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME);
+    console.log(printCellsForRole(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME, cells));
+
     /** Authorize all zome calls */
     const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
     console.log({ adminWs });

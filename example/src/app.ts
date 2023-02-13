@@ -1,6 +1,14 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
-import { ConductorAppProxy, EntryDefSelect, HvmDef, HappViewModel, CellContext, HappElement } from "@ddd-qc/lit-happ";
+import {
+  ConductorAppProxy,
+  EntryDefSelect,
+  HvmDef,
+  HappViewModel,
+  CellContext,
+  HappElement,
+  printCellsForRole
+} from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
 import { IntegerList } from "./elements/integer-list";
@@ -140,7 +148,7 @@ export class PlaygroundApp extends HappElement {
   /** */
   render() {
     console.log("<playground-app> render()", this.hvm);
-    
+
     if (!this._initialized) {
       return html`<span>Loading...</span>`;
     }
