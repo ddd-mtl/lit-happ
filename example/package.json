@@ -16,6 +16,7 @@
     "build:dna": "npm run build:wasm && hc dna pack --output=../artifacts/named_real.dna workdir && hc dna pack --output=../artifacts/named_integer.dna workdir_named_integer",
     "build:happ": "npm run build:dna && hc app pack --output=../artifacts/playground.happ workdir",
     "build:happ:clone": "npm run build:dna && hc app pack --output=../artifacts/playground-clone.happ workdir_clone",
+    "build-old": "rm -rf dist && tsc && cp index.html dist",
     "build": "rm -rf dist && tsc && rollup -c rollup.config.js",
     "build:watch": "tsc -w --incremental --preserveWatchOutput",
     "start:happ": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground.happ --run=$HC_PORT -a playground network --bootstrap https://bootstrap-staging.holo.host/ quic -p=kitsune-proxy://SYVd4CF3BdJ4DS7KwLLgeU3_DbHoZ34Y-qroZ79DOs8/kitsune-quic/h/165.22.32.11/p/5779/--",
@@ -25,7 +26,6 @@
     "start:clone": "cross-env HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run start:happ:clone\" \"sleep 5 && npm run start:ui\"",
     "launch": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground.happ -w --ui-path ./dist network mdns",
     "launch:clone": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground-clone.happ -w --ui-path ./dist network mdns",
-    "package": "rm -rf ui.zip && cd dist && bestzip ../ui.zip * && cd .. && hc web-app pack ./webhapp.workdir",
     "clean:hc": "hc s clean"
   },
   "devDependencies": {
@@ -35,6 +35,8 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-typescript": "^10.0.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "@web/dev-server": "^0.1.35",
     "@web/dev-server-rollup": "^0.3.19",
     "@web/rollup-plugin-html": "^1.11.0",

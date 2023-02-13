@@ -75,7 +75,7 @@ Imagine you have a happ that has a dna that uses a profile zome.
 /** HCL of the role we want to use */
 const hcl = new HCL("myHapp", "myRole");
 /** Create AppProxy from provided local port */
-const appProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+const appProxy = await ConductorAppProxy.new(Number(process.env.HC_APP_PORT));
 /** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
 await appProxy.fetchCells(hcl);
 /** Create a CellProxy for the "myRole" role */
@@ -114,7 +114,7 @@ export class ProfileZomeProxy extends ZomeProxy {
 /** HCL of the cell we want to use */
 const hcl = new HCL("myHapp", "myRole");
 /** Create AppProxy from provided local port */
-const appProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+const appProxy = await ConductorAppProxy.new(Number(process.env.HC_APP_PORT));
 /** Map out all the runnings cells for a Role in a happ. Required before calling createCellProxy */
 await appProxy.fetchCells(hcl);
 /** Create a CellProxy for the "profiles" role */

@@ -242,7 +242,7 @@ Initialize the Happ UI:
 ```typescript
 init() {
   /** Create AppProxy from provided local port */
-  this._conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
+  this._conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_APP_PORT));
   /** Create HappViewModel from definition and AppProxy. Does the initial probe in background */   
   this._hvm = await HappViewModel.new(this, this._conductorAppProxy, playgroundDef);
   /** Grab the profiles ZomeViewModel */

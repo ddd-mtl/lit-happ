@@ -13,23 +13,19 @@
   <body style="margin:0px;background: #FAF1EA;height:100vh;">
     <playground-app></playground-app>
     <script type="module">
-      console.log("   HC_PORT:", process.env.HC_PORT);
-      console.log("ADMIN_PORT:", process.env.ADMIN_PORT);
-
-      // import crypto from "tweetnacl";
-      // const v = crypto.randomBytes(32)
-      // console.log({v})
+      console.log("  HC_APP_PORT:", process.env.HC_APP_PORT);
+      console.log("HC_ADMIN_PORT:", process.env.HC_ADMIN_PORT);
 
       //import * as hcc from "@holochain/client";
       import {AdminWebsocket} from "@holochain/client";
       console.log({AdminWebsocket});
-      const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`)
+      const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`)
       console.log({adminWs});
 
       const apps = await adminWs.listApps({});
       console.log("Installed apps:", apps);
 
-      import {PlaygroundApp, PlaygroundCloneApp} from "./dist";
+      import {PlaygroundApp, PlaygroundCloneApp} from "./";
 
       if (apps[0].installed_app_id == "playground") {
         customElements.define("playground-app", PlaygroundApp);

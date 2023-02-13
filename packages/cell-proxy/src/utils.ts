@@ -100,7 +100,7 @@ export function printCellsForRole(baseRoleName: BaseRoleName, cells: CellsForRol
   print += `  - Provisionned: ${cells.provisioned.name} | ${encodeHashToBase64(cells.provisioned.cell_id[0])}\n`;
   print += `  - Clones : ${Object.values(cells.clones).length}\n`;
   for (const [cloneId, clone] of Object.entries(cells.clones)) {
-    print += `    - ${cloneId}: ${clone.name} | ${encodeHashToBase64(clone.cell_id[0])}\n`;
+    print += `    - (${clone.enabled? "enabled" : "disabled"})${cloneId}: ${clone.name} | ${encodeHashToBase64(clone.cell_id[0])}\n`;
   }
   return print;
 }

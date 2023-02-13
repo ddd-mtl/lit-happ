@@ -28,7 +28,7 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** Ctor */
   constructor() {
-    super(Number(process.env.HC_PORT));
+    super(Number(process.env.HC_APP_PORT));
   }
 
   /** HvmDef */
@@ -73,7 +73,7 @@ export class PlaygroundCloneApp extends HappElement {
     console.log(printCellsForRole(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME, cells));
 
     /** Authorize all zome calls */
-    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`);
     console.log({ adminWs });
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");

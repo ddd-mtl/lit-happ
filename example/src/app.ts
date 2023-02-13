@@ -78,7 +78,7 @@ export class PlaygroundApp extends HappElement {
 
   /** Ctor */
   constructor() {
-    super(Number(process.env.HC_PORT));
+    super(Number(process.env.HC_APP_PORT));
   }
 
   /** HvmDef */
@@ -118,7 +118,7 @@ export class PlaygroundApp extends HappElement {
   /** */
   async happInitialized(): Promise<void> {
     /** Authorize all zome calls */
-    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.ADMIN_PORT}`);
+    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`);
     console.log({adminWs});
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
