@@ -3,6 +3,7 @@ import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
 import {anyToB64, delay, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
+import {EntryDefsCallbackResult} from "./types";
 
 
 export interface RequestLog {
@@ -13,12 +14,14 @@ export interface RequestLog {
 }
 
 export interface ResponseLog {
-  success?: any,
-  failure?: any,
+  success?: unknown,
+  failure?: unknown,
   timestamp: number,
   requestIndex: number;
 }
 
+
+export type Cb = () => Promise<unknown>
 
 /**
  * Proxy for a running DNA.
@@ -45,13 +48,15 @@ export class CellProxy extends CellMixin(Empty) {
 
   defaultTimeout: number;
 
-  //private _blockingRequestQueue: Queue<RequestLog> = new Queue();
+
   /** append only logs */
   private _requestLog: RequestLog[] = []
   private _responseLog: ResponseLog[] = []
 
   private _canCallBlocking: boolean = true;
 
+  //private _requestQueue = new Queue<[RequestLog, Cb]>();
+  //private _blockingRequestQueue: Queue<RequestLog> = new Queue();
 
   /** -- Methods -- */
 
@@ -84,11 +89,41 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
 
+  // /**
+  //   * Call queue instead of mutex
+  //   */
+  // async queueCall(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
+  //   timeout = timeout ? timeout : this.defaultTimeout;
+  //   const req = {
+  //     cap_secret, zome_name, fn_name, payload,
+  //     cell_id: this.cell.id,
+  //     provenance: this.cell.id[1],
+  //   } as CallZomeRequest;
+  //   const log = {request: req, timeout, requestTimestamp: Date.now()} as RequestLog;
+  //   this._requestQueue.enqueue([log, (response) => ]);
+  //   this.executeQueuedCall();
+  // }
+  //
+  // async executeQueuedCall(): Promise<unknown> {
+  //   if (Date.now() - log.requestTimestamp >= timeout) {
+  //     console.warn({requestLogs: this._requestLog})
+  //     return Promise.reject("Waiting for zomeCall execution timed-out");
+  //   }
+  //   const respLog = await this.executeZomeCall(log);
+  //   if (respLog.failure) {
+  //     this.dumpSignals();
+  //     this.dumpLogs(zome_name);
+  //     return Promise.reject(respLog.failure)
+  //   }
+  //   return respLog.success;
+  // }
+
+
   /**
    * callZome() with "Mutex" (for calls that writes to source-chain)
    * TODO: Implement call queue instead of mutex
    */
-  async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
+  async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -117,7 +152,7 @@ export class CellProxy extends CellMixin(Empty) {
 
 
   /** */
-  async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<any> {
+  async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -142,7 +177,7 @@ export class CellProxy extends CellMixin(Empty) {
   async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
     //console.log("callEntryDefs()", zomeName)
     try {
-      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 2 * 1000);
+      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 2 * 1000) as EntryDefsCallbackResult;
       //console.debug("getEntryDefs() for " + this.zomeName + " result:")
       //console.log({entryDefs})
       let result: [string, boolean][] = []

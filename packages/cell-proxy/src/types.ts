@@ -11,6 +11,11 @@ import {Dictionary} from "./utils";
 export type BaseRoleName = string;
 export type CloneIndex = number;
 
+
+export type EntryDef = any; // FIXME
+export type EntryDefsCallbackResult = {Defs: EntryDef[]}
+
+
 /** */
 export type CellsForRole = {
   //baseRoleName: BaseRoleName,
