@@ -37,10 +37,16 @@ fn create_real(value: f32)  -> ExternResult<EntryHash> {
   let _ah = create_entry(RealEntry::Real(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), RealLink::Default, LinkTag::from(()))?;
 
-  let payload = "I hate floats";
-  debug!("emit_signal() {:?}", payload);
-  emit_signal(payload)?;
-
+  let start = sys_time()?;
+  let mut payload = "I hate floats".to_string();
+  debug!("emit_signal() {:?} | {:?}", payload, start);
+  emit_signal(payload.clone())?;
+  let mut diff = 0;
+  while diff < 2 * 1000 {
+    diff = (sys_time()? - start).unwrap().num_milliseconds();
+    payload.push('s');
+  }
+  debug!("create_real() Done: {:?}", start);
   /// Done
   Ok(eh)
 }

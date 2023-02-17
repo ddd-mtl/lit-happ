@@ -4,6 +4,8 @@ import {anyToB64, delay, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
 import {EntryDefsCallbackResult} from "./types";
+import {Mutex, withTimeout} from "async-mutex";
+import MutexInterface from "async-mutex/lib/MutexInterface";
 
 
 export interface RequestLog {
@@ -41,22 +43,21 @@ export class CellProxy extends CellMixin(Empty) {
     this._cell = cell;
     console.log(`CellProxy.ctor`, cell);
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
+    this._callMutex = withTimeout(new Mutex(), this.defaultTimeout);
   }
 
 
   /** -- Fields -- */
 
   defaultTimeout: number;
+  protected _callMutex: MutexInterface;
+
 
 
   /** append only logs */
   private _requestLog: RequestLog[] = []
   private _responseLog: ResponseLog[] = []
 
-  private _canCallBlocking: boolean = true;
-
-  //private _requestQueue = new Queue<[RequestLog, Cb]>();
-  //private _blockingRequestQueue: Queue<RequestLog> = new Queue();
 
   /** -- Methods -- */
 
@@ -89,39 +90,20 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
 
-  // /**
-  //   * Call queue instead of mutex
-  //   */
-  // async queueCall(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
-  //   timeout = timeout ? timeout : this.defaultTimeout;
-  //   const req = {
-  //     cap_secret, zome_name, fn_name, payload,
-  //     cell_id: this.cell.id,
-  //     provenance: this.cell.id[1],
-  //   } as CallZomeRequest;
-  //   const log = {request: req, timeout, requestTimestamp: Date.now()} as RequestLog;
-  //   this._requestQueue.enqueue([log, (response) => ]);
-  //   this.executeQueuedCall();
-  // }
-  //
-  // async executeQueuedCall(): Promise<unknown> {
-  //   if (Date.now() - log.requestTimestamp >= timeout) {
-  //     console.warn({requestLogs: this._requestLog})
-  //     return Promise.reject("Waiting for zomeCall execution timed-out");
-  //   }
-  //   const respLog = await this.executeZomeCall(log);
-  //   if (respLog.failure) {
-  //     this.dumpSignals();
-  //     this.dumpLogs(zome_name);
-  //     return Promise.reject(respLog.failure)
-  //   }
-  //   return respLog.success;
-  // }
+  /** Pass call request to conductor proxy and log it */
+  logCallTimedout(reqLog: RequestLog): ResponseLog {
+    reqLog.executionTimestamp = Date.now();
+    const requestIndex = this._requestLog.length;
+    this._requestLog.push(reqLog);
+    const respLog = { requestIndex, failure: "Waiting for Mutex timed-out", timestamp: Date.now() }
+    this._responseLog.push(respLog);
+    return respLog;
+  }
 
 
   /**
-   * callZome() with "Mutex" (for calls that writes to source-chain)
-   * TODO: Implement call queue instead of mutex
+   * callZome() with Mutex (for calls that writes to source-chain)
+   * TODO: Implement call queue instead of mutex?
    */
   async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     timeout = timeout? timeout : this.defaultTimeout;
@@ -132,16 +114,19 @@ export class CellProxy extends CellMixin(Empty) {
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
-    while(!this._canCallBlocking && Date.now() - log.requestTimestamp < timeout) {
-      await delay(1);
+    /** Acquire lock */
+    let release;
+    try {
+      release = await this._callMutex.acquire();
+    } catch(e) {
+      console.warn("Waiting for callZomeBlocking mutex timed-out", e);
+      this.logCallTimedout(log)
+      return Promise.reject("Waiting for callZomeBlocking mutex timed-out");
     }
-    if (Date.now() - log.requestTimestamp >= timeout) {
-      console.warn({requestLogs: this._requestLog})
-      return Promise.reject("Waiting for zomeCall execution timed-out");
-    }
-    this._canCallBlocking = false;
+    /** Execute */
     const respLog = await this.executeZomeCall(log);
-    this._canCallBlocking = true;
+    /** Release */
+    release();
     if (respLog.failure) {
       this.dumpSignals();
       this.dumpLogs(zome_name);
@@ -160,6 +145,13 @@ export class CellProxy extends CellMixin(Empty) {
       provenance: this.cell.id[1],
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
+    try {
+      await this._callMutex.waitForUnlock();
+    } catch(e) {
+      console.warn("Waiting for callZome mutex timed-out", e);
+      this.logCallTimedout(log);
+      return Promise.reject("Waiting for callZome mutex timed-out");
+    }
     const respLog = await this.executeZomeCall(log);
     if (respLog.failure) {
       this.dumpSignals();

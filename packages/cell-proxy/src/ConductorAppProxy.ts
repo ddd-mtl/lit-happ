@@ -143,7 +143,7 @@ export class ConductorAppProxy implements AppApi {
     return this._appWs!.appInfo(args);
   }
 
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<any> {
+  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
     timeout = timeout ? timeout : this.defaultTimeout
     return this._appWs.callZome(req, timeout)
   }
@@ -205,7 +205,7 @@ export class ConductorAppProxy implements AppApi {
         let cell: Cell;
         try {
           cell = Cell.from(cellInfo, appId, baseRoleName);
-        } catch(e:any) {
+        } catch(e) {
           // skip stem cell
           continue;
         }
