@@ -11,9 +11,9 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
 
 
 #[hdk_extern]
-fn get_integer(eh: EntryHash) -> ExternResult<u32> {
+fn get_integer(ah: ActionHash) -> ExternResult<u32> {
   debug!("*** get_integer() called");
-  let Some(record) = get(eh, GetOptions::content())? else {
+  let Some(record) = get(ah, GetOptions::content())? else {
     return Err(wasm_error!(WasmErrorInner::Guest("Integer not found".to_string())));
   };
   let record::RecordEntry::Present(entry) = record.entry() else {
@@ -25,29 +25,68 @@ fn get_integer(eh: EntryHash) -> ExternResult<u32> {
 
 
 #[hdk_extern]
-fn create_integer(value: u32) -> ExternResult<EntryHash> {
+fn create_integer(value: u32) -> ExternResult<ActionHash> {
   debug!("*** create_integer() called");
   let entry = Integer {value};
-  let eh = hash_entry(entry.clone())?;
-  let _ah = create_entry(IntegerEntry::Integer(entry))?;
-  let _link_ah = create_link(agent_info()?.agent_initial_pubkey, eh.clone(), IntegerLinkType::Default, LinkTag::from(()))?;
+  let _eh = hash_entry(entry.clone())?;
+  let ah = create_entry(IntegerEntry::Integer(entry))?;
+  let _link_ah = create_link(agent_info()?.agent_initial_pubkey, ah.clone(), IntegerLinkType::Default, LinkTag::from(()))?;
 
   let payload = "I like integers";
   debug!("emit_signal() {:?}", payload);
   emit_signal(payload)?;
 
-  Ok(eh)
+  Ok(ah)
 }
 
 
+#[hdk_extern]
+fn get_my_values_local(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
+  debug!("*** get_my_values_local()");
+  // Get all Create Integer actions with query
+  let query_args = ChainQueryFilter::default()
+    .include_entries(true)
+    .action_type(ActionType::Create)
+    .entry_type(IntegerEntryTypes::Integer.try_into().unwrap());
+  let records = query(query_args)?;
+  // Get typed entry for all results
+  let mut numbers = Vec::new();
+  for record in records {
+    let record::RecordEntry::Present(entry) = record.entry() else {
+      return Err(wasm_error!(WasmErrorInner::Guest("Could not convert record".to_string())));
+    };
+    let number = Integer::try_from(entry.clone()).unwrap();
+    numbers.push((record.action_address().to_owned(), number.value))
+  }
+  Ok(numbers)
+}
+
 
 #[hdk_extern]
-fn get_my_values(_:()) -> ExternResult<Vec<u32>> {
-  debug!("*** get_my_values() called");
+fn get_my_values(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
+  debug!("*** get_my_values()");
   let links = get_links(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default, None)?;
-  let dummies = links.into_iter().map(|link| {
-      let value = get_integer(link.target.into()).unwrap();
-      return value;
+  let numbers = links.into_iter().map(|link| {
+    let ah: ActionHash = link.target.into();
+    let value = get_integer(ah.clone()).unwrap();
+    return (ah, value);
   }).collect();
-  Ok(dummies)
+  Ok(numbers)
+}
+
+
+#[hdk_extern]
+fn get_my_values_incremental(knowns: Vec<ActionHash>) -> ExternResult<Vec<(ActionHash, u32)>> {
+  debug!("*** get_my_values_incremental(): knowns = {:?}", knowns);
+  let links = get_links(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default, None)?;
+  let ahs: Vec<ActionHash> = links.into_iter()
+    .map(|link| link.target.into())
+    .filter(|item| !knowns.contains(item))
+    .collect();
+  debug!("*** get_my_values_incremental(): ahs = {:?}", ahs);
+  let numbers = ahs.into_iter().map(|ah| {
+    let value = get_integer(ah.clone()).unwrap();
+    return (ah, value);
+  }).collect();
+  Ok(numbers)
 }

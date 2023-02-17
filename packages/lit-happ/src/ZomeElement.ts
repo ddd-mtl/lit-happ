@@ -62,19 +62,22 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
   }
 
 
-  /** To be overriden by subclasses */
+  /** Subclass can override this to get notified when a new ZVM has been received */
   protected async zvmUpdated(newZvm: ZVM, oldZvm?: ZVM): Promise<void> {
     //console.log(`\t\t Default zvmUpdated() called`)
   }
 
 
-  /** RequestZvm on first "shouldUpdate" */
+  /** */
   shouldUpdate(changedProperties: PropertyValues<this>) {
     //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.installedCell);
     if (changedProperties.has("_cell_via_context")) {
       //console.log("ZomeElement.shouldUpdate()", this._cell_via_context)
       this._cell = this._cell_via_context;
+      this.requestZvm();
+      return false;
     }
+    /** RequestZvm on first "shouldUpdate" */
     if (!this._zvm) {
       this.requestZvm();
     }
@@ -82,13 +85,13 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedE
   }
 
 
-  /** */
-  protected willUpdate(changedProperties: PropertyValues<this>) {
-    //console.log("ZomeElement.willUpdate()", changedProperties)
-    if (changedProperties.has("_cell_via_context")) {
-      this.requestZvm();
-    }
-  }
+  // /** Request ZVM if cell changed */
+  // protected willUpdate(changedProperties: PropertyValues<this>) {
+  //   //console.log("ZomeElement.willUpdate()", changedProperties)
+  //   if (changedProperties.has("_cell_via_context")) {
+  //     this.requestZvm();
+  //   }
+  // }
 
 }
 

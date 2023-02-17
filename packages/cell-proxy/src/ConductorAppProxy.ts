@@ -312,7 +312,7 @@ export class ConductorAppProxy implements AppApi {
     /** Grab cell specific handlers */
     const hcls = this.getLocations(signal.cell_id);
     const handlerss: AppSignalCb[][]  = hcls? hcls.map((hcl) => this._signalHandlers[hcl.toString()]) : [];
-    console.log("onSignal()", hcls? hcls.toString() : "unknown cell:" + encodeHashToBase64(signal.cell_id[0]), handlerss);
+    console.log("onSignal()", hcls? hcls.toString() : "unknown cell: " + encodeHashToBase64(signal.cell_id[0]), handlerss);
     /** Grab common handler  */
     const allHandlers = this._signalHandlers["__all"];
     if (allHandlers) handlerss.push(allHandlers);

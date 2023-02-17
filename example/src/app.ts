@@ -113,19 +113,31 @@ export class PlaygroundApp extends HappElement {
 
   @state() private _selectedZomeName = ""
 
-  @state() private _initialized = false;
+  @state() private _initializedOffline = false;
+  @state() private _initializedOnline = false;
 
   /** */
-  async happInitialized(): Promise<void> {
+  async hvmConstructed(): Promise<void> {
+    console.log("hvmConstructed()")
     /** Authorize all zome calls */
     const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`);
     console.log({adminWs});
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
-    /** Probe */
-    await this.hvm.probeAll();
-    /** Done */
-    this._initialized = true;
+  }
+
+
+  /** */
+  async perspectiveInitializedOffline(): Promise<void> {
+    console.log("perspectiveInitializedOffline()")
+    this._initializedOffline = true;
+  }
+
+
+  /** */
+  async perspectiveInitializedOnline(): Promise<void> {
+    console.log("perspectiveInitializedOnline()")
+    this._initializedOnline = true;
   }
 
 
@@ -149,7 +161,7 @@ export class PlaygroundApp extends HappElement {
   render() {
     console.log("<playground-app> render()", this.hvm);
 
-    if (!this._initialized) {
+    if (!this._initializedOffline) {
       return html`<span>Loading...</span>`;
     }
 
@@ -167,7 +179,7 @@ export class PlaygroundApp extends HappElement {
 
     /** render all */
     return html`
-      <div style="margin:10px;">
+      <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(e:any) => {this.conductorAppProxy.dumpSignals()}}>

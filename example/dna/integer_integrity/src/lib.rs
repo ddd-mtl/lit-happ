@@ -9,7 +9,7 @@ pub struct Integer {
 
 
 #[hdk_entry_defs]
-#[unit_enum(DummyEntryTypes)]
+#[unit_enum(IntegerEntryTypes)]
 pub enum IntegerEntry {
    #[entry_def(required_validations = 3, visibility = "public")]
    Integer(Integer),

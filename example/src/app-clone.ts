@@ -50,8 +50,8 @@ export class PlaygroundCloneApp extends HappElement {
 
   @state() private _integerCell?: Cell;
 
-  @state() private _initialized = false;
-
+  @state() private _initializedOffline = false;
+  @state() private _initializedOnline = false;
 
   /** QoL */
   get integerDvm(): NamedIntegerDvm { return this.hvm.getDvm(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME)! as NamedIntegerDvm }
@@ -67,7 +67,8 @@ export class PlaygroundCloneApp extends HappElement {
   @state() private _selectedClone: HCL = new HCL("playground-clone", NamedRealDvm.DEFAULT_BASE_ROLE_NAME)
 
   /** override */
-  async happInitialized(): Promise<void> {
+  async hvmConstructed(): Promise<void> {
+    console.log("hvmConstructed()")
     /** Grab cells */
     const cells = await this.conductorAppProxy.fetchCells(PlaygroundCloneApp.HVM_DEF.id, NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME);
     console.log(printCellsForRole(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME, cells));
@@ -77,12 +78,22 @@ export class PlaygroundCloneApp extends HappElement {
     console.log({ adminWs });
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
-    /** Probe */
     this._integerCell = this.integerDvm.cell;
-    await this.hvm.probeAll();
-    /** Done */
-    this._initialized = true;
   }
+
+  /** */
+  async perspectiveInitializedOffline(): Promise<void> {
+    console.log("perspectiveInitializedOffline()")
+    this._initializedOffline = true;
+  }
+
+
+  /** */
+  async perspectiveInitializedOnline(): Promise<void> {
+    console.log("perspectiveInitializedOnline()")
+    this._initializedOnline = true;
+  }
+
 
   /** */
   async onProbe(e: any) {
@@ -145,7 +156,7 @@ export class PlaygroundCloneApp extends HappElement {
   render() {
     console.log("<playground-clone-app> render()", this._selectedClone);
 
-    if (!this._initialized) {
+    if (!this._initializedOffline) {
       return html`<span>Loading...</span>`;
     }
 
@@ -176,7 +187,7 @@ export class PlaygroundCloneApp extends HappElement {
 
 
     return html`
-      <div style="margin:10px;">
+      <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(e: any) => { this.conductorAppProxy.dumpSignals() }}>

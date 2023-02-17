@@ -24,19 +24,19 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   },
 
   rootDir: '../',
-  appIndex: './dist/index.html',
+  appIndex: './index.html',
 
   plugins: [
     replace({
       "preventAssignment": true,
-      'process.env.ENV': JSON.stringify(process.env.ENV),
+      //'process.env.ENV': JSON.stringify(process.env.ENV),
       'process.env.HC_ADMIN_PORT': JSON.stringify(process.env.ADMIN_PORT || 8889),
       'process.env.HC_APP_PORT': JSON.stringify(process.env.HC_PORT || 8888),
       '  COMB =': 'window.COMB =',
       delimiters: ['', ''],
     }),
-    //builtins(),
-    //commonjs({}),
+    builtins(),
+    commonjs({}),
   ],
   // See documentation for all available options
 });

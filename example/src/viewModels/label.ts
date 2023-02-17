@@ -1,6 +1,7 @@
 import {ZomeProxy, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {AppSignal, AppSignalCb, EntryHash} from "@holochain/client";
 import {labelZomeFunctions} from "../fn";
+import {delay} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -54,9 +55,10 @@ export class LabelZvm extends ZomeViewModel {
   }
 
   /** */
-  async probeAll(): Promise<void> {
+  async probeAllInner(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
+    await delay(1000); // for testing probeAll mutex
     this._values = await this.zomeProxy.getMyLabels();
     this.notifySubscribers();
   }

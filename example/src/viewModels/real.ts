@@ -52,7 +52,7 @@ export class RealZvm extends ZomeViewModel {
   private _values: number[] = [];
 
 
-  async probeAll(): Promise<void> {
+  async probeAllInner(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this._values = await this.zomeProxy.getMyReals();

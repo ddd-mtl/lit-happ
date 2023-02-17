@@ -96,7 +96,6 @@ export class HappViewModel {
       conductorAppProxy.createCellProxy(hcl);
     }
     const hvm = new HappViewModel(host, conductorAppProxy, hvmDef);
-    await hvm.initialProbe();
     return hvm;
   }
 
@@ -235,17 +234,32 @@ export class HappViewModel {
 
 
   /** */
-  async probeAll(): Promise<void> {
+  probeAll(): void {
     for (const dvm of Object.values(this._dvmMap)) {
-      await dvm.probeAll();
+      dvm.probeAll();
     }
   }
 
+
   /** */
-  private async initialProbe(): Promise<void> {
+  async initializePerspectiveOnline(): Promise<void> {
+    const all = [];
     for (const dvm of Object.values(this._dvmMap)) {
-      await dvm.initialProbe();
+      const p = dvm.initializePerspectiveOnline();
+      all.push(p);
     }
+    await Promise.all(all);
+  }
+
+
+  /** */
+  async initializePerspectiveOffline(): Promise<void> {
+    const all = [];
+    for (const dvm of Object.values(this._dvmMap)) {
+      const p = dvm.initializePerspectiveOffline();
+      all.push(p);
+    }
+    await Promise.all(all);
   }
 
 

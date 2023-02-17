@@ -1,5 +1,5 @@
 import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
-import {AppSignal, EntryHash, AppSignalCb} from "@holochain/client";
+import {AppSignal, EntryHash, AppSignalCb, ActionHash} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {integerZomeFunctions} from "../fn";
 
@@ -13,21 +13,28 @@ export class IntegerZomeProxy extends ZomeProxy {
   static readonly FN_NAMES = integerZomeFunctions;
 
 
-  async getInteger(eh: EntryHash): Promise<number> {
-    return this.call('get_integer', eh);
+  async getInteger(ah: ActionHash): Promise<number> {
+    return this.call('get_integer', ah);
   }
-  async createInteger(value: number): Promise<EntryHash> {
+  async createInteger(value: number): Promise<ActionHash> {
     return this.callBlocking('create_integer', value);
   }
-  async getMyValues(): Promise<number[]> {
+
+  async getMyValuesLocal(): Promise<[ActionHash, number][]> {
+    return this.call('get_my_values_local', null);
+  }
+  async getMyValues(): Promise<[ActionHash, number][]> {
     return this.call('get_my_values', null);
+  }
+  async getMyValuesIncremental(ahs: ActionHash[]): Promise<[ActionHash, number][]> {
+    return this.call('get_my_values_incremental', ahs);
   }
 }
 
 
 /** */
 export interface IntegerZomePerspective {
-  values: number[];
+  values: number[],
 }
 
 
@@ -47,29 +54,53 @@ export class IntegerZvm extends ZomeViewModel {
   get perspective(): IntegerZomePerspective {return {values: this._values}}
 
   private _values: number[] = [];
+  private _knowns: ActionHash[] = [];
 
   readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
     console.warn("Signal for zInteger zome received:", appSignal);
   }
 
+
   /** */
-  async probeAll(): Promise<void> {
+  async initializePerspectiveOffline(): Promise<void> {
+    const pairs = await this.zomeProxy.getMyValuesLocal();
+    this._values = pairs.map(([a, b]) => b);
+    this._knowns = pairs.map(([a, b]) => a);
+    this.notifySubscribers();
+  }
+
+  /** */
+  async initializePerspectiveOnline(): Promise<void> {
+    const pairs = await this.zomeProxy.getMyValues();
+    this._values = pairs.map(([a, b]) => b);
+    this._knowns = pairs.map(([a, b]) => a);
+    this.notifySubscribers();
+  }
+
+  /** */
+  async probeAllInner(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this._values = await this.zomeProxy.getMyValues();
-    this.notifySubscribers();
+    this.zomeProxy.getMyValuesIncremental(this._knowns).then((pairs) => {
+        pairs.map(([a, b]) => {
+          this._values.push(b);
+          this._knowns.push(a);
+        });
+      this.notifySubscribers();
+    })
   }
 
 
   /** -- Integer specific methods -- */
 
   /**  */
-  async createInteger(value: number): Promise<EntryHash> {
-    const res = await this.zomeProxy.createInteger(value);
+  async createInteger(value: number): Promise<ActionHash> {
+    const ah = await this.zomeProxy.createInteger(value);
     /** Add directly to perspective */
     this._values.push(value);
+    this._knowns.push(ah);
     this.notifySubscribers();
-    return res;
+    return ah;
   }
 }
 

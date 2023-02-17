@@ -24,16 +24,19 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   /** Ctor */
   protected constructor(port_or_socket: number | AppWebsocket, appId?: InstalledAppId) {
     super();
-    /* await */ this.initHapp(port_or_socket, appId);
+    /* await */ this.constructHvm(port_or_socket, appId);
   }
 
+  /** */
+  async hvmConstructed(): Promise<void> {}
+  /** */
+  async perspectiveInitializedOffline(): Promise<void> {}
+  /** */
+  async perspectiveInitializedOnline(): Promise<void> {}
+
 
   /** */
-  async happInitialized(): Promise<void> {}
-
-
-  /** */
-  protected async initHapp(port_or_socket: number | AppWebsocket, appId?: InstalledAppId): Promise<void> {
+  protected async constructHvm(port_or_socket: number | AppWebsocket, appId?: InstalledAppId): Promise<void> {
     this.conductorAppProxy = await ConductorAppProxy.new(port_or_socket);
     const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
     if (!hvmDef) {
@@ -44,7 +47,17 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
       hvmDef.id = appId;
     }
     this.hvm = await HappViewModel.new(this, this.conductorAppProxy, hvmDef);
-    await this.happInitialized();
+    await this.hvmConstructed();
+    await this.initializePerspective();
+  }
+
+
+  /** */
+  async initializePerspective(): Promise<void> {
+    await this.hvm.initializePerspectiveOffline();
+    await this.perspectiveInitializedOffline();
+    await this.hvm.initializePerspectiveOnline();
+    await this.perspectiveInitializedOnline();
   }
 
 

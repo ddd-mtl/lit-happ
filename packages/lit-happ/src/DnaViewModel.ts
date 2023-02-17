@@ -16,6 +16,7 @@ import {
   Dictionary, CellMixin
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
+import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
@@ -104,7 +105,8 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     }
   }
 
-  getContext(): any {return createContext<typeof this>('dvm/' + this.cell.name)};
+
+  getContext(): ContextKey<unknown, unknown> {return createContext<typeof this>('dvm/' + this.cell.name)};
 
 
   /** */
@@ -130,11 +132,33 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** */
-  async probeAll(): Promise<void> {
+  probeAll(): void {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
-      await zvm.probeAll();
+      zvm.probeAll();
     }
+  }
+
+
+  /** */
+  async initializePerspectiveOffline(): Promise<void> {
+    const all = [];
+    for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
+      const p = zvm.initializePerspectiveOffline();
+      all.push(p);
+    }
+    await Promise.all(all);
+  }
+
+
+  /** */
+  async initializePerspectiveOnline(): Promise<void> {
+    const all = [];
+    for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
+      const p = zvm.initializePerspectiveOnline();
+      all.push(p);
+    }
+    await Promise.all(all);
   }
 
 

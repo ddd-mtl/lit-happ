@@ -1,7 +1,17 @@
 import {ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {AppSignalCb} from "@holochain/client";
+import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 
+import { Mutex } from 'async-mutex';
+
+
+enum InitializationState {
+  Uninitialized = "Uninitialized",
+  InitializingOffline = "InitializingOffline",
+  InitializingOnline = "InitializingOnline",
+  Initialized = "Initialized",
+}
 
 /**
  * ABC of a ViewModel.
@@ -17,10 +27,14 @@ import {AppSignalCb} from "@holochain/client";
  export abstract class ViewModel {
 
   /** -- Fields -- */
-  protected _previousPerspective?: any;
+  protected _previousPerspective?: unknown;
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
-  protected _provider?: any; // FIXME type: ContextProvider<this.getContext()>;
+  protected _provider?: unknown; // FIXME type: ContextProvider<this.getContext()>;
 
+  protected _initializationState: InitializationState = InitializationState.Uninitialized;
+
+
+  protected _probeMutex = new Mutex();
 
   /** -- Abstract fields -- */
 
@@ -29,13 +43,34 @@ import {AppSignalCb} from "@holochain/client";
 
   /** -- Abstract methods -- */
 
-  abstract getContext(): any;
+  abstract getContext(): ContextKey<unknown, unknown>;
   /* Child class should implement with specific type */
-  abstract get perspective(): any;
-  /* (optional) Lets the observer trigger probing in order to get an updated perspective */
-  async probeAll(): Promise<void> {}
-  /* (optional) Define the probing to do at startup (should get data on source-chain only) */
-  async initialProbe(): Promise<void> {}
+  abstract get perspective(): unknown;
+
+  /* (optional) Set perspective with data from the source-chain only */
+  async initializePerspectiveOffline(): Promise<void> {}
+  /* (optional) Set perspective with data from the DHT */
+  async initializePerspectiveOnline(): Promise<void> {}
+  /* (optional) Lets the observer trigger probing into the network in order to get an updated perspective */
+  protected async probeAllInner(): Promise<void> {};
+
+  /* Mutex wrapping of probeAllInner: Don't call probeAll() during a probeAll() */
+  probeAll(): void {
+    // if (this._initializationState !== InitializationState.Initialized) {
+    //   console.warn("probeAll() called on unitialized ViewModel");
+    //   return;
+    // }
+    if (this._probeMutex.isLocked()) {
+      console.log("probeAll() call skipped. Reason: Already running.");
+      return;
+    }
+    this._probeMutex
+      .acquire()
+      .then(async (release) => {
+        await this.probeAllInner();
+        release();
+      });
+  }
 
   /**
    * Return true if the perspective has changed. This will trigger an update on the observers
