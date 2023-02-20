@@ -52,9 +52,12 @@ enum InitializationState {
   /* (optional) Set perspective with data from the DHT */
   async initializePerspectiveOnline(): Promise<void> {}
   /* (optional) Lets the observer trigger probing into the network in order to get an updated perspective */
-  protected async probeAllInner(): Promise<void> {};
+  protected probeAllInner(): void {};
 
-  /* Mutex wrapping of probeAllInner: Don't call probeAll() during a probeAll() */
+  /**
+   * Mutex wrapping of probeAllInner: Don't call probeAll() during a probeAll()
+   * Should not be async as we expect this to be long, so happs are expected to use signals instead if something changed.
+   */
   probeAll(): void {
     // if (this._initializationState !== InitializationState.Initialized) {
     //   console.warn("probeAll() called on unitialized ViewModel");
@@ -67,7 +70,7 @@ enum InitializationState {
     this._probeMutex
       .acquire()
       .then(async (release) => {
-        await this.probeAllInner();
+        this.probeAllInner();
         release();
       });
   }

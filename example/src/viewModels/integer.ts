@@ -78,7 +78,7 @@ export class IntegerZvm extends ZomeViewModel {
   }
 
   /** */
-  async probeAllInner(): Promise<void> {
+   probeAllInner(): void {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this.zomeProxy.getMyValuesIncremental(this._knowns).then((pairs) => {

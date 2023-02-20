@@ -132,7 +132,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** */
-  probeAll(): void {
+  protected probeAllInner(): void {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
       zvm.probeAll();
