@@ -10,7 +10,7 @@ import {
   ViewCellContext,
   createCloneName,
   Cell,
-  printCellsForRole
+  printCellsForRole, CloneId
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealCloneDvm, NamedRealDvm } from "./viewModels/real";
@@ -58,10 +58,10 @@ export class PlaygroundCloneApp extends HappElement {
   get integerDvmCount(): number {return this.hvm.getClones(NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME).length }
 
 
-  integerDvmClone(cloneName: string): NamedIntegerDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, cloneName))! as NamedIntegerDvm }
+  integerDvmClone(cloneId: CloneId): NamedIntegerDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedIntegerDvm.DEFAULT_BASE_ROLE_NAME, cloneId))! as NamedIntegerDvm }
 
   get realDvmClones(): NamedRealCloneDvm[] { return this.hvm.getClones(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealCloneDvm[] }
-  realDvmClone(cloneName: string): NamedRealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedRealDvm.DEFAULT_BASE_ROLE_NAME, cloneName))! as NamedRealDvm }
+  realDvmClone(cloneId: CloneId): NamedRealDvm { return this.hvm.getDvm(new HCL(this.hvm.appId, NamedRealDvm.DEFAULT_BASE_ROLE_NAME, cloneId))! as NamedRealDvm }
 
 
   @state() private _selectedClone: HCL = new HCL("playground-clone", NamedRealDvm.DEFAULT_BASE_ROLE_NAME)

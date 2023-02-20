@@ -55,6 +55,9 @@ export class ConductorAppProxy implements AppApi {
   private _cellProxies: Dictionary<CellProxy> = {};
 
 
+  /** Map HCLString: CloneId -> CloneName */
+  private _cellNames: Dictionary<string> = {} // Provisioned cell's name is its baseRoleName so no need to map them
+
   /** -- Getters -- */
 
   /** Check this after connecting since AppWebsocket can shamelessly override the provided args. */
@@ -64,6 +67,10 @@ export class ConductorAppProxy implements AppApi {
   getAppCells(appId: InstalledAppId): RoleCellsMap | undefined {
     return this._cellsByApp[appId];
   }
+
+
+  getCellName(hcl: HCL): string {return this._cellNames[hcl.toString()]}
+
 
   /** */
   getLocations(cellId: CellId): HCL[] | undefined {
@@ -270,7 +277,7 @@ export class ConductorAppProxy implements AppApi {
     //   const cloneIndex: number = Object.keys(this._cellsByApp[hcl.appId][hcl.baseRoleName].clones).length;
     //   cloneName = createCloneName(hcl.baseRoleName, cloneIndex);
     // }
-    this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[cloneCell.clone_id!] = cloneCell;
+    this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[cloneCell.clone_id] = cloneCell;
     // const sCellId = CellIdStr(cloneCell.cell_id);
     // console.log("CreateCellProxy() adding to hclMap", sCellId, cellLoc.asHcl())
     // if (this._hclMap[sCellId]) {
@@ -282,8 +289,8 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** */
-  createCellProxy(hcl: HCL): CellProxy {
-    console.log("createCellProxy() for", hcl.toString());
+  createCellProxy(hcl: HCL, cloneName?: string): CellProxy {
+    console.log("createCellProxy() for", hcl.toString(), cloneName);
     /** Make sure cell exists */
     const cell = this.getCell(hcl);
     const sCellId = CellIdStr(cell.id);
@@ -302,6 +309,9 @@ export class ConductorAppProxy implements AppApi {
       this._hclMap[sCellId] = [hcl];
     }
     //console.log("createCellProxy() Currently stored hclMap:", this._hclMap);
+    /** Associate cloneName if any */
+    const name = cloneName?  cloneName : hcl.baseRoleName;
+    this._cellNames[hcl.toString()] = name;
     /** Done */
     return cellProxy;
   }
@@ -361,7 +371,9 @@ export class ConductorAppProxy implements AppApi {
   dumpSignals(cellId?: CellId) {
     if (cellId) {
       const cellStr = CellIdStr(cellId);
-      console.warn(`Dumping signal logs for cell "${this._hclMap[cellStr]}"`)
+      const hcls = this._hclMap[cellStr];
+      const names = hcls.map((hcl) => this.getCellName(hcl));
+      console.warn(`Dumping signal logs for cell "${names}"`);
       const logs = this._signalLogs
         .filter((log) => log[1] == cellStr)
         .map((log) => {

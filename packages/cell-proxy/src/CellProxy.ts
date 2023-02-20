@@ -1,6 +1,6 @@
 import {AppSignalCb, CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName} from "@holochain/client";
 import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
-import {anyToB64, delay, prettyDate, prettyDuration} from "./utils";
+import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
 import {EntryDefsCallbackResult} from "./types";

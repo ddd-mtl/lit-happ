@@ -131,9 +131,9 @@ export class HappViewModel {
     const appInstalledCells = this._conductorAppProxy.getAppCells(this.appId)!;
     for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
-      for (const cloneId of Object.keys(roleCells.clones)) {
+      for (const [cloneId, clone] of Object.entries(roleCells.clones)) {
         const hcl = new HCL(this.appId, baseRoleName, cloneId);
-        this._conductorAppProxy.createCellProxy(hcl);
+        this._conductorAppProxy.createCellProxy(hcl, clone.name);
         this.createDvm(def, hcl);
       }
     }
@@ -220,9 +220,10 @@ export class HappViewModel {
     console.log("clone created:", cell);
     const hcl = new HCL(this.appId, baseRoleName, cell.cloneId);
     /** Get created cell */
-    this._conductorAppProxy.addClone(hcl, cell.asCloned()!);
+    const clone = cell.asCloned()!;
+    this._conductorAppProxy.addClone(hcl, clone);
     /** Create CellProxy */
-    this._conductorAppProxy.createCellProxy(hcl);
+    this._conductorAppProxy.createCellProxy(hcl, clone.name);
     /** Create DVM and authorize */
     const dvm = this.createDvm(def, hcl);
     if (this._adminWs) {
