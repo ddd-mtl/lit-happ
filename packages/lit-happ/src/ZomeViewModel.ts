@@ -4,8 +4,9 @@ import {ViewModel} from "./ViewModel";
 import {AppSignalCb, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ContextKey} from "@lit-labs/context/src/lib/context-key";
+import {DnaViewModel} from "./DnaViewModel";
 
-export type ZvmConstructor = {new(proxy: CellProxy, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
+export type ZvmConstructor = {new(proxy: CellProxy, dvmParent: DnaViewModel, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
 
 /** (EXPERIMENTAL) Class Decorator */
 export function zvm(zProxyCtor: typeof ZomeProxy) {
@@ -45,10 +46,12 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     }
     zomeName!: ZomeName;
 
+    private _dvmParent: DnaViewModel;
 
     /** Ctor */
-    constructor(cellProxy: CellProxy, zomeName?: ZomeName) {
+    constructor(cellProxy: CellProxy, dvmParent: DnaViewModel, zomeName?: ZomeName) {
         super();
+        this._dvmParent = dvmParent;
         const zProxyCtor = this.getProxyConstructor();
         if (!zProxyCtor) {
             throw Error("ZOME_PROXY static field undefined in ZVM subclass " + this.constructor.name);
@@ -64,6 +67,15 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
         cellProxy.addSignalHandler( (signal: AppSignal) => this.handleZomeSignal(signal));
     }
 
+
+    /** Notify DVM parent */
+    protected notifySubscribers(): boolean {
+        const hasChanged = super.notifySubscribers();
+        if (hasChanged) {
+            this._dvmParent.zvmChanged(this);
+        }
+        return hasChanged;
+    }
 
     /** Filter signal by zome name */
     private handleZomeSignal(signal: AppSignal) {

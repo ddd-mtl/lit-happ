@@ -112,12 +112,13 @@ enum InitializationState {
   }
 
   /** */
-  protected notifySubscribers(): void {
-      if (!this.hasChanged()) return;
-      for (const [host, propName] of this._providedHosts) {
-          (host as any)[propName] = this.perspective;
-      }
-      this._previousPerspective = this.perspective
+  protected notifySubscribers(): boolean {
+    if (!this.hasChanged()) return false;
+    for (const [host, propName] of this._providedHosts) {
+      (host as any)[propName] = this.perspective;
+    }
+    this._previousPerspective = this.perspective
+    return true;
   }
 
 }

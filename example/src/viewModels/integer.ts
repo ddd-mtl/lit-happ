@@ -43,6 +43,9 @@ export interface IntegerZomePerspective {
  */
 export class IntegerZvm extends ZomeViewModel {
 
+  /** Test zvmChanged */
+  randomValue = "whatever";
+
   /** -- ZomeViewModel Interface -- */
 
   static readonly ZOME_PROXY = IntegerZomeProxy;
@@ -128,7 +131,17 @@ export class NamedIntegerDvm extends DnaViewModel {
 
   get perspective(): number {return 4242}
 
-  /** methods */
+
+  /** Methods */
+
+  zvmChanged(zvm: ZomeViewModel): void {
+    console.log("NamedIntegerDvm.zvmChanged()", zvm.zomeName);
+    if (zvm.zomeName == IntegerZvm.DEFAULT_ZOME_NAME) {
+      const typed = zvm as IntegerZvm;
+      console.log("NamedIntegerDvm.zvmChanged()", typed.randomValue);
+    }
+  }
+
   handleSignal(appSignal: AppSignal): void {
     console.warn("Signal for NamedInteger received:", appSignal);
   }

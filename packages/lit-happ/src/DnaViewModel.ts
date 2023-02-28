@@ -38,7 +38,7 @@ export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersO
 /**
  * Abstract ViewModel for a DNA.
  * It holds the CellProxy and all the ZomeViewModels of the DNA.
- * A DNA is expected to derive this class and add extra logic at the DNA level.
+ * It is expected to derive this class for each DNA and add extra logic at the DNA level.
  * TODO: Split into RoleViewModel and CellViewModel (e.g. have call logs separated by role)
  */
 export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) implements IDnaViewModel {
@@ -64,9 +64,9 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     for (const zvmDef of zvmDefs) {
       let zvm;
       if (Array.isArray(zvmDef)) {
-        zvm = new zvmDef[0](this._cellProxy, zvmDef[1]);
+        zvm = new zvmDef[0](this._cellProxy, this, zvmDef[1]);
       } else {
-        zvm = new zvmDef(this._cellProxy);
+        zvm = new zvmDef(this._cellProxy, this);
       }
       // TODO check zvm.zomeName exists in _cellProxy
       this._zomeViewModels[zvm.zomeName] = zvm;
@@ -138,6 +138,9 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
       zvm.probeAll();
     }
   }
+
+  /** */
+  zvmChanged(zvm: ZomeViewModel): void {}
 
 
   /** */
