@@ -33,6 +33,8 @@ export const integerZomeFunctions: FunctionName[] = [
   "get_my_values",
   "get_my_values_local",
   "get_my_values_incremental",
+  "get_zome_info",
+  "get_dna_info",
 ];
 
 

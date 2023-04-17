@@ -1,6 +1,7 @@
 import {CapSecret, FunctionName, ZomeName} from "@holochain/client";
 import {CellMixin, ZomeSpecific} from "./mixins";
 import {CellProxy} from "./CellProxy";
+import {DnaInfo, ZomeInfo} from "./types";
 
 export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
@@ -44,7 +45,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
       ? maybeSecret
       // : this._signingProps
       //   ? this._signingProps.capSecret
-        : null;
+      : null;
     return this._cellProxy.callZome(this.zomeName, fnName, payload, cap_secret, timeout);
   }
 
@@ -54,8 +55,18 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
     if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
       return Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);
     }
-    const cap_secret = maybeSecret? maybeSecret : null;
+    const cap_secret = maybeSecret ? maybeSecret : null;
     return this._cellProxy.callZomeBlocking(this.zomeName, fnName, payload, cap_secret, timeout);
   }
 
+
+  /** */
+  async zomeInfo(): Promise<ZomeInfo> {
+    return this._cellProxy.callZomeInfo(this.zomeName);
+  }
+
+  /** */
+  async dnaInfo(): Promise<DnaInfo> {
+    return this._cellProxy.callDnaInfo(this.zomeName);
+  }
 }

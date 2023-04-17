@@ -20,7 +20,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   /** */
   async onCreate(e: any) {
-    const input = this.shadowRoot!.getElementById("dummyInput") as HTMLInputElement;
+    const input = this.shadowRoot!.getElementById("realInput") as HTMLInputElement;
     const value = Number(input.value);
     let res = await this._zvm.createReal(value);
     console.log("onCreate() res =", encodeHashToBase64(res))
@@ -34,7 +34,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
     //console.log("real-list:", this.perspective.floats)
 
-    const dummyLi = Object.values(this.perspective.floats).map(
+    const realLi = Object.values(this.perspective.floats).map(
       (value) => {
         return html`<li>${value}</li>`
       }
@@ -43,11 +43,11 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
     /** render all */
     return html`
         <h3>Real List <input type="button" value="Probe" @click=${this.onProbe}></h3>
-        <label for="dummyInput">New real:</label>
-        <input type="number" id="dummyInput" name="Value">
+        <label for="realInput">New real:</label>
+        <input type="number" id="realInput" name="Value">
         <input type="button" value="create" @click=${this.onCreate}>
       <ul>
-          ${dummyLi}
+          ${realLi}
       </ul>
     `
 

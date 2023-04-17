@@ -3,7 +3,7 @@ import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
 import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
-import {EntryDefsCallbackResult} from "./types";
+import {DnaInfo, EntryDefsCallbackResult, ZomeInfo} from "./types";
 import {Mutex, withTimeout} from "async-mutex";
 import MutexInterface from "async-mutex/lib/MutexInterface";
 
@@ -185,6 +185,44 @@ export class CellProxy extends CellMixin(Empty) {
       return Promise.reject(e)
     }
   }
+
+
+
+  /**
+   * Calls the `zome_info()` zome function
+   */
+  async callZomeInfo(zomeName: ZomeName): Promise<ZomeInfo> {
+    console.log("callZomeInfo()", zomeName)
+    try {
+      const zome_info = await this.callZome(zomeName, "get_zome_info", null, null, 10 * 100) as ZomeInfo;
+      //console.debug("callZomeInfo() for " + zomeName + " result:")
+      //console.log({zome_info})
+      return zome_info;
+    } catch (e) {
+      console.error("Calling callZomeInfo() on " + zomeName + " failed. Make sure `get_zome_info()` is implemented in your zome code. Error: ")
+      console.error({ e })
+      return Promise.reject(e)
+    }
+  }
+
+
+  /**
+   * Calls the `dna_info()` zome function
+   */
+  async callDnaInfo(zomeName: ZomeName): Promise<DnaInfo> {
+    console.log("callDnaInfo()", zomeName)
+    try {
+      const dna_info = await this.callZome(zomeName, "get_dna_info", null, null, 10 * 100) as DnaInfo;
+      //console.debug("callDnaInfo() for " + zomeName + " result:")
+      //console.log({dna_info})
+      return dna_info;
+    } catch (e) {
+      console.error("Calling callDnaInfo() on " + zomeName + " failed. Make sure `get_dna_info()` is implemented in your zome code. Error: ")
+      console.error({ e })
+      return Promise.reject(e)
+    }
+  }
+
 
   // /** TODO once we have getDnaDefinition() api */
   // dumpAllZomes() {

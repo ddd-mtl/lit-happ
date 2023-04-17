@@ -35,7 +35,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
     //console.log("label-list:", this.perspective.names)
 
-    const dummyLi = Object.values(this.perspective.names).map(
+    const integerLi = Object.values(this.perspective.names).map(
       (value) => {
         return html`<li>${value}</li>`
       }
@@ -48,7 +48,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
         <input type="text" id="labelInput" name="Value">
         <input type="button" value="create" @click=${this.onCreate}>
       <ul>
-          ${dummyLi}
+          ${integerLi}
       </ul>
     `;
 

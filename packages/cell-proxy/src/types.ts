@@ -2,7 +2,7 @@ import {
   CellId,
   decodeHashFromBase64,
   encodeHashToBase64,
-  RoleName, ClonedCell, ProvisionedCell,
+  RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName,
 } from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
@@ -11,10 +11,34 @@ import {Dictionary} from "./utils";
 export type BaseRoleName = string;
 export type CloneIndex = number;
 
+export type ZomeIndex = number;
 
 export type EntryDef = any; // FIXME
 export type EntryDefsCallbackResult = {Defs: EntryDef[]}
 
+export type ScopedZomeTypes = [ZomeIndex, number[]][];
+
+export type ScopedZomeTypesSet = {
+  entries: ScopedZomeTypes, // EntryDefIndex
+  links: ScopedZomeTypes, // LinkType
+};
+
+export type ZomeInfo = {
+  name: ZomeName,
+  id: ZomeIndex,
+  properties: Uint8Array,
+  entry_defs: EntryDef[],
+  extern_fns: FunctionName[],
+  zome_types: ScopedZomeTypesSet,
+}
+
+
+export type DnaInfo = {
+  name: string,
+  hash: DnaHash,
+  properties: Uint8Array,
+  zome_names: ZomeName[],
+}
 
 /** */
 export type CellsForRole = {

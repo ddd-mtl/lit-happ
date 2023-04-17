@@ -98,6 +98,10 @@ export class IntegerZvm extends ZomeViewModel {
 
   /**  */
   async createInteger(value: number): Promise<ActionHash> {
+    const zi = await this.zomeProxy.zomeInfo();
+    console.log({zi});
+    const di = await this.zomeProxy.dnaInfo();
+    console.log({di});
     const ah = await this.zomeProxy.createInteger(value);
     /** Add directly to perspective */
     this._values.push(value);

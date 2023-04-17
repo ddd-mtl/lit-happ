@@ -4,7 +4,7 @@ name: dNamedInteger
 integrity:
   origin_time: 2022-09-25T13:55:49.200Z
   zomes:
-    - name: dummy_integrity
+    - name: integer_integrity
       bundled: ../target/wasm32-unknown-unknown/release/integer_integrity.wasm
     - name: label_integrity
       bundled: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
@@ -13,7 +13,7 @@ coordinator:
     - name: zInteger
       bundled: ../target/wasm32-unknown-unknown/release/zInteger.wasm
       dependencies:
-        - name: dummy_integrity
+        - name: integer_integrity
     - name: zIntegerLabel
       bundled: ../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
