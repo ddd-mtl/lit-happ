@@ -46,6 +46,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /* private */ static ZVM_DEFS: ZvmDef[];
   static DNA_MODIFIERS: DnaModifiersOptions;
 
+
   /** Ctor */
   constructor(public readonly host: ReactiveElement, conductorAppProxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId) {
     super();

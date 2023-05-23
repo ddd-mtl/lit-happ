@@ -56,6 +56,7 @@ export class HappElement extends ScopedElementsMixin(LitElement) {
   async initializePerspective(): Promise<void> {
     await this.hvm.initializePerspectiveOffline();
     await this.perspectiveInitializedOffline();
+    // TODO move this to a later stage
     await this.hvm.initializePerspectiveOnline();
     await this.perspectiveInitializedOnline();
   }

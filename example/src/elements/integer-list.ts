@@ -20,7 +20,7 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
 
 
-  protected async zvmUpdated(newDvm: IntegerZvm, oldDvm?: IntegerZvm): Promise<void> {
+  protected async zvmUpdated(newZvm: IntegerZvm, oldZvm?: IntegerZvm): Promise<void> {
     console.log(`\t\t IntegerList zvmUpdated() called`)
   }
 

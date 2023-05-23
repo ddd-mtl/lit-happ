@@ -48,6 +48,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
     private _dvmParent: DnaViewModel;
 
+
     /** Ctor */
     constructor(cellProxy: CellProxy, dvmParent: DnaViewModel, zomeName?: ZomeName) {
         super();

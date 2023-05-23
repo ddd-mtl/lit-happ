@@ -55,7 +55,6 @@
   },
   "dependencies": {
     "@ddd-qc/lit-happ": "file:../",
-    "@holochain/client": "^0.12.0",
     "@lit-labs/context": "^0.1.3",
     "@open-wc/scoped-elements": "^2.1.1",
     "lit": "^2.3.0"
