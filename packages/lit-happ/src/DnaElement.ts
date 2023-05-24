@@ -1,4 +1,3 @@
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
@@ -10,7 +9,7 @@ import {RoleMixin} from "./roleMixin";
 /**
  * A LitElement that is bound to a specific DnaViewModel, e.g. a View for the ViewModel
  */
-export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin(ScopedElementsMixin(LitElement))) {
+export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin(LitElement)) {
 
   /** if BaseRoleName is not provided, subclass must call requestDvm() in its Ctor */
   constructor(baseRoleName?: BaseRoleName) {

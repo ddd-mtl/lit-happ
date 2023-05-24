@@ -1,4 +1,3 @@
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
 import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
@@ -11,7 +10,7 @@ import {Cell, CellMixin} from "@ddd-qc/cell-proxy";
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(ScopedElementsMixin(LitElement)) {
+export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElement) {
 
   constructor(public readonly defaultZomeName: ZomeName) {
     super();

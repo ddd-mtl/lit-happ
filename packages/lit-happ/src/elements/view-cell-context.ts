@@ -1,17 +1,18 @@
-import {ScopedElementsMixin} from "@open-wc/scoped-elements";
 import {LitElement, html} from "lit";
-import {property} from "lit/decorators.js";
-import {contextProvided} from "@lit-labs/context";
+import {property, customElement} from "lit/decorators.js";
+import {consume} from "@lit-labs/context";
 import {cellContext} from "./cell-context";
 import {Cell} from "@ddd-qc/cell-proxy";
+
 
 /**
  * LitElement that shows the cellContext as a <div>
  * Used for debugging
  */
-export class ViewCellContext extends ScopedElementsMixin(LitElement) {
+@customElement("view-cell-context")
+export class ViewCellContext extends LitElement {
 
-  @contextProvided({ context: cellContext, subscribe: true})
+  @consume({ context: cellContext, subscribe: true})
   @property({type: Object})
   cell!: Cell;
 

@@ -2,22 +2,20 @@ import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
   ConductorAppProxy,
-  EntryDefSelect,
   HvmDef,
   HappViewModel,
-  CellContext,
   HappElement,
   printCellsForRole
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
-import { IntegerList } from "./elements/integer-list";
-import { RealList } from "./elements/real-list";
-import { LabelList } from "./elements/label-list";
-import {NamedIntegerInspect, NamedRealInspect} from "./elements/named-inspect";
 import {AdminWebsocket} from "@holochain/client";
-import {integerZomeFunctions} from "./fn";
 
+/** Import custom elements */
+import "./elements/integer-list";
+import "./elements/label-list";
+import "./elements/real-list";
+import "./elements/named-inspect";
 
 /** TESTING Decorator for better init */
 /** Doesn't solve our problem since our initializer is doing an async call */
@@ -227,18 +225,18 @@ export class PlaygroundApp extends HappElement {
   }
 
 
-  /** */
-  static get scopedElements() {
-    return {
-      "entry-def-select": EntryDefSelect,
-      "named-integer-inspect": NamedIntegerInspect,
-      "named-real-inspect": NamedRealInspect,
-      "integer-list": IntegerList,
-      "real-list": RealList,
-      "label-list": LabelList,
-      "cell-context": CellContext,
-    };
-  }
+  // /** */
+  // static get scopedElements() {
+  //   return {
+  //     "entry-def-select": EntryDefSelect,
+  //     "named-integer-inspect": NamedIntegerInspect,
+  //     "named-real-inspect": NamedRealInspect,
+  //     "integer-list": IntegerList,
+  //     "real-list": RealList,
+  //     "label-list": LabelList,
+  //     "cell-context": CellContext,
+  //   };
+  // }
 }
 
 //DummyApp.addInitializer(initializeHapp);

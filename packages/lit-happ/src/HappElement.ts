@@ -3,7 +3,6 @@ import { state } from "lit/decorators.js";
 import {BaseRoleName, ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {CellDef, HvmDef} from "./definitions";
-import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import {AppWebsocket, ClonedCell, InstalledAppId} from "@holochain/client";
 import {DnaViewModel} from "./DnaViewModel";
 
@@ -11,7 +10,7 @@ import {DnaViewModel} from "./DnaViewModel";
 /**
  *
  */
-export class HappElement extends ScopedElementsMixin(LitElement) {
+export class HappElement extends LitElement {
 
   /** Must be defined by subclass */
   static HVM_DEF: HvmDef;

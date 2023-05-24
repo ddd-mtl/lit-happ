@@ -1,10 +1,12 @@
 import {html} from "lit";
+import {customElement} from "lit/decorators.js";
 import {IntegerZomePerspective, IntegerZvm} from "../viewModels/integer";
 import {ZomeElement} from "@ddd-qc/lit-happ";
 
 /**
  *
  */
+@customElement("integer-list")
 export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm> {
 
   /** */

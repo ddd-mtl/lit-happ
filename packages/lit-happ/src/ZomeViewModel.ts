@@ -1,9 +1,8 @@
-import {createContext} from "@lit-labs/context";
+import {Context, createContext} from "@lit-labs/context";
 import {CellProxy, ZomeProxy, ZomeProxyConstructor, CellMixin} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
 import {AppSignalCb, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
-import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 import {DnaViewModel} from "./DnaViewModel";
 
 export type ZvmConstructor = {new(proxy: CellProxy, dvmParent: DnaViewModel, zomeName?: ZomeName): ZomeViewModel} /*& typeof ZomeSpecific;*/
@@ -87,7 +86,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     }
 
     /** */
-    getContext(): ContextKey<unknown, unknown> {
+    getContext(): Context<unknown, unknown> {
         const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.cell.dnaHash)
         //console.log({contextType: typeof context})
         return context

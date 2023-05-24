@@ -2,11 +2,13 @@ import {html} from "lit";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {ZomeElement} from "@ddd-qc/lit-happ";
 import {encodeHashToBase64} from "@holochain/client";
+import {customElement} from "lit/decorators.js";
 
 
 /**
  *
  */
+@customElement("label-list")
 export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   constructor() {

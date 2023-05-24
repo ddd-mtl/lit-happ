@@ -1,14 +1,14 @@
 import { LitElement, html } from "lit";
-import { state, property } from "lit/decorators.js";
+import { state, property, customElement } from "lit/decorators.js";
 import { DnaViewModel } from "../DnaViewModel";
-import { ScopedElementsMixin } from "@open-wc/scoped-elements";
 import {Dictionary} from "@ddd-qc/cell-proxy";
 
 
 /**
  *
  */
-export class EntryDefSelect extends ScopedElementsMixin(LitElement) {
+@customElement("entry-def-select")
+export class EntryDefSelect extends LitElement {
 
   /** -- Fields -- */
   @state() private _selectedZomeName = ""

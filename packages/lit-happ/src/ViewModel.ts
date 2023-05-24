@@ -1,7 +1,6 @@
-import {ContextProvider} from "@lit-labs/context";
+import {Context, ContextProvider} from "@lit-labs/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {AppSignalCb} from "@holochain/client";
-import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 
 import { Mutex } from 'async-mutex';
 
@@ -43,7 +42,7 @@ enum InitializationState {
 
   /** -- Abstract methods -- */
 
-  abstract getContext(): ContextKey<unknown, unknown>;
+  abstract getContext(): Context<unknown, unknown>;
   /* Child class should implement with specific type */
   abstract get perspective(): unknown;
 

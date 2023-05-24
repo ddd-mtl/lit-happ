@@ -2,10 +2,12 @@ import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {ZomeElement} from "@ddd-qc/lit-happ";
 import {encodeHashToBase64} from "@holochain/client";
+import {customElement} from "lit/decorators.js";
 
 /**
  *
  */
+@customElement("real-list")
 export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   constructor() {

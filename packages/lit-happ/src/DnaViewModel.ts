@@ -8,7 +8,7 @@ import {
   ZomeName,
 } from "@holochain/client";
 import {DnaModifiersOptions, ZvmDef} from "./definitions";
-import {createContext} from "@lit-labs/context";
+import {Context, createContext} from "@lit-labs/context";
 import {
   CellProxy,
   ConductorAppProxy,
@@ -16,7 +16,6 @@ import {
   Dictionary, CellMixin
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
-import {ContextKey} from "@lit-labs/context/src/lib/context-key";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
@@ -107,7 +106,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
-  getContext(): ContextKey<unknown, unknown> {return createContext<typeof this>('dvm/' + this.cell.name)};
+  getContext(): Context<unknown, unknown> {return createContext<typeof this>('dvm/' + this.cell.name)};
 
 
   /** */

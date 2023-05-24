@@ -1,25 +1,23 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  EntryDefSelect,
   HvmDef,
-  CellContext,
   HappElement,
   CellDef,
   HCL,
-  ViewCellContext,
   createCloneName,
   Cell,
   printCellsForRole, CloneId
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealCloneDvm, NamedRealDvm } from "./viewModels/real";
-import { IntegerList } from "./elements/integer-list";
-import { RealList } from "./elements/real-list";
-import { LabelList } from "./elements/label-list";
-import { NamedRealInspect } from "./elements/named-inspect";
 import { AdminWebsocket } from "@holochain/client";
 
+/** Import custom elements */
+import "./elements/integer-list";
+import "./elements/label-list";
+import "./elements/real-list";
+import "./elements/named-inspect";
 
 /**
  *
@@ -239,17 +237,17 @@ export class PlaygroundCloneApp extends HappElement {
 
 
   /** */
-  static get scopedElements() {
-    return {
-      "entry-def-select": EntryDefSelect,
-      "named-real-inspect": NamedRealInspect,
-      "integer-list": IntegerList,
-      "real-list": RealList,
-      "label-list": LabelList,
-      "cell-context": CellContext,
-      "view-cell-context": ViewCellContext,
-    };
-  }
+  // static get scopedElements() {
+  //   return {
+  //     "entry-def-select": EntryDefSelect,
+  //     "named-real-inspect": NamedRealInspect,
+  //     "integer-list": IntegerList,
+  //     "real-list": RealList,
+  //     "label-list": LabelList,
+  //     "cell-context": CellContext,
+  //     "view-cell-context": ViewCellContext,
+  //   };
+  // }
 }
 
 //DummyApp.addInitializer(initializeHapp);

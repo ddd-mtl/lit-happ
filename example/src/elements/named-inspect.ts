@@ -1,5 +1,5 @@
 import {html} from "lit";
-import { property } from "lit/decorators.js";
+import { property, customElement } from "lit/decorators.js";
 import {IntegerZomePerspective, NamedIntegerDvm} from "../viewModels/integer";
 import {DnaElement} from "@ddd-qc/lit-happ";
 import { NamedRealDvm, RealZomePerspective } from "../viewModels/real";
@@ -8,6 +8,7 @@ import { NamedRealDvm, RealZomePerspective } from "../viewModels/real";
 /**
  *
  */
+@customElement("named-integer-inspect")
 export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, NamedIntegerDvm> {
 
   constructor() {
@@ -33,6 +34,7 @@ export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, Name
 /**
  *
  */
+@customElement("named-real-inspect")
  export class NamedRealInspect extends DnaElement<RealZomePerspective, NamedRealDvm> {
 
   /** Ctor */
