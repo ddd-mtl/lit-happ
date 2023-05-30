@@ -193,7 +193,7 @@ export class ConductorAppProxy implements AppApi {
 
 
   /** Ctor */
-  protected constructor(public defaultTimeout: number) {
+  /*protected*/ constructor(public defaultTimeout: number) {
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
@@ -392,3 +392,4 @@ export class ConductorAppProxy implements AppApi {
     }
   }
 }
+
