@@ -4,6 +4,8 @@ import {property, state, customElement} from "lit/decorators.js";
 import {Cell} from "@ddd-qc/cell-proxy";
 
 export const cellContext = createContext<Cell>('lit-happ/cell');
+//export const cellContext = createContext<Cell>('lit-happ/cell/default');
+
 
 /**
  *

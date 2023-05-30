@@ -1,6 +1,6 @@
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
-import {ContextConsumer, contextProvided, createContext} from "@lit-labs/context";
+import {ContextConsumer, consume, createContext} from "@lit-labs/context";
 import {DnaViewModel} from "./DnaViewModel";
 import {BaseRoleName, Cell, CellMixin} from "@ddd-qc/cell-proxy";
 import {cellContext} from "./elements/cell-context";
@@ -22,7 +22,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   /** Provided by Context depending on BaseRoleName */
   @state() protected _dvm!: DVM;
 
-  @contextProvided({ context: cellContext, subscribe: true})
+  @consume({ context: cellContext, subscribe: true})
   @property({type: Object, attribute: false})
   _cell_via_context!: Cell;
 
