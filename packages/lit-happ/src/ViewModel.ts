@@ -30,7 +30,7 @@ enum InitializationState {
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
   protected _provider?: unknown; // FIXME type: ContextProvider<this.getContext()>;
 
-  protected _initializationState: InitializationState = InitializationState.Uninitialized;
+  //protected _initializationState: InitializationState = InitializationState.Uninitialized;
 
 
   protected _probeMutex = new Mutex();
