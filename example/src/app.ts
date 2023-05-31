@@ -1,11 +1,11 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  ConductorAppProxy,
+  AppProxy,
   HvmDef,
   HappViewModel,
   HappElement,
-  printCellsForRole
+  printCellsForRole,
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
@@ -21,7 +21,7 @@ import "./elements/named-inspect";
 /** Doesn't solve our problem since our initializer is doing an async call */
 
 interface IHapp {
-  get conductorAppProxy(): ConductorAppProxy;
+  get appProxy(): AppProxy;
   get hvm(): HappViewModel;
 }
 
@@ -180,7 +180,7 @@ export class PlaygroundApp extends HappElement {
       <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
-        <input type="button" value="Dump signals" @click=${(e:any) => {this.conductorAppProxy.dumpSignals()}}>
+        <input type="button" value="Dump signals" @click=${(e:any) => {this.appProxy.dumpSignals()}}>
         <br/>
         <!-- SELECT ENTRY TYPE -->
         <span>Select AppEntryType:</span>

@@ -1,9 +1,9 @@
 import {AdminWebsocket, ClonedCell, CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
+  AppProxy,
   BaseRoleName,
   CloneIndex,
-  ConductorAppProxy,
   createCloneName,
   Dictionary,
   HCL,
@@ -42,7 +42,7 @@ export class HappViewModel {
 
   /** */
   getCellDvms(cellId: CellId): Dictionary<DnaViewModel> | undefined {
-    const hcls = this._conductorAppProxy.getLocations(cellId);
+    const hcls = this._appProxy.getLocations(cellId);
     if (hcls === undefined) return undefined;
     let dict: Dictionary<DnaViewModel> = {};
     for (const hcl of hcls) {
@@ -79,9 +79,9 @@ export class HappViewModel {
 
   /** -- Create -- */
 
-  /** Spawn a HappViewModel for an AppId running on the ConductorAppProxy */
-  static async new(host: ReactiveElement, conductorAppProxy: ConductorAppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
-    const appId = conductorAppProxy.appIdOfShame? conductorAppProxy.appIdOfShame : hvmDef.id;
+  /** Spawn a HappViewModel for an AppId running on the AppProxy */
+  static async new(host: ReactiveElement, appProxy: AppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
+    const appId = appProxy.appIdOfShame? appProxy.appIdOfShame : hvmDef.id;
     console.log("HappViewModel.new()", hvmDef.id, appId)
     /** Create all Cell Proxies in the definition */
     for (const dvmDef of hvmDef.dvmDefs) {
@@ -91,11 +91,11 @@ export class HappViewModel {
       const baseRoleName = dvmDef.baseRoleName
         ? dvmDef.baseRoleName
         : dvmDef.ctor.DEFAULT_BASE_ROLE_NAME;
-      await conductorAppProxy.fetchCells(appId, baseRoleName);
+      await appProxy.fetchCells(appId, baseRoleName);
       const hcl = new HCL(appId, baseRoleName);
-      conductorAppProxy.createCellProxy(hcl);
+      appProxy.createCellProxy(hcl);
     }
-    const hvm = new HappViewModel(host, conductorAppProxy, hvmDef);
+    const hvm = new HappViewModel(host, appProxy, hvmDef);
     return hvm;
   }
 
@@ -103,10 +103,10 @@ export class HappViewModel {
   /** Ctor */
   private constructor(
     protected _host: ReactiveElement, /* VIEW */
-    protected _conductorAppProxy: ConductorAppProxy, /* MODEL */
+    protected _appProxy: AppProxy, /* MODEL */
     hvmDef: HvmDef, /* VIEW-MODEL definition */
   ) {
-    this.appId = this._conductorAppProxy.appIdOfShame? this._conductorAppProxy.appIdOfShame : hvmDef.id;
+    this.appId = this._appProxy.appIdOfShame? this._appProxy.appIdOfShame : hvmDef.id;
     /** Create all non-deferred DVMs for this Happ */
     for (const dvmDef of hvmDef.dvmDefs) {
       this.createOriginalDvm(dvmDef);
@@ -128,12 +128,12 @@ export class HappViewModel {
 
   /** */
   private createStartingClonesDvm(): void {
-    const appInstalledCells = this._conductorAppProxy.getAppCells(this.appId)!;
+    const appInstalledCells = this._appProxy.getAppCells(this.appId)!;
     for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
       for (const [cloneId, clone] of Object.entries(roleCells.clones)) {
         const hcl = new HCL(this.appId, baseRoleName, cloneId);
-        this._conductorAppProxy.createCellProxy(hcl, clone.name);
+        this._appProxy.createCellProxy(hcl, clone.name);
         this.createDvm(def, hcl);
       }
     }
@@ -142,13 +142,13 @@ export class HappViewModel {
 
   /** */
   private createDvm(dvmDef: DvmDef, hcl: HCL): DnaViewModel {
-    const dvm: DnaViewModel = new dvmDef.ctor(this._host, this._conductorAppProxy, hcl); // WARN this can throw an error
+    const dvm: DnaViewModel = new dvmDef.ctor(this._host, this._appProxy, hcl); // WARN this can throw an error
     //console.log(`  createDvm() for "${hcl.toString()}" ; cellId: ${CellIdStr(dvm.cellId)}`);
     /** Setup signalHandler */
     if (dvm.signalHandler) {
       //console.log(`"${dvm.baseRoleName}" signalHandler added`, dvm.signalHandler);
       try {
-        this._conductorAppProxy.addSignalHandler((sig: AppSignal) => {
+        this._appProxy.addSignalHandler((sig: AppSignal) => {
           dvm.signalHandler!(sig)
         }, hcl.toString());
       } catch (e) {
@@ -214,16 +214,16 @@ export class HappViewModel {
       request.name = cellDef.cloneName;
     }
     /** Create Cell */
-    const clonedCell = await this._conductorAppProxy.createCloneCell(request);
+    const clonedCell = await this._appProxy.createCloneCell(request);
     //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
-    const cell = await this._conductorAppProxy.fetchCell(this.appId, clonedCell.cell_id);
+    const cell = await this._appProxy.fetchCell(this.appId, clonedCell.cell_id);
     console.log("clone created:", cell);
     const hcl = new HCL(this.appId, baseRoleName, cell.cloneId);
     /** Get created cell */
     const clone = cell.asCloned()!;
-    this._conductorAppProxy.addClone(hcl, clone);
+    this._appProxy.addClone(hcl, clone);
     /** Create CellProxy */
-    this._conductorAppProxy.createCellProxy(hcl, clone.name);
+    this._appProxy.createCellProxy(hcl, clone.name);
     /** Create DVM and authorize */
     const dvm = this.createDvm(def, hcl);
     if (this._adminWs) {

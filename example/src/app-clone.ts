@@ -68,7 +68,7 @@ export class PlaygroundCloneApp extends HappElement {
   async hvmConstructed(): Promise<void> {
     console.log("hvmConstructed()")
     /** Grab cells */
-    const cells = await this.conductorAppProxy.fetchCells(PlaygroundCloneApp.HVM_DEF.id, NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME);
+    const cells = await this.appProxy.fetchCells(PlaygroundCloneApp.HVM_DEF.id, NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME);
     console.log(printCellsForRole(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME, cells));
 
     /** Authorize all zome calls */
@@ -188,7 +188,7 @@ export class PlaygroundCloneApp extends HappElement {
       <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
-        <input type="button" value="Dump signals" @click=${(e: any) => { this.conductorAppProxy.dumpSignals() }}>
+        <input type="button" value="Dump signals" @click=${(e: any) => { this.appProxy.dumpSignals() }}>
         <br/>
         <span>Select AppEntryType:</span>
         <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>

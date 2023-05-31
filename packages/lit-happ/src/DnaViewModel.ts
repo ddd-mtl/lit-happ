@@ -12,6 +12,7 @@ import {Context, createContext} from "@lit-labs/context";
 import {
   CellProxy,
   ConductorAppProxy,
+  AppProxy,
   HCL,
   Dictionary, CellMixin
 } from "@ddd-qc/cell-proxy";
@@ -30,7 +31,7 @@ interface IDnaViewModel {
 }
 
 export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersOptions} & {
-  new(host: ReactiveElement, proxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId): DnaViewModel;
+  new(host: ReactiveElement, proxy: AppProxy, idOrHcl: HCL | InstalledAppId): DnaViewModel;
 };
 
 
@@ -47,7 +48,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** Ctor */
-  constructor(public readonly host: ReactiveElement, conductorAppProxy: ConductorAppProxy, idOrHcl: HCL | InstalledAppId) {
+  constructor(public readonly host: ReactiveElement, appProxy: AppProxy, idOrHcl: HCL | InstalledAppId) {
     super();
     if (typeof idOrHcl === 'object') {
       this.baseRoleName = idOrHcl.baseRoleName;
@@ -57,7 +58,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
-    this._cellProxy = conductorAppProxy.getCellProxy(this.hcl); // WARN can throw error
+    this._cellProxy = appProxy.getCellProxy(this.hcl); // WARN can throw error
     this._cell = this._cellProxy.cell;
     console.log(`DVM.ctor of ${this.baseRoleName}`, this._cellProxy.cell);
     /** Create all ZVMs for this DNA */

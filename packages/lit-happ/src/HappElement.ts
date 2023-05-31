@@ -1,6 +1,6 @@
 import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
-import {BaseRoleName, ConductorAppProxy} from "@ddd-qc/cell-proxy";
+import {BaseRoleName, AppProxy, ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {CellDef, HvmDef} from "./definitions";
 import {AppWebsocket, ClonedCell, InstalledAppId} from "@holochain/client";
@@ -16,7 +16,7 @@ export class HappElement extends LitElement {
   static HVM_DEF: HvmDef;
 
   /** Set during init triggered at ctor */
-  conductorAppProxy!: ConductorAppProxy;
+  appProxy!: AppProxy;
   @state() hvm!: HappViewModel;
 
 
@@ -36,7 +36,7 @@ export class HappElement extends LitElement {
 
   /** */
   protected async constructHvm(port_or_socket: number | AppWebsocket, appId?: InstalledAppId): Promise<void> {
-    this.conductorAppProxy = await ConductorAppProxy.new(port_or_socket);
+    this.appProxy = await ConductorAppProxy.new(port_or_socket);
     const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappElement subclass " + this.constructor.name);
@@ -45,7 +45,7 @@ export class HappElement extends LitElement {
     if (appId) {
       hvmDef.id = appId;
     }
-    this.hvm = await HappViewModel.new(this, this.conductorAppProxy, hvmDef);
+    this.hvm = await HappViewModel.new(this, this.appProxy, hvmDef);
     await this.hvmConstructed();
     await this.initializePerspective();
   }

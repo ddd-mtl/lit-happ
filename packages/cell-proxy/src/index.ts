@@ -1,4 +1,6 @@
+export * from "./AppProxy";
 export * from "./ConductorAppProxy";
+export * from "./ExternalAppProxy";
 export * from "./CellProxy";
 export * from "./ZomeProxy";
 export * from "./utils";
