@@ -1,11 +1,11 @@
 import {AppSignalCb, CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName} from "@holochain/client";
-import {ConductorAppProxy, SignalUnsubscriber} from "./ConductorAppProxy";
 import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
 import {DnaInfo, EntryDefsCallbackResult, ZomeInfo} from "./types";
 import {Mutex, withTimeout} from "async-mutex";
 import MutexInterface from "async-mutex/lib/MutexInterface";
+import {AppProxy, SignalUnsubscriber} from "./AppProxy";
 
 
 export interface RequestLog {
@@ -28,14 +28,14 @@ export type Cb = () => Promise<unknown>
 /**
  * Proxy for a running DNA.
  * It logs and queues ZomeCalls.
- * It holds a reference to its ConductorAppProxy and its Cell.
+ * It holds a reference to its AppProxy and its Cell.
  * This class is expected to be used by ZomeProxies.
  */
 export class CellProxy extends CellMixin(Empty) {
 
   /** Ctor */
   constructor(
-    private _conductor: ConductorAppProxy,
+    private _appProxy: AppProxy,
     cell: Cell,
     //public readonly dnaDef: MyDnaDef,
     defaultTimeout?: number) {
@@ -63,13 +63,13 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** */
   addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
-    return this._conductor.addSignalHandler(handler, this.cell.hcl().toString());
+    return this._appProxy.addSignalHandler(handler, this.cell.hcl().toString());
   }
 
 
   /** */
   dumpSignals() {
-    this._conductor.dumpSignals(this.cell.id);
+    this._appProxy.dumpSignals(this.cell.id);
   }
 
   /** Pass call request to conductor proxy and log it */
@@ -78,7 +78,7 @@ export class CellProxy extends CellMixin(Empty) {
     const requestIndex = this._requestLog.length;
     this._requestLog.push(reqLog);
     try {
-      const response = await this._conductor.callZome(reqLog.request, reqLog.timeout);
+      const response = await this._appProxy.callZome(reqLog.request, reqLog.timeout);
       const respLog = { requestIndex, success: response, timestamp: Date.now() };
       this._responseLog.push(respLog);
       return respLog;
@@ -250,7 +250,7 @@ export class CellProxy extends CellMixin(Empty) {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn(`Dumping logs for cell "${this._conductor.getLocations(this.cell.id)}"`)
+    console.warn(`Dumping logs for cell "${this._appProxy.getLocations(this.cell.id)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }
