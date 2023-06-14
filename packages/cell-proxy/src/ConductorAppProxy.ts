@@ -8,7 +8,7 @@ import {
   CreateCloneCellRequest,
   DisableCloneCellRequest,
   EnableCloneCellRequest,
-  ClonedCell,
+  ClonedCell, AppAgentWebsocket,
 } from "@holochain/client";
 import {AppProxy} from "./AppProxy";
 
@@ -72,8 +72,17 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
       let wsUrl = `ws://localhost:${port_or_socket}`
       try {
         let conductor = new ConductorAppProxy(timeout);
-        conductor._appWs = await AppWebsocket.connect(wsUrl, timeout);
-        conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
+
+        /** AppWebsocket */
+        const appWs = await AppWebsocket.connect(wsUrl, timeout);
+
+        /** AppAgentWebsocket */
+        // const appAgentWs = await AppAgentWebsocket.connect(`ws://localhost:${process.env.HC_APP_PORT}`, "playground");
+        // console.log(appAgentWs.appWebsocket);
+        // const appWs = await appAgentWs.appWebsocket;
+
+        conductor._appWs = appWs;
+        conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)});
         return conductor;
       } catch (e) {
         console.error("ConductorAppProxy initialization failed", e)
