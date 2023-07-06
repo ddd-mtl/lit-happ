@@ -83,6 +83,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
   /* ZvmCtorName -> ZomeName */
   protected _zomeNames: Dictionary<ZomeName> = {};
+  /* ZomeName -> [EntryName, EntryVisibility] */
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
   public readonly hcl: HCL;

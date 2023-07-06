@@ -69,4 +69,9 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   async dnaInfo(): Promise<DnaInfo> {
     return this._cellProxy.callDnaInfo(this.zomeName);
   }
+
+  /** */
+  async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
+    return this._cellProxy.callEntryDefs(zomeName);
+  }
 }
