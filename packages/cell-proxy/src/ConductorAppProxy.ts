@@ -109,7 +109,6 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
   /** Ctor */
   /*protected*/ constructor(public defaultTimeout: number) {
     super(defaultTimeout);
-    /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
 }

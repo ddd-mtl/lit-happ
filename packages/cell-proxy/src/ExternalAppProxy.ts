@@ -18,7 +18,6 @@ export class ExternalAppProxy extends AppProxy implements AppApi {
   /** Ctor */
   /*protected*/ constructor(private _appApi: AppApi, defaultTimeout: number) {
     super(defaultTimeout);
-    /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
 
