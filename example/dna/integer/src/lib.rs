@@ -16,7 +16,7 @@ fn get_integer(ah: ActionHash) -> ExternResult<u32> {
   let Some(record) = get(ah, GetOptions::content())? else {
     return Err(wasm_error!(WasmErrorInner::Guest("Integer not found".to_string())));
   };
-  let record::RecordEntry::Present(entry) = record.entry() else {
+  let RecordEntry::Present(entry) = record.entry() else {
     return Err(wasm_error!(WasmErrorInner::Guest("Integer not found".to_string())));
   };
   let integer = Integer::try_from(entry.clone())?;
@@ -52,7 +52,7 @@ fn get_my_values_local(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
   // Get typed entry for all results
   let mut numbers = Vec::new();
   for record in records {
-    let record::RecordEntry::Present(entry) = record.entry() else {
+    let RecordEntry::Present(entry) = record.entry() else {
       return Err(wasm_error!(WasmErrorInner::Guest("Could not convert record".to_string())));
     };
     let number = Integer::try_from(entry.clone()).unwrap();
@@ -67,7 +67,7 @@ fn get_my_values(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
   debug!("*** get_my_values()");
   let links = get_links(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default, None)?;
   let numbers = links.into_iter().map(|link| {
-    let ah: ActionHash = link.target.into();
+    let ah: ActionHash = link.target.into_action_hash().unwrap();
     let value = get_integer(ah.clone()).unwrap();
     return (ah, value);
   }).collect();
@@ -80,7 +80,7 @@ fn get_my_values_incremental(knowns: Vec<ActionHash>) -> ExternResult<Vec<(Actio
   debug!("*** get_my_values_incremental(): knowns = {:?}", knowns);
   let links = get_links(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default, None)?;
   let ahs: Vec<ActionHash> = links.into_iter()
-    .map(|link| link.target.into())
+    .map(|link| link.target.into_action_hash().unwrap())
     .filter(|item| !knowns.contains(item))
     .collect();
   debug!("*** get_my_values_incremental(): ahs = {:?}", ahs);

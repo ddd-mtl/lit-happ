@@ -21,7 +21,7 @@ fn get_real(eh: EntryHash) -> ExternResult<f32> {
   let Some(record) = get(eh, GetOptions::content())? else {
     return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
   };
-  let record::RecordEntry::Present(entry) = record.entry() else {
+  let RecordEntry::Present(entry) = record.entry() else {
     return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
   };
   let real = Real::try_from(entry.clone())?;
@@ -58,7 +58,7 @@ fn get_my_reals(_:()) -> ExternResult<Vec<f32>> {
   debug!("*** get_my_reals() called");
   let links = get_links(agent_info()?.agent_initial_pubkey, RealLink::Default, None)?;
   let labels = links.into_iter().map(|link| {
-      let name = get_real(link.target.into()).unwrap();
+      let name = get_real(link.target.into_entry_hash().unwrap()).unwrap();
       return name;
   }).collect();
   Ok(labels)

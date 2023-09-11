@@ -134,12 +134,17 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
+
+  /* (optional) Lets a concret DVM do its own thing after probing the ZVMs */
+  protected allProbed(): void {};
+
   /** */
   protected probeAllInner(): void {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
       zvm.probeAll();
     }
+    this.allProbed();
   }
 
   /** */

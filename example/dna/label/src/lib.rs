@@ -21,7 +21,7 @@ fn get_label(eh: EntryHash) -> ExternResult<String> {
   let Some(record) = get(eh, GetOptions::content())? else {
     return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
   };
-  let record::RecordEntry::Present(entry) = record.entry() else {
+  let RecordEntry::Present(entry) = record.entry() else {
     return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
   };
   let label = Label::try_from(entry.clone())?;
@@ -51,7 +51,7 @@ fn get_my_labels(_:()) -> ExternResult<Vec<String>> {
   debug!("*** get_my_labels() called");
   let links = get_links(agent_info()?.agent_initial_pubkey, LabelLink::Default, None)?;
   let labels = links.into_iter().map(|link| {
-      let name = get_label(link.target.into()).unwrap();
+      let name = get_label(link.target.into_entry_hash().unwrap()).unwrap();
       return name;
   }).collect();
   Ok(labels)
