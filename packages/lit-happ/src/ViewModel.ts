@@ -116,7 +116,7 @@ enum InitializationState {
     for (const [host, propName] of this._providedHosts) {
       (host as any)[propName] = this.perspective;
     }
-    this._previousPerspective = this.perspective
+    this._previousPerspective = structuredClone(this.perspective);
     return true;
   }
 

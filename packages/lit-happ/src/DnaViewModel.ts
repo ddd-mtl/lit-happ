@@ -134,18 +134,14 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
-
-  /* (optional) Lets a concret DVM do its own thing after probing the ZVMs */
-  protected allProbed(): void {};
-
-  /** */
+  /** Not async on purpose as we except this to be long. Post-processing should be done via Observer pattern */
   protected probeAllInner(): void {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
       zvm.probeAll();
     }
-    this.allProbed();
   }
+
 
   /** */
   zvmChanged(zvm: ZomeViewModel): void {}
