@@ -69,7 +69,7 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
       return  ConductorAppProxy.fromSocket(port_or_socket);
     } else {
       const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
-      let wsUrl = `ws://localhost:${port_or_socket}`
+      let wsUrl = new URL(`ws://localhost:${port_or_socket}`);
       try {
         let conductor = new ConductorAppProxy(timeout);
 

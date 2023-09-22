@@ -118,7 +118,7 @@ export class PlaygroundApp extends HappElement {
   async hvmConstructed(): Promise<void> {
     console.log("hvmConstructed()")
     /** Authorize all zome calls */
-    const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`);
+    const adminWs = await AdminWebsocket.connect(new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
     console.log({adminWs});
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
