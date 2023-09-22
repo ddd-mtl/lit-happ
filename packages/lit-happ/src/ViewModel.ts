@@ -113,10 +113,10 @@ enum InitializationState {
   /** */
   protected notifySubscribers(): boolean {
     if (!this.hasChanged()) return false;
-    for (const [host, propName] of this._providedHosts) {
-      (host as any)[propName] = this.perspective;
-    }
     this._previousPerspective = structuredClone(this.perspective);
+    for (const [host, propName] of this._providedHosts) {
+      (host as any)[propName] = this._previousPerspective;
+    }
     return true;
   }
 
