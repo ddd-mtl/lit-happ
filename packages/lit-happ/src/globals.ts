@@ -20,10 +20,12 @@ export enum HappBuildModeType {
 
 /** INIT GLOBAL CONSTS */
 
-console.log("Initializaing HAPP global consts");
+console.log("Initializaing HAPP global consts", window);
 
 let buildMode: HappBuildModeType;
 let happEnv: HappEnvType;
+
+/** Determine HappEnv */
 try {
     happEnv = process.env.HAPP_ENV as HappEnvType;
     //console.log(`HAPP_ENV defined by process.ENV: "${happEnv}"`);
@@ -34,20 +36,26 @@ try {
         happEnv = HappEnvType.Electron;
         buildMode = MY_ELECTRON_API.BUILD_MODE;
         //console.log(`HAPP_ENV is "${HappEnvType.Electron}"`);
+    } else {
+        /** Looking for We */
+        const isInWe = 'IN_WE' in window? window.IN_WE as boolean : false;
+        if (isInWe) {
+            happEnv = HappEnvType.We;
+        } else {
+            /** Looking for Holo */
+            // FIXME
+            const isInHolo = false;
+            if (isInHolo) {
+                happEnv = HappEnvType.Holo;
+            } else {
+                /** Default to prod */
+                happEnv = HappEnvType.Prod;
+            }
+        }
     }
-    /** Looking for We */
-    //console.log("window.IN_WE", (window as any).IN_WE);
-    const isInWe = 'IN_WE' in window? window.IN_WE as boolean : false;
-    if (isInWe) {
-        happEnv = HappEnvType.We;
-    }
-    /** Looking for Holo */
-    // FIXME
-    /** Default to prod */
-    happEnv = HappEnvType.Prod;
 }
 
-
+/** Determine BuildMode */
 if (!buildMode) {
     try {
        buildMode = process.env.HAPP_BUILD_MODE as HappBuildModeType;
@@ -57,6 +65,7 @@ if (!buildMode) {
     }
 }
 
+/** export result */
 export let HAPP_BUILD_MODE = buildMode;
 export let HAPP_ENV = happEnv;
 
