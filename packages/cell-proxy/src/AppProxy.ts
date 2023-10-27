@@ -13,7 +13,7 @@ import {
   ClonedCell,
   CellType,
   ProvisionedCell,
-  encodeHashToBase64,
+  encodeHashToBase64, Timestamp,
 } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, RoleCellsMap, BaseRoleName, CellsForRole} from "./types";
@@ -40,7 +40,7 @@ export class AppProxy implements AppApi {
   /** -- Fields -- */
 
   /** Signal log: [Timestamp, CellIdStr, Signal] */
-  private _signalLogs: [number, CellIdStr, AppSignal][] = [];
+  private _signalLogs: [Timestamp, CellIdStr, AppSignal][] = [];
   /** Map cells per App: InstalledAppId -> (BaseRoleName -> CellsForRole) */
   private _cellsByApp: Dictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */

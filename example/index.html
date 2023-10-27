@@ -13,12 +13,17 @@
   <body style="margin:0px;background: #FAF1EA;height:100vh;">
     <playground-app></playground-app>
     <script type="module">
-      console.log("  HC_APP_PORT:", process.env.HC_APP_PORT);
-      console.log("HC_ADMIN_PORT:", process.env.HC_ADMIN_PORT);
-
+      console.log("example/index.html");
+      console.log("  - HC_APP_PORT  :", process.env.HC_APP_PORT);
+      console.log("  - HC_ADMIN_PORT:", process.env.HC_ADMIN_PORT);
+      console.log("  - BUILD_MODE   :", process.env.BUILD_MODE);
+      console.log("  - HAPP_ENV     :", process.env.HAPP_ENV);
+      //window.IN_WE = true;
+    </script>
+    <script type="module">
       //import * as hcc from "@holochain/client";
       import {AdminWebsocket} from "@holochain/client";
-      console.log({AdminWebsocket});
+      //console.log({AdminWebsocket});
       const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`)
       console.log({adminWs});
 

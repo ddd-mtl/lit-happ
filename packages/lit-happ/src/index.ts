@@ -1,3 +1,5 @@
+export * from "./globals";
+
 export * from "./HappViewModel";
 export * from "./ZomeViewModel";
 export * from "./DnaViewModel";
