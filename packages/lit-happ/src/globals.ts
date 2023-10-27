@@ -50,9 +50,9 @@ try {
 
 if (!buildMode) {
     try {
-       buildMode = process.env.BUILD_MODE as HappBuildModeType;
+       buildMode = process.env.HAPP_BUILD_MODE as HappBuildModeType;
     } catch (e) {
-       console.log(`BUILD_MODE not defined. Defaulting to "${HappBuildModeType.Retail}"`);
+       console.log(`HAPP_BUILD_MODE not defined. Defaulting to "${HappBuildModeType.Retail}"`);
        buildMode = HappBuildModeType.Retail;
     }
 }
@@ -69,7 +69,7 @@ console.log("Initializaing HAPP global consts - DONE")
 
 /** Remove console.log() in PROD */
 // FIXME
-// if (BUILD_MODE === 'prod') {
+// if (HAPP_BUILD_MODE === 'prod') {
 //   console.log("console.log() disabled");
 //   console.log = () => {};
 // }
