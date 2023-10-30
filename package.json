@@ -3,17 +3,27 @@
   "workspaces": [
     "example",
     "packages/cell-proxy",
-    "packages/lit-happ"
+    "packages/lit-happ",
+    "packages/we-utils"
   ],
   "scripts": {
+    "ci:tsc" : "tsc --version",
     "version": "hc --version && holochain --version && lair-keystore --version",
     "postinstall": "mkdir -p artifacts",
+
     "build:happ": "npm run build:happ -w example && npm run build:happ:clone -w example",
     "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ",
+
     "start": "npm run start -w example",
     "start:clone": "npm run start:clone -w example",
     "devtest": "npm run build:happ && npm run build:libs && npm run build -w example && npm run start",
     "devtest:clone": "npm run build:happ && npm run build:libs && npm run build -w example && npm run start:clone",
+
+    "publish:cell": "npm run build -w packages/cell-proxy && cd packages/cell-proxy && npm publish",
+    "publish:lit": "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
+    "publish:we": "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
+    "publish:all": "npm publish:cell && npm publish:lit && npm publish:we",
+
     "clean": "bash scripts/clean.sh",
     "clean:npm": "bash scripts/clean-npm.sh",
     "clean:hc": "cd example && hc s clean",

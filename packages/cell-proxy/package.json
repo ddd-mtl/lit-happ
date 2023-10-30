@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "lint": "eslint --ext .ts .",
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",

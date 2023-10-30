@@ -1,0 +1,42 @@
+{
+  "name": "@ddd-qc/we-utils",
+  "version": "0.19.14",
+  "description": "Helpers for creating we-applets out of HappElements from lit-happ",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "ci:tsc": "tsc --version",
+    "lint"  : "eslint --ext .ts .",
+    "build" : "rm -rf dist && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddd-mtl/lit-happ.git"
+  },
+  "author": "",
+  "license": "CAL-1.0",
+  "bugs": {
+    "url": "https://github.com/ddd-mtl/lit-happ/issues"
+  },
+  "homepage": "https://github.com/ddd-mtl/lit-happ/packages/we-utils/#readme",
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "tslib": "^2.4.0",
+    "typescript": "^4.9.0"
+  },
+  "dependencies": {
+    "@ddd-qc/cell-proxy": "file:../cell-proxy",
+    "@ddd-qc/lit-happ": "file:../lit-happ",
+    "@holochain-open-dev/profiles": "^0.16.1",
+    "@holochain/client": "=0.16.2",
+    "@lightningrodlabs/we-applet": "0.10.0",
+    "@mdi/js": "^7.2.0"
+  },
+  "engines": {
+    "node": "^14.13.1 || >=16.0.0 || >=18.0.0"
+  }
+}

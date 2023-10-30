@@ -9,9 +9,8 @@
     "dist"
   ],
   "scripts": {
-    "ci:tsc" : "tsc --version",
     "lint": "eslint --ext .ts .",
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",
