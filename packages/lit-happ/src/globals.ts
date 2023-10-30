@@ -25,16 +25,18 @@ console.log("Initializaing HAPP global consts", window);
 let buildMode: HappBuildModeType;
 let happEnv: HappEnvType;
 
+
+const maybeElectronApi = 'electronBridge' in window? window.electronBridge as any : undefined;
+
 /** Determine HappEnv */
 try {
     happEnv = process.env.HAPP_ENV as HappEnvType;
     //console.log(`HAPP_ENV defined by process.ENV: "${happEnv}"`);
 } catch (e) {
     /** Looking for Electron */
-    const MY_ELECTRON_API = 'electronBridge' in window? window.electronBridge as any : undefined;
-    if (MY_ELECTRON_API) {
+    if (maybeElectronApi) {
         happEnv = HappEnvType.Electron;
-        buildMode = MY_ELECTRON_API.BUILD_MODE;
+        buildMode = maybeElectronApi.BUILD_MODE;
         //console.log(`HAPP_ENV is "${HappEnvType.Electron}"`);
     } else {
         /** Looking for We */
@@ -68,10 +70,13 @@ if (!buildMode) {
 /** export result */
 export let HAPP_BUILD_MODE = buildMode;
 export let HAPP_ENV = happEnv;
+export let HAPP_ELECTRON_API = maybeElectronApi;
 
-
-console.log("HAPP_BUILD_MODE =", HAPP_BUILD_MODE)
-console.log("       HAPP_ENV =", HAPP_ENV);
+console.log("  HAPP_BUILD_MODE =", HAPP_BUILD_MODE)
+console.log("         HAPP_ENV =", HAPP_ENV);
+if (HAPP_ELECTRON_API) {
+    console.log("HAPP_ELECTRON_API =", HAPP_ENV);
+}
 
 console.log("Initializaing HAPP global consts - DONE")
 
