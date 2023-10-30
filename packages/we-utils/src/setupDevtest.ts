@@ -6,6 +6,8 @@ import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
 import { setBasePath, getBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import {HappElement} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
+import {emptyRenderInfo} from "./mocks/renderInfoMock";
+import {AppletViewInfo} from "./index";
 
 
 /** */
@@ -78,12 +80,12 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     mockProfilesZome.create_profile({nickname: "Alex", fields: {}})
     const mockAppInfo = await mockProfilesZome.appInfo();
     console.log("setupDevtest() mockAppInfo", mockAppInfo);
-    const applet = await createApplet(
-        appAgentWs,
-        devtestAppletHash,
-        new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby"),
-        myWeServicesMock,
-    );
+
+    let renderInfo = emptyRenderInfo as AppletViewInfo;
+    renderInfo.profilesClient = new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby");
+    renderInfo.appletClient = appAgentWs;
+    renderInfo.appletHash = devtestAppletHash;
+    const applet = await createApplet(renderInfo, myWeServicesMock);
     //renderers.main(document.body);
     console.log("setupDevtest() applet", applet);
     return applet;

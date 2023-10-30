@@ -36,8 +36,8 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
     /** Delay because of We 'CellDisabled' bug at startup race condition */
     await delay(1000);
 
-    const renderInfo = weClient.renderInfo as any;
-    const applet = await createApplet(renderInfo.appletClient, renderInfo.appletHash, renderInfo.profilesClient, weClient);
+    //const renderInfo = weClient.renderInfo as any;
+    const applet = await createApplet(weClient.renderInfo, weClient);
     console.log("applet", applet);
     return applet;
 }

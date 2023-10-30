@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/we-utils",
-  "version": "0.19.14",
+  "version": "0.19.15",
   "description": "Helpers for creating we-applets out of HappElements from lit-happ",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/ddd-mtl/lit-happ/issues"
   },
-  "homepage": "https://github.com/ddd-mtl/lit-happ/packages/we-utils/#readme",
+  "homepage": "https://github.com/ddd-mtl/lit-happ/blob/main/packages/we-utils/",
   "devDependencies": {
     "@types/node": "^20.8.9",
     "tslib": "^2.4.0",

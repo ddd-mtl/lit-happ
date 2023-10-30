@@ -12,7 +12,7 @@
     "postinstall": "mkdir -p artifacts",
 
     "build:happ": "npm run build:happ -w example && npm run build:happ:clone -w example",
-    "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ",
+    "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils",
 
     "start": "npm run start -w example",
     "start:clone": "npm run start:clone -w example",
