@@ -1,12 +1,12 @@
 import {ZomeViewModel} from "@ddd-qc/lit-happ";
-import {ProfilesProxy, FileShareProfile} from "./profiles.proxy";
-import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64, EntryHashB64} from "@holochain/client";
+import {ProfilesProxy, ProfileMat} from "./profiles.proxy";
+import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64} from "@holochain/client";
 
 
 /** */
 export interface ProfilesPerspective {
   /* AgentPubKeyB64 -> Profile */
-  profiles: Record<AgentPubKeyB64, FileShareProfile>,
+  profiles: Record<AgentPubKeyB64, ProfileMat>,
   ///* AgentPubKeyB64 -> Profile hash */
   //profile_ahs: Record<AgentPubKeyB64, ActionHashB64>,
 
@@ -52,14 +52,14 @@ export class ProfilesZvm extends ZomeViewModel {
     };
   }
 
-  private _profiles: Record<AgentPubKeyB64, FileShareProfile> = {};
+  private _profiles: Record<AgentPubKeyB64, ProfileMat> = {};
   //private _profile_ahs: Record<AgentPubKeyB64, ActionHashB64> = {};
   private _reversed: Record<string, AgentPubKeyB64> = {};
 
 
-  getMyProfile(): FileShareProfile | undefined { return this._profiles[this.cell.agentPubKey] }
+  getMyProfile(): ProfileMat | undefined { return this._profiles[this.cell.agentPubKey] }
 
-  getProfile(agent: AgentPubKeyB64): FileShareProfile | undefined {return this._profiles[agent]}
+  getProfile(agent: AgentPubKeyB64): ProfileMat | undefined {return this._profiles[agent]}
 
   //getProfileHash(agent: AgentPubKeyB64): ActionHashB64 | undefined {return this._profile_ahs[agent]}
 
@@ -83,7 +83,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async probeAllProfiles(): Promise<Record<AgentPubKeyB64, FileShareProfile>> {
+  async probeAllProfiles(): Promise<Record<AgentPubKeyB64, ProfileMat>> {
     let allAgents;
     /** Attempt a retry on fail as this can create an entry and generate an error (path anchor) */
     try {
@@ -108,7 +108,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<FileShareProfile | undefined> {
+  async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<ProfileMat | undefined> {
     const maybeProfile = await this.zomeProxy.getAgentProfile(decodeHashFromBase64(pubKeyB64));
     console.log("probeProfile()", maybeProfile);
     if (!maybeProfile) {
@@ -124,7 +124,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async createMyProfile(profile: FileShareProfile): Promise<void> {
+  async createMyProfile(profile: ProfileMat): Promise<void> {
     /*const record =*/ await this.zomeProxy.createProfile(profile);
     this._profiles[this.cell.agentPubKey] = profile;
     this._reversed[profile.nickname] = this.cell.agentPubKey;
@@ -133,7 +133,7 @@ export class ProfilesZvm extends ZomeViewModel {
   }
 
   /** */
-  async updateMyProfile(profile: FileShareProfile): Promise<void> {
+  async updateMyProfile(profile: ProfileMat): Promise<void> {
     /*const record =*/ await this.zomeProxy.updateProfile(profile);
     this._profiles[this.cell.agentPubKey] = profile;
     this._reversed[profile.nickname] = this.cell.agentPubKey;

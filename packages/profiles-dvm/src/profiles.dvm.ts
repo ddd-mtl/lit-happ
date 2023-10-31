@@ -35,15 +35,6 @@ export class ProfilesDvm extends DnaViewModel {
     return {}
   }
 
-  // get perspective(): ThreadsDnaPerspective {
-  //   return {
-  //     agentPresences: this._agentPresences,
-  //   }
-  // }
-
-  ///** agentPubKey -> timestamp */
-  //private _agentPresences: Record<string, number> = {};
-
 
   /** -- Signaling -- */
 

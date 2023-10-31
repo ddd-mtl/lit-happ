@@ -4,6 +4,7 @@
     "example",
     "packages/cell-proxy",
     "packages/lit-happ",
+    "packages/profiles-dvm",
     "packages/we-utils"
   ],
   "scripts": {
@@ -12,7 +13,7 @@
     "postinstall": "mkdir -p artifacts",
 
     "build:happ": "npm run build:happ -w example && npm run build:happ:clone -w example",
-    "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils",
+    "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build -w packages/profiles-dvm",
 
     "start": "npm run start -w example",
     "start:clone": "npm run start:clone -w example",
@@ -22,6 +23,8 @@
     "publish:cell": "npm run build -w packages/cell-proxy && cd packages/cell-proxy && npm publish",
     "publish:lit": "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
     "publish:we": "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
+    "publish:profiles": "npm run build -w packages/profiles-dvm && cd packages/profiles-dvm && npm publish",
+
     "publish:all": "npm run publish:cell && npm run publish:lit && npm run publish:we",
 
     "clean": "bash scripts/clean.sh",

@@ -3,9 +3,7 @@ import {ZomeProxy} from "@ddd-qc/lit-happ";
 import { decode } from "@msgpack/msgpack";
 
 
-// FIXME delete this file and use ProfilesClient in ZVM instead
-
-export interface FileShareProfile {
+export interface ProfileMat {
   nickname: string;
   fields: Record<string, string>;
 }
@@ -27,11 +25,11 @@ export class ProfilesProxy extends ZomeProxy {
   ];
 
 
-  async createProfile(profile: FileShareProfile): Promise<void> {
+  async createProfile(profile: ProfileMat): Promise<void> {
     return this.callBlocking('create_profile', profile);
   }
 
-  async updateProfile(profile: FileShareProfile): Promise<void> {
+  async updateProfile(profile: ProfileMat): Promise<void> {
     return this.callBlocking('update_profile', profile);
   }
 
@@ -39,7 +37,7 @@ export class ProfilesProxy extends ZomeProxy {
     return this.call('search_agents', {nickname_filter});
   }
 
-  async getAgentProfile(agentPubKey: AgentPubKey): Promise<FileShareProfile | undefined> {
+  async getAgentProfile(agentPubKey: AgentPubKey): Promise<ProfileMat | undefined> {
     const record: HcRecord | undefined =  await this.call('get_agent_profile', agentPubKey);
     console.log("getAgentProfile() record", record);
     if (!record) {
@@ -47,7 +45,7 @@ export class ProfilesProxy extends ZomeProxy {
     }
     const entry = (record.entry as any)?.Present?.entry;
     console.log("getAgentProfile() entry", entry);
-    return decode(entry) as FileShareProfile;
+    return decode(entry) as ProfileMat;
   }
 
   async getAgentsWithProfile(): Promise<AgentPubKey[]> {
