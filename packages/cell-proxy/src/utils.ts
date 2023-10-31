@@ -24,6 +24,8 @@ export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
 /** convert Pascal case to snake case */
 export const snake = str => str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
+/** convert snake case to pascal case */
+const pascal = str => str[0].toUpperCase() + str.slice(1, str.length).replace(/_([a-z])/g, letter => `${letter[1].toUpperCase()}`);
 
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64

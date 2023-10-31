@@ -1,6 +1,6 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
 import {fakeDnaHash, fakeEntryHash} from "@holochain/client";
-import {AppletViewInfo} from "../index";
+import {AppletViewInfo, EntryViewInfo} from "../index";
 
 
 /** Empty AppletViews */
@@ -20,9 +20,9 @@ export const emptyEntryAppletView = {
     roleName: "",
     integrityZomeName: "",
     entryType: "",
-    hrl: [await fakeDnaHash(), await fakeEntryHash()],
+    "hrl": [await fakeDnaHash(), await fakeEntryHash()],
     context: null,
-} as AppletView;
+} as EntryViewInfo;
 
 
 

@@ -8,10 +8,11 @@ import {HappElement} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 import {emptyRenderInfo} from "./mocks/renderInfoMock";
 import {AppletViewInfo} from "./index";
+import {AppletView} from "@lightningrodlabs/we-applet";
 
 
 /** */
-export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestNames, createWeServicesMock: CreateWeServicesMockFn)
+export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestNames, createWeServicesMock: CreateWeServicesMockFn, appletView?: AppletView)
     : Promise<HappElement> {
     console.log("setupDevtest()", process.env.HAPP_BUILD_MODE, process.env.HC_APP_PORT, process.env.HC_ADMIN_PORT);
 
@@ -81,10 +82,17 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     const mockAppInfo = await mockProfilesZome.appInfo();
     console.log("setupDevtest() mockAppInfo", mockAppInfo);
 
+
+    /** Create renderInfo */
     let renderInfo = emptyRenderInfo as AppletViewInfo;
     renderInfo.profilesClient = new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby");
     renderInfo.appletClient = appAgentWs;
     renderInfo.appletHash = devtestAppletHash;
+    /** Determine renderInfo.view */
+    if (appletView) {
+        renderInfo.view = appletView;
+    }
+    /** Create Applet */
     const applet = await createApplet(renderInfo, myWeServicesMock);
     //renderers.main(document.body);
     console.log("setupDevtest() applet", applet);
