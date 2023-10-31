@@ -1,7 +1,7 @@
 {
-  "name": "@ddd-qc/lit-happ",
+  "name": "@ddd-qc/profiles-dvm",
   "version": "0.19.18",
-  "description": "MVVM Framework for holochain apps using Lit",
+  "description": "DnaViewModel implementation for the Profiles zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
@@ -9,8 +9,9 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint --ext .ts .",
-    "build": "rm -rf dist && tsc"
+    "ci:tsc": "tsc --version",
+    "lint"  : "eslint --ext .ts .",
+    "build" : "rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",
@@ -21,16 +22,18 @@
   "bugs": {
     "url": "https://github.com/ddd-mtl/lit-happ/issues"
   },
-  "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
+  "homepage": "https://github.com/ddd-mtl/lit-happ/blob/main/packages/profiles-dvm/",
   "devDependencies": {
     "@types/node": "^20.8.9",
     "tslib": "^2.4.0",
     "typescript": "^4.9.0"
   },
   "dependencies": {
-    "@ddd-qc/cell-proxy": "file:../cell-proxy",
-    "@lit-labs/context": "^0.2.0",
-    "lit": "^2.6.0",
-    "async-mutex": "0.4.0"
+    "@ddd-qc/lit-happ": "file:../lit-happ",
+    "@holochain/client": "=0.16.2",
+    "@msgpack/msgpack": "^2.7.2"
+  },
+  "engines": {
+    "node": "^14.13.1 || >=16.0.0 || >=18.0.0"
   }
 }
