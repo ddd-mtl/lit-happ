@@ -4,7 +4,7 @@ import {
   AppAgentWebsocket,
   CellInfo,
   DnaHash,
-  encodeHashToBase64,
+  encodeHashToBase64, EntryHash,
   InstalledAppId
 } from "@holochain/client";
 
@@ -53,4 +53,11 @@ export function wrapPathInSvg(path) {
 /** Wraps a path from @mdi/js into a svg, to be used inside an <sl-icon src=""></sl-icon> */
 export function wrapPathInSvgWithoutPrefix(path) {
   return `<svg style='fill: currentColor' viewBox='0 0 24 24'><path d='${path}'></path></svg>`;
+}
+
+
+/** */
+export async function emptyAppletHash(): Promise<EntryHash> {
+  const zeroBytes = new Uint8Array(36).fill(0);
+  return new Uint8Array([0x84, 0x21, 0x24, ...zeroBytes]);
 }

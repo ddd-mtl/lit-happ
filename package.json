@@ -1,5 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
+  "version": "0.19.19",
   "workspaces": [
     "example",
     "packages/cell-proxy",
@@ -25,7 +26,10 @@
     "publish:we": "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
     "publish:profiles": "npm run build -w packages/profiles-dvm && cd packages/profiles-dvm && npm publish",
 
-    "publish:all": "npm run publish:cell && npm run publish:lit && npm run publish:we",
+    "update-version" : "bash scripts/update-version-number.sh $npm_package_version",
+
+
+    "publish:all": "npm run publish:cell && npm run publish:lit && npm run publish:we && npm run publish:profiles",
 
     "clean": "bash scripts/clean.sh",
     "clean:npm": "bash scripts/clean-npm.sh",

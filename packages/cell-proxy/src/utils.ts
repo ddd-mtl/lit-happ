@@ -27,6 +27,7 @@ export const snake = str => str[0].toLowerCase() + str.slice(1, str.length).repl
 /** convert snake case to pascal case */
 export const pascal = str => str[0].toUpperCase() + str.slice(1, str.length).replace(/_([a-z])/g, letter => `${letter[1].toUpperCase()}`);
 
+
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
  */

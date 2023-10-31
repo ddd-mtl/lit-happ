@@ -1,4 +1,4 @@
-export * from "./cellUtils"
+export * from "./utils"
 export * from "./profilesApi"
 export * from "./setup"
 export * from "./setupDevtest"
