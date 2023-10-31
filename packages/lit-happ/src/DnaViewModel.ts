@@ -23,6 +23,7 @@ import {RoleMixin, RoleSpecific} from "./roleMixin";
 /** Interface specific to DnaViewModel class */
 interface IDnaViewModel {
   dumpLogs(zomeName?: ZomeName): void;
+  /** zomeName -> (AppEntryName, isPublic)[]*/
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   //getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined;

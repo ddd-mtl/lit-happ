@@ -21,6 +21,9 @@ export function areCellsEqual(cellA: CellId, cellB: CellId) {
 /**  */
 export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
 
+/** convert Pascal case to snake case */
+export const snake = str => str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+
 
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64

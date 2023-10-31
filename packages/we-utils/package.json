@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/we-utils",
-  "version": "0.19.15",
+  "version": "0.19.16",
   "description": "Helpers for creating we-applets out of HappElements from lit-happ",
   "main": "dist/index.js",
   "module": "dist/index.js",

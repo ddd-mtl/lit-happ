@@ -164,7 +164,7 @@ export class CellProxy extends CellMixin(Empty) {
 
   /**
    * Calls the `entry_defs()` zome function and
-   * returns an array of all the zome's AppEntryDefNames and visibility
+   * Returns an array of all the zome's AppEntryNames and Visibility, i.e. (AppEntryName, isPublic)[]
    */
   async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
     //console.log("callEntryDefs()", zomeName)

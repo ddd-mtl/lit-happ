@@ -22,7 +22,7 @@
     "publish:cell": "npm run build -w packages/cell-proxy && cd packages/cell-proxy && npm publish",
     "publish:lit": "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
     "publish:we": "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
-    "publish:all": "npm publish:cell && npm publish:lit && npm publish:we",
+    "publish:all": "npm run publish:cell && npm run publish:lit && npm run publish:we",
 
     "clean": "bash scripts/clean.sh",
     "clean:npm": "bash scripts/clean-npm.sh",
