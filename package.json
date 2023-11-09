@@ -5,13 +5,21 @@
     "example",
     "packages/cell-proxy",
     "packages/lit-happ",
+    "packages/notifications-dvm",
     "packages/profiles-dvm",
     "packages/we-utils"
   ],
   "scripts": {
-    "ci:tsc" : "tsc --version",
-    "version": "hc --version && holochain --version && lair-keystore --version",
+    "version:tsc" : "tsc --version",
+    "version:hc"  : "hc --version && holochain --version && lair-keystore --version",
+
     "postinstall": "mkdir -p artifacts",
+
+    "install:submodules" : "bash scripts/install-submodules.sh",
+    "install:zits"       : "cargo install zits --version 1.9.0",
+
+
+    "build:notifications" : "bash scripts/ts-bindings.sh",
 
     "build:happ": "npm run build:happ -w example && npm run build:happ:clone -w example",
     "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build -w packages/profiles-dvm",

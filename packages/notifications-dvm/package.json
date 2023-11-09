@@ -1,7 +1,7 @@
 {
-  "name": "@ddd-qc/profiles-dvm",
+  "name": "@ddd-qc/notifications-dvm",
   "version": "0.19.20",
-  "description": "DnaViewModel implementation for the Profiles zome.",
+  "description": "DnaViewModel implementation for the Notifications zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/ddd-mtl/lit-happ/issues"
   },
-  "homepage": "https://github.com/ddd-mtl/lit-happ/blob/main/packages/profiles-dvm/",
+  "homepage": "https://github.com/ddd-mtl/lit-happ/blob/main/packages/notifications-dvm/",
   "devDependencies": {
     "@types/node": "^20.8.9",
     "tslib": "^2.4.0",
@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@ddd-qc/lit-happ": "file:../lit-happ",
-    "@holochain-open-dev/core-types": "0.6.3",
     "@holochain/client": "=0.16.2",
     "@msgpack/msgpack": "^2.7.2",
     "lit": "^2.6.0"
