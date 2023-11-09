@@ -38,3 +38,10 @@ export type EntryViewInfo = {
     hrl: Hrl,
     context: any,
 }
+
+
+export type BlockViewInfo = {
+    type: "block";
+    block: string;
+    context: any;
+}
