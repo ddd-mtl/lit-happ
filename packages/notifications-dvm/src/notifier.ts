@@ -1,6 +1,6 @@
 
 /** */
-export async function sendText(to, message, config) {
+export async function sendText(to: string, message: string, config: any) {
     console.log(to, message, config.twilio.account_sid, config.twilio.auth_token, config.twilio.from_number_text)
     try {
         fetch('https://api.twilio.com/2010-04-01/Accounts/' + config.twilio.account_sid + '/Messages.json', {
@@ -20,7 +20,7 @@ export async function sendText(to, message, config) {
 }
 
 /** */
-export async function sendWhatsappMessage(to, message, config) {
+export async function sendWhatsappMessage(to: string, message: string, config: any) {
     console.log(to, message, config.twilio.account_sid, config.twilio.auth_token, config.twilio.from_number_whatsapp)
     try {
         fetch('https://api.twilio.com/2010-04-01/Accounts/' + config.twilio.account_sid + '/Messages.json', {
@@ -41,7 +41,7 @@ export async function sendWhatsappMessage(to, message, config) {
 
 
 /** */
-export async function sendEmail(to, message, config) {
+export async function sendEmail(to: string, message: string, config: any) {
     try {
         const form = new FormData();
         form.append('from', 'Excited User <' + config.mailgun.email_address + '>');
@@ -57,7 +57,6 @@ export async function sendEmail(to, message, config) {
             },
             body: form
         });
-
     } catch {
         console.log('error sending email')
     }

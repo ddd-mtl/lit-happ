@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/notifications-dvm",
-  "version": "0.19.21",
+  "version": "0.19.22",
   "description": "DnaViewModel implementation for the Notifications zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",

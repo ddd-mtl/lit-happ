@@ -8,8 +8,7 @@ import {
   encodeHashToBase64
 } from "@holochain/client";
 import {NotificationsProxy} from "../bindings/notifications.proxy";
-import {AgentPubKeyWithTag, Contact, NotificationTip, Signal, TwilioCredentials} from "../bindings/notifications.types";
-import {Record as HcRecord} from "@holochain/client/lib/hdk/record";
+import {AgentPubKeyWithTag, Contact, NotificationTip, TwilioCredentials} from "../bindings/notifications.types";
 import {sendEmail, sendText, sendWhatsappMessage} from "../notifier";
 
 
@@ -31,6 +30,13 @@ export class NotificationsZvm extends ZomeViewModel {
   static readonly ZOME_PROXY = NotificationsProxy;
   get zomeProxy(): NotificationsProxy {return this._zomeProxy as NotificationsProxy;}
 
+  /** Config */
+  private _config?: Object;
+
+  get config(): Object {return this._config}
+  setConfig(config: object) {
+    this._config = config;
+  }
 
   /** -- Signals -- */
 
@@ -56,18 +62,22 @@ export class NotificationsZvm extends ZomeViewModel {
           this.zomeProxy.handleNotificationTip(new_payload);
         }, 10000);
       } else {
-        console.log('sending text', notification)
-        let textMessage = notification.message
+        console.log('sending text', notification);
+        if (!this._config) {
+          console.error("Cannot send notification. Config has not been set");
+          return;
+        }
+        let textMessage = notification.message;
         for (let i = 0; i < notification.contacts.length; i++) {
           let contact = notification.contacts[i];
           if (contact.text_number.length > 0) {
-            sendText(contact.text_number, textMessage, config);
+            sendText(contact.text_number, textMessage, this._config);
           }
           if (contact.email_address.length > 0) {
-            sendEmail(contact.email_address, textMessage, config);
+            sendEmail(contact.email_address, textMessage, this._config);
           }
           if (contact.whatsapp_number.length > 0) {
-            sendWhatsappMessage(contact.whatsapp_number, textMessage, config);
+            sendWhatsappMessage(contact.whatsapp_number, textMessage, this._config);
           }
         }
       }
