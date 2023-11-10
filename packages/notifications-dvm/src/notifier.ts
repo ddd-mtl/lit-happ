@@ -41,13 +41,13 @@ export async function sendWhatsappMessage(to: string, message: string, config: a
 
 
 /** */
-export async function sendEmail(to: string, message: string, config: any) {
+export async function sendTextEmail(to: string, serviceName: string, subject: string, message: string, config: any) {
     try {
         const form = new FormData();
-        form.append('from', 'Excited User <' + config.mailgun.email_address + '>');
+        form.append('from', `${serviceName} < ${config.mailgun.email_address} >`);
         form.append('to', config.mailgun.email_address);
         form.append('to', to);
-        form.append('subject', 'New message');
+        form.append('subject', subject);
         form.append('text', message);
 
         fetch('https://api.mailgun.net/v3/' + config.mailgun.domain + '/messages', {

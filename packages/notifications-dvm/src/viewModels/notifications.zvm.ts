@@ -9,7 +9,7 @@ import {
 } from "@holochain/client";
 import {NotificationsProxy} from "../bindings/notifications.proxy";
 import {AgentPubKeyWithTag, Contact, NotificationTip, TwilioCredentials} from "../bindings/notifications.types";
-import {sendEmail, sendText, sendWhatsappMessage} from "../notifier";
+import {sendText, sendTextEmail, sendWhatsappMessage} from "../notifier";
 
 
 /** */
@@ -30,9 +30,10 @@ export class NotificationsZvm extends ZomeViewModel {
   static readonly ZOME_PROXY = NotificationsProxy;
   get zomeProxy(): NotificationsProxy {return this._zomeProxy as NotificationsProxy;}
 
+  serviceName: string = "Holochain Notification"
+
   /** Config */
   private _config?: Object;
-
   get config(): Object {return this._config}
   setConfig(config: object) {
     this._config = config;
@@ -74,7 +75,7 @@ export class NotificationsZvm extends ZomeViewModel {
             sendText(contact.text_number, textMessage, this._config);
           }
           if (contact.email_address.length > 0) {
-            sendEmail(contact.email_address, textMessage, this._config);
+            sendTextEmail(contact.email_address, this.serviceName, notification.extra_context, textMessage, this._config);
           }
           if (contact.whatsapp_number.length > 0) {
             sendWhatsappMessage(contact.whatsapp_number, textMessage, this._config);
@@ -177,14 +178,14 @@ export class NotificationsZvm extends ZomeViewModel {
 
 
   /** */
-  async sendNotification(message: string, notificant: AgentPubKeyB64): Promise<void> {
+  async sendNotification(message: string, extra_context: string, notificant: AgentPubKeyB64): Promise<void> {
     const tip = {
       retry_count: 5,
       status: "",
       message,
       notificants: [decodeHashFromBase64(notificant)],
       contacts: [],
-      extra_context: "",
+      extra_context,
       message_id: "",
       destination: "",
     } as NotificationTip;
