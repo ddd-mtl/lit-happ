@@ -33,6 +33,7 @@ export const emptyAppletView: AppletViewInfo = {
     appletClient: undefined,
     profilesClient: undefined,
     appletHash: await fakeEntryHash(),
+    groupProfiles: [{name: "fakeGroup", logo_src: "https://lightningrodlabs.org/lrl_logo.png"}],
 }
 
 /** */

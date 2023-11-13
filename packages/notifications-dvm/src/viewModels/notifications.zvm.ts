@@ -49,7 +49,6 @@ export class NotificationsZvm extends ZomeViewModel {
     if (signal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }
-    console.log('signal received from notifications', signal.payload);
     const notification = signal.payload as NotificationTip;
 
     /** */
@@ -63,11 +62,11 @@ export class NotificationsZvm extends ZomeViewModel {
           this.zomeProxy.handleNotificationTip(new_payload);
         }, 10000);
       } else {
-        console.log('sending text', notification);
         if (!this._config) {
           console.error("Cannot send notification. Config has not been set");
           return;
         }
+        console.log('NotificationsZvm - sending text notification', notification);
         let textMessage = notification.message;
         for (let i = 0; i < notification.contacts.length; i++) {
           let contact = notification.contacts[i];
@@ -156,7 +155,7 @@ export class NotificationsZvm extends ZomeViewModel {
   /** */
   async createMyContact(text_number?: string, whatsapp_number?: string, email_address?: string) {
     const contact = {
-      agent_pub_key: decodeHashFromBase64(this.cell.agentPubKey),
+      agent_pub_key: this.cell.id[1],
       text_number,
       whatsapp_number,
       email_address,
@@ -178,12 +177,12 @@ export class NotificationsZvm extends ZomeViewModel {
 
 
   /** */
-  async sendNotification(message: string, extra_context: string, notificant: AgentPubKeyB64): Promise<void> {
+  async sendNotification(message: string, extra_context: string, notificants: AgentPubKeyB64[]): Promise<void> {
     const tip = {
       retry_count: 5,
       status: "",
       message,
-      notificants: [decodeHashFromBase64(notificant)],
+      notificants: notificants.map((agent) => decodeHashFromBase64(agent)),
       contacts: [],
       extra_context,
       message_id: "",
@@ -192,4 +191,40 @@ export class NotificationsZvm extends ZomeViewModel {
     await this.zomeProxy.sendNotificationTip(tip);
   }
 
+
+  /** */
+  async selectNotifier(agent?: AgentPubKeyB64) {
+    if (!agent) {
+      try {
+        await this.zomeProxy.selectFirstNotifier();
+      } catch (e) {
+        console.warn("Failed to select first notifier", e);
+        return undefined;
+      }
+    } else {
+      await this.probeNotifiers();
+      const notifiers = this._notifiers.map((notifier) => encodeHashToBase64(notifier.agent));
+      console.log("NotificationsZvm selectNotifier()", notifiers, agent);
+      if (!notifiers.includes(agent)) {
+        throw Error("Agent is not a known notifier");
+      }
+      await this.zomeProxy.selectNotifier(decodeHashFromBase64(agent));
+    }
+    /** Send my contact to new notifier */
+    const previousNotifier = this._myNotifier;
+    const newNotifier = await this.zomeProxy.getMyNotifier();
+    if (!newNotifier) {
+      console.warn("Failed to get notifier");
+      return undefined;
+    }
+    if (!previousNotifier || encodeHashToBase64(previousNotifier) != encodeHashToBase64(newNotifier)) {
+      const myContact = this.perspective.contacts[this.cell.agentPubKey];
+      if (myContact) {
+        await this.zomeProxy.sendContact(myContact);
+      }
+      this._myNotifier = newNotifier;
+      this.notifySubscribers();
+    }
+    return newNotifier;
+  }
 }

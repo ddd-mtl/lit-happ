@@ -19,7 +19,7 @@ export interface DevTestNames {
 import {AppletHash, AppletView} from "@lightningrodlabs/we-applet";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 import {AppAgentClient} from "@holochain/client";
-import {Hrl} from "@lightningrodlabs/we-applet/dist/types";
+import {GroupProfile, Hrl} from "@lightningrodlabs/we-applet/dist/types";
 
 export type AppletViewInfo = {
     type: "applet-view",
@@ -27,6 +27,7 @@ export type AppletViewInfo = {
     appletClient: AppAgentClient,
     profilesClient: ProfilesClient,
     appletHash: AppletHash,
+    groupProfiles: GroupProfile[];
 };
 
 

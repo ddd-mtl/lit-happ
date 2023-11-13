@@ -42,6 +42,7 @@ export async function sendWhatsappMessage(to: string, message: string, config: a
 
 /** */
 export async function sendTextEmail(to: string, serviceName: string, subject: string, message: string, config: any) {
+    console.log("sendTextEmail() to", config.mailgun.email_address);
     try {
         const form = new FormData();
         form.append('from', `${serviceName} < ${config.mailgun.email_address} >`);
@@ -50,13 +51,15 @@ export async function sendTextEmail(to: string, serviceName: string, subject: st
         form.append('subject', subject);
         form.append('text', message);
 
-        fetch('https://api.mailgun.net/v3/' + config.mailgun.domain + '/messages', {
+        const response = await fetch('https://api.mailgun.net/v3/' + config.mailgun.domain + '/messages', {
             method: 'POST',
             headers: {
                 'Authorization': 'Basic ' + btoa(config.mailgun.auth_token)
             },
             body: form
         });
+        console.log("sendTextEmail() response", response);
+        return response;
     } catch {
         console.log('error sending email')
     }
