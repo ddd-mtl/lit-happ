@@ -85,7 +85,7 @@ export class ProfilesZvm extends ZomeViewModel {
   /** */
   async probeAllProfiles(): Promise<Record<AgentPubKeyB64, ProfileMat>> {
     let allAgents;
-    /** Attempt a retry on fail as this can create an entry and generate an error (path anchor) */
+    /** Attempt a retry on fail as this can create an entry (path anchor) and generate a 'head has moved' error */
     try {
       allAgents = await this.zomeProxy.getAgentsWithProfile();
     } catch(e) {

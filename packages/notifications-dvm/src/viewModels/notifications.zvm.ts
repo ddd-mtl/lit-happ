@@ -36,6 +36,7 @@ export class NotificationsZvm extends ZomeViewModel {
   private _config?: Object;
   get config(): Object {return this._config}
   setConfig(config: object) {
+    console.log("NotificationsZvm.setConfig(). Keys:", Object.keys(config))
     this._config = config;
   }
 
@@ -45,19 +46,19 @@ export class NotificationsZvm extends ZomeViewModel {
 
   /** */
   handleSignal(signal: AppSignal) {
-    console.log("NotificationsZvm - Received Signal", signal);
+    //console.log("NotificationsZvm - Received Signal", signal);
     if (signal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }
+    console.log("NotificationsZvm - Received Signal", signal);
     const notification = signal.payload as NotificationTip;
-
     /** */
     if (notification.destination && notification.destination == "notifier_service") {
       if (notification.status === 'retry' && notification.retry_count < 5) {
         console.log('about to retry')
         let new_payload = notification;
         new_payload.retry_count = new_payload.retry_count + 1
-        console.log(new_payload)
+        console.log(new_payload);
         setTimeout(() => {
           this.zomeProxy.handleNotificationTip(new_payload);
         }, 10000);
@@ -117,8 +118,12 @@ export class NotificationsZvm extends ZomeViewModel {
 
   /** */
   async probeMyNotifier() {
-    this._myNotifier = await this.zomeProxy.getMyNotifier();
-    this.notifySubscribers();
+    try {
+      this._myNotifier = await this.zomeProxy.getMyNotifier();
+      this.notifySubscribers();
+    } catch (e) {
+      console.warn("No notifier found for this agent.", e);
+    }
   }
 
 
