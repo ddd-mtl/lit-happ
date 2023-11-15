@@ -1,5 +1,5 @@
 import {
-    AdminWebsocket, AppAgentWebsocket, encodeHashToBase64, fakeEntryHash, decodeHashFromBase64, EntryHash,
+    AdminWebsocket, AppAgentWebsocket, encodeHashToBase64, fakeEntryHash, decodeHashFromBase64, EntryHash, Record,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
@@ -8,7 +8,8 @@ import {HappElement} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 import {emptyRenderInfo} from "./mocks/renderInfoMock";
 import {AppletViewInfo} from "./index";
-import {AppletView} from "@lightningrodlabs/we-applet";
+import {AppletView, RenderInfo} from "@lightningrodlabs/we-applet";
+import {AgentPubKeyMap} from "@holochain-open-dev/utils";
 
 
 /** */
@@ -74,9 +75,9 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     }
 
     /** Creating mock lobby app with profiles dna & zome */
-    const mockProfilesZome = new ProfilesZomeMock();
+    const mockProfilesZome = new ProfilesZomeMock(new AgentPubKeyMap<Record>(), mainCellId[1]);
     //console.log("mock agentId", mockProfilesZome.myPubKey);
-    mockProfilesZome.myPubKey = mainCellId[1];
+    //mockProfilesZome.myPubKey = mainCellId[1];
     //console.log("mock agentId", encodeHashToBase64(mockProfilesZome.myPubKey));
     mockProfilesZome.create_profile({nickname: "Alex", fields: {}})
     const mockAppInfo = await mockProfilesZome.appInfo();
@@ -84,7 +85,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
 
 
     /** Create renderInfo */
-    let renderInfo = emptyRenderInfo as AppletViewInfo;
+    let renderInfo= emptyRenderInfo as unknown as AppletViewInfo;
     renderInfo.profilesClient = new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby");
     renderInfo.appletClient = appAgentWs;
     renderInfo.appletHash = devtestAppletHash;
@@ -93,7 +94,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
         renderInfo.view = appletView;
     }
     /** Create Applet */
-    const applet = await createApplet(renderInfo, myWeServicesMock);
+    const applet = await createApplet(renderInfo as unknown as RenderInfo, myWeServicesMock);
     //renderers.main(document.body);
     console.log("setupDevtest() applet", applet);
     return applet;

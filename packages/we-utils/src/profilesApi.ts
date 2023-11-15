@@ -6,6 +6,7 @@ import {
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 import { encode } from "@msgpack/msgpack";
 import {Profile} from "@holochain-open-dev/profiles/dist/types";
+import {EntryRecord} from "@holochain-open-dev/utils";
 
 
 /**
@@ -52,7 +53,7 @@ export class ProfilesApi implements AppApi {
         return this._profilesClient.getAgentsWithProfile();
         break;
       case 'get_agent_profile':
-        const maybeProfile: Profile | undefined = await this._profilesClient.getAgentProfile(req.payload);
+        const maybeProfile: EntryRecord<Profile> | undefined = await this._profilesClient.getAgentProfile(req.payload);
         if (!maybeProfile) {
           return undefined;
         }

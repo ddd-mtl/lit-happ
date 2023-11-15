@@ -1,6 +1,6 @@
 import {AgentPubKeyB64} from "@holochain/client";
 import {ProfilesPerspective} from "./profiles.zvm";
-import {ProfileMat} from "./profiles.proxy";
+import {Profile as ProfileMat} from "./bindings/profiles.types";
 import {html, TemplateResult} from "lit";
 
 /** */

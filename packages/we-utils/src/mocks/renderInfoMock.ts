@@ -1,6 +1,7 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
 import {fakeDnaHash, fakeEntryHash} from "@holochain/client";
 import {AppletViewInfo, EntryViewInfo} from "../index";
+import {AppletHash} from "@lightningrodlabs/we-applet/dist/types";
 
 
 /** Empty AppletViews */
@@ -20,21 +21,28 @@ export const emptyEntryAppletView = {
     roleName: "",
     integrityZomeName: "",
     entryType: "",
-    "hrl": [await fakeDnaHash(), await fakeEntryHash()],
+    hrl: [await fakeDnaHash(), await fakeEntryHash()],
     context: null,
 } as EntryViewInfo;
 
 
 
 /**  Empty RenderInfo */
-export const emptyAppletView: AppletViewInfo = {
+// export const emptyAppletView: AppletViewInfo = {
+//     type: "applet-view",
+//     view: emptyMainAppletView,
+//     appletClient: undefined,
+//     profilesClient: undefined,
+//     appletHash: await fakeEntryHash() as AppletHash,
+//     groupProfiles: [{name: "fakeGroup", logo_src: "https://lightningrodlabs.org/lrl_logo.png"}],
+// }
+
+/** */
+export const emptyRenderInfo: RenderInfo = {
     type: "applet-view",
     view: emptyMainAppletView,
     appletClient: undefined,
     profilesClient: undefined,
-    appletHash: await fakeEntryHash(),
+    appletHash: await fakeEntryHash() as AppletHash,
     groupProfiles: [{name: "fakeGroup", logo_src: "https://lightningrodlabs.org/lrl_logo.png"}],
-}
-
-/** */
-export const emptyRenderInfo: RenderInfo = emptyAppletView;
+};

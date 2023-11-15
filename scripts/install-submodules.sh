@@ -9,9 +9,12 @@ rm -rf submodules
 mkdir submodules
 
 cd submodules
-echo \* Download latest install scripts
+echo \* Download latest notifications zome
 git clone -b "0.2-merge" --depth 1 https://github.com/holochain-open-dev/notifications
 #git clone --depth 1 https://github.com/ddd-mtl/notifications
+
+echo \* Download latest profiles zome
+git clone --depth 1 https://github.com/holochain-open-dev/profiles
 
 cd ..
 

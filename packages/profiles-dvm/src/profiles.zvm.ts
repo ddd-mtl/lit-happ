@@ -1,6 +1,8 @@
 import {ZomeViewModel} from "@ddd-qc/lit-happ";
-import {ProfilesProxy, ProfileMat} from "./profiles.proxy";
+import {Profile as ProfileMat} from "./bindings/profiles.types";
 import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64} from "@holochain/client";
+import {ProfilesProxy} from "./bindings/profiles.proxy";
+import {decode} from "@msgpack/msgpack";
 
 
 /** */
@@ -96,10 +98,10 @@ export class ProfilesZvm extends ZomeViewModel {
       if (!maybeProfile) {
         continue;
       }
-      //const maybeProfile: ThreadsProfile = decode((record.entry as any).Present.entry) as ThreadsProfile;
+      const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
       const pubKeyB64 = encodeHashToBase64(agentPubKey);
-      this._profiles[pubKeyB64] = maybeProfile;
-      this._reversed[maybeProfile.nickname] = pubKeyB64;
+      this._profiles[pubKeyB64] = profile;
+      this._reversed[profile.nickname] = pubKeyB64;
       //this._profile_ahs[pubKeyB64] = encodeHashToBase64(record.signed_action.hashed.hash);
     }
     this.notifySubscribers();
@@ -114,12 +116,12 @@ export class ProfilesZvm extends ZomeViewModel {
     if (!maybeProfile) {
       return;
     }
-    //const maybeProfile: ThreadsProfile = decode((record.entry as any).Present.entry) as ThreadsProfile;
-    this._profiles[pubKeyB64] = maybeProfile;
-    this._reversed[maybeProfile.nickname] = pubKeyB64;
+    const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
+    this._profiles[pubKeyB64] = profile;
+    this._reversed[profile.nickname] = pubKeyB64;
     //this._profile_ahs[pubKeyB64] = encodeHashToBase64(record.signed_action.hashed.hash);
     this.notifySubscribers();
-    return maybeProfile;
+    return profile;
   }
 
 
