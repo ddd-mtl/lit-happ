@@ -24,6 +24,11 @@ OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/profiles-dvm/package.jso
 echo "./packages/profiles-dvm/package.json $OLD_VER -> $1"
 sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/profiles-dvm/package.json
 
+# Change notifications-dvm/package.json
+OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/notifications-dvm/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
+echo "./packages/notifications-dvm/package.json $OLD_VER -> $1"
+sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/notifications-dvm/package.json
+
 # Change we-utils/package.json
 OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/we-utils/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
 echo "./packages/we-utils/package.json $OLD_VER -> $1"

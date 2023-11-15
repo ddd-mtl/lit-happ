@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.19.22",
+  "version": "0.20.0",
   "workspaces": [
     "example",
     "packages/cell-proxy",
@@ -10,40 +10,36 @@
     "packages/we-utils"
   ],
   "scripts": {
-    "version:tsc" : "tsc --version",
-    "version:hc"  : "hc --version && holochain --version && lair-keystore --version",
+    "version:tsc"           : "tsc --version",
+    "version:hc"            : "hc --version && holochain --version && lair-keystore --version",
 
-    "postinstall": "mkdir -p artifacts",
+    "postinstall"           : "mkdir -p artifacts",
 
-    "install:submodules" : "bash scripts/install-submodules.sh",
-    "install:zits"       : "cargo install zits --version 1.9.0",
+    "install:submodules"    : "bash scripts/install-submodules.sh",
+    "install:zits"          : "cargo install zits --version 1.11.0",
 
+    "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
+    "build:happ"            : "npm run build:happ -w example && npm run build:happ:clone -w example",
+    "build:libs"            : "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build -w packages/profiles-dvm && npm run build:notifications",
 
-    "build:notifications" : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
+    "start"                 : "npm run start -w example",
+    "start:clone"           : "npm run start:clone -w example",
+    "devtest"               : "npm run build:happ && npm run build:libs && npm run build -w example && npm run start",
+    "devtest:clone"         : "npm run build:happ && npm run build:libs && npm run build -w example && npm run start:clone",
 
-    "build:happ": "npm run build:happ -w example && npm run build:happ:clone -w example",
-    "build:libs": "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build -w packages/profiles-dvm && npm run build:notifications",
+    "publish:cell"          : "npm run build -w packages/cell-proxy && cd packages/cell-proxy && npm publish",
+    "publish:lit"           : "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
+    "publish:we"            : "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
+    "publish:profiles"      : "npm run build -w packages/profiles-dvm && cd packages/profiles-dvm && npm publish",
+    "publish:notifications" : "npm run build -w packages/notifications-dvm && cd packages/notifications-dvm && npm publish",
+    "publish:all"           : "npm run publish:cell && npm run publish:lit && npm run publish:we && npm run publish:profiles && npm run publish:notifications",
 
-    "start": "npm run start -w example",
-    "start:clone": "npm run start:clone -w example",
-    "devtest": "npm run build:happ && npm run build:libs && npm run build -w example && npm run start",
-    "devtest:clone": "npm run build:happ && npm run build:libs && npm run build -w example && npm run start:clone",
+    "update-version"        : "bash scripts/update-version-number.sh $npm_package_version",
 
-    "publish:cell": "npm run build -w packages/cell-proxy && cd packages/cell-proxy && npm publish",
-    "publish:lit": "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
-    "publish:we": "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
-    "publish:profiles": "npm run build -w packages/profiles-dvm && cd packages/profiles-dvm && npm publish",
-    "publish:notifications": "npm run build -w packages/notifications-dvm && cd packages/notifications-dvm && npm publish",
-
-    "update-version" : "bash scripts/update-version-number.sh $npm_package_version",
-
-
-    "publish:all": "npm run publish:cell && npm run publish:lit && npm run publish:we && npm run publish:profiles && npm run publish:notifications",
-
-    "clean": "bash scripts/clean.sh",
-    "clean:npm": "bash scripts/clean-npm.sh",
-    "clean:hc": "cd example && hc s clean",
-    "clean:all": "npm run clean:hc & npm run clean:npm & npm run clean"
+    "clean"                 : "bash scripts/clean.sh",
+    "clean:npm"             : "bash scripts/clean-npm.sh",
+    "clean:hc"              : "cd example && hc s clean",
+    "clean:all"             : "git clean -x -d -e .idea && rm -rf submodules"
   },
   "repository": {
     "type": "git",
@@ -60,9 +56,6 @@
     "@rollup/plugin-json": "^6.0.0",
     "@types/ws": "^8.5.3",
     "gh-pages": "^3.1.0"
-  },
-  "dependencies": {
-    "@holochain/client": "0.16.2"
   },
   "engines": {
     "node": "^14.13.1 || >=16.0.0 || >=18.0.0"
