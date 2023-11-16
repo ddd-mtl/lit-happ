@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/profiles-dvm",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "description": "DnaViewModel implementation for the Profiles zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",

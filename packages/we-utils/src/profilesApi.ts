@@ -4,9 +4,6 @@ import {
   EnableCloneCellRequest,
 } from "@holochain/client";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
-import { encode } from "@msgpack/msgpack";
-import {Profile} from "@holochain-open-dev/profiles/dist/types";
-import {EntryRecord} from "@holochain-open-dev/utils";
 
 
 /**
