@@ -116,10 +116,11 @@ export class ProfilesZvm extends ZomeViewModel {
     if (!maybeProfile) {
       return;
     }
-    const profileEntry: any = decode((maybeProfile.entry as any).Present.entry);
-    console.log("probeProfile() profileEntry", profileEntry);
-    const profile: ProfileMat = decode(profileEntry.record.entry.Present.entry) as ProfileMat;
-    console.log("probeProfile() profile", profileEntry);
+    // const profileEntry: any = decode((maybeProfile.entry as any).Present.entry);
+    // console.log("probeProfile() profileEntry", profileEntry);
+    //const profile: ProfileMat = decode(profileEntry.record.entry.Present.entry) as ProfileMat;
+    const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
+    console.log("probeProfile() profile", profile);
     this._profiles[pubKeyB64] = profile;
     this._reversed[profile.nickname] = pubKeyB64;
     //this._profile_ahs[pubKeyB64] = encodeHashToBase64(record.signed_action.hashed.hash);

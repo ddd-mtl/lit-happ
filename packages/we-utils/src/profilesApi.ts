@@ -53,14 +53,15 @@ export class ProfilesApi implements AppApi {
         return this._profilesClient.getAgentsWithProfile();
         break;
       case 'get_agent_profile':
-        const maybeProfile: EntryRecord<Profile> | undefined = await this._profilesClient.getAgentProfile(req.payload);
-        if (!maybeProfile) {
-          return undefined;
-        }
-        const entry = encode(maybeProfile);
-        return {
-          entry: {Present: {entry}},
-        }
+        return this._profilesClient.getAgentProfile(req.payload);
+        // const maybeProfile: EntryRecord<Profile> | undefined = await this._profilesClient.getAgentProfile(req.payload);
+        // if (!maybeProfile) {
+        //   return undefined;
+        // }
+        // const entry = encode(maybeProfile);
+        // return {
+        //   entry: {Present: {entry}},
+        // }
         break;
       case 'search_agents':
         return this._profilesClient.searchAgents(req.payload);
