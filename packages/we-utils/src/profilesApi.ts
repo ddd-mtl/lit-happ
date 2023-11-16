@@ -34,31 +34,36 @@ export class ProfilesApi implements AppApi {
   }
 
 
-  /** */
+  /** Undo crap by ProfilesClient */
   async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
     if (req.zome_name != "profiles") {
       throw new Error("Unknown zome_name requested");
     }
     switch(req.fn_name) {
       case 'create_profile':
-        return this._profilesClient.createProfile(req.payload);
+        const maybeCreate = await this._profilesClient.createProfile(req.payload);
+        if (!maybeCreate) {
+          return undefined;
+        }
+        return maybeCreate.record;
         break;
       case 'update_profile':
-        return this._profilesClient.updateProfile(req.payload);
+        const maybe = await this._profilesClient.updateProfile(req.payload);
+        if (!maybe) {
+          return undefined;
+        }
+        return maybe.record;
         break;
       case 'get_agents_with_profile':
         return this._profilesClient.getAgentsWithProfile();
         break;
       case 'get_agent_profile':
-        return this._profilesClient.getAgentProfile(req.payload);
-        // const maybeProfile: EntryRecord<Profile> | undefined = await this._profilesClient.getAgentProfile(req.payload);
-        // if (!maybeProfile) {
-        //   return undefined;
-        // }
-        // const entry = encode(maybeProfile);
-        // return {
-        //   entry: {Present: {entry}},
-        // }
+        //return this._profilesClient.getAgentProfile(req.payload);
+        const maybeProfile = await this._profilesClient.getAgentProfile(req.payload);
+        if (!maybeProfile) {
+          return undefined;
+        }
+        return maybeProfile.record;
         break;
       case 'search_agents':
         return this._profilesClient.searchAgents(req.payload);
