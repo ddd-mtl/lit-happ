@@ -8,7 +8,7 @@ import {
   ZomeName,
 } from "@holochain/client";
 import {DnaModifiersOptions, ZvmDef} from "./definitions";
-import {Context, createContext} from "@lit-labs/context";
+import {Context, createContext} from "@lit/context";
 import {
   CellProxy,
   AppProxy,

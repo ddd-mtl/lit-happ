@@ -112,11 +112,14 @@ export class ProfilesZvm extends ZomeViewModel {
   /** */
   async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<ProfileMat | undefined> {
     const maybeProfile = await this.zomeProxy.getAgentProfile(decodeHashFromBase64(pubKeyB64));
-    console.log("probeProfile()", maybeProfile);
+    console.log("probeProfile() maybeProfile", maybeProfile);
     if (!maybeProfile) {
       return;
     }
-    const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
+    const profileEntry: any = decode((maybeProfile.entry as any).Present.entry);
+    console.log("probeProfile() profileEntry", profileEntry);
+    const profile: ProfileMat = decode(profileEntry.record.entry.Present.entry) as ProfileMat;
+    console.log("probeProfile() profile", profileEntry);
     this._profiles[pubKeyB64] = profile;
     this._reversed[profile.nickname] = pubKeyB64;
     //this._profile_ahs[pubKeyB64] = encodeHashToBase64(record.signed_action.hashed.hash);

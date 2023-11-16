@@ -16,6 +16,7 @@ import "./elements/integer-list";
 import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
+import {ProfilesDvm} from "@ddd-qc/profiles-dvm";
 
 /** TESTING Decorator for better init */
 /** Doesn't solve our problem since our initializer is doing an async call */
@@ -95,7 +96,11 @@ export class PlaygroundApp extends HappElement {
         ctor: NamedRealDvm,
         baseRoleName: "rImpostor",
         isClonable: false,
-      }
+      },
+      {
+        ctor: ProfilesDvm,
+        isClonable: false,
+      },
     ],
   };
 
@@ -105,6 +110,7 @@ export class PlaygroundApp extends HappElement {
   get impostorDvm(): NamedRealDvm { return this.hvm.getDvm("rImpostor")! as NamedRealDvm }
   get realDvm(): NamedRealDvm { return this.hvm.getDvm(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealDvm }
 
+  get profilesDvm(): ProfilesDvm { return this.hvm.getDvm(ProfilesDvm.DEFAULT_BASE_ROLE_NAME)! as ProfilesDvm }
 
   //@happy _happ!: HappElement;
   //_happ!: IHapp;
@@ -122,6 +128,9 @@ export class PlaygroundApp extends HappElement {
     console.log({adminWs});
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
+    await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
+    const maybeProfile = await this.profilesDvm.profilesZvm.getMyProfile();
+    console.log("maybeProfile", maybeProfile);
   }
 
 

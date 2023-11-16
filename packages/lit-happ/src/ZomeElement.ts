@@ -1,6 +1,6 @@
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
-import {consume, ContextConsumer, createContext} from "@lit-labs/context";
+import {consume, ContextConsumer, createContext} from "@lit/context";
 import {ZomeName} from "@holochain/client";
 import {cellContext} from "./elements/cell-context";
 import { ZomeViewModel } from "./ZomeViewModel";

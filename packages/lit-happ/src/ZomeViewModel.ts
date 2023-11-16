@@ -1,4 +1,4 @@
-import {Context, createContext} from "@lit-labs/context";
+import {Context, createContext} from "@lit/context";
 import {CellProxy, ZomeProxy, ZomeProxyConstructor, CellMixin} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
 import {AppSignalCb, ZomeName} from "@holochain/client";

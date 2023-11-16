@@ -1,6 +1,6 @@
 import {LitElement, PropertyValues} from "lit";
 import {property, state} from "lit/decorators.js";
-import {ContextConsumer, consume, createContext} from "@lit-labs/context";
+import {ContextConsumer, consume, createContext} from "@lit/context";
 import {DnaViewModel} from "./DnaViewModel";
 import {BaseRoleName, Cell, CellMixin} from "@ddd-qc/cell-proxy";
 import {cellContext} from "./elements/cell-context";

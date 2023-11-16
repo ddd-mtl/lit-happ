@@ -1,4 +1,4 @@
-import {ContextProvider, createContext} from '@lit-labs/context';
+import {ContextProvider, createContext} from '@lit/context';
 import {LitElement, html, PropertyValues} from "lit";
 import {property, state, customElement} from "lit/decorators.js";
 import {Cell} from "@ddd-qc/cell-proxy";

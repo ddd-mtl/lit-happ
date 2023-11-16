@@ -7,6 +7,8 @@ members = [
   "dna/label_integrity",
   "dna/real",
   "dna/real_integrity",
+  "dna/profiles",
+  "dna/profiles_integrity",
 ]
 
 [workspace.package]

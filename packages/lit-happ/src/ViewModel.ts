@@ -1,4 +1,4 @@
-import {Context, ContextProvider} from "@lit-labs/context";
+import {Context, ContextProvider} from "@lit/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {AppSignalCb} from "@holochain/client";
 
