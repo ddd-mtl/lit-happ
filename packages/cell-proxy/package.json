@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/cell-proxy",
-  "version": "0.20.1",
+  "version": "0.20.5",
   "description": "Proxy classes and helpers for managing a Holochain AppWebsocket",
   "main": "dist/index.js",
   "module": "dist/index.js",
