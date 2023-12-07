@@ -217,19 +217,20 @@ export class NotificationsZvm extends ZomeViewModel {
     }
     /** Send my contact to new notifier */
     const previousNotifier = this._myNotifier;
-    const newNotifier = await this.zomeProxy.getMyNotifier();
-    if (!newNotifier) {
-      console.warn("Failed to get notifier");
-      return undefined;
-    }
-    if (!previousNotifier || encodeHashToBase64(previousNotifier) != encodeHashToBase64(newNotifier)) {
-      const myContact = this.perspective.contacts[this.cell.agentPubKey];
-      if (myContact) {
-        await this.zomeProxy.sendContact(myContact);
+    try {
+      const newNotifier = await this.zomeProxy.getMyNotifier();
+      if (!previousNotifier || encodeHashToBase64(previousNotifier) != encodeHashToBase64(newNotifier)) {
+        const myContact = this.perspective.contacts[this.cell.agentPubKey];
+        if (myContact) {
+          await this.zomeProxy.sendContact(myContact);
+        }
+        this._myNotifier = newNotifier;
+        this.notifySubscribers();
       }
-      this._myNotifier = newNotifier;
-      this.notifySubscribers();
+      return newNotifier;
+    } catch(e) {
+        console.warn("Failed to get notifier");
+        return undefined;
     }
-    return newNotifier;
   }
 }
