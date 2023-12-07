@@ -140,6 +140,7 @@ export type Signal =
   | {
       type: "LinkDeleted",
       action: SignedActionHashed
+      create_link_action: SignedActionHashed
       link_type: LinkTypes
     }
   | {
