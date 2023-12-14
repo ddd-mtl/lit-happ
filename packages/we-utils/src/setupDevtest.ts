@@ -79,7 +79,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     //console.log("mock agentId", mockProfilesZome.myPubKey);
     //mockProfilesZome.myPubKey = mainCellId[1];
     //console.log("mock agentId", encodeHashToBase64(mockProfilesZome.myPubKey));
-    mockProfilesZome.create_profile({nickname: "Alex", fields: {}})
+    mockProfilesZome.create_profile({nickname: "Alex", fields: {lang:"en"}})
     const mockAppInfo = await mockProfilesZome.appInfo();
     console.log("setupDevtest() mockAppInfo", mockAppInfo);
 

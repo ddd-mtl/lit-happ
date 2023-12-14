@@ -193,12 +193,16 @@ export class NotificationsZvm extends ZomeViewModel {
       message_id: "",
       destination: "",
     } as NotificationTip;
-    await this.zomeProxy.sendNotificationTip(tip);
+    try {
+      await this.zomeProxy.sendNotificationTip(tip);
+    } catch(e) {
+      console.warn("sendNotification failed.", e);
+    }
   }
 
 
   /** */
-  async selectNotifier(agent?: AgentPubKeyB64) {
+  async selectNotifier(agent?: AgentPubKeyB64): Promise<AgentPubKey | undefined>  {
     if (!agent) {
       try {
         await this.zomeProxy.selectFirstNotifier();
