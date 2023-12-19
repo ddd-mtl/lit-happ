@@ -4,13 +4,34 @@ import {
   EntryHash, fakeActionHash,
   fakeDnaHash
 } from "@holochain/client";
-import {AppletInfo, EntryLocationAndInfo, Hrl, WeNotification, WeServices} from "@lightningrodlabs/we-applet";
-import {HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
+import {
+  AppletInfo,
+  AttachmentType,
+  EntryLocationAndInfo,
+  Hrl,
+  WeNotification,
+  WeServices
+} from "@lightningrodlabs/we-applet";
+import {AppletHash, AttachmentName, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
+import {mdiFileExcelOutline} from "@mdi/js";
+import {wrapPathInSvg} from "../utils";
 
 
+/** Build fake AttachmentTypes */
+const fakeNoteType = {
+  label: "FakeNote",
+  icon_src: wrapPathInSvg(mdiFileExcelOutline),
+  //create: (attachToHrl: Hrl): Promise<HrlWithContext> => {return {hrl: attachToHrl, context: {}}},
+  create: (attachToHrl: Hrl): Promise<HrlWithContext> => {return Promise.reject("Create not implemented in Fake Attachment Type")},
+}
+const fakeAttachmentTypes: Map<AppletHash, Record<AttachmentName, AttachmentType>> = new Map();
+fakeAttachmentTypes.set(await fakeDnaHash(), {FakeNote: fakeNoteType})
+
+
+/** */
 export const emptyWeServicesMock: WeServices = {
   //attachmentTypes: new HoloHashMap<AppletHash, Record<AttachmentName, AttachmentType>>(),
-  attachmentTypes: undefined,
+  attachmentTypes: fakeAttachmentTypes,
   openAppletMain: (appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
   openAppletBlock: (appletHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
   openCrossAppletMain: (appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
