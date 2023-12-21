@@ -2,7 +2,7 @@ import {
   ActionHash,
   decodeHashFromBase64, encodeHashToBase64,
   EntryHash, fakeActionHash,
-  fakeDnaHash
+  fakeDnaHash, fakeEntryHash
 } from "@holochain/client";
 import {
   AppletInfo,
@@ -14,7 +14,7 @@ import {
 } from "@lightningrodlabs/we-applet";
 import {AppletHash, AttachmentName, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
 import {mdiFileExcelOutline} from "@mdi/js";
-import {wrapPathInSvg} from "../utils";
+import {stringifyHrl, wrapPathInSvg} from "../utils";
 
 
 /** Build fake AttachmentTypes */
@@ -26,6 +26,7 @@ const fakeNoteType = {
 }
 const fakeAttachmentTypes: Map<AppletHash, Record<AttachmentName, AttachmentType>> = new Map();
 fakeAttachmentTypes.set(await fakeDnaHash(), {FakeNote: fakeNoteType})
+
 
 
 /** */
@@ -47,32 +48,70 @@ export const emptyWeServicesMock: WeServices = {
 };
 
 
+var _mockClipboard = undefined;
+
 /** Create default WeServices Mock */
 export async function createDefaultWeServicesMock(devtestAppletId: string): Promise<WeServices> {
   console.log("createDefaultWeServicesMock() devtestAppletId", devtestAppletId);
   const weServicesMock = emptyWeServicesMock;
-  weServicesMock.appletInfo = async (appletId) => {
-    const appletIdB64 = encodeHashToBase64(appletId);
-    console.log("DefaultWeServicesMock.appletInfo()", appletIdB64, devtestAppletId);
-    if (appletIdB64 == devtestAppletId) {
-      const appletInfo: AppletInfo = {
+  /** Implement appletInfo */
+  weServicesMock.appletInfo = async (appletHash) => {
+    const appletId = encodeHashToBase64(appletHash);
+    console.log("DefaultWeServicesMock.appletInfo()", appletId, devtestAppletId);
+    if (appletId == devtestAppletId) {
+      return {
         appletBundleId: await fakeActionHash(),
         appletName: "DevTestWeApplet",
         groupsIds: [await fakeDnaHash()],
-      };
-      return appletInfo;
+      } as AppletInfo;
     }
-    return undefined;
+    return {
+      appletBundleId: await fakeActionHash(),
+      appletName: "Mock: " + appletId,
+      groupsIds: [await fakeDnaHash()],
+    } as AppletInfo;
   };
+  /** Implement entryInfo */
   weServicesMock.entryInfo = async (hrl) => {
     console.log("DefaultWeServicesMock.entryInfo()", hrl);
     return {
       appletHash: decodeHashFromBase64(devtestAppletId),
       entryInfo: {
-        icon_src: "",
-        name: "demo:" + encodeHashToBase64(hrl[1]),
+        icon_src: wrapPathInSvg(mdiFileExcelOutline),
+        name: "Mock: " + encodeHashToBase64(hrl[1]),
       }
     } as EntryLocationAndInfo;
   }
+  /** Implement userSelectHrl */
+  weServicesMock.userSelectHrl = async () => {
+    if (_mockClipboard) {
+      const copy = _mockClipboard;
+      _mockClipboard = undefined;
+      return copy;
+    }
+    return {
+      hrl: [await fakeDnaHash(), await fakeEntryHash()],
+      context: null,
+    } as HrlWithContext;
+  }
+  /** Implement groupProfile */
+  // FIXME
+  /** Implement openHrl */
+  weServicesMock.openHrl = async (hrl: Hrl, context: any): Promise<void> => {
+    alert("Mock weServices.openHrl() for hrl: " + stringifyHrl(hrl) + "\n\n see console for context");
+    console.log("weServicesMock.openHrl() context:", context);
+  }
+  /** Implement notifyWe */
+  weServicesMock.notifyWe = async (notifications: Array<WeNotification>): Promise<any> => {
+    alert(`Mock weServices.notifyWe(${notifications.length})\n\n see console for details`);
+    console.log("weServicesMock.notifyWe() notifications:", notifications);
+  }
+  /** Implement hrlToClipboard */
+  weServicesMock.hrlToClipboard = async (hrl: HrlWithContext): Promise<void> => {
+    _mockClipboard = hrl;
+  }
+  /** Done */
   return weServicesMock;
 }
+
+
