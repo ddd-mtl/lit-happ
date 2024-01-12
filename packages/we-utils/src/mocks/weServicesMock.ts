@@ -7,7 +7,7 @@ import {
 import {
   AppletInfo,
   AttachmentType,
-  EntryLocationAndInfo,
+  AttachableLocationAndInfo,
   Hrl,
   WeNotification,
   WeServices
@@ -22,7 +22,7 @@ const fakeNoteType = {
   label: "FakeNote",
   icon_src: wrapPathInSvg(mdiFileExcelOutline),
   //create: (attachToHrl: Hrl): Promise<HrlWithContext> => {return {hrl: attachToHrl, context: {}}},
-  create: (attachToHrl: Hrl): Promise<HrlWithContext> => {return Promise.reject("Create not implemented in Fake Attachment Type")},
+  create: (hrlc: HrlWithContext): Promise<HrlWithContext> => {return Promise.reject("Create not implemented in Fake Attachment Type")},
 }
 const fakeAttachmentTypes: Map<AppletHash, Record<AttachmentName, AttachmentType>> = new Map();
 fakeAttachmentTypes.set(await fakeDnaHash(), {FakeNote: fakeNoteType})
@@ -40,11 +40,12 @@ export const emptyWeServicesMock: WeServices = {
   openHrl: (hrl: Hrl, context: any): Promise<void> => {throw new Error("openHrl() is not implemented on WeServicesMock.");},
   groupProfile: (groupId): Promise<any> => {throw new Error("groupProfile() is not implemented on WeServicesMock.");},
   appletInfo: (appletHash): Promise<AppletInfo | undefined> => {throw new Error("appletInfo() is not implemented on WeServicesMock.");},
-  entryInfo: (hrl: Hrl): Promise<EntryLocationAndInfo | undefined> => {throw new Error("entryInfo() is not implemented on WeServicesMock.");},
-  hrlToClipboard: (hrl: HrlWithContext): Promise<void> => {throw new Error("hrlToClipboard() is not implemented on WeServicesMock.");},
+  attachableInfo: (hrlc: HrlWithContext): Promise<AttachableLocationAndInfo | undefined> => {throw new Error("entryInfo() is not implemented on WeServicesMock.");},
+  hrlToClipboard: (hrlc: HrlWithContext): Promise<void> => {throw new Error("hrlToClipboard() is not implemented on WeServicesMock.");},
   search: (searchFilter: string): Promise<any> => {throw new Error("search() is not implemented on WeServicesMock.");},
   userSelectHrl: (): Promise<HrlWithContext | undefined> => {throw new Error("userSelectHrl() is not implemented on WeServicesMock.");},
-  notifyWe: (notifications: Array<WeNotification>): Promise<any> => {throw new Error("notifyWe() is not implemented on WeServicesMock.");}
+  notifyWe: (notifications: Array<WeNotification>): Promise<any> => {throw new Error("notifyWe() is not implemented on WeServicesMock.");},
+  userSelectScreen: (): Promise<string> => {throw new Error("userSelectScreen() is not implemented on WeServicesMock.");}
 };
 
 
@@ -67,20 +68,20 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
     }
     return {
       appletBundleId: await fakeActionHash(),
-      appletName: "Mock: " + appletId,
+      appletName: "MockApplet: " + appletId,
       groupsIds: [await fakeDnaHash()],
     } as AppletInfo;
   };
   /** Implement entryInfo */
-  weServicesMock.entryInfo = async (hrl) => {
+  weServicesMock.attachableInfo = async (hrl) => {
     console.log("DefaultWeServicesMock.entryInfo()", hrl);
     return {
       appletHash: decodeHashFromBase64(devtestAppletId),
-      entryInfo: {
+      attachableInfo: {
         icon_src: wrapPathInSvg(mdiFileExcelOutline),
-        name: "Mock: " + encodeHashToBase64(hrl[1]),
+        name: "MockEntry: " + encodeHashToBase64(hrl[1]),
       }
-    } as EntryLocationAndInfo;
+    } as AttachableLocationAndInfo;
   }
   /** Implement userSelectHrl */
   weServicesMock.userSelectHrl = async () => {

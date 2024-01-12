@@ -64,7 +64,7 @@ export class NotificationsZvm extends ZomeViewModel {
         }, 10000);
       } else {
         if (!this._config) {
-          console.error("Cannot send notification. Config has not been set");
+          console.error("Cannot send notification. Config has not been set.");
           return;
         }
         console.log('NotificationsZvm - sending text notification', notification);
