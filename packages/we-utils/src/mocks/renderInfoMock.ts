@@ -1,6 +1,6 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
 import {fakeDnaHash, fakeEntryHash} from "@holochain/client";
-import {AppletViewInfo, EntryViewInfo} from "../index";
+import {AppletViewInfo, AttachableViewInfo} from "../index";
 import {AppletHash} from "@lightningrodlabs/we-applet/dist/types";
 
 
@@ -17,13 +17,13 @@ export const emptyBlockAppletView = {
 } as AppletView;
 
 export const emptyEntryAppletView = {
-    type: "entry",
+    type: "attachable",
     roleName: "",
     integrityZomeName: "",
     entryType: "",
     hrl: [await fakeDnaHash(), await fakeEntryHash()],
     context: null,
-} as EntryViewInfo;
+} as AttachableViewInfo;
 
 
 

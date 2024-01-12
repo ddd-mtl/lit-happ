@@ -1,4 +1,4 @@
-import {RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
+import {JSONCompatible, RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
 import {HappElement} from "@ddd-qc/lit-happ";
 
 
@@ -31,18 +31,18 @@ export type AppletViewInfo = {
 };
 
 
-export type EntryViewInfo = {
-    type: "entry",
+export type AttachableViewInfo = {
+    type: "attachable",
     roleName: string,
     integrityZomeName: string,
     entryType: string,
     hrl: Hrl,
-    context: any,
+    context: JSONCompatible,
 }
 
 
 export type BlockViewInfo = {
     type: "block";
     block: string;
-    context: any;
+    context: JSONCompatible;
 }
