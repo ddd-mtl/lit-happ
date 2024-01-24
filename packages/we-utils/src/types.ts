@@ -1,4 +1,4 @@
-import {JSONCompatible, RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
+import {RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
 import {HappElement} from "@ddd-qc/lit-happ";
 
 
@@ -19,7 +19,7 @@ export interface DevTestNames {
 import {AppletHash, AppletView} from "@lightningrodlabs/we-applet";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 import {AppAgentClient} from "@holochain/client";
-import {GroupProfile, Hrl} from "@lightningrodlabs/we-applet/dist/types";
+import {GroupProfile, Hrl, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
 
 export type AppletViewInfo = {
     type: "applet-view",
@@ -36,13 +36,12 @@ export type AttachableViewInfo = {
     roleName: string,
     integrityZomeName: string,
     entryType: string,
-    hrl: Hrl,
-    context: JSONCompatible,
+    hrlWithContext: HrlWithContext,
 }
 
 
 export type BlockViewInfo = {
     type: "block";
     block: string;
-    context: JSONCompatible;
+    context: any;
 }

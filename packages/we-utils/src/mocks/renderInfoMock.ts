@@ -21,8 +21,10 @@ export const emptyEntryAppletView = {
     roleName: "",
     integrityZomeName: "",
     entryType: "",
-    hrl: [await fakeDnaHash(), await fakeEntryHash()],
-    context: null,
+    hrlWithContext: {
+        hrl: [await fakeDnaHash(), await fakeEntryHash()],
+        context: null,
+    },
 } as AttachableViewInfo;
 
 

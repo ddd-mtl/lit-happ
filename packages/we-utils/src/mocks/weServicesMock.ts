@@ -37,7 +37,7 @@ export const emptyWeServicesMock: WeServices = {
   openAppletBlock: (appletHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
   openCrossAppletMain: (appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
   openCrossAppletBlock: (appletBundleId: ActionHash, block: string, context: any): Promise<void> => {throw new Error("openCrossAppletBlock() is not implemented on WeServicesMock.");},
-  openHrl: (hrl: Hrl, context: any): Promise<void> => {throw new Error("openHrl() is not implemented on WeServicesMock.");},
+  openHrl: (hrlc: HrlWithContext): Promise<void> => {throw new Error("openHrl() is not implemented on WeServicesMock.");},
   groupProfile: (groupId): Promise<any> => {throw new Error("groupProfile() is not implemented on WeServicesMock.");},
   appletInfo: (appletHash): Promise<AppletInfo | undefined> => {throw new Error("appletInfo() is not implemented on WeServicesMock.");},
   attachableInfo: (hrlc: HrlWithContext): Promise<AttachableLocationAndInfo | undefined> => {throw new Error("entryInfo() is not implemented on WeServicesMock.");},
@@ -98,9 +98,9 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
   /** Implement groupProfile */
   // FIXME
   /** Implement openHrl */
-  weServicesMock.openHrl = async (hrl: Hrl, context: any): Promise<void> => {
-    alert("Mock weServices.openHrl() for hrl: " + stringifyHrl(hrl) + "\n\n see console for context");
-    console.log("weServicesMock.openHrl() context:", context);
+  weServicesMock.openHrl = async (hrlc: HrlWithContext): Promise<void> => {
+    alert("Mock weServices.openHrl() for hrl: " + stringifyHrl(hrlc.hrl) + "\n\n see console for context");
+    console.log("weServicesMock.openHrl() context:", hrlc.context);
   }
   /** Implement notifyWe */
   weServicesMock.notifyWe = async (notifications: Array<WeNotification>): Promise<any> => {

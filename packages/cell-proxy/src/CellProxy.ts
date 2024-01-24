@@ -169,7 +169,7 @@ export class CellProxy extends CellMixin(Empty) {
   async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
     //console.log("callEntryDefs()", zomeName)
     try {
-      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 5 * 1000) as EntryDefsCallbackResult;
+      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 10 * 1000) as EntryDefsCallbackResult; // Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs
       //console.debug("getEntryDefs() for " + this.zomeName + " result:")
       //console.log({entryDefs})
       let result: [string, boolean][] = []
