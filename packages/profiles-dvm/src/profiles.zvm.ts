@@ -70,6 +70,21 @@ export class ProfilesZvm extends ZomeViewModel {
   getNames(): string[] { return Object.keys(this._reversed)}
 
 
+  /** Dump perspective as JSON */
+  exportPerspective(): string {
+    //console.log("exportPerspective()", perspMat);
+    return JSON.stringify(this._profiles, null, 2);
+  }
+
+
+  /** */
+  importPerspective(json: string, mapping?: Object) {
+    const profiles = JSON.parse(json) as Record<AgentPubKeyB64, ProfileMat>;
+    for (const [pubKey, profileMat] of Object.entries(profiles)) {
+      this.storeProfile(pubKey, profileMat);
+    }
+  }
+
   /** -- Methods -- */
 
   /* */
@@ -99,13 +114,18 @@ export class ProfilesZvm extends ZomeViewModel {
         continue;
       }
       const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
-      const pubKeyB64 = encodeHashToBase64(agentPubKey);
-      this._profiles[pubKeyB64] = profile;
-      this._reversed[profile.nickname] = pubKeyB64;
-      //this._profile_ahs[pubKeyB64] = encodeHashToBase64(record.signed_action.hashed.hash);
+      this.storeProfile(encodeHashToBase64(agentPubKey), profile);
     }
     this.notifySubscribers();
     return this._profiles;
+  }
+
+
+  /** */
+  storeProfile(pubKeyB64: AgentPubKeyB64, profile: ProfileMat) {
+    this._profiles[pubKeyB64] = profile;
+    this._reversed[profile.nickname] = pubKeyB64;
+    this.notifySubscribers();
   }
 
 
@@ -121,10 +141,7 @@ export class ProfilesZvm extends ZomeViewModel {
     //const profile: ProfileMat = decode(profileEntry.record.entry.Present.entry) as ProfileMat;
     const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
     console.log("probeProfile() profile", profile);
-    this._profiles[pubKeyB64] = profile;
-    this._reversed[profile.nickname] = pubKeyB64;
-    //this._profile_ahs[pubKeyB64] = encodeHashToBase64(record.signed_action.hashed.hash);
-    this.notifySubscribers();
+    this.storeProfile(pubKeyB64, profile);
     return profile;
   }
 
@@ -132,19 +149,14 @@ export class ProfilesZvm extends ZomeViewModel {
   /** */
   async createMyProfile(profile: ProfileMat): Promise<void> {
     /*const record =*/ await this.zomeProxy.createProfile(profile);
-    this._profiles[this.cell.agentPubKey] = profile;
-    this._reversed[profile.nickname] = this.cell.agentPubKey;
-    //this._profile_ahs[this.cell.agentPubKey] = encodeHashToBase64(record.signed_action.hashed.hash);
-    this.notifySubscribers();
+    this.storeProfile(this.cell.agentPubKey, profile);
   }
+
 
   /** */
   async updateMyProfile(profile: ProfileMat): Promise<void> {
     /*const record =*/ await this.zomeProxy.updateProfile(profile);
-    this._profiles[this.cell.agentPubKey] = profile;
-    this._reversed[profile.nickname] = this.cell.agentPubKey;
-    //this._profile_ahs[this.cell.agentPubKey] = encodeHashToBase64(record.signed_action.hashed.hash);
-    this.notifySubscribers();
+    this.storeProfile(this.cell.agentPubKey, profile);
   }
 
 }
