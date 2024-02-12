@@ -1,12 +1,12 @@
 import {ZomeViewModel} from "@ddd-qc/lit-happ";
 import {Profile as ProfileMat} from "./bindings/profiles.types";
-import {AgentPubKey, AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64} from "@holochain/client";
+import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
 import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
 
 
 /** */
-export interface ProfilesPerspective {
+export interface ProfilesAltPerspective {
   /* AgentPubKeyB64 -> Profile */
   profiles: Record<AgentPubKeyB64, ProfileMat>,
   ///* AgentPubKeyB64 -> Profile hash */
@@ -46,7 +46,7 @@ export class ProfilesAltZvm extends ZomeViewModel {
   /** -- Perspective -- */
 
   /* */
-  get perspective(): ProfilesPerspective {
+  get perspective(): ProfilesAltPerspective {
     return {
       profiles: this._profiles,
       reversed: this._reversed,
