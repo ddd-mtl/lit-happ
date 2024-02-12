@@ -26,5 +26,5 @@ export function generateProfilesAltZomeFunctionsArray(zomeName: ZomeName): [Zome
 }
 
 
-/** Tuple array of all zome function names with default zome name "profilesAlt" */
-export const profilesAltZomeFunctions: [ZomeName, FunctionName][] = generateProfilesAltZomeFunctionsArray("profilesAlt");
+/** Tuple array of all zome function names with default zome name "profiles" */
+export const profilesAltZomeFunctions: [ZomeName, FunctionName][] = generateProfilesAltZomeFunctionsArray("profiles");

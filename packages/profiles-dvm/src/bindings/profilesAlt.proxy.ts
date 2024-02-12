@@ -152,7 +152,7 @@ import {profilesAltFunctionNames} from './profilesAlt.fn';
  *
  */
 export class ProfilesAltProxy extends ZomeProxy {
-  static readonly DEFAULT_ZOME_NAME = "profilesAlt"
+  static readonly DEFAULT_ZOME_NAME = "profiles"
   static readonly FN_NAMES = profilesAltFunctionNames
  
 
