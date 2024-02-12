@@ -16,6 +16,9 @@ git clone -b "0.2-merge" --depth 1 https://github.com/holochain-open-dev/notific
 echo \* Download latest profiles zome
 git clone --depth 1 https://github.com/holochain-open-dev/profiles
 
+echo \* Download latest profiles-alt zome
+git clone --depth 1 https://github.com/ddd-mtl/profiles_alt_zome.git
+
 cd ..
 
 echo

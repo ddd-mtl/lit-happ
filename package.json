@@ -17,7 +17,7 @@
     "postinstall"           : "mkdir -p artifacts",
 
     "install:submodules"    : "bash scripts/install-submodules.sh",
-    "install:zits"          : "cargo install zits --version 1.11.0",
+    "install:zits"          : "cargo install zits --version 1.12.0",
 
     "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
     "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w packages/profiles-dvm",
