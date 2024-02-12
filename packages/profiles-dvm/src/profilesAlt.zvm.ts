@@ -78,13 +78,19 @@ export class ProfilesAltZvm extends ZomeViewModel {
 
 
   /** */
+  async publishAllFromPerspective(profiles: Record<AgentPubKeyB64, ProfileMat>) {
+    for (const [pubKey, profileMat] of Object.entries(profiles)) {
+      await this.createProfile(profileMat, pubKey);
+    }
+  }
+
+
+  /** */
   importPerspective(json: string, canPublish: boolean) {
     const profiles = JSON.parse(json) as Record<AgentPubKeyB64, ProfileMat>;
 
     if (canPublish) {
-      for (const [pubKey, profileMat] of Object.entries(profiles)) {
-        /* await */ this.createProfile(profileMat, pubKey);
-      }
+      /*await*/ this.publishAllFromPerspective(profiles);
       return;
     }
 
@@ -92,6 +98,7 @@ export class ProfilesAltZvm extends ZomeViewModel {
       this.storeProfile(pubKey, profileMat);
     }
   }
+
 
   /** -- Methods -- */
 
