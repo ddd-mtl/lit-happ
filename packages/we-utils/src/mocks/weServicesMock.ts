@@ -73,13 +73,13 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
     } as AppletInfo;
   };
   /** Implement entryInfo */
-  weServicesMock.attachableInfo = async (hrl) => {
-    console.log("DefaultWeServicesMock.entryInfo()", hrl);
+  weServicesMock.attachableInfo = async (hrlc) => {
+    console.log("DefaultWeServicesMock.entryInfo()", hrlc);
     return {
       appletHash: decodeHashFromBase64(devtestAppletId),
       attachableInfo: {
         icon_src: wrapPathInSvg(mdiFileExcelOutline),
-        name: "MockEntry: " + encodeHashToBase64(hrl[1]),
+        name: "MockEntry: " + encodeHashToBase64(hrlc.hrl[1]),
       }
     } as AttachableLocationAndInfo;
   }
@@ -108,8 +108,8 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
     console.log("weServicesMock.notifyWe() notifications:", notifications);
   }
   /** Implement hrlToClipboard */
-  weServicesMock.hrlToClipboard = async (hrl: HrlWithContext): Promise<void> => {
-    _mockClipboard = hrl;
+  weServicesMock.hrlToClipboard = async (hrlc: HrlWithContext): Promise<void> => {
+    _mockClipboard = hrlc;
   }
   /** Done */
   return weServicesMock;
