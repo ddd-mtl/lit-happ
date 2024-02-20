@@ -189,9 +189,11 @@ export class PlaygroundCloneApp extends HappElement {
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(e: any) => { this.appProxy.dumpSignals() }}>
-        <br/>
-        <span>Select AppEntryType:</span>
-        <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        <input type="button" value="networkInfos" @click=${async (e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
+        <div style="margin-top:5px;">
+            <span>Select AppEntryType:</span>
+            <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        </div>
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>
         </div>
