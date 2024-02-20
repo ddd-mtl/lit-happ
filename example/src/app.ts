@@ -18,57 +18,6 @@ import "./elements/real-list";
 import "./elements/named-inspect";
 import {ProfilesDvm} from "@ddd-qc/profiles-dvm";
 
-/** TESTING Decorator for better init */
-/** Doesn't solve our problem since our initializer is doing an async call */
-
-interface IHapp {
-  get appProxy(): AppProxy;
-  get hvm(): HappViewModel;
-}
-
-
-// class Happ {
-//   conductorAppProxy!: ConductorAppProxy;
-//   hvm!: HappViewModel;
-// }
-
-// // A TypeScript decorator
-// const happy = (proto: ReactiveElement, key: string) => {
-//   const ctor = proto.constructor as typeof ReactiveElement;
-
-//   ctor.addInitializer(async (instance: ReactiveElement) => {
-//     console.log("initializeHapp()", instance, key);
-//     //const happElem = await HappElement.new(Number(process.env.HC_PORT), playgroundHappDef);
-
-//     let happEl = {} as Happ;
-//     happEl.conductorAppProxy = await ConductorAppProxy.new(Number(process.env.HC_PORT));
-//     happEl.hvm = await HappViewModel.new(instance, happEl.conductorAppProxy, playgroundDef);
-
-//     (instance as any)[key] = happEl;
-//     console.log("initializeHapp() Done", happEl);
-//     //instance.addController(happElem)
-//     instance.requestUpdate();
-//   });
-// };
-
-
-
-// /** */
-// async function initializeHapp(instance: ReactiveElement) {
-//   console.log("initializeHapp()", instance);
-//   // let HC_PORT = Number(process.env.HC_PORT);
-//   // this._conductorAppProxy = await ConductorAppProxy.new(HC_PORT);
-//   // this._happ = await this._conductorAppProxy.newHappViewModel(this, PlaygroundHappDef); // FIXME this can throw an error
-//   //
-//   // await this._happ.probeAll();
-
-//   //await dummyDvm.fetchAllEntryDefs();
-
-//   const happElem = HappElement.new(Number(process.env.HC_PORT), playgroundHappDef)
-//   //instance['happ'] = happElem;
-//   instance.addController(happElem)
-// }
-
 
 /**
  *
@@ -112,8 +61,6 @@ export class PlaygroundApp extends HappElement {
 
   get profilesDvm(): ProfilesDvm { return this.hvm.getDvm(ProfilesDvm.DEFAULT_BASE_ROLE_NAME)! as ProfilesDvm }
 
-  //@happy _happ!: HappElement;
-  //_happ!: IHapp;
 
   @state() private _selectedZomeName = ""
 
@@ -192,10 +139,13 @@ export class PlaygroundApp extends HappElement {
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(e:any) => {this.appProxy.dumpSignals()}}>
+        <input type="button" value="networkInfos" @click=${async (e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
         <br/>
         <!-- SELECT ENTRY TYPE -->
-        <span>Select AppEntryType:</span>
-        <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        <div style="margin-top: 5px;">
+          <span>Select AppEntryType:</span>
+          <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+        </div>
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>
         </div>

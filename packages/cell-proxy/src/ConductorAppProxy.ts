@@ -8,9 +8,10 @@ import {
   CreateCloneCellRequest,
   DisableCloneCellRequest,
   EnableCloneCellRequest,
-  ClonedCell, AppAgentWebsocket,
+  ClonedCell, decodeHashFromBase64, DnaHashB64, NetworkInfo, NetworkInfoRequest, AgentPubKeyB64, Timestamp,
 } from "@holochain/client";
 import {AppProxy} from "./AppProxy";
+import {CellIdStr} from "./types";
 
 
 /**
@@ -61,7 +62,41 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
   }
 
 
-  /** -- Creation -- */
+  /** Store networkInfo calls */
+  private _lastTimeQueriedMap: Record<AgentPubKeyB64, Timestamp> = {};
+  private _networkInfoLogs: Record<CellIdStr, [Timestamp, NetworkInfo][]> = {};
+
+  get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return this._networkInfoLogs;}
+
+  /** */
+  async networkInfo(agent: AgentPubKeyB64, dnas: DnaHashB64[]): Promise<Record<DnaHashB64, [Timestamp, NetworkInfo]>> {
+    const hashs = dnas.map((b64) => decodeHashFromBase64(b64));
+    /* Call networkInfo */
+    const response = await this._appWs.networkInfo({
+      agent_pub_key: decodeHashFromBase64(agent),
+      dnas: hashs,
+      last_time_queried: this._lastTimeQueriedMap[agent]} as NetworkInfoRequest);
+    this._lastTimeQueriedMap[agent] = Date.now();
+
+    /* Convert result */
+    let i = 0;
+    let result = {}
+    for (const netInfo of response) {
+      result[dnas[i]] = [this._lastTimeQueriedMap[agent], netInfo];
+      /* Store */
+      const cellIdStr = CellIdStr(decodeHashFromBase64(dnas[i]), decodeHashFromBase64(agent));
+      if (!this._networkInfoLogs[cellIdStr]) {
+        this._networkInfoLogs[cellIdStr] = [];
+      }
+      this._networkInfoLogs[cellIdStr].push([this._lastTimeQueriedMap[agent], netInfo])
+      /* */
+      i += 1;
+    }
+    return result;
+  }
+
+
+/** -- Creation -- */
 
   /** async Factory */
   static async new(port_or_socket: number | AppWebsocket, defaultTimeout?: number): Promise<ConductorAppProxy> {

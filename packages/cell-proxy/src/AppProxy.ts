@@ -13,7 +13,7 @@ import {
   ClonedCell,
   CellType,
   ProvisionedCell,
-  encodeHashToBase64, Timestamp,
+  encodeHashToBase64, Timestamp, DnaHashB64, NetworkInfo, decodeHashFromBase64, AgentPubKeyB64,
 } from "@holochain/client";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, RoleCellsMap, BaseRoleName, CellsForRole} from "./types";
@@ -157,6 +157,13 @@ export class AppProxy implements AppApi {
 
 
   /** -- Methods -- */
+
+  get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return {}}
+
+  /** */
+  async networkInfo(agent: AgentPubKeyB64, dnas: DnaHashB64[]): Promise<Record<DnaHashB64, [Timestamp, NetworkInfo]>> {
+    throw new Error("Method not implemented.");
+  }
 
   /** */
   async fetchCell(appId: InstalledAppId, cellId: CellId): Promise<Cell> {

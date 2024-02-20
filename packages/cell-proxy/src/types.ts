@@ -51,6 +51,13 @@ export type CellsForRole = {
 /** BaseRoleName -> RoleCells */
 export type RoleCellsMap = Dictionary<CellsForRole>;
 
+/** */
+export function flattenCells(cells: CellsForRole): CellId[] {
+  let res: CellId[] = Object.entries(cells.clones).map(([cloneId, clone]) => clone.cell_id);
+  res.push(cells.provisioned.cell_id);
+  return res;
+}
+
 
 /** -- CloneId -- */
 export type CloneId = RoleName;
