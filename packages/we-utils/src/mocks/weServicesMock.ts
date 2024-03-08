@@ -6,13 +6,12 @@ import {
 } from "@holochain/client";
 import {
   AppletInfo,
-  AttachmentType,
   AttachableLocationAndInfo,
   Hrl,
   WeNotification,
   WeServices
 } from "@lightningrodlabs/we-applet";
-import {AppletHash, AttachmentName, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
+import {AppletHash, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
 import {mdiFileExcelOutline} from "@mdi/js";
 import {stringifyHrl, wrapPathInSvg} from "../utils";
 
@@ -24,17 +23,17 @@ const fakeNoteType = {
   //create: (attachToHrl: Hrl): Promise<HrlWithContext> => {return {hrl: attachToHrl, context: {}}},
   create: (hrlc: HrlWithContext): Promise<HrlWithContext> => {return Promise.reject("Create not implemented in Fake Attachment Type")},
 }
-const fakeAttachmentTypes: Map<AppletHash, Record<AttachmentName, AttachmentType>> = new Map();
-fakeAttachmentTypes.set(await fakeDnaHash(), {FakeNote: fakeNoteType})
+// const fakeAttachmentTypes: Map<AppletHash, Record<AttachmentName, AttachmentType>> = new Map();
+// fakeAttachmentTypes.set(await fakeDnaHash(), {FakeNote: fakeNoteType})
 
 
 
 /** */
 export const emptyWeServicesMock: WeServices = {
   //attachmentTypes: new HoloHashMap<AppletHash, Record<AttachmentName, AttachmentType>>(),
-  attachmentTypes: fakeAttachmentTypes,
+  //attachmentTypes: fakeAttachmentTypes,
   openAppletMain: (appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
-  openAppletBlock: (appletHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
+  openAppletBlock: (appletHash: EntryHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
   openCrossAppletMain: (appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
   openCrossAppletBlock: (appletBundleId: ActionHash, block: string, context: any): Promise<void> => {throw new Error("openCrossAppletBlock() is not implemented on WeServicesMock.");},
   openHrl: (hrlc: HrlWithContext): Promise<void> => {throw new Error("openHrl() is not implemented on WeServicesMock.");},
@@ -42,10 +41,11 @@ export const emptyWeServicesMock: WeServices = {
   appletInfo: (appletHash): Promise<AppletInfo | undefined> => {throw new Error("appletInfo() is not implemented on WeServicesMock.");},
   attachableInfo: (hrlc: HrlWithContext): Promise<AttachableLocationAndInfo | undefined> => {throw new Error("entryInfo() is not implemented on WeServicesMock.");},
   hrlToClipboard: (hrlc: HrlWithContext): Promise<void> => {throw new Error("hrlToClipboard() is not implemented on WeServicesMock.");},
-  search: (searchFilter: string): Promise<any> => {throw new Error("search() is not implemented on WeServicesMock.");},
+  //search: (searchFilter: string): Promise<any> => {throw new Error("search() is not implemented on WeServicesMock.");},
   userSelectHrl: (): Promise<HrlWithContext | undefined> => {throw new Error("userSelectHrl() is not implemented on WeServicesMock.");},
   notifyWe: (notifications: Array<WeNotification>): Promise<any> => {throw new Error("notifyWe() is not implemented on WeServicesMock.");},
-  userSelectScreen: (): Promise<string> => {throw new Error("userSelectScreen() is not implemented on WeServicesMock.");}
+  userSelectScreen: (): Promise<string> => {throw new Error("userSelectScreen() is not implemented on WeServicesMock.");},
+  requestBind: (srcWal: HrlWithContext, dstWal: HrlWithContext) => {throw new Error("requestBind() is not implemented on WeServicesMock.");}
 };
 
 
