@@ -96,7 +96,12 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
     } as HrlWithContext;
   }
   /** Implement groupProfile */
-  // FIXME
+  weServicesMock.groupProfile = async (groupId) => {
+    return {
+      name: "FakeGroupeName",
+      logo_src: "",
+    }
+  }
   /** Implement openHrl */
   weServicesMock.openHrl = async (hrlc: HrlWithContext): Promise<void> => {
     alert("Mock weServices.openHrl() for hrl: " + stringifyHrl(hrlc.hrl) + "\n\n see console for context");
