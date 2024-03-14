@@ -1,10 +1,16 @@
-import {AppletId, AppletInfo, HrlWithContext, WeNotification, WeServices} from "@lightningrodlabs/we-applet";
+import {
+  AppletId,
+  AppletInfo,
+  HrlWithContext,
+  weaveUrlFromWal,
+  WeNotification,
+  WeServices
+} from "@lightningrodlabs/we-applet";
 import {
   AppletHash,
   AttachableLocationAndInfo,
 } from "@lightningrodlabs/we-applet/dist/types";
 import {ActionHash, DnaHash, DnaHashB64, encodeHashToBase64, EntryHash, EntryHashB64} from "@holochain/client";
-import {stringifyHrl} from "./utils";
 
 
 /** WeServices wrapper that caches requested infos */
@@ -31,7 +37,7 @@ export class WeServicesEx implements WeServices {
   getAttachableInfo(hrlc_or_str: HrlWithContext | string): AttachableLocationAndInfo | undefined {
     let hrlStr = hrlc_or_str as string;
     if (typeof hrlc_or_str == 'object') {
-      hrlStr = stringifyHrl(hrlc_or_str.hrl);
+      hrlStr = weaveUrlFromWal({hrl: hrlc_or_str.hrl}, false);
     }
     return this._attachableInfoCache[hrlStr];
   }
@@ -66,12 +72,12 @@ export class WeServicesEx implements WeServices {
 
   /** */
   async attachableInfo(hrlc: HrlWithContext): Promise<AttachableLocationAndInfo | undefined> {
-    const hrlStr = stringifyHrl(hrlc.hrl);
-    if (this._attachableInfoCache[hrlStr]) {
-      return this._attachableInfoCache[hrlStr];
+    const sHrl = weaveUrlFromWal({hrl: hrlc.hrl}, false);
+    if (this._attachableInfoCache[sHrl]) {
+      return this._attachableInfoCache[sHrl];
     }
-    this._attachableInfoCache[hrlStr] = await this._inner.attachableInfo(hrlc);
-    return this._attachableInfoCache[hrlStr];
+    this._attachableInfoCache[sHrl] = await this._inner.attachableInfo(hrlc);
+    return this._attachableInfoCache[sHrl];
   }
 
 

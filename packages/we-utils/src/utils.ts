@@ -7,13 +7,13 @@ import {
   encodeHashToBase64, EntryHash,
   InstalledAppId
 } from "@holochain/client";
-import {Hrl} from "@lightningrodlabs/we-applet";
+//import {Hrl} from "@lightningrodlabs/we-applet";
 
 
-/** */
-export function stringifyHrl(hrl: Hrl): string {
-  return `hrl://${encodeHashToBase64(hrl[0])}/${encodeHashToBase64(hrl[1])}`;
-}
+// /** */
+// export function stringifyHrl(hrl: Hrl): string {
+//   return `hrl://${encodeHashToBase64(hrl[0])}/${encodeHashToBase64(hrl[1])}`;
+// }
 
 
 /** */

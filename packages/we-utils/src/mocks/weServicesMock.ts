@@ -7,13 +7,13 @@ import {
 import {
   AppletInfo,
   AttachableLocationAndInfo,
-  Hrl,
+  Hrl, weaveUrlFromWal,
   WeNotification,
   WeServices
 } from "@lightningrodlabs/we-applet";
 import {AppletHash, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
 import {mdiFileExcelOutline} from "@mdi/js";
-import {stringifyHrl, wrapPathInSvg} from "../utils";
+import {wrapPathInSvg} from "../utils";
 
 
 /** Build fake AttachmentTypes */
@@ -104,7 +104,7 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
   }
   /** Implement openHrl */
   weServicesMock.openHrl = async (hrlc: HrlWithContext): Promise<void> => {
-    alert("Mock weServices.openHrl() for hrl: " + stringifyHrl(hrlc.hrl) + "\n\n see console for context");
+    alert("Mock weServices.openHrl() for hrl: " + weaveUrlFromWal({hrl:hrlc.hrl}) + "\n\n see console for context");
     console.log("weServicesMock.openHrl() context:", hrlc.context);
   }
   /** Implement notifyWe */
