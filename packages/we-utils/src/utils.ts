@@ -7,6 +7,8 @@ import {
   encodeHashToBase64, EntryHash,
   InstalledAppId
 } from "@holochain/client";
+import {weaveUrlToLocation} from "@lightningrodlabs/we-applet";
+import {HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
 //import {Hrl} from "@lightningrodlabs/we-applet";
 
 
