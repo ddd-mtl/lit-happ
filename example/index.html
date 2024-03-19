@@ -24,7 +24,7 @@
       //import * as hcc from "@holochain/client";
       import {AdminWebsocket} from "@holochain/client";
       //console.log({AdminWebsocket});
-      const adminWs = await AdminWebsocket.connect(`ws://localhost:${process.env.HC_ADMIN_PORT}`)
+      const adminWs = await AdminWebsocket.connect({url: `ws://localhost:${process.env.HC_ADMIN_PORT}`})
       console.log({adminWs});
 
       const apps = await adminWs.listApps({});

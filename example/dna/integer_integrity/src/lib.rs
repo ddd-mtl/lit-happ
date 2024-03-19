@@ -8,10 +8,10 @@ pub struct Integer {
 }
 
 
-#[hdk_entry_defs]
+#[hdk_entry_types]
 #[unit_enum(IntegerEntryTypes)]
 pub enum IntegerEntry {
-   #[entry_def(required_validations = 3, visibility = "public")]
+   #[entry_type(required_validations = 3, visibility = "public")]
    Integer(Integer),
 }
 

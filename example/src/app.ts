@@ -71,11 +71,11 @@ export class PlaygroundApp extends HappElement {
   async hvmConstructed(): Promise<void> {
     console.log("hvmConstructed()")
     /** Authorize all zome calls */
-    const adminWs = await AdminWebsocket.connect(new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
+    const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
     console.log({adminWs});
     await this.hvm.authorizeAllZomeCalls(adminWs);
     console.log("*** Zome call authorization complete");
-    await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
+    //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);
     const maybeProfile = await this.profilesDvm.profilesZvm.probeProfile(this.profilesDvm.cell.agentPubKey);

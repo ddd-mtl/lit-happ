@@ -27,7 +27,7 @@
     "typescript": "~5.2.0"
   },
   "dependencies": {
-    "@holochain/client": "=0.16.7",
+    "@holochain/client": "^0.17.0-dev.3",
     "async-mutex": "0.4.0"
   }
 }

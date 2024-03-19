@@ -109,7 +109,7 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
         let conductor = new ConductorAppProxy(timeout);
 
         /** AppWebsocket */
-        const appWs = await AppWebsocket.connect(wsUrl, timeout);
+        const appWs = await AppWebsocket.connect({url: wsUrl, defaultTimeout: timeout});
 
         /** AppAgentWebsocket */
         // const appAgentWs = await AppAgentWebsocket.connect(`ws://localhost:${process.env.HC_APP_PORT}`, "playground");

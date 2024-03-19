@@ -16,10 +16,10 @@ pub struct Label {
 }
 
 
-#[hdk_entry_defs]
+#[hdk_entry_types]
 #[unit_enum(LabelEntryTypes)]
 pub enum LabelEntry {
-   #[entry_def(required_validations = 3, visibility = "public")]
+   #[entry_type(required_validations = 3, visibility = "public")]
    Label(Label),
 }
 

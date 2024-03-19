@@ -18,7 +18,7 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
 #[hdk_extern]
 fn get_label(eh: EntryHash) -> ExternResult<String> {
   debug!("*** get_label() called");
-  let Some(record) = get(eh, GetOptions::content())? else {
+  let Some(record) = get(eh, GetOptions::network())? else {
     return Err(wasm_error!(WasmErrorInner::Guest("Entry not found".to_string())));
   };
   let RecordEntry::Present(entry) = record.entry() else {
@@ -49,7 +49,7 @@ fn create_label(name: String)  -> ExternResult<EntryHash> {
 #[hdk_extern]
 fn get_my_labels(_:()) -> ExternResult<Vec<String>> {
   debug!("*** get_my_labels() called");
-  let links = get_links(agent_info()?.agent_initial_pubkey, LabelLink::Default, None)?;
+  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, LabelLink::Default).unwrap().build())?;
   let labels = links.into_iter().map(|link| {
       let name = get_label(link.target.into_entry_hash().unwrap()).unwrap();
       return name;

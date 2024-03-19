@@ -183,7 +183,6 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('delete_contact', originalContactHash);
   }
 
-
   async handleNotificationTip(data: NotificationTip): Promise<void> {
     return this.call('handle_notification_tip', data);
   }
@@ -237,8 +236,13 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('create_sent_notification', sentNotification);
   }
 
+
   async grantUnrestrictedCapability(): Promise<void> {
     return this.call('grant_unrestricted_capability', null);
+  }
+
+  async getGrants(): Promise<void> {
+    return this.call('get_grants', null);
   }
 
   async createTwilioCredentials(twilioCredentials: TwilioCredentials): Promise<HcRecord> {

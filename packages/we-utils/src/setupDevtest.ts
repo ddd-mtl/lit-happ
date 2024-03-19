@@ -38,7 +38,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     const myWeServicesMock = await createWeServicesMock(devtestAppletId);
 
     /** AppAgentWebsocket */
-    const appAgentWs = await AppAgentWebsocket.connect(new URL(`ws://localhost:${process.env.HC_APP_PORT}`), names.installed_app_id);
+    const appAgentWs = await AppAgentWebsocket.connect( names.installed_app_id, {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`)});
     console.log("appAgentWs", appAgentWs);
     const appInfo = await appAgentWs.appInfo();
     console.log("appInfo", appInfo);
@@ -55,7 +55,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
 
     /** AdminWebsocket */
     let mainCellId;
-    const adminWs = await AdminWebsocket.connect(new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
+    const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
     const apps = await adminWs.listApps({});
     console.log("setupDevtest() apps", apps);
     for (const [roleName, cells] of Object.entries(appInfo.cell_info)) {

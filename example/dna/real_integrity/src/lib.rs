@@ -16,10 +16,10 @@ pub struct Real {
 }
 
 
-#[hdk_entry_defs]
+#[hdk_entry_types]
 #[unit_enum(RealEntryTypes)]
 pub enum RealEntry {
-   #[entry_def(required_validations = 3, visibility = "public")]
+   #[entry_type(required_validations = 3, visibility = "public")]
    Real(Real),
 }
 

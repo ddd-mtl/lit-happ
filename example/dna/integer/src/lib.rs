@@ -13,7 +13,7 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
 #[hdk_extern]
 fn get_integer(ah: ActionHash) -> ExternResult<u32> {
   debug!("*** get_integer() called");
-  let Some(record) = get(ah, GetOptions::content())? else {
+  let Some(record) = get(ah, GetOptions::network())? else {
     return Err(wasm_error!(WasmErrorInner::Guest("Integer not found".to_string())));
   };
   let RecordEntry::Present(entry) = record.entry() else {
@@ -65,7 +65,7 @@ fn get_my_values_local(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
 #[hdk_extern]
 fn get_my_values(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
   debug!("*** get_my_values()");
-  let links = get_links(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default, None)?;
+  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default).unwrap().build())?;
   let numbers = links.into_iter().map(|link| {
     let ah: ActionHash = link.target.into_action_hash().unwrap();
     let value = get_integer(ah.clone()).unwrap();
@@ -78,7 +78,7 @@ fn get_my_values(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
 #[hdk_extern]
 fn get_my_values_incremental(knowns: Vec<ActionHash>) -> ExternResult<Vec<(ActionHash, u32)>> {
   debug!("*** get_my_values_incremental(): knowns = {:?}", knowns);
-  let links = get_links(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default, None)?;
+  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default).unwrap().build())?;
   let ahs: Vec<ActionHash> = links.into_iter()
     .map(|link| link.target.into_action_hash().unwrap())
     .filter(|item| !knowns.contains(item))
