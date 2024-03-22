@@ -19,7 +19,7 @@ export interface DevTestNames {
 import {AppletHash, AppletView} from "@lightningrodlabs/we-applet";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 import {AppAgentClient} from "@holochain/client";
-import {GroupProfile, Hrl, HrlWithContext} from "@lightningrodlabs/we-applet/dist/types";
+import {GroupProfile, WAL} from "@lightningrodlabs/we-applet/dist/types";
 
 export type AppletViewInfo = {
     type: "applet-view",
@@ -39,19 +39,19 @@ export type BlockViewInfo = {
 }
 
 /** */
-export type AttachableViewInfo = {
-    type: "attachable",
+export type AssetViewInfo = {
+    type: "asset",
     roleName: string,
     integrityZomeName: string,
     entryType: string,
-    hrlWithContext: HrlWithContext,
+    wal: WAL,
 }
 
 /** */
 export type CreatableViewInfo = {
     type: "creatable";
     name: CreatableName;
-    resolve: (hrlWithContext: HrlWithContext) => Promise<void>;
+    resolve: (wal: WAL) => Promise<void>;
     reject: (reason: any) => Promise<void>;
     cancel: () => Promise<void>;
 };

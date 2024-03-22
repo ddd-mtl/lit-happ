@@ -147,29 +147,29 @@ ValidationReceipt,
 
 export type Signal =
   | {
-      type: "LinkCreated",
+      type: {LinkCreated: null},
       action: SignedActionHashed
       link_type: LinkTypes
     }
   | {
-      type: "LinkDeleted",
+      type: {LinkDeleted: null},
       action: SignedActionHashed
       create_link_action: SignedActionHashed
       link_type: LinkTypes
     }
   | {
-      type: "EntryCreated",
+      type: {EntryCreated: null},
       action: SignedActionHashed
       app_entry: EntryTypes
     }
   | {
-      type: "EntryUpdated",
+      type: {EntryUpdated: null},
       action: SignedActionHashed
       app_entry: EntryTypes
       original_app_entry: EntryTypes
     }
   | {
-      type: "EntryDeleted",
+      type: {EntryDeleted: null},
       action: SignedActionHashed
       original_app_entry: EntryTypes
     };
@@ -189,7 +189,7 @@ export enum EntryTypesType {
 	Profile = 'Profile',
 }
 export type EntryTypes = 
- | {type: "Profile", content: Profile}
+ | {type: {Profile: null}, content: Profile}
 
 
 export type LinkTypes =

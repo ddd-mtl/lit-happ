@@ -1,14 +1,11 @@
 import {
   AppletId,
   AppletInfo,
-  HrlWithContext,
   weaveUrlFromWal,
-  WeNotification,
-  WeServices
+  WeServices,
 } from "@lightningrodlabs/we-applet";
 import {
-  AppletHash,
-  AttachableLocationAndInfo,
+  AppletHash, AssetLocationAndInfo, FrameNotification, OpenWalMode, WAL,
 } from "@lightningrodlabs/we-applet/dist/types";
 import {ActionHash, DnaHash, DnaHashB64, encodeHashToBase64, EntryHash, EntryHashB64} from "@holochain/client";
 
@@ -22,8 +19,8 @@ export class WeServicesEx implements WeServices {
     //this.attachmentTypes = _inner.attachmentTypes;
   }
 
-  /** hrlStr -> AttachableLocationAndInfo */
-  private _attachableInfoCache: Record<string, AttachableLocationAndInfo | undefined> = {};
+  /** wurl -> AssetLocationAndInfo */
+  private _attachableInfoCache: Record<string, AssetLocationAndInfo | undefined> = {};
   /** DnaHashB64 -> groupProfile */
   private _groupProfileCache: Record<string, any | undefined> = {};
   /** appletId -> AppletInfo */
@@ -34,12 +31,12 @@ export class WeServicesEx implements WeServices {
 
   get appletId(): AppletId {return this._thisAppletId}
 
-  getAttachableInfo(hrlc_or_str: HrlWithContext | string): AttachableLocationAndInfo | undefined {
-    let hrlStr = hrlc_or_str as string;
-    if (typeof hrlc_or_str == 'object') {
-      hrlStr = weaveUrlFromWal({hrl: hrlc_or_str.hrl}, false);
+  getAssetInfo(wal_or_wurl: WAL | string): AssetLocationAndInfo | undefined {
+    let wurl = wal_or_wurl as string;
+    if (typeof wal_or_wurl == 'object') {
+      wurl = weaveUrlFromWal({hrl: wal_or_wurl.hrl});
     }
-    return this._attachableInfoCache[hrlStr];
+    return this._attachableInfoCache[wurl];
   }
   getAttachables(): string[] {
     return Object.keys(this._attachableInfoCache);
@@ -71,13 +68,13 @@ export class WeServicesEx implements WeServices {
   /** -- Call & cache info  -- */
 
   /** */
-  async attachableInfo(hrlc: HrlWithContext): Promise<AttachableLocationAndInfo | undefined> {
-    const sHrl = weaveUrlFromWal({hrl: hrlc.hrl}, false);
-    if (this._attachableInfoCache[sHrl]) {
-      return this._attachableInfoCache[sHrl];
+  async assetInfo(wal: WAL): Promise<AssetLocationAndInfo | undefined> {
+    const wurl = weaveUrlFromWal({hrl: wal.hrl});
+    if (this._attachableInfoCache[wurl]) {
+      return this._attachableInfoCache[wurl];
     }
-    this._attachableInfoCache[sHrl] = await this._inner.attachableInfo(hrlc);
-    return this._attachableInfoCache[sHrl];
+    this._attachableInfoCache[wurl] = await this._inner.assetInfo(wal);
+    return this._attachableInfoCache[wurl];
   }
 
 
@@ -109,11 +106,11 @@ export class WeServicesEx implements WeServices {
   async openAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void> {return this._inner.openAppletBlock(appletHash, block, context)}
   async openCrossAppletMain(appletBundleId: ActionHash): Promise<void>  {return this._inner.openCrossAppletMain(appletBundleId)}
   async openCrossAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void>  {return this._inner.openCrossAppletBlock(appletHash, block, context)}
-  async openHrl(hrlc: HrlWithContext): Promise<void>  {return this._inner.openHrl(hrlc)}
-  async hrlToClipboard(hrlc: HrlWithContext): Promise<void>  {return this._inner.hrlToClipboard(hrlc)}
+  async openWal(wal: WAL, mode?: OpenWalMode): Promise<void>  {return this._inner.openWal(wal, mode)}
+  async walToPocket(wal: WAL): Promise<void>  {return this._inner.walToPocket(wal)}
   //async search(searchFilter: string): Promise<any>  {return this._inner.search(searchFilter)}
-  async userSelectHrl(): Promise<HrlWithContext | undefined>  {return this._inner.userSelectHrl()}
-  async notifyWe(notifications: Array<WeNotification>): Promise<any>  {return this._inner.notifyWe(notifications)}
+  async userSelectWal(): Promise<WAL | undefined>  {return this._inner.userSelectWal()}
+  async notifyFrame(notifications: Array<FrameNotification>): Promise<any>  {return this._inner.notifyFrame(notifications)}
   async userSelectScreen(): Promise<string>  {return this._inner.userSelectScreen()}
-  async requestBind(srcWal: HrlWithContext, dstWal: HrlWithContext) {return this._inner.requestBind(srcWal, dstWal)}
+  async requestBind(srcWal: WAL, dstWal: WAL) {return this._inner.requestBind(srcWal, dstWal)}
 }
