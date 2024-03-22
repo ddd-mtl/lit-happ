@@ -2,6 +2,7 @@
 
 import {EntryTypes, LinkTypes, Signal, AgentPubKeyWithTag, Contact, NotificationTip, RemoveNotifierForNotificantInput, SentNotification, TwilioCredentials, UpdateContactInput, UpdateTwilioCredentialsInput, } from './notifications.types';
 import {
+WebsocketConnectionOptions,
 /** types.ts */
 HoloHash,
 AgentPubKey,

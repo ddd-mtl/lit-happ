@@ -1,4 +1,4 @@
-import {RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
+import {CreatableName, RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
 import {HappElement} from "@ddd-qc/lit-happ";
 
 
@@ -31,6 +31,14 @@ export type AppletViewInfo = {
 };
 
 
+/** */
+export type BlockViewInfo = {
+    type: "block";
+    block: string;
+    context: any;
+}
+
+/** */
 export type AttachableViewInfo = {
     type: "attachable",
     roleName: string,
@@ -39,9 +47,11 @@ export type AttachableViewInfo = {
     hrlWithContext: HrlWithContext,
 }
 
-
-export type BlockViewInfo = {
-    type: "block";
-    block: string;
-    context: any;
-}
+/** */
+export type CreatableViewInfo = {
+    type: "creatable";
+    name: CreatableName;
+    resolve: (hrlWithContext: HrlWithContext) => Promise<void>;
+    reject: (reason: any) => Promise<void>;
+    cancel: () => Promise<void>;
+};
