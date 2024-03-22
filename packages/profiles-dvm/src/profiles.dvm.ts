@@ -1,9 +1,8 @@
 import {delay, DnaViewModel} from "@ddd-qc/lit-happ";
-//import {ProfilesZvm} from "./profiles.zvm";
 import {
   AppSignal, AppSignalCb,
 } from "@holochain/client";
-import {ProfilesAltZvm} from "./profilesAlt.zvm";
+import {ProfilesZvm} from "./profiles.zvm";
 
 /** */
 // export interface ProfilesDnaPerspective {
@@ -17,13 +16,13 @@ import {ProfilesAltZvm} from "./profilesAlt.zvm";
 export class ProfilesDvm extends DnaViewModel {
 
   static readonly DEFAULT_BASE_ROLE_NAME = "profiles";
-  static readonly ZVM_DEFS = [ProfilesAltZvm]
+  static readonly ZVM_DEFS = [ProfilesZvm]
   readonly signalHandler?: AppSignalCb = this.handleSignal;
 
 
   /** QoL Helpers */
-  get profilesZvm(): ProfilesAltZvm {
-    return this.getZomeViewModel(ProfilesAltZvm.DEFAULT_ZOME_NAME) as ProfilesAltZvm
+  get profilesZvm(): ProfilesZvm {
+    return this.getZomeViewModel(ProfilesZvm.DEFAULT_ZOME_NAME) as ProfilesZvm
   }
 
   /** -- Perspective -- */
@@ -42,7 +41,7 @@ export class ProfilesDvm extends DnaViewModel {
   /** */
   handleSignal(signal: AppSignal) {
     console.log("Received Signal", signal);
-    if (signal.zome_name !== ProfilesAltZvm.DEFAULT_ZOME_NAME) {
+    if (signal.zome_name !== ProfilesZvm.DEFAULT_ZOME_NAME) {
       return;
     }
   }
