@@ -139,6 +139,7 @@ export class ProfilesAltZvm extends ZomeViewModel {
   /** */
   storeProfile(pubKeyB64: AgentPubKeyB64, profile: ProfileMat, ts: Timestamp) {
     this._profiles[pubKeyB64] = profile;
+    this._profileDates[pubKeyB64] = ts;
     this._reversed[profile.nickname] = pubKeyB64;
     this.notifySubscribers();
   }
