@@ -29,19 +29,25 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
+  private _consumer?;
+
 
   /** -- Methods -- */
 
   /** */
-  protected requestDvm() {
+  protected requestDvm(canRerequest: boolean = false) {
     /** Consume Context based on given dnaHash */
     if (!this._cell_via_context) {
       console.error("No Cell info found via context in a DnaElement for role:", this.baseRoleName)
       return;
     }
+    /* DVM already requested */
+    if (!canRerequest && this._consumer) {
+      return;
+    }
     const contextType = createContext<DVM>('dvm/'+ this.cell.name);
     console.log(`\t\t Requesting context "${contextType}"`)
-    /*const consumer =*/ new ContextConsumer(
+    this._consumer = new ContextConsumer(
       this,
       contextType,
       async (value: DVM, dispose?: () => void): Promise<void> => {
@@ -83,7 +89,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   /** */
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("_cell_via_context")) {
-      this.requestDvm();
+      this.requestDvm(true);
     }
   }
 }

@@ -33,17 +33,23 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
+  private _consumer?;
+
 
   /** -- Methods -- */
 
   /** Request zvm from Context based on current CellId */
-  private requestZvm() {
+  private requestZvm(canRerequest: boolean = false) {
     if (!this._cell_via_context) {
       throw Error(`Context "${cellContext}" not found from ZomeElement "${this.constructor.name}"`)
     }
+    /* DVM already requested */
+    if (!canRerequest && this._consumer) {
+      return;
+    }
     const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.cell.dnaHash)
     console.log(`\t\t Requesting context "${contextType}"`)
-    /*const consumer =*/ new ContextConsumer(
+    this._consumer = new ContextConsumer(
       this,
       contextType,
       async (value: ZVM, dispose?: () => void): Promise<void> => {
@@ -73,7 +79,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
     if (changedProperties.has("_cell_via_context")) {
       //console.log("ZomeElement.shouldUpdate()", this._cell_via_context)
       this._cell = this._cell_via_context;
-      this.requestZvm();
+      this.requestZvm(true);
       return false;
     }
     /** RequestZvm on first "shouldUpdate" */

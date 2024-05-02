@@ -20,9 +20,9 @@ import {
 
 /** */
 export interface WeServicesCache {
-  assetInfo: Record<string, AssetLocationAndInfo | undefined>;
-  groupProfile: Record<string, any | undefined>;
-  appletInfo: Record<AppletId, AppletInfo | undefined>;
+  assetInfos: Record<string, AssetLocationAndInfo | undefined>;
+  groupProfiles: Record<string, any | undefined>;
+  appletInfos: Record<AppletId, AppletInfo | undefined>;
 }
 
 
@@ -49,9 +49,9 @@ export class WeServicesEx implements WeServices {
 
   get cache(): WeServicesCache {
     return {
-      assetInfo: this._assetInfoCache,
-      groupProfile: this._groupProfileCache,
-      appletInfo: this._appletInfoCache,
+      assetInfos: this._assetInfoCache,
+      groupProfiles: this._groupProfileCache,
+      appletInfos: this._appletInfoCache,
     };
   }
 
