@@ -20,14 +20,12 @@ export async function setup(appletServices: AppletServices, createApplet: Create
 
 /** */
 export async function setupProd(appletServices: AppletServices, createApplet: CreateAppletFn): Promise<HappElement> {
-    console.log("setup()");
-
+    //console.log("setup()");
     setBasePath('./');
-    console.log("shoelace basePath", getBasePath());
-
-    console.log("WeClient.connect()...", WeClient);
+    //console.log("shoelace basePath", getBasePath());
+    //console.log("WeClient.connect()...", WeClient);
     const weClient = await WeClient.connect(appletServices);
-    console.log("weClient", weClient);
+    //console.log("weClient", weClient);
     if (weClient.renderInfo.type != "applet-view") {
         console.error("Setup called for non 'applet-view' type")
         return;
@@ -38,6 +36,6 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
 
     //const renderInfo = weClient.renderInfo as any;
     const applet = await createApplet(weClient.renderInfo, weClient);
-    console.log("applet", applet);
+    //console.log("applet", applet);
     return applet;
 }

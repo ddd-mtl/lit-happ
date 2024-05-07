@@ -302,7 +302,7 @@ export class AppProxy implements AppApi {
 
   /** Store signalHandler to internal handler array */
   addSignalHandler(handler: AppSignalCb, hcl?: HCLString): SignalUnsubscriber {
-    console.log("addSignalHandler()", hcl);
+    //console.log("addSignalHandler()", hcl);
 
     hcl = hcl? hcl: "__all";
     //console.log("addSignalHandler()", hcl, Object.keys(this._signalHandlers));

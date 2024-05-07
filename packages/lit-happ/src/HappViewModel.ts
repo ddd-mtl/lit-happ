@@ -82,7 +82,7 @@ export class HappViewModel {
   /** Spawn a HappViewModel for an AppId running on the AppProxy */
   static async new(host: ReactiveElement, appProxy: AppProxy, hvmDef: HvmDef): Promise<HappViewModel> {
     const appId = appProxy.appIdOfShame? appProxy.appIdOfShame : hvmDef.id;
-    console.log("HappViewModel.new()", hvmDef.id, appId)
+    //console.log("HappViewModel.new()", hvmDef.id, appId)
     /** Create all Cell Proxies in the definition */
     for (const dvmDef of hvmDef.dvmDefs) {
       if (dvmDef.ctor.DEFAULT_BASE_ROLE_NAME === undefined) {

@@ -20,7 +20,7 @@ export enum HappBuildModeType {
 
 /** INIT GLOBAL CONSTS */
 
-console.log("Initializaing HAPP global consts", window);
+console.log("[lit-happ] Initializaing LIT-HAPP global consts", window);
 
 let buildMode: HappBuildModeType;
 let happEnv: HappEnvType;
@@ -62,7 +62,7 @@ if (!buildMode) {
     try {
        buildMode = process.env.HAPP_BUILD_MODE as HappBuildModeType;
     } catch (e) {
-       console.log(`HAPP_BUILD_MODE not defined. Defaulting to "${HappBuildModeType.Retail}"`);
+       console.log(`[lit-happ] HAPP_BUILD_MODE not defined. Defaulting to "${HappBuildModeType.Retail}"`);
        buildMode = HappBuildModeType.Retail;
     }
 }
@@ -72,13 +72,13 @@ export let HAPP_BUILD_MODE = buildMode;
 export let HAPP_ENV = happEnv;
 export let HAPP_ELECTRON_API = maybeElectronApi;
 
-console.log("  HAPP_BUILD_MODE =", HAPP_BUILD_MODE)
-console.log("         HAPP_ENV =", HAPP_ENV);
+console.log("[lit-happ]  HAPP_BUILD_MODE =", HAPP_BUILD_MODE)
+console.log("[lit-happ]         HAPP_ENV =", HAPP_ENV);
 if (HAPP_ELECTRON_API) {
-    console.log("HAPP_ELECTRON_API =", HAPP_ENV);
+    console.log("[lit-happ] HAPP_ELECTRON_API =", HAPP_ENV);
 }
 
-console.log("Initializaing HAPP global consts - DONE")
+console.log("[lit-happ] Initializaing LIT-HAPP global consts - DONE")
 
 
 /** Remove console.log() in PROD */
