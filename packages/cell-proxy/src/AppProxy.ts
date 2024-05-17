@@ -39,8 +39,8 @@ export class AppProxy implements AppApi {
 
   /** -- Fields -- */
 
-  /** Signal log: [Timestamp, CellIdStr, Signal] */
-  private _signalLogs: [Timestamp, CellIdStr, AppSignal][] = [];
+  /** Signal log: [Timestamp, CellIdStr, Signal, isSystem] */
+  private _signalLogs: [Timestamp, CellIdStr, AppSignal, Boolean][] = [];
   /** Map cells per App: InstalledAppId -> (BaseRoleName -> CellsForRole) */
   private _cellsByApp: Dictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */
@@ -327,8 +327,9 @@ export class AppProxy implements AppApi {
 
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
-    this._signalLogs.push([Date.now(), CellIdStr(signal.cell_id), signal])
-    //console.log("signal logged", this._signalLogs)
+    const isSystem = typeof signal.payload === 'object' && !Array.isArray(signal.payload) && signal.payload !== null && "System" in (signal.payload as Object);
+    console.log("signal logged", signal, isSystem)
+    this._signalLogs.push([Date.now(), CellIdStr(signal.cell_id), signal, isSystem])
   }
 
 
@@ -338,22 +339,43 @@ export class AppProxy implements AppApi {
       const cellStr = CellIdStr(cellId);
       const hcls = this._hclMap[cellStr];
       const names = hcls.map((hcl) => this.getCellName(hcl));
-      console.warn(`Dumping signal logs for cell "${names}"`);
+      console.warn(`Dumping App signal logs for cell "${names}"`);
       const logs = this._signalLogs
         .filter((log) => log[1] == cellStr)
+        .filter((log) => !log[3])
         .map((log) => {
           return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload: log[2].payload}
         });
       console.table(logs);
+      console.warn(`Dumping System signal logs for cell "${names}"`);
+      const syslogs = this._signalLogs
+        .filter((log) => log[1] == cellStr)
+        .filter((log) => log[3])
+        .map((log) => {
+          const payload = (log[2].payload as Object)["System"];
+          return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload}
+        });
+      console.table(syslogs);
     } else {
-      console.warn("Dumping all signal logs", )
+      console.warn("Dumping all App signal logs", )
       const logs = this._signalLogs
+        .filter((log) => !log[3])
         .map((log) => {
           const app = this._hclMap[log[1]][0].appId
           const cell: string = this._hclMap[log[1]][0].roleName;
-          return { timestamp: prettyDate(new Date(log[0])), app, cell, zome: log[2].zome_name, payload: log[2].payload}
+          return { timestamp: prettyDate(new Date(log[0])), app, cell, zome: log[2].zome_name, payload: log[2].payload };
         });
       console.table(logs);
+      console.warn("Dumping all System signal logs", )
+      const syslogs = this._signalLogs
+        .filter((log) => log[3])
+        .map((log) => {
+          const app = this._hclMap[log[1]][0].appId
+          const cell: string = this._hclMap[log[1]][0].roleName;
+          const payload = (log[2].payload as Object)["System"];
+          return { timestamp: prettyDate(new Date(log[0])), app, cell, zome: log[2].zome_name, payload };
+        });
+      console.table(syslogs);
     }
   }
 }

@@ -1,7 +1,12 @@
 #![allow(non_snake_case)]
 
+mod signal_protocol;
+mod callbacks;
+pub use signal_protocol::*;
+
 use hdk::prelude::*;
 use integer_integrity::*;
+
 
 /// Zome Callback
 #[hdk_extern]
