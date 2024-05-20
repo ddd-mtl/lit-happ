@@ -12,15 +12,15 @@ fn post_commit(signedActionList: Vec<SignedActionHashed>) {
     if action.entry_type().is_none() {
       continue;
     }
-    let (_eh, entry_type) = action.entry_data().unwrap();
-    match entry_type {
+    let (_eh, entry_type2) = action.entry_data().unwrap();
+    match entry_type2 {
       EntryType::AgentPubKey => {},
       EntryType::CapClaim => {},
       EntryType::CapGrant => {},
       EntryType::App(_app_entry_def) => {
-        let variantName = "Integer".to_owned();
-        let _ = emit_signal(&SignalProtocol::System(SystemSignalProtocol::PostCommitStart(variantName.clone())));
-        let _ = emit_signal(&SignalProtocol::System(SystemSignalProtocol::PostCommitEnd((variantName, true))));
+        let variant_name = "Integer".to_owned();
+        let _ = emit_signal(&SignalProtocol::System(SystemSignalProtocol::PostCommitStart { entry_type: variant_name.clone()}));
+        let _ = emit_signal(&SignalProtocol::System(SystemSignalProtocol::PostCommitEnd {entry_type: variant_name, succeeded: true}));
       },
     }
   }

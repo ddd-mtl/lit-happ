@@ -64,9 +64,11 @@ export class AppProxy implements AppApi {
     return this._cellsByApp[appId];
   }
 
-
+  /** */
   getCellName(hcl: HCL): string {return this._cellNames[hcl.toString()]}
 
+
+  get signalLogs(): [Timestamp, CellIdStr, AppSignal, Boolean][]  { return this._signalLogs }
 
   /** */
   getLocations(cellId: CellId): HCL[] | undefined {
@@ -327,9 +329,15 @@ export class AppProxy implements AppApi {
 
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
-    const isSystem = typeof signal.payload === 'object' && !Array.isArray(signal.payload) && signal.payload !== null && "System" in (signal.payload as Object);
+    const isSystem = this.isSystemSignal(signal);
     console.log("signal logged", signal, isSystem)
     this._signalLogs.push([Date.now(), CellIdStr(signal.cell_id), signal, isSystem])
+  }
+
+
+  /** */
+  isSystemSignal(signal: AppSignal): Boolean {
+    return typeof signal.payload === 'object' && !Array.isArray(signal.payload) && signal.payload !== null && "System" in (signal.payload as Object);
   }
 
 
@@ -380,3 +388,31 @@ export class AppProxy implements AppApi {
   }
 }
 
+
+/** WARN: must be up to date with Rust code */
+/** Protocol for notifying the ViewModel (UI) of system level events */
+export type SystemSignalProtocolVariantPostCommitStart = {
+  type: "PostCommitStart"
+  entryType: string
+}
+export type SystemSignalProtocolVariantPostCommitEnd = {
+  type: "PostCommitEnd"
+  entryType: string
+  succeeded: boolean
+}
+export type SystemSignalProtocolVariantSelfCallStart = {
+  type: "SelfCallStart"
+  zomeName: string
+  fnName: string
+}
+export type SystemSignalProtocolVariantSelfCallEnd = {
+  type: "SelfCallEnd"
+  zomeName: string
+  fnName: string
+  succeeded: boolean
+}
+export type SystemSignalProtocol =
+  | SystemSignalProtocolVariantPostCommitStart
+  | SystemSignalProtocolVariantPostCommitEnd
+  | SystemSignalProtocolVariantSelfCallStart
+  | SystemSignalProtocolVariantSelfCallEnd;

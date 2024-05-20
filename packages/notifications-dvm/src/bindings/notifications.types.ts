@@ -169,33 +169,38 @@ export interface NotificationTip {
   destination: string
 }
 
+export type SignalVariantLinkCreated = {
+  type: "LinkCreated"
+  action: SignedActionHashed
+  link_type: LinkTypes
+}
+export type SignalVariantLinkDeleted = {
+  type: "LinkDeleted"
+  action: SignedActionHashed
+  link_type: LinkTypes
+}
+export type SignalVariantEntryCreated = {
+  type: "EntryCreated"
+  action: SignedActionHashed
+  app_entry: EntryTypes
+}
+export type SignalVariantEntryUpdated = {
+  type: "EntryUpdated"
+  action: SignedActionHashed
+  app_entry: EntryTypes
+  original_app_entry: EntryTypes
+}
+export type SignalVariantEntryDeleted = {
+  type: "EntryDeleted"
+  action: SignedActionHashed
+  original_app_entry: EntryTypes
+}
 export type Signal =
-  | {
-      type: {LinkCreated: null},
-      action: SignedActionHashed
-      link_type: LinkTypes
-    }
-  | {
-      type: {LinkDeleted: null},
-      action: SignedActionHashed
-      link_type: LinkTypes
-    }
-  | {
-      type: {EntryCreated: null},
-      action: SignedActionHashed
-      app_entry: EntryTypes
-    }
-  | {
-      type: {EntryUpdated: null},
-      action: SignedActionHashed
-      app_entry: EntryTypes
-      original_app_entry: EntryTypes
-    }
-  | {
-      type: {EntryDeleted: null},
-      action: SignedActionHashed
-      original_app_entry: EntryTypes
-    };
+  | SignalVariantLinkCreated
+  | SignalVariantLinkDeleted
+  | SignalVariantEntryCreated
+  | SignalVariantEntryUpdated
+  | SignalVariantEntryDeleted;
 
 export interface AgentPubKeyWithTag {
   agent: AgentPubKey

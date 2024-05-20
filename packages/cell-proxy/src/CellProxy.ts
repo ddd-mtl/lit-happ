@@ -1,11 +1,25 @@
-import {AppSignalCb, CallZomeRequest, CapSecret, encodeHashToBase64, ZomeName} from "@holochain/client";
+import {
+  AppSignal,
+  AppSignalCb,
+  CallZomeRequest,
+  CapSecret,
+  encodeHashToBase64,
+  Timestamp,
+  ZomeName
+} from "@holochain/client";
 import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
-import {DnaInfo, EntryDefsCallbackResult, ZomeInfo} from "./types";
+import {CellIdStr, DnaInfo, EntryDefsCallbackResult, ZomeInfo} from "./types";
 import {Mutex, withTimeout} from "async-mutex";
 import MutexInterface from "async-mutex/lib/MutexInterface";
-import {AppProxy, SignalUnsubscriber} from "./AppProxy";
+import {
+  AppProxy,
+  SignalUnsubscriber,
+  SystemSignalProtocol,
+  SystemSignalProtocolVariantSelfCallEnd,
+  SystemSignalProtocolVariantSelfCallStart
+} from "./AppProxy";
 
 
 export interface RequestLog {
@@ -44,6 +58,38 @@ export class CellProxy extends CellMixin(Empty) {
     console.log(`CellProxy.ctor`, cell);
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
     this._callMutex = withTimeout(new Mutex(), this.defaultTimeout);
+
+    /*const _unsub =*/ this.addSignalHandler((sig) => this.blockSelfCall(sig));
+  }
+
+
+  private _selfCallRelease?;
+
+  /** Have a self call acquire & the call Mutex */
+  protected async blockSelfCall(signal: AppSignal) {
+    if (!this._appProxy.isSystemSignal(signal)) {
+      return;
+    }
+
+    const sys = (signal.payload as Object)["System"] as SystemSignalProtocol;
+    if (sys.type == "SelfCallStart") {
+      /** Acquire lock */
+      try {
+        this._callMutex.acquire().then((r) => this._selfCallRelease = r)
+      } catch (e) {
+        console.error("A Zome self call is initialted during a writing zome call", e);
+      }
+    }
+    if (sys.type == "SelfCallEnd" && this._selfCallRelease) {
+      /** Release */
+      this._selfCallRelease();
+      delete this._selfCallRelease;
+      const end = sys as SystemSignalProtocolVariantSelfCallEnd;
+      if (!end.succeeded) {
+        this.dumpSignals();
+        this.dumpLogs(end.zomeName);
+      }
+    }
   }
 
 
@@ -240,7 +286,7 @@ export class CellProxy extends CellMixin(Empty) {
       if (zomeName && requestLog.request.zome_name != zomeName) {
         continue;
       }
-      const startTime = prettyDate(new Date(requestLog.requestTimestamp));
+      const startTime= prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
       const input = requestLog.request.payload instanceof Uint8Array ? encodeHashToBase64(requestLog.request.payload) : requestLog.request.payload;
@@ -255,7 +301,34 @@ export class CellProxy extends CellMixin(Empty) {
       console.warn(` - For zome "${zomeName}"`);
     }
     console.table(result)
+
+    /** Parse signal self-call logs */
+    //console.log(this._appProxy.signalLogs)
+    const startCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallStart][] = this._appProxy.signalLogs
+      .filter(([ts, cellId, signal, isSystem]) => isSystem && (signal.payload as Object)["System"].type == "SelfCallStart")
+      .map(([ts, cellId, signal, isSystem]) => [ts, cellId, (signal.payload as Object)["System"]])
+
+    const endCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallEnd][] = this._appProxy.signalLogs
+      .filter(([ts, cellId, signal, isSystem]) => isSystem && (signal.payload as Object)["System"].type == "SelfCallEnd")
+      .map(([ts, cellId, signal, isSystem]) => [ts, cellId, (signal.payload as Object)["System"]])
+
+
+    let sigResults = [];
+    for (const [startTs, startId, startSignal] of startCalls) {
+      const index = endCalls.findIndex(([ts, cellId, signal]) => ts >= startTs && startId == cellId && startSignal.fnName == signal.fnName)
+      if (index == -1) {
+        continue;
+      }
+      const first = endCalls.splice(index, 1)[0];
+      const [endTs, _cId, endSignal] = first;
+      const duration = prettyDuration(new Date(endTs - startTs));
+      const log = { startTime: startTs, zomeName: endSignal.zomeName, fnName: endSignal.fnName, succeeded: endSignal.succeeded, duration }
+      sigResults.push(log);
+    }
+
+    console.table(sigResults)
   }
+
 
 }
 
