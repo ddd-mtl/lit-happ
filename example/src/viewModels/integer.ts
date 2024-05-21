@@ -19,6 +19,9 @@ export class IntegerZomeProxy extends ZomeProxy {
   async createInteger(value: number): Promise<ActionHash> {
     return this.callBlocking('create_integer', value);
   }
+  async createBlockingInteger(value: number): Promise<ActionHash> {
+    return this.callZomeBlockPostCommit('Integer', 'create_integer', value);
+  }
 
   async getMyValuesLocal(): Promise<[ActionHash, number][]> {
     return this.call('get_my_values_local', null);
@@ -97,12 +100,17 @@ export class IntegerZvm extends ZomeViewModel {
   /** -- Integer specific methods -- */
 
   /**  */
-  async createInteger(value: number): Promise<ActionHash> {
+  async createInteger(value: number, canBlock: boolean): Promise<ActionHash> {
     const zi = await this.zomeProxy.zomeInfo();
     console.log({zi});
     const di = await this.zomeProxy.dnaInfo();
     console.log({di});
-    const ah = await this.zomeProxy.createInteger(value);
+    let ah;
+    if (canBlock) {
+      ah = await this.zomeProxy.createBlockingInteger(value);
+    } else {
+      ah = await this.zomeProxy.createInteger(value);
+    }
     /** Add directly to perspective */
     this._values.push(value);
     this._knowns.push(ah);

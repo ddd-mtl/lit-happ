@@ -16,7 +16,7 @@ import MutexInterface from "async-mutex/lib/MutexInterface";
 import {
   AppProxy,
   SignalUnsubscriber,
-  SystemSignalProtocol,
+  SystemSignalProtocol, SystemSignalProtocolVariantPostCommitEnd,
   SystemSignalProtocolVariantSelfCallEnd,
   SystemSignalProtocolVariantSelfCallStart
 } from "./AppProxy";
@@ -59,13 +59,41 @@ export class CellProxy extends CellMixin(Empty) {
     this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
     this._callMutex = withTimeout(new Mutex(), this.defaultTimeout);
 
-    /*const _unsub =*/ this.addSignalHandler((sig) => this.blockSelfCall(sig));
+    ///*const _unsub =*/ this.addSignalHandler((sig) => this.blockSelfCall(sig));
+    /*const _unsub =*/ this.addSignalHandler((sig) => this.blockUntilPostCommit(sig));
   }
 
 
-  private _selfCallRelease?;
+  /** Have a PostCommitEnd release the Mutex */
+  private _postCommitRelease?;
+  private _postCommitReleaseEntryType?: string;
+  protected async blockUntilPostCommit(signal: AppSignal) {
+    console.log("blockUntilPostCommit()", signal, this._appProxy.isSystemSignal(signal) , this._postCommitReleaseEntryType, !!this._postCommitRelease);
+    if (!this._appProxy.isSystemSignal(signal) || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
+      return;
+    }
+    const sys = (signal.payload as Object)["System"] as SystemSignalProtocol;
+    if (sys.type !== "PostCommitEnd") {
+      return;
+    }
+    const end = sys as SystemSignalProtocolVariantPostCommitEnd;
+    if (!end.succeeded) {
+      this.dumpSignals();
+      this.dumpLogs(signal.zome_name);
+    }
+    if (end.entry_type !== this._postCommitReleaseEntryType) {
+      return;
+    }
+    /** Release */
+    console.log("blockUntilPostCommit() RELEASE");
+    this._postCommitRelease();
+    delete this._postCommitRelease;
+    delete this._postCommitReleaseEntryType;
+  }
+
 
   /** Have a self call acquire & the call Mutex */
+  private _selfCallRelease?;
   protected async blockSelfCall(signal: AppSignal) {
     if (!this._appProxy.isSystemSignal(signal)) {
       return;
@@ -73,6 +101,7 @@ export class CellProxy extends CellMixin(Empty) {
 
     const sys = (signal.payload as Object)["System"] as SystemSignalProtocol;
     if (sys.type == "SelfCallStart") {
+      console.log("")
       /** Acquire lock */
       try {
         this._callMutex.acquire().then((r) => this._selfCallRelease = r)
@@ -87,7 +116,7 @@ export class CellProxy extends CellMixin(Empty) {
       const end = sys as SystemSignalProtocolVariantSelfCallEnd;
       if (!end.succeeded) {
         this.dumpSignals();
-        this.dumpLogs(end.zomeName);
+        this.dumpLogs(end.zome_name);
       }
     }
   }
@@ -144,6 +173,34 @@ export class CellProxy extends CellMixin(Empty) {
     const respLog = { requestIndex, failure: "Waiting for Mutex timed-out", timestamp: Date.now() }
     this._responseLog.push(respLog);
     return respLog;
+  }
+
+
+  /**
+   * callZome() with Mutex (for calls that writes to source-chain)
+   * TODO: Implement call queue instead of mutex?
+   */
+  async callZomeBlockPostCommit(entryType: string, zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
+    timeout = timeout? timeout : this.defaultTimeout;
+    const req = {
+      cap_secret, zome_name, fn_name, payload,
+      cell_id: this.cell.id,
+      provenance: this.cell.id[1],
+    } as CallZomeRequest;
+    const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
+
+    /** Acquire lock */
+    try {
+      this._postCommitRelease = await this._callMutex.acquire();
+      this._postCommitReleaseEntryType = entryType;
+    } catch(e) {
+      console.warn("Waiting for callZomeBlockPostCommit mutex timed-out", e);
+      this.logCallTimedout(log)
+      return Promise.reject("Waiting for callZomeBlockPostCommit mutex timed-out");
+    }
+    /** Execute */
+    const respLog = await this.executeZomeCall(log);
+    return respLog.success;
   }
 
 
@@ -315,14 +372,14 @@ export class CellProxy extends CellMixin(Empty) {
 
     let sigResults = [];
     for (const [startTs, startId, startSignal] of startCalls) {
-      const index = endCalls.findIndex(([ts, cellId, signal]) => ts >= startTs && startId == cellId && startSignal.fnName == signal.fnName)
+      const index = endCalls.findIndex(([ts, cellId, signal]) => ts >= startTs && startId == cellId && startSignal.fnName == signal.fn_name)
       if (index == -1) {
         continue;
       }
       const first = endCalls.splice(index, 1)[0];
       const [endTs, _cId, endSignal] = first;
       const duration = prettyDuration(new Date(endTs - startTs));
-      const log = { startTime: startTs, zomeName: endSignal.zomeName, fnName: endSignal.fnName, succeeded: endSignal.succeeded, duration }
+      const log = { startTime: startTs, zomeName: endSignal.zome_name, fnName: endSignal.fn_name, succeeded: endSignal.succeeded, duration }
       sigResults.push(log);
     }
 

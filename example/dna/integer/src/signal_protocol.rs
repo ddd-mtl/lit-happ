@@ -3,7 +3,7 @@ use crate::*;
 
 /// Protocol for notifying the ViewModel (UI) of system level events
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum SystemSignalProtocol {
     PostCommitStart {entry_type: String},
     PostCommitEnd {entry_type: String, succeeded: bool},

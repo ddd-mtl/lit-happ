@@ -32,7 +32,7 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
   async onCreateInteger(e: any) {
     const input = this.shadowRoot!.getElementById("integerInput") as HTMLInputElement;
     const value = Number(input.value);
-    let res = await this._zvm.createInteger(value);
+    let res = await this._zvm.createInteger(value, true);
     //console.log("onCreateDummy() res =", serializeHash(res))
     input.value = "";
   }
