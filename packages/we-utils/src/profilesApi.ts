@@ -1,38 +1,23 @@
 import {
-  AppApi, AppInfoRequest, AppInfoResponse, CallZomeRequest, ClonedCell,
+  AgentPubKey,
+  AppClient, AppCreateCloneCellRequest, AppEvents,
+  AppInfoResponse, AppNetworkInfoRequest, AppSignalCb, CallZomeRequest, ClonedCell, CreateCloneCellResponse,
   DisableCloneCellRequest,
-  EnableCloneCellRequest,
+  EnableCloneCellRequest, InstalledAppId, NetworkInfoResponse,
 } from "@holochain/client";
+import { UnsubscribeFunction } from "emittery";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 
 
 /**
- * Adapt ProfilesClient to AppApi interface
+ * Adapt ProfilesClient to AppClient interface
  */
-export class ProfilesApi implements AppApi {
+export class ProfilesApi implements AppClient {
 
   constructor(private _profilesClient: ProfilesClient/*, public appId: InstalledAppId*/) { }
 
-
-  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
-    //console.log("enableCloneCell() called:", request)
-    return this._profilesClient.client.enableCloneCell(request);
-  }
-
-  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
-    //console.log("disableCloneCell() called:", request)
-    return this._profilesClient.client.disableCloneCell(request);
-  }
-
-
-  async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
-    const res = await this._profilesClient.client.appInfo();
-    if (res.installed_app_id != args.installed_app_id) {
-      throw new Error("Unknown appId requested");
-    }
-    return res;
-  }
-
+  myPubKey: AgentPubKey;
+  installedAppId: InstalledAppId;
 
   /** Undo crap by ProfilesClient */
   async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
@@ -71,4 +56,40 @@ export class ProfilesApi implements AppApi {
     }
     throw new Error("Unknown fn_name requested");
   }
+
+  on<Name extends keyof AppEvents>(
+    eventName: Name | readonly Name[],
+    listener: AppSignalCb,
+  ): UnsubscribeFunction {
+    return this._profilesClient.client.on(eventName, listener);
+  }
+
+
+  async appInfo(): Promise<AppInfoResponse> {
+    const res = await this._profilesClient.client.appInfo();
+    // if (res.installed_app_id != args.installed_app_id) {
+    //   throw new Error("Unknown appId requested");
+    // }
+    return res;
+  }
+
+  async createCloneCell(request: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> {
+    //console.log("enableCloneCell() called:", request)
+    return this._profilesClient.client.createCloneCell(request);
+  }
+
+  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
+    //console.log("enableCloneCell() called:", request)
+    return this._profilesClient.client.enableCloneCell(request);
+  }
+
+  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
+    //console.log("disableCloneCell() called:", request)
+    return this._profilesClient.client.disableCloneCell(request);
+  }
+
+  networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+    return this._profilesClient.client.networkInfo(args);
+  }
+
 }

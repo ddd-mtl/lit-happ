@@ -1,47 +1,69 @@
 import {
-  AppApi,
-  AppInfoRequest,
   AppInfoResponse,
   CallZomeRequest,
   DisableCloneCellRequest,
   EnableCloneCellRequest,
   ClonedCell,
+  AppClient,
+  AppEvents,
+  AppSignalCb,
+  AppCreateCloneCellRequest,
+  CreateCloneCellResponse,
+  AppNetworkInfoRequest, NetworkInfoResponse, AgentPubKeyB64, InstalledAppId,
 } from "@holochain/client";
+import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
+import {AgentPubKey} from "@holochain/client/lib/types";
 
 
 /**
  *
  */
-export class ExternalAppProxy extends AppProxy implements AppApi {
+export class ExternalAppProxy extends AppProxy implements AppClient {
 
   /** Ctor */
-  /*protected*/ constructor(private _appApi: AppApi, defaultTimeout: number) {
+  /*protected*/ constructor(private _appClient: AppClient, defaultTimeout: number) {
     super(defaultTimeout);
   }
 
 
 
-  /** -- AppApi (Passthrough to external AppApi) -- */
+  /** -- AppClient (Passthrough to external AppClient) -- */
 
-  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
-    //console.log("enableCloneCell() called:", request)
-    return this._appApi.enableCloneCell(request);
-  }
-
-  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
-    //console.log("disableCloneCell() called:", request)
-    return this._appApi.disableCloneCell(request);
-  }
-  async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
-    return this._appApi.appInfo(args);
-  }
+  //get myPubKey(): AgentPubKey { return this._appClient.myPubKey}
+  //get installedAppId(): InstalledAppId { return this._appClient.installedAppId}
 
   async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
     timeout = timeout ? timeout : this.defaultTimeout
-    return this._appApi.callZome(req, timeout)
+    return this._appClient.callZome(req, timeout)
   }
 
+  on<Name extends keyof AppEvents>(
+    eventName: Name | readonly Name[],
+    listener: AppSignalCb
+  ): UnsubscribeFunction {
+    return this._appClient.on(eventName, listener);
+  }
+
+  async appInfo(): Promise<AppInfoResponse> {
+    return this._appClient.appInfo();
+  }
+
+  async createCloneCell(request: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> {
+    return this._appClient.createCloneCell(request);
+  }
+
+  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
+    return this._appClient.enableCloneCell(request);
+  }
+
+  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
+    return this._appClient.disableCloneCell(request);
+  }
+
+  networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+    return this._appClient.networkInfo(args);
+  }
 
 }
 

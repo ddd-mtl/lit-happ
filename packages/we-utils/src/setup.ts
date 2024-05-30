@@ -1,4 +1,4 @@
-import {AppletServices, WeClient} from "@lightningrodlabs/we-applet";
+import {AppletServices, WeaveClient} from "@lightningrodlabs/we-applet";
 import {setBasePath, getBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import {delay, HappElement, HAPP_ENV, HappEnvType} from "@ddd-qc/lit-happ";
 import {setupDevtest} from "./setupDevtest";
@@ -24,7 +24,7 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
     setBasePath('./');
     //console.log("shoelace basePath", getBasePath());
     //console.log("WeClient.connect()...", WeClient);
-    const weClient = await WeClient.connect(appletServices);
+    const weClient = await WeaveClient.connect(appletServices);
     //console.log("weClient", weClient);
     if (weClient.renderInfo.type != "applet-view") {
         console.error("Setup called for non 'applet-view' type")

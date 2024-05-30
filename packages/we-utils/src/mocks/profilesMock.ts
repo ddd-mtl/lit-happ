@@ -1,5 +1,5 @@
 import {AgentPubKey} from "@holochain/client/lib/types";
-import {AppInfo, AppInfoRequest, AppInfoResponse, fakeAgentPubKey, fakeDnaHash} from "@holochain/client";
+import {AppInfo, AppInfoResponse, fakeAgentPubKey, fakeDnaHash} from "@holochain/client";
 import {CellInfo} from "@holochain/client/lib/api/admin/types";
 import {ConductorAppProxy} from "@ddd-qc/cell-proxy";
 
@@ -25,9 +25,7 @@ async function generateFakeProfilesAppInfo(myKey: AgentPubKey): Promise<AppInfo>
         cell_info: {
             profiles: [fakeProfilesDnaCellInfo],
         },
-        status: {
-            running: null,
-        }
+        status: "running",
     };
 }
 
@@ -40,7 +38,7 @@ export class ConductorProxyProfilesMock extends ConductorAppProxy {
 
 
     /** */
-    async appInfo(_args: AppInfoRequest): Promise<AppInfoResponse> {
+    async appInfo(): Promise<AppInfoResponse> {
         return generateFakeProfilesAppInfo(await fakeAgentPubKey());
     }
 

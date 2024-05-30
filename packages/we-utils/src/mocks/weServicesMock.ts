@@ -5,9 +5,8 @@ import {
   fakeDnaHash, fakeEntryHash
 } from "@holochain/client";
 import {
-  AppletInfo,
+  AppletInfo, PeerStatusUpdate, WeaveServices,
   weaveUrlFromWal,
-  WeServices
 } from "@lightningrodlabs/we-applet";
 import {
   AppletHash,
@@ -33,9 +32,10 @@ import {wrapPathInSvg} from "../utils";
 
 
 /** */
-export const emptyWeServicesMock: WeServices = {
+export const emptyWeServicesMock: WeaveServices = {
   //attachmentTypes: new HoloHashMap<AppletHash, Record<AttachmentName, AttachmentType>>(),
   //attachmentTypes: fakeAttachmentTypes,
+  onPeerStatusUpdate: (callback: (payload: PeerStatusUpdate) => any) => {throw new Error("onPeerStatusUpdate() is not implemented on WeServicesMock."); },
   openAppletMain: (appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
   openAppletBlock: (appletHash: EntryHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
   openCrossAppletMain: (appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
@@ -49,14 +49,16 @@ export const emptyWeServicesMock: WeServices = {
   userSelectWal: (): Promise<WAL | undefined> => {throw new Error("userSelectWal() is not implemented on WeServicesMock.");},
   notifyFrame: (notifications: Array<FrameNotification>): Promise<any> => {throw new Error("notifyFrame() is not implemented on WeServicesMock.");},
   userSelectScreen: (): Promise<string> => {throw new Error("userSelectScreen() is not implemented on WeServicesMock.");},
-  requestBind: (srcWal: WAL, dstWal: WAL) => {throw new Error("requestBind() is not implemented on WeServicesMock.");}
+  requestBind: (srcWal: WAL, dstWal: WAL) => {throw new Error("requestBind() is not implemented on WeServicesMock.");},
+  myGroupPermissionType: () => {throw new Error("myGroupPermissionType() is not implemented on WeServicesMock.");},
+
 };
 
 
 var _mockClipboard = undefined;
 
 /** Create default WeServices Mock */
-export async function createDefaultWeServicesMock(devtestAppletId: string): Promise<WeServices> {
+export async function createDefaultWeServicesMock(devtestAppletId: string): Promise<WeaveServices> {
   console.log("createDefaultWeServicesMock() devtestAppletId", devtestAppletId);
   const weServicesMock = emptyWeServicesMock;
   /** Implement appletInfo */
@@ -67,13 +69,15 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
       return {
         appletBundleId: await fakeActionHash(),
         appletName: "DevTestWeApplet",
-        groupsIds: [await fakeDnaHash()],
+        appletIcon: "",
+        groupsHashes: [await fakeDnaHash()],
       } as AppletInfo;
     }
     return {
       appletBundleId: await fakeActionHash(),
       appletName: "MockApplet: " + appletId,
-      groupsIds: [await fakeDnaHash()],
+      appletIcon: "",
+      groupsHashes: [await fakeDnaHash()],
     } as AppletInfo;
   };
   /** Implement entryInfo */

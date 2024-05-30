@@ -1,7 +1,7 @@
 import {asCell, BaseRoleName, Cell, CellProxy, ConductorAppProxy} from "@ddd-qc/cell-proxy";
 import {
-  AppAgentClient,
-  AppAgentWebsocket,
+  AppClient,
+  AppWebsocket,
   CellInfo,
   DnaHash,
   encodeHashToBase64, EntryHash,
@@ -10,7 +10,7 @@ import {
 
 
 /** */
-export async function getCellInfo(client: AppAgentClient, maybeDnaHash: DnaHash | undefined, baseRoleName: BaseRoleName): Promise<CellInfo | null> {
+export async function getCellInfo(client: AppClient, maybeDnaHash: DnaHash | undefined, baseRoleName: BaseRoleName): Promise<CellInfo | null> {
   const appInfo = await client.appInfo();
   const cells = appInfo.cell_info[baseRoleName];
   for (const cellInfo of cells) {
@@ -34,9 +34,8 @@ export async function getCellInfo(client: AppAgentClient, maybeDnaHash: DnaHash 
 
 
 /** */
-export async function asCellProxy(client: AppAgentClient, maybeDnaHash: DnaHash | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
-  const agentWs = client as AppAgentWebsocket;
-  const appProxy = await ConductorAppProxy.new(agentWs.appWebsocket);
+export async function asCellProxy(client: AppClient, maybeDnaHash: DnaHash | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
+  const appProxy = await ConductorAppProxy.new(client as AppWebsocket);
   const cellInfo = await getCellInfo(client, maybeDnaHash, baseRoleName);
   const cell = Cell.from(cellInfo, appId, baseRoleName)
   const cellProxy = new CellProxy(appProxy, cell);

@@ -1,5 +1,5 @@
 import {
-    AdminWebsocket, AppAgentWebsocket, encodeHashToBase64, fakeEntryHash, decodeHashFromBase64, EntryHash, Record,
+    AdminWebsocket, encodeHashToBase64, fakeEntryHash, decodeHashFromBase64, EntryHash, Record, AppWebsocket,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
@@ -38,7 +38,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     const myWeServicesMock = await createWeServicesMock(devtestAppletId);
 
     /** AppAgentWebsocket */
-    const appAgentWs = await AppAgentWebsocket.connect( names.installed_app_id, {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`)});
+    const appAgentWs = await AppWebsocket.connect( {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`)});
     console.log("appAgentWs", appAgentWs);
     const appInfo = await appAgentWs.appInfo();
     console.log("appInfo", appInfo);

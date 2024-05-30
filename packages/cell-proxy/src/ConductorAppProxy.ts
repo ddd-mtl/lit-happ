@@ -1,6 +1,4 @@
 import {
-  AppApi,
-  AppInfoRequest,
   AppInfoResponse,
   AppWebsocket,
   CallZomeRequest,
@@ -8,10 +6,20 @@ import {
   CreateCloneCellRequest,
   DisableCloneCellRequest,
   EnableCloneCellRequest,
-  ClonedCell, decodeHashFromBase64, DnaHashB64, NetworkInfo, NetworkInfoRequest, AgentPubKeyB64, Timestamp,
+  ClonedCell,
+  decodeHashFromBase64,
+  DnaHashB64,
+  NetworkInfo,
+  NetworkInfoRequest,
+  AgentPubKeyB64,
+  Timestamp,
+  AppClient,
+  AppEvents, AppSignalCb, AppNetworkInfoRequest, NetworkInfoResponse, encodeHashToBase64,
 } from "@holochain/client";
+import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {CellIdStr} from "./types";
+import {DEFAULT_TIMEOUT} from "@holochain/client/lib/api/common";
 
 
 /**
@@ -22,7 +30,7 @@ import {CellIdStr} from "./types";
  * Stores appSignal logs
  * TODO Implement Singleton per App port?
  */
-export class ConductorAppProxy extends AppProxy implements AppApi {
+export class ConductorAppProxy extends AppProxy implements AppClient {
 
   /** -- Fields -- */
 
@@ -31,16 +39,32 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
 
   /** -- Getters -- */
 
-  /** Check this after connecting since AppWebsocket can shamelessly override the provided args. */
-  get appIdOfShame(): InstalledAppId | undefined { return this._appWs.overrideInstalledAppId;}
+  ///** Check this after connecting since AppWebsocket can shamelessly override the provided args. */
+  //get appIdOfShame(): InstalledAppId | undefined { return this._appWs.overrideInstalledAppId;}
 
+
+  /** -- AppClient (Passthrough to appWebsocket) -- */
+
+  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+    timeout = timeout ? timeout : this.defaultTimeout
+    return this._appWs.callZome(req, timeout)
+  }
+
+  async appInfo(): Promise<AppInfoResponse> {
+    return this._appWs!.appInfo();
+  }
+
+  on<Name extends keyof AppEvents>(
+    eventName: Name | readonly Name[],
+    listener: AppSignalCb
+  ): UnsubscribeFunction {
+    return this._appWs!.on(eventName, listener);
+  }
 
   async createCloneCell(request: CreateCloneCellRequest): Promise<ClonedCell> {
     //console.log("createCloneCell() called:", request)
     return this._appWs!.createCloneCell(request);
   }
-
-  /** -- AppApi (Passthrough to appWebsocket) -- */
 
   async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
     //console.log("enableCloneCell() called:", request)
@@ -52,14 +76,38 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
     return this._appWs!.disableCloneCell(request);
   }
 
-  async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
-    return this._appWs!.appInfo(args);
+  // async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+  //   return this._appWs!.networkInfo(args);
+  // }
+
+
+  /** */
+  async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+    const agent = encodeHashToBase64(this._appWs.myPubKey);
+    /* Call networkInfo */
+    const response = await this._appWs.networkInfo({
+      dnas: args.dnas,
+      last_time_queried: this._lastTimeQueriedMap[agent]} as NetworkInfoRequest);
+    this._lastTimeQueriedMap[agent] = Date.now();
+
+    /* Convert result */
+    let i = 0;
+    //let result = {}
+    for (const netInfo of response) {
+      const dnaHash = encodeHashToBase64(args.dnas[i]);
+      //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
+      /* Store */
+      const cellIdStr = CellIdStr(args.dnas[i], decodeHashFromBase64(agent));
+      if (!this._networkInfoLogs[cellIdStr]) {
+        this._networkInfoLogs[cellIdStr] = [];
+      }
+      this._networkInfoLogs[cellIdStr].push([this._lastTimeQueriedMap[agent], netInfo])
+      /* */
+      i += 1;
+    }
+    return response;
   }
 
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
-    timeout = timeout ? timeout : this.defaultTimeout
-    return this._appWs.callZome(req, timeout)
-  }
 
 
   /** Store networkInfo calls */
@@ -68,32 +116,6 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
 
   get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return this._networkInfoLogs;}
 
-  /** */
-  async networkInfo(agent: AgentPubKeyB64, dnas: DnaHashB64[]): Promise<Record<DnaHashB64, [Timestamp, NetworkInfo]>> {
-    const hashs = dnas.map((b64) => decodeHashFromBase64(b64));
-    /* Call networkInfo */
-    const response = await this._appWs.networkInfo({
-      agent_pub_key: decodeHashFromBase64(agent),
-      dnas: hashs,
-      last_time_queried: this._lastTimeQueriedMap[agent]} as NetworkInfoRequest);
-    this._lastTimeQueriedMap[agent] = Date.now();
-
-    /* Convert result */
-    let i = 0;
-    let result = {}
-    for (const netInfo of response) {
-      result[dnas[i]] = [this._lastTimeQueriedMap[agent], netInfo];
-      /* Store */
-      const cellIdStr = CellIdStr(decodeHashFromBase64(dnas[i]), decodeHashFromBase64(agent));
-      if (!this._networkInfoLogs[cellIdStr]) {
-        this._networkInfoLogs[cellIdStr] = [];
-      }
-      this._networkInfoLogs[cellIdStr].push([this._lastTimeQueriedMap[agent], netInfo])
-      /* */
-      i += 1;
-    }
-    return result;
-  }
 
 
 /** -- Creation -- */
@@ -130,7 +152,7 @@ export class ConductorAppProxy extends AppProxy implements AppApi {
   /** */
   private static async fromSocket(appWebsocket: AppWebsocket): Promise<ConductorAppProxy> {
     try {
-      let conductor = new ConductorAppProxy(appWebsocket.defaultTimeout);
+      let conductor = new ConductorAppProxy(DEFAULT_TIMEOUT);
       conductor._appWs = appWebsocket;
       conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
       return conductor;

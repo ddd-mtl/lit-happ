@@ -1,7 +1,7 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
 import {fakeDnaHash, fakeEntryHash} from "@holochain/client";
 import {AppletViewInfo, AssetViewInfo} from "../index";
-import {AppletHash} from "@lightningrodlabs/we-applet/dist/types";
+import {AppletHash, ReadonlyPeerStatusStore} from "@lightningrodlabs/we-applet/dist/types";
 
 
 /** Empty AppletViews */
@@ -45,6 +45,7 @@ export const emptyRenderInfo: RenderInfo = {
     view: emptyMainAppletView,
     appletClient: undefined,
     profilesClient: undefined,
+    peerStatusStore: undefined,
     appletHash: await fakeEntryHash() as AppletHash,
-    groupProfiles: [{name: "fakeGroup", logo_src: "https://lightningrodlabs.org/lrl_logo.png"}],
+    groupProfiles: [{name: "fakeGroup", icon_src: "https://lightningrodlabs.org/lrl_logo.png"}],
 };

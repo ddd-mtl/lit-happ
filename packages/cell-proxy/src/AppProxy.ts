@@ -1,6 +1,4 @@
 import {
-  AppApi,
-  AppInfoRequest,
   AppInfoResponse,
   AppSignal,
   AppSignalCb,
@@ -13,13 +11,15 @@ import {
   ClonedCell,
   CellType,
   ProvisionedCell,
-  encodeHashToBase64, Timestamp, DnaHashB64, NetworkInfo, decodeHashFromBase64, AgentPubKeyB64,
+  Timestamp, NetworkInfo, AppClient, AppNetworkInfoRequest, NetworkInfoResponse, AppEvents,
 } from "@holochain/client";
+import { UnsubscribeFunction } from "emittery";
 import { CellProxy } from "./CellProxy";
 import {CellIdStr, RoleCellsMap, BaseRoleName, CellsForRole} from "./types";
 import {areCellsEqual, Dictionary, prettyDate, printAppInfo} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
+import {AgentPubKey} from "@holochain/client/lib/types";
 
 
 /** */
@@ -35,7 +35,7 @@ export interface SignalUnsubscriber {
  * Stores appSignal logs
  * TODO Implement Singleton per App port?
  */
-export class AppProxy implements AppApi {
+export class AppProxy implements AppClient {
 
   /** -- Fields -- */
 
@@ -126,12 +126,29 @@ export class AppProxy implements AppApi {
   }
 
 
+  /** -- AppClient -- */
+
+  myPubKey: AgentPubKey;
+  installedAppId: InstalledAppId;
+
+  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+    throw new Error("Method not implemented.");
+  }
+
+  on<Name extends keyof AppEvents>(
+    eventName: Name | readonly Name[],
+    listener: AppSignalCb
+  ): UnsubscribeFunction {
+    throw new Error("Method not implemented.");
+  }
+
+  async appInfo(): Promise<AppInfoResponse> {
+    throw new Error("Method not implemented.");
+  }
 
   async createCloneCell(request: CreateCloneCellRequest): Promise<ClonedCell> {
     throw new Error("Method not implemented.");
   }
-
-  /** -- AppApi -- */
 
   async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
     throw new Error("Method not implemented.");
@@ -141,11 +158,7 @@ export class AppProxy implements AppApi {
     throw new Error("Method not implemented.");
   }
 
-  async appInfo(args: AppInfoRequest): Promise<AppInfoResponse> {
-    throw new Error("Method not implemented.");
-  }
-
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+  networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
     throw new Error("Method not implemented.");
   }
 
@@ -163,13 +176,8 @@ export class AppProxy implements AppApi {
   get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return {}}
 
   /** */
-  async networkInfo(agent: AgentPubKeyB64, dnas: DnaHashB64[]): Promise<Record<DnaHashB64, [Timestamp, NetworkInfo]>> {
-    throw new Error("Method not implemented.");
-  }
-
-  /** */
   async fetchCell(appId: InstalledAppId, cellId: CellId): Promise<Cell> {
-    const appInfo = await this.appInfo({installed_app_id: appId});
+    const appInfo = await this.appInfo();
     //console.log("fetchCell", appInfo);
     if (appInfo == null) {
       return Promise.reject(`getCell() failed. App "${appId}" not found"`);
@@ -195,7 +203,7 @@ export class AppProxy implements AppApi {
   /** Get all cells for a BaseRole in an app */
   async fetchCells(appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellsForRole> {
     /** Make sure hApp exists */
-    const appInfo = await this.appInfo({installed_app_id: appId});
+    const appInfo = await this.appInfo();
     if (appInfo == null) {
       return Promise.reject(`fetchCells() failed. App "${appId}" not found`);
     }
@@ -330,7 +338,7 @@ export class AppProxy implements AppApi {
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
     const isSystem = this.isSystemSignal(signal);
-    console.log("signal logged", signal, isSystem)
+    //console.log("signal logged", signal, isSystem)
     this._signalLogs.push([Date.now(), CellIdStr(signal.cell_id), signal, isSystem])
   }
 

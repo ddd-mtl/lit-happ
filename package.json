@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "workspaces": [
     "example",
     "packages/cell-proxy",

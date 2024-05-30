@@ -2,7 +2,7 @@ import {
   AppletId,
   AppletInfo,
   weaveUrlFromWal,
-  WeServices,
+  WeaveServices, PeerStatusUpdate, GroupPermissionType,
 } from "@lightningrodlabs/we-applet";
 import {
   AssetLocationAndInfo, FrameNotification, GroupProfile, OpenWalMode, WAL,
@@ -16,6 +16,7 @@ import {
   EntryHash,
   EntryHashB64
 } from "@holochain/client";
+import {UnsubscribeFunction} from "emittery";
 
 
 /** */
@@ -27,9 +28,9 @@ export interface WeServicesCache {
 
 
 /** WeServices wrapper that caches requested infos */
-export class WeServicesEx implements WeServices {
+export class WeServicesEx implements WeaveServices {
 
-  constructor(private _inner: WeServices, private _thisAppletId: AppletId) {
+  constructor(private _inner: WeaveServices, private _thisAppletId: AppletId) {
     this.cacheFullAppletInfo(_thisAppletId).then(([_appletId, groupProfiles]) => {
       this._groupProfiles = groupProfiles;
     })
@@ -96,7 +97,7 @@ export class WeServicesEx implements WeServices {
       return undefined;
     }
     const groupProfiles: Record<DnaHashB64, GroupProfile> = {};
-    for (const groupHash of appletInfo.groupsIds) {
+    for (const groupHash of appletInfo.groupsHashes) {
       const gp = await this.groupProfile(groupHash);
       groupProfiles[encodeHashToBase64(groupHash)] = gp;
     }
@@ -138,7 +139,7 @@ export class WeServicesEx implements WeServices {
 
 
   /** -- Passthrough  -- */
-
+  onPeerStatusUpdate(callback: (payload: PeerStatusUpdate) => any): UnsubscribeFunction {return this._inner.onPeerStatusUpdate(callback)}
   async openAppletMain(appletHash: EntryHash): Promise<void> {return this._inner.openAppletMain(appletHash)}
   async openAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void> {return this._inner.openAppletBlock(appletHash, block, context)}
   async openCrossAppletMain(appletBundleId: ActionHash): Promise<void>  {return this._inner.openCrossAppletMain(appletBundleId)}
@@ -150,4 +151,5 @@ export class WeServicesEx implements WeServices {
   async notifyFrame(notifications: Array<FrameNotification>): Promise<any>  {return this._inner.notifyFrame(notifications)}
   async userSelectScreen(): Promise<string>  {return this._inner.userSelectScreen()}
   async requestBind(srcWal: WAL, dstWal: WAL) {return this._inner.requestBind(srcWal, dstWal)}
+  async myGroupPermissionType(): Promise<GroupPermissionType> {return this._inner.myGroupPermissionType()}
 }

@@ -68,7 +68,7 @@ export class CellProxy extends CellMixin(Empty) {
   private _postCommitRelease?;
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: AppSignal) {
-    console.log("blockUntilPostCommit()", signal, this._appProxy.isSystemSignal(signal) , this._postCommitReleaseEntryType, !!this._postCommitRelease);
+    //console.log("blockUntilPostCommit()", signal, this._appProxy.isSystemSignal(signal) , this._postCommitReleaseEntryType, !!this._postCommitRelease);
     if (!this._appProxy.isSystemSignal(signal) || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
       return;
     }
@@ -85,7 +85,7 @@ export class CellProxy extends CellMixin(Empty) {
       return;
     }
     /** Release */
-    console.log("blockUntilPostCommit() RELEASE");
+    //console.log("blockUntilPostCommit() RELEASE");
     this._postCommitRelease();
     delete this._postCommitRelease;
     delete this._postCommitReleaseEntryType;

@@ -200,7 +200,7 @@ export class HappViewModel {
       : createCloneName(baseRoleName, cloneIndex);
     /** Build default request */
     let request: CreateCloneCellRequest = {
-      app_id: this.appId,
+      //app_id: this.appId,
       role_name: baseRoleName,
       modifiers: {
         network_seed: String(cloneIndex),

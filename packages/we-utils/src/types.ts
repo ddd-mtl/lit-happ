@@ -1,10 +1,10 @@
-import {CreatableName, RenderInfo, WeServices} from "@lightningrodlabs/we-applet";
+import {CreatableName, RecordInfo, RenderInfo, WeaveServices} from "@lightningrodlabs/we-applet";
 import {HappElement} from "@ddd-qc/lit-happ";
 
 
-export type CreateAppletFn = (renderInfo: RenderInfo, weServices: WeServices) => Promise<HappElement>;
+export type CreateAppletFn = (renderInfo: RenderInfo, weServices: WeaveServices) => Promise<HappElement>;
 
-export type CreateWeServicesMockFn = (devtestAppletId: string) => Promise<WeServices>;
+export type CreateWeServicesMockFn = (devtestAppletId: string) => Promise<WeaveServices>;
 
 export interface DevTestNames {
     installed_app_id: string,
@@ -18,14 +18,15 @@ export interface DevTestNames {
 
 import {AppletHash, AppletView} from "@lightningrodlabs/we-applet";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
-import {AppAgentClient} from "@holochain/client";
-import {GroupProfile, WAL} from "@lightningrodlabs/we-applet/dist/types";
+import {GroupProfile, ReadonlyPeerStatusStore, WAL} from "@lightningrodlabs/we-applet/dist/types";
+import {AppClient} from "@holochain/client";
 
 export type AppletViewInfo = {
     type: "applet-view",
     view: AppletView,
-    appletClient: AppAgentClient,
+    appletClient: AppClient,
     profilesClient: ProfilesClient,
+    peerStatusStore: ReadonlyPeerStatusStore,
     appletHash: AppletHash,
     groupProfiles: GroupProfile[];
 };
@@ -41,10 +42,8 @@ export type BlockViewInfo = {
 /** */
 export type AssetViewInfo = {
     type: "asset",
-    roleName: string,
-    integrityZomeName: string,
-    entryType: string,
     wal: WAL,
+    recordInfo?: RecordInfo;
 }
 
 /** */

@@ -5,9 +5,7 @@ import {
   AppProxy,
   ConductorAppProxy,
   HCL,
-  Dictionary,
   flattenCells,
-  prettyDate,
   CellIdStr, str2CellId
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
@@ -86,7 +84,7 @@ export class HappElement extends LitElement {
     if (!dvm) {
       return Promise.reject("No DNA found at given HCL: " + hcl.toString());
     }
-    const netInfoMap = this.appProxy.networkInfo(dvm.cell.agentPubKey, [dvm.cell.dnaHash]);
+    const netInfoMap = this.appProxy.networkInfo({dnas: [decodeHashFromBase64(dvm.cell.dnaHash)]});
     return netInfoMap[dvm.cell.dnaHash][1];
   }
 
@@ -127,7 +125,7 @@ export class HappElement extends LitElement {
     /** Call NetworkInfo per AgentPubKey */
     const allNetInfos = {};
     for (const [agent, dnaHashes] of Object.entries(dnaMap)) {
-      const netInfos = await this.appProxy.networkInfo(agent, dnaHashes);
+      const netInfos = await this.appProxy.networkInfo({dnas: dnaHashes.map((dna) => decodeHashFromBase64(dna))});
       for (const [dnaHash, infoPair] of Object.entries(netInfos)) {
         const idStr = CellIdStr(decodeHashFromBase64(dnaHash), decodeHashFromBase64(agent));
         allNetInfos[idStr] = infoPair;
