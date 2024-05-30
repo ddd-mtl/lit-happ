@@ -35,7 +35,7 @@ export async function getCellInfo(client: AppClient, maybeDnaHash: DnaHash | und
 
 /** */
 export async function asCellProxy(client: AppClient, maybeDnaHash: DnaHash | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
-  const appProxy = await ConductorAppProxy.new(client as AppWebsocket);
+  const appProxy = await ConductorAppProxy.new(client as AppWebsocket, appId);
   const cellInfo = await getCellInfo(client, maybeDnaHash, baseRoleName);
   const cell = Cell.from(cellInfo, appId, baseRoleName)
   const cellProxy = new CellProxy(appProxy, cell);

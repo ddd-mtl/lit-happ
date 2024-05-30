@@ -14,12 +14,17 @@ import {
   AgentPubKeyB64,
   Timestamp,
   AppClient,
-  AppEvents, AppSignalCb, AppNetworkInfoRequest, NetworkInfoResponse, encodeHashToBase64,
+  AppEvents,
+  AppSignalCb,
+  AppNetworkInfoRequest,
+  NetworkInfoResponse,
+  encodeHashToBase64,
+  AppAuthenticationToken,
+  AdminWebsocket,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {CellIdStr} from "./types";
-import {DEFAULT_TIMEOUT} from "@holochain/client/lib/api/common";
 
 
 /**
@@ -121,23 +126,23 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 /** -- Creation -- */
 
   /** async Factory */
-  static async new(port_or_socket: number | AppWebsocket, defaultTimeout?: number): Promise<ConductorAppProxy> {
+  static async new(port_or_socket: number | AppWebsocket, appId: InstalledAppId, adminUrl?: URL, defaultTimeout?: number): Promise<ConductorAppProxy> {
+    const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
     if (typeof port_or_socket == 'object') {
-      return  ConductorAppProxy.fromSocket(port_or_socket);
+      return  ConductorAppProxy.fromSocket(port_or_socket, timeout);
     } else {
-      const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
       let wsUrl = new URL(`ws://localhost:${port_or_socket}`);
       try {
-        let conductor = new ConductorAppProxy(timeout);
-
-        /** AppWebsocket */
-        const appWs = await AppWebsocket.connect({url: wsUrl, defaultTimeout: timeout});
-
-        /** AppAgentWebsocket */
-        // const appAgentWs = await AppAgentWebsocket.connect(`ws://localhost:${process.env.HC_APP_PORT}`, "playground");
-        // console.log(appAgentWs.appWebsocket);
-        // const appWs = await appAgentWs.appWebsocket;
-
+        let token;
+        let adminWs: AdminWebsocket;
+        if (adminUrl) {
+          adminWs = await AdminWebsocket.connect({url: adminUrl});
+          console.log({adminWs});
+          const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: appId});
+          token = issued.token;
+        }
+        let conductor = new ConductorAppProxy(timeout, adminWs);
+        const appWs = await AppWebsocket.connect({url: wsUrl, defaultTimeout: timeout, token});
         conductor._appWs = appWs;
         conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)});
         return conductor;
@@ -150,9 +155,9 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
 
   /** */
-  private static async fromSocket(appWebsocket: AppWebsocket): Promise<ConductorAppProxy> {
+  private static async fromSocket(appWebsocket: AppWebsocket, defaultTimeout: number): Promise<ConductorAppProxy> {
     try {
-      let conductor = new ConductorAppProxy(DEFAULT_TIMEOUT);
+      let conductor = new ConductorAppProxy(defaultTimeout);
       conductor._appWs = appWebsocket;
       conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
       return conductor;
@@ -164,8 +169,8 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
 
   /** Ctor */
-  /*protected*/ constructor(public defaultTimeout: number) {
-    super(defaultTimeout);
+  /*protected*/ constructor(public defaultTimeout: number, adminWs?: AdminWebsocket) {
+    super(defaultTimeout, adminWs);
   }
 
 }

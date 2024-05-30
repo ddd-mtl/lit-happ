@@ -26,7 +26,7 @@ export class PlaygroundApp extends HappElement {
 
   /** Ctor */
   constructor() {
-    super(Number(process.env.HC_APP_PORT));
+    super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
   }
 
   /** HvmDef */
@@ -67,14 +67,10 @@ export class PlaygroundApp extends HappElement {
   @state() private _initializedOffline = false;
   @state() private _initializedOnline = false;
 
+
   /** */
   async hvmConstructed(): Promise<void> {
     console.log("hvmConstructed()")
-    /** Authorize all zome calls */
-    const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
-    console.log({adminWs});
-    await this.hvm.authorizeAllZomeCalls(adminWs);
-    console.log("*** Zome call authorization complete");
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);

@@ -11,7 +11,7 @@ import {
   ClonedCell,
   CellType,
   ProvisionedCell,
-  Timestamp, NetworkInfo, AppClient, AppNetworkInfoRequest, NetworkInfoResponse, AppEvents,
+  Timestamp, NetworkInfo, AppClient, AppNetworkInfoRequest, NetworkInfoResponse, AppEvents, AdminWebsocket,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import { CellProxy } from "./CellProxy";
@@ -38,6 +38,9 @@ export interface SignalUnsubscriber {
 export class AppProxy implements AppClient {
 
   /** -- Fields -- */
+
+  public defaultTimeout: number;
+  public adminWs?: AdminWebsocket;
 
   /** Signal log: [Timestamp, CellIdStr, Signal, isSystem] */
   private _signalLogs: [Timestamp, CellIdStr, AppSignal, Boolean][] = [];
@@ -166,7 +169,9 @@ export class AppProxy implements AppClient {
   /** -- Creation -- */
 
   /** Ctor */
-  /*protected*/ constructor(public defaultTimeout: number) {
+  /*protected*/ constructor(defaultTimeout: number, adminWs?: AdminWebsocket) {
+    this.defaultTimeout = defaultTimeout;
+    this.adminWs = adminWs;
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 

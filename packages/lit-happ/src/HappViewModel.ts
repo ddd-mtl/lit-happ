@@ -118,12 +118,14 @@ export class HappViewModel {
 
   /** -- Methods -- */
 
-  async authorizeAllZomeCalls(adminWs: AdminWebsocket): Promise<void> {
+  async authorizeAllZomeCalls(adminWs?: AdminWebsocket): Promise<void> {
+    if (!adminWs) {
+      return;
+    }
     for (const [_sHcl, dvm] of Object.entries(this._dvmMap)) {
       //console.log("Authorizing", sHcl);
       await dvm.authorizeZomeCalls(adminWs);
     }
-    this._adminWs = adminWs
   }
 
   /** */

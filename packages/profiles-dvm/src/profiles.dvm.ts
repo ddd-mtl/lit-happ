@@ -3,6 +3,7 @@ import {
   AppSignal, AppSignalCb,
 } from "@holochain/client";
 import {ProfilesZvm} from "./profiles.zvm";
+import {ProfilesAltZvm} from "./profilesAlt.zvm";
 
 /** */
 // export interface ProfilesDnaPerspective {
@@ -16,13 +17,13 @@ import {ProfilesZvm} from "./profiles.zvm";
 export class ProfilesDvm extends DnaViewModel {
 
   static readonly DEFAULT_BASE_ROLE_NAME = "profiles";
-  static readonly ZVM_DEFS = [ProfilesZvm]
+  static readonly ZVM_DEFS = [ProfilesAltZvm]
   readonly signalHandler?: AppSignalCb = this.handleSignal;
 
 
   /** QoL Helpers */
-  get profilesZvm(): ProfilesZvm {
-    return this.getZomeViewModel(ProfilesZvm.DEFAULT_ZOME_NAME) as ProfilesZvm
+  get profilesZvm(): ProfilesAltZvm {
+    return this.getZomeViewModel(ProfilesAltZvm.DEFAULT_ZOME_NAME) as ProfilesAltZvm
   }
 
   /** -- Perspective -- */
