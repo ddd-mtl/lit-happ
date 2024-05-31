@@ -1,5 +1,12 @@
 import {
-    AdminWebsocket, encodeHashToBase64, fakeEntryHash, decodeHashFromBase64, EntryHash, Record, AppWebsocket,
+    AdminWebsocket,
+    encodeHashToBase64,
+    fakeEntryHash,
+    decodeHashFromBase64,
+    EntryHash,
+    Record,
+    AppWebsocket,
+    ListAppsResponse,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
@@ -37,27 +44,22 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     /** Create custom WeServiceMock */
     const myWeServicesMock = await createWeServicesMock(devtestAppletId);
 
-    /** AppAgentWebsocket */
-    const appAgentWs = await AppWebsocket.connect( {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`)});
+    /** AdminWebsocket */
+    let mainCellId;
+    const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
+    const apps: ListAppsResponse = await adminWs.listApps({});
+    console.log("setupDevtest() apps", apps);
+    const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: apps[0].installed_app_id});
+    const token = issued.token;
+
+
+    /** AppWebsocket */
+    const appAgentWs = await AppWebsocket.connect( {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`), token});
     console.log("appAgentWs", appAgentWs);
     const appInfo = await appAgentWs.appInfo();
     console.log("appInfo", appInfo);
 
-    // const cellInfo = appInfo.cell_info[names.provisionedRoleName][0];
-    // let cellId;
-    // if ("provisioned" in cellInfo) {
-    //     cellId = cellInfo.provisioned.cell_id;
-    // } else {
-    //     console.error("Cell found is not a 'provisioned");
-    //}
-    //console.log("main agentId", cellId[1]);
-    //console.log("main agentId", encodeHashToBase64(cellId[1]));
-
-    /** AdminWebsocket */
-    let mainCellId;
-    const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
-    const apps = await adminWs.listApps({});
-    console.log("setupDevtest() apps", apps);
+    /** Authorize Zome functions */
     for (const [roleName, cells] of Object.entries(appInfo.cell_info)) {
         for (const cell of cells) {
             let cellId;
@@ -71,7 +73,6 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
             }
             await adminWs.authorizeSigningCredentials(cellId);
         }
-
     }
 
     /** Creating mock lobby app with profiles dna & zome */
