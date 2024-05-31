@@ -1,22 +1,18 @@
 import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
-  AppProxy,
   HvmDef,
-  HappViewModel,
   HappElement,
-  printCellsForRole,
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
-import {AdminWebsocket} from "@holochain/client";
 
 /** Import custom elements */
 import "./elements/integer-list";
 import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
-import {ProfilesDvm} from "@ddd-qc/profiles-dvm";
+import {ProfilesAltDvm} from "@ddd-qc/profiles-dvm/dist/profilesAlt.dvm";
 
 
 /**
@@ -47,7 +43,7 @@ export class PlaygroundApp extends HappElement {
         isClonable: false,
       },
       {
-        ctor: ProfilesDvm,
+        ctor: ProfilesAltDvm,
         isClonable: false,
       },
     ],
@@ -59,7 +55,7 @@ export class PlaygroundApp extends HappElement {
   get impostorDvm(): NamedRealDvm { return this.hvm.getDvm("rImpostor")! as NamedRealDvm }
   get realDvm(): NamedRealDvm { return this.hvm.getDvm(NamedRealDvm.DEFAULT_BASE_ROLE_NAME)! as NamedRealDvm }
 
-  get profilesDvm(): ProfilesDvm { return this.hvm.getDvm(ProfilesDvm.DEFAULT_BASE_ROLE_NAME)! as ProfilesDvm }
+  get profilesDvm(): ProfilesAltDvm { return this.hvm.getDvm(ProfilesAltDvm.DEFAULT_BASE_ROLE_NAME)! as ProfilesAltDvm }
 
 
   @state() private _selectedZomeName = ""
