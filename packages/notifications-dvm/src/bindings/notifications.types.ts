@@ -236,9 +236,7 @@ export type EntryTypes =
  | {type: {SentNotification: null}, content: SentNotification}
 
 
-export type LinkTypes =
-  | {TwilioCredentialsUpdates: null} | {NotificantToNotifiers: null} | {ContactUpdates: null} | {AnchorToNotifiers: null} | {SentNotificationUpdates: null};
-export enum LinkTypesType {
+export enum LinkTypes {
 	TwilioCredentialsUpdates = 'TwilioCredentialsUpdates',
 	NotificantToNotifiers = 'NotificantToNotifiers',
 	ContactUpdates = 'ContactUpdates',

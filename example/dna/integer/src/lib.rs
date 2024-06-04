@@ -7,7 +7,6 @@ pub use signal_protocol::*;
 use hdk::prelude::*;
 use integer_integrity::*;
 
-
 /// Zome Callback
 #[hdk_extern]
 fn init(_: ()) -> ExternResult<InitCallbackResult> {
@@ -37,9 +36,9 @@ fn create_integer(value: u32) -> ExternResult<ActionHash> {
   let ah = create_entry(IntegerEntry::Integer(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, ah.clone(), IntegerLinkType::Default, LinkTag::from(()))?;
 
-  let payload = "I like integers";
-  debug!("emit_signal() {:?}", payload);
-  emit_signal(payload)?;
+  let payload = "I like integers".to_string();
+  debug!("emit_self_signal() {:?}", payload);
+  emit_self_signal(SignalProtocol::Custom(payload))?;
 
   Ok(ah)
 }

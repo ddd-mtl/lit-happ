@@ -19,8 +19,8 @@ fn post_commit(signedActionList: Vec<SignedActionHashed>) {
       EntryType::CapGrant => {},
       EntryType::App(_app_entry_def) => {
         let variant_name = "Integer".to_owned();
-        let _ = emit_signal(&SignalProtocol::System(SystemSignalProtocol::PostCommitStart { entry_type: variant_name.clone()}));
-        let _ = emit_signal(&SignalProtocol::System(SystemSignalProtocol::PostCommitEnd {entry_type: variant_name, succeeded: true}));
+        let _ = emit_self_signal(SignalProtocol::System(SystemSignalProtocol::PostCommitStart { entry_type: variant_name.clone()}));
+        let _ = emit_self_signal(SignalProtocol::System(SystemSignalProtocol::PostCommitEnd {entry_type: variant_name, succeeded: true}));
       },
     }
   }

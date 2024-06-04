@@ -349,8 +349,15 @@ export class AppProxy implements AppClient {
 
 
   /** */
-  isSystemSignal(signal: AppSignal): Boolean {
-    return typeof signal.payload === 'object' && !Array.isArray(signal.payload) && signal.payload !== null && "System" in (signal.payload as Object);
+  isSystemSignal(appSignal: AppSignal): Boolean {
+    if (typeof appSignal.payload !== 'object' || Array.isArray(appSignal.payload) || appSignal.payload === null) {
+      return false;
+    }
+    const payload = appSignal.payload as Object;
+    if ("signal" in payload) {
+      return  "System" in (payload.signal as Object);
+    }
+    return false;
   }
 
 

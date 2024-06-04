@@ -197,9 +197,7 @@ export type EntryTypes =
  | {type: {Profile: null}, content: Profile}
 
 
-export type LinkTypes =
-  | {PrefixPath: null} | {PathToAgent: null} | {AgentToProfile: null};
-export enum LinkTypesType {
+export enum LinkTypes {
 	PrefixPath = 'PrefixPath',
 	PathToAgent = 'PathToAgent',
 	AgentToProfile = 'AgentToProfile',

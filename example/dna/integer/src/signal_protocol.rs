@@ -15,4 +15,22 @@ pub enum SystemSignalProtocol {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum SignalProtocol {
     System(SystemSignalProtocol),
+    Custom(String),
+}
+
+
+#[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
+pub struct LitHappSignal {
+    pub from: AgentPubKey,
+    pub signal: SignalProtocol,
+}
+
+
+///
+pub fn emit_self_signal(signal: SignalProtocol) -> ExternResult<()> {
+    let signal = LitHappSignal {
+        from: agent_info()?.agent_latest_pubkey,
+        signal: signal,
+    };
+    return emit_signal(&signal);
 }

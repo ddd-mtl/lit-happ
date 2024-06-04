@@ -72,7 +72,7 @@ export class CellProxy extends CellMixin(Empty) {
     if (!this._appProxy.isSystemSignal(signal) || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
       return;
     }
-    const sys = (signal.payload as Object)["System"] as SystemSignalProtocol;
+    const sys = (signal.payload as Object)["signal"]["System"] as SystemSignalProtocol;
     if (sys.type !== "PostCommitEnd") {
       return;
     }
@@ -99,7 +99,7 @@ export class CellProxy extends CellMixin(Empty) {
       return;
     }
 
-    const sys = (signal.payload as Object)["System"] as SystemSignalProtocol;
+    const sys = (signal.payload as Object)["signal"]["System"] as SystemSignalProtocol;
     if (sys.type == "SelfCallStart") {
       console.log("")
       /** Acquire lock */
@@ -146,6 +146,7 @@ export class CellProxy extends CellMixin(Empty) {
   dumpSignals() {
     this._appProxy.dumpSignals(this.cell.id);
   }
+
 
   /** Pass call request to conductor proxy and log it */
   async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
