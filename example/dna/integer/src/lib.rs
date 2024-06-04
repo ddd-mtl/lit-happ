@@ -39,7 +39,6 @@ fn create_integer(value: u32) -> ExternResult<ActionHash> {
   let payload = "I like integers".to_string();
   debug!("emit_self_signal() {:?}", payload);
   emit_self_signal(SignalProtocol::Custom(payload))?;
-
   Ok(ah)
 }
 

@@ -23,7 +23,7 @@ export class ExternalAppProxy extends AppProxy implements AppClient {
 
   /** Ctor */
   /*protected*/ constructor(private _appClient: AppClient, defaultTimeout: number) {
-    super(defaultTimeout);
+    super(defaultTimeout, _appClient.installedAppId, _appClient.myPubKey);
   }
 
 

@@ -6,7 +6,21 @@ import {
 } from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
+import {SystemSignalProtocol} from "./AppProxy";
 
+export enum SignalType  {
+  Unknown = "Unknown",
+  System = "System",
+  LitHapp = "LitHapp",
+}
+
+
+export type SignalPayload = unknown | SystemSignal | LitHappSignal;
+export type SystemSignal = {System: SystemSignalProtocol}
+export interface LitHappSignal {
+  from: AgentPubKey
+  signal: unknown
+}
 
 export type BaseRoleName = string;
 export type CloneIndex = number;

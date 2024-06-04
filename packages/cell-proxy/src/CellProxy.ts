@@ -10,13 +10,14 @@ import {
 import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
-import {CellIdStr, DnaInfo, EntryDefsCallbackResult, ZomeInfo} from "./types";
+import {CellIdStr, DnaInfo, EntryDefsCallbackResult, SignalType, SystemSignal, ZomeInfo} from "./types";
 import {Mutex, withTimeout} from "async-mutex";
 import MutexInterface from "async-mutex/lib/MutexInterface";
 import {
   AppProxy,
   SignalUnsubscriber,
-  SystemSignalProtocol, SystemSignalProtocolVariantPostCommitEnd,
+  SystemSignalProtocol,
+  SystemSignalProtocolVariantPostCommitEnd,
   SystemSignalProtocolVariantSelfCallEnd,
   SystemSignalProtocolVariantSelfCallStart
 } from "./AppProxy";
@@ -68,11 +69,12 @@ export class CellProxy extends CellMixin(Empty) {
   private _postCommitRelease?;
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: AppSignal) {
-    //console.log("blockUntilPostCommit()", signal, this._appProxy.isSystemSignal(signal) , this._postCommitReleaseEntryType, !!this._postCommitRelease);
-    if (!this._appProxy.isSystemSignal(signal) || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
+    const [signalType, payload] = this._appProxy.determineSignalType(signal);
+    //console.log("blockUntilPostCommit()", signalType, payload, this._postCommitReleaseEntryType, !!this._postCommitRelease);
+    if (signalType != SignalType.System || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
       return;
     }
-    const sys = (signal.payload as Object)["signal"]["System"] as SystemSignalProtocol;
+    const sys = (payload as SystemSignal).System;
     if (sys.type !== "PostCommitEnd") {
       return;
     }
@@ -95,11 +97,12 @@ export class CellProxy extends CellMixin(Empty) {
   /** Have a self call acquire & the call Mutex */
   private _selfCallRelease?;
   protected async blockSelfCall(signal: AppSignal) {
-    if (!this._appProxy.isSystemSignal(signal)) {
+    const [signalType, systemSignal] = this._appProxy.determineSignalType(signal);
+    if (signalType != SignalType.System) {
       return;
     }
 
-    const sys = (signal.payload as Object)["signal"]["System"] as SystemSignalProtocol;
+    const sys = systemSignal as SystemSignalProtocol;
     if (sys.type == "SelfCallStart") {
       console.log("")
       /** Acquire lock */
@@ -363,12 +366,12 @@ export class CellProxy extends CellMixin(Empty) {
     /** Parse signal self-call logs */
     //console.log(this._appProxy.signalLogs)
     const startCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallStart][] = this._appProxy.signalLogs
-      .filter(([ts, cellId, signal, isSystem]) => isSystem && (signal.payload as Object)["System"].type == "SelfCallStart")
-      .map(([ts, cellId, signal, isSystem]) => [ts, cellId, (signal.payload as Object)["System"]])
+      .filter((log) => log.type == SignalType.System && (log.payload as SystemSignalProtocol).type == "SelfCallStart")
+      .map((log) => [log.ts, log.cellId, (log.payload as SystemSignalProtocolVariantSelfCallStart)])
 
     const endCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallEnd][] = this._appProxy.signalLogs
-      .filter(([ts, cellId, signal, isSystem]) => isSystem && (signal.payload as Object)["System"].type == "SelfCallEnd")
-      .map(([ts, cellId, signal, isSystem]) => [ts, cellId, (signal.payload as Object)["System"]])
+      .filter((log) => log.type == SignalType.System && (log.payload as SystemSignalProtocol).type == "SelfCallEnd")
+      .map((log) => [log.ts, log.cellId, (log.payload as SystemSignalProtocolVariantSelfCallEnd)])
 
 
     let sigResults = [];

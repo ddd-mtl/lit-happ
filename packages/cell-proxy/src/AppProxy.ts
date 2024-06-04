@@ -1,21 +1,37 @@
 import {
+  AdminWebsocket,
+  AppClient,
+  AppEvents,
   AppInfoResponse,
+  AppNetworkInfoRequest,
   AppSignal,
   AppSignalCb,
   CallZomeRequest,
   CellId,
-  InstalledAppId,
+  CellType,
+  ClonedCell,
   CreateCloneCellRequest,
   DisableCloneCellRequest,
   EnableCloneCellRequest,
-  ClonedCell,
-  CellType,
+  encodeHashToBase64,
+  InstalledAppId,
+  NetworkInfo,
+  NetworkInfoResponse,
   ProvisionedCell,
-  Timestamp, NetworkInfo, AppClient, AppNetworkInfoRequest, NetworkInfoResponse, AppEvents, AdminWebsocket,
+  Timestamp,
 } from "@holochain/client";
-import { UnsubscribeFunction } from "emittery";
-import { CellProxy } from "./CellProxy";
-import {CellIdStr, RoleCellsMap, BaseRoleName, CellsForRole} from "./types";
+import {UnsubscribeFunction} from "emittery";
+import {CellProxy} from "./CellProxy";
+import {
+  BaseRoleName,
+  CellIdStr,
+  CellsForRole,
+  LitHappSignal,
+  RoleCellsMap,
+  SignalPayload,
+  SignalType,
+  SystemSignal
+} from "./types";
 import {areCellsEqual, Dictionary, prettyDate, printAppInfo} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
@@ -27,6 +43,14 @@ export interface SignalUnsubscriber {
   unsubscribe: () => void;
 }
 
+
+export interface SignalLog {
+  ts: Timestamp,
+  cellId: CellIdStr,
+  zome_name: string,
+  type: SignalType,
+  payload: SignalPayload,
+}
 
 /**
  * Creates and holds Cell proxies.
@@ -42,8 +66,8 @@ export class AppProxy implements AppClient {
   public defaultTimeout: number;
   public adminWs?: AdminWebsocket;
 
-  /** Signal log: [Timestamp, CellIdStr, Signal, isSystem] */
-  private _signalLogs: [Timestamp, CellIdStr, AppSignal, Boolean][] = [];
+  /** Signal logs */
+  private _signalLogs: SignalLog[] = [];
   /** Map cells per App: InstalledAppId -> (BaseRoleName -> CellsForRole) */
   private _cellsByApp: Dictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */
@@ -71,7 +95,7 @@ export class AppProxy implements AppClient {
   getCellName(hcl: HCL): string {return this._cellNames[hcl.toString()]}
 
 
-  get signalLogs(): [Timestamp, CellIdStr, AppSignal, Boolean][]  { return this._signalLogs }
+  get signalLogs(): SignalLog[]  { return this._signalLogs }
 
   /** */
   getLocations(cellId: CellId): HCL[] | undefined {
@@ -169,9 +193,11 @@ export class AppProxy implements AppClient {
   /** -- Creation -- */
 
   /** Ctor */
-  /*protected*/ constructor(defaultTimeout: number, adminWs?: AdminWebsocket) {
+  /*protected*/ constructor(defaultTimeout: number, appId: InstalledAppId, agentId: AgentPubKey, adminWs?: AdminWebsocket) {
     this.defaultTimeout = defaultTimeout;
     this.adminWs = adminWs;
+    this.installedAppId = appId;
+    this.myPubKey = agentId;
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
@@ -342,66 +368,93 @@ export class AppProxy implements AppClient {
 
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
-    const isSystem = this.isSystemSignal(signal);
+    const [signalType, payload] = this.determineSignalType(signal);
     //console.log("signal logged", signal, isSystem)
-    this._signalLogs.push([Date.now(), CellIdStr(signal.cell_id), signal, isSystem])
+    this._signalLogs.push({ts: Date.now(), cellId: CellIdStr(signal.cell_id), zome_name: signal.zome_name, payload, type: signalType})
   }
 
 
   /** */
-  isSystemSignal(appSignal: AppSignal): Boolean {
+  determineSignalType(appSignal: AppSignal): [SignalType, unknown | SystemSignal | LitHappSignal] {
     if (typeof appSignal.payload !== 'object' || Array.isArray(appSignal.payload) || appSignal.payload === null) {
-      return false;
+      return [SignalType.Unknown, appSignal.payload];
     }
     const payload = appSignal.payload as Object;
-    if ("signal" in payload) {
-      return  "System" in (payload.signal as Object);
+    if ("signal" in payload && "from" in payload) {
+      return [SignalType.LitHapp, appSignal.payload as LitHappSignal];
     }
-    return false;
+    if ("System" in payload) {
+      return  [SignalType.System, appSignal.payload as SystemSignal];
+    }
+    return [SignalType.Unknown, appSignal.payload];
   }
 
 
   /** */
   dumpSignals(cellId?: CellId) {
+    const me = encodeHashToBase64(this.myPubKey);
+    const validSignals = this._signalLogs.filter((log) => !(log.type == SignalType.Unknown));
+    const unknownSignals = this._signalLogs.filter((log) => log.type == SignalType.Unknown);
+    if (unknownSignals.length) {
+      console.error("Unknown signals received: ", unknownSignals.length);
+      const logs = unknownSignals
+        .map((log) => {
+          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload: log.payload}
+        });
+      console.table(logs);
+    }
     if (cellId) {
       const cellStr = CellIdStr(cellId);
       const hcls = this._hclMap[cellStr];
       const names = hcls.map((hcl) => this.getCellName(hcl));
-      console.warn(`Dumping App signal logs for cell "${names}"`);
-      const logs = this._signalLogs
-        .filter((log) => log[1] == cellStr)
-        .filter((log) => !log[3])
+      console.warn(`Dumping Self signal logs for cell "${names}"`);
+      const logs = validSignals
+        .filter((log) => log.cellId == cellStr)
+        .filter((log) => log.type == SignalType.LitHapp)
+        .filter((log) => encodeHashToBase64(log.payload["from"]) == me)
         .map((log) => {
-          return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload: log[2].payload}
+          const payload = (log.payload as LitHappSignal).signal;
+          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload}
         });
       console.table(logs);
-      console.warn(`Dumping System signal logs for cell "${names}"`);
-      const syslogs = this._signalLogs
-        .filter((log) => log[1] == cellStr)
-        .filter((log) => log[3])
+      console.warn(`Dumping Received signal logs for cell "${names}"`);
+      const remoteSignals = validSignals
+        .filter((log) => log.cellId == cellStr)
+        .filter((log) => log.type == SignalType.LitHapp)
+        .filter((log) => encodeHashToBase64(log.payload["from"]) != me)
         .map((log) => {
-          const payload = (log[2].payload as Object)["System"];
-          return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload}
+          return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload: log[2].payload["signal"], from: encodeHashToBase64(log[2].payload["from"])}
+        });
+      console.table(remoteSignals);
+      console.warn(`Dumping System signal logs for cell "${names}"`);
+      const syslogs = validSignals
+        .filter((log) => log.cellId == cellStr)
+        .filter((log) => log.type == SignalType.System)
+        .map((log) => {
+          const payload = (log.payload as SystemSignal).System;
+          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload}
         });
       console.table(syslogs);
     } else {
       console.warn("Dumping all App signal logs", )
-      const logs = this._signalLogs
-        .filter((log) => !log[3])
+      const logs = validSignals
+        .filter((log) => log.type == SignalType.LitHapp)
         .map((log) => {
-          const app = this._hclMap[log[1]][0].appId
-          const cell: string = this._hclMap[log[1]][0].roleName;
-          return { timestamp: prettyDate(new Date(log[0])), app, cell, zome: log[2].zome_name, payload: log[2].payload };
+          const app = this._hclMap[log.cellId][0].appId;
+          const cell: string = this._hclMap[log.cellId][0].roleName;
+          const signal = log.payload as LitHappSignal;
+          const from = encodeHashToBase64(signal.from) == me? "self" : encodeHashToBase64(signal.from);
+          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, payload: signal.signal, from};
         });
       console.table(logs);
       console.warn("Dumping all System signal logs", )
-      const syslogs = this._signalLogs
-        .filter((log) => log[3])
+      const syslogs = validSignals
+        .filter((log) => log.type == SignalType.System)
         .map((log) => {
-          const app = this._hclMap[log[1]][0].appId
-          const cell: string = this._hclMap[log[1]][0].roleName;
-          const payload = (log[2].payload as Object)["System"];
-          return { timestamp: prettyDate(new Date(log[0])), app, cell, zome: log[2].zome_name, payload };
+          const app = this._hclMap[log.cellId][0].appId;
+          const cell: string = this._hclMap[log.cellId][0].roleName;
+          const payload = (log.payload as SystemSignal).System;
+          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, payload };
         });
       console.table(syslogs);
     }
@@ -409,7 +462,7 @@ export class AppProxy implements AppClient {
 }
 
 
-/** WARN: must be up to date with Rust code */
+/** WARN: must be up-to-date with Rust code */
 /** Protocol for notifying the ViewModel (UI) of system level events */
 export type SystemSignalProtocolVariantPostCommitStart = {
   type: "PostCommitStart"
