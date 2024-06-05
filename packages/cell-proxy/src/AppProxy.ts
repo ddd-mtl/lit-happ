@@ -423,7 +423,8 @@ export class AppProxy implements AppClient {
         .filter((log) => log.type == SignalType.LitHapp)
         .filter((log) => encodeHashToBase64(log.payload["from"]) != me)
         .map((log) => {
-          return { timestamp: prettyDate(new Date(log[0])), zome: log[2].zome_name, payload: log[2].payload["signal"], from: encodeHashToBase64(log[2].payload["from"])}
+          const payload = log.payload as LitHappSignal;
+          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload: payload.signal, from: payload.from }
         });
       console.table(remoteSignals);
       console.warn(`Dumping System signal logs for cell "${names}"`);

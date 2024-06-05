@@ -45,13 +45,16 @@ export class NotificationsZvm extends ZomeViewModel {
   readonly signalHandler?: AppSignalCb = this.handleSignal;
 
   /** */
-  handleSignal(signal: AppSignal) {
+  handleSignal(appSignal: AppSignal) {
     //console.log("NotificationsZvm - Received Signal", signal);
-    if (signal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
+    if (appSignal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }
-    console.log("NotificationsZvm - Received Signal", signal);
-    const notification = signal.payload as NotificationTip;
+    // if (!("signal" in appSignal.payload)) {
+    //   return;
+    // }
+    console.log("NotificationsZvm - Received Signal", appSignal);
+    const notification = appSignal.payload as NotificationTip;
     /** */
     if (notification.destination && notification.destination == "notifier_service") {
       if (notification.status === 'retry' && notification.retry_count < 5) {
