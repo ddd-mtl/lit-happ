@@ -118,7 +118,8 @@ export class PlaygroundApp extends HappElement {
           <hr class="solid">
           <h2>
               Impostor Role: ${this.impostorDvm.hcl.toString()}
-              <input type="button" value="dump logs" @click=${(e: any) => this.impostorDvm.dumpLogs()}>
+              <input type="button" value="dump calls" @click=${(e: any) => this.impostorDvm.dumpCallLogs()}>
+              <input type="button" value="dump signals" @click=${(e: any) => this.impostorDvm.dumpSignalLogs()}>
           </h2>
           <real-list></real-list>
           <label-list></label-list>
@@ -130,7 +131,7 @@ export class PlaygroundApp extends HappElement {
       <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
-        <input type="button" value="Dump signals" @click=${(e:any) => {this.appProxy.dumpSignals()}}>
+        <input type="button" value="Dump signals" @click=${(e:any) => {this.appProxy.dumpSignalLogs(true)}}>
         <input type="button" value="networkInfos" @click=${async (e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
         <br/>
         <!-- SELECT ENTRY TYPE -->
@@ -157,7 +158,8 @@ export class PlaygroundApp extends HappElement {
         <cell-context .cell="${this.integerDvm.cell}">
             <h2>
                 Integer Role: ${this.integerDvm.hcl.toString()}
-                <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
+                <input type="button" value="dump calls" @click=${(e: any) => this.integerDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(e: any) => this.integerDvm.dumpSignalLogs()}>
             </h2>
             <integer-list></integer-list>
             <label-list></label-list>
@@ -167,7 +169,8 @@ export class PlaygroundApp extends HappElement {
             <hr class="solid">
             <h2>
                 Real Role: ${this.realDvm.hcl.toString()}
-                <input type="button" value="dump logs" @click=${(e: any) => this.realDvm.dumpLogs()}>
+                <input type="button" value="dump calls" @click=${(e: any) => this.realDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(e: any) => this.realDvm.dumpSignalLogs()}>
             </h2>
             <real-list></real-list>
             <label-list></label-list>

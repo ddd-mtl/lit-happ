@@ -1,4 +1,4 @@
-import {DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
+import {DnaViewModel, SignalLog, SignalType, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
 import {AppSignal, EntryHash, AppSignalCb, ActionHash} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {integerZomeFunctions} from "../fn";
@@ -64,6 +64,15 @@ export class IntegerZvm extends ZomeViewModel {
 
   readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
     console.warn("Signal for zInteger zome received:", appSignal);
+  }
+
+
+  /** */
+  dumpSignalLogs(signalLogs: SignalLog[]) {
+    //this._dvmParent.dumpSignalLogs(this.zomeName/*, false*/);
+    console.warn(`App signals from zome "${this.zomeName}"`);
+    const appSignals = signalLogs.filter((log) => log.type == SignalType.LitHapp);
+    console.table(appSignals);
   }
 
 

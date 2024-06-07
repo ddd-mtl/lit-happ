@@ -18,7 +18,7 @@ import {
   NetworkInfo,
   NetworkInfoResponse,
   ProvisionedCell,
-  Timestamp,
+  Timestamp, ZomeName,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -391,74 +391,105 @@ export class AppProxy implements AppClient {
 
 
   /** */
-  dumpSignals(cellId?: CellId) {
+  dumpSignalLogs(canAppSignals: boolean, cellId?: CellId, zomeName?: ZomeName) {
     const me = encodeHashToBase64(this.myPubKey);
-    const validSignals = this._signalLogs.filter((log) => !(log.type == SignalType.Unknown));
-    const unknownSignals = this._signalLogs.filter((log) => log.type == SignalType.Unknown);
-    if (unknownSignals.length) {
-      console.error("Unknown signals received: ", unknownSignals.length);
-      const logs = unknownSignals
-        .map((log) => {
-          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload: log.payload}
-        });
-      console.table(logs);
-    }
+    let signals = this._signalLogs;
+    /** Filter by cell and zome */
+    let cellNames;
     if (cellId) {
       const cellStr = CellIdStr(cellId);
       const hcls = this._hclMap[cellStr];
-      const names = hcls.map((hcl) => this.getCellName(hcl));
-      console.warn(`Dumping Self signal logs for cell "${names}"`);
-      const logs = validSignals
-        .filter((log) => log.cellId == cellStr)
-        .filter((log) => log.type == SignalType.LitHapp)
-        .filter((log) => encodeHashToBase64(log.payload["from"]) == me)
-        .map((log) => {
-          const payload = (log.payload as LitHappSignal).signal;
-          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload}
-        });
+      cellNames = hcls.map((hcl) => this.getCellName(hcl));
+      signals = this._signalLogs
+        .filter((log) => log.cellId == cellStr);
+      if (zomeName) {
+        signals = this._signalLogs
+          .filter((log) => log.zome_name == zomeName);
+      }
+    }
+    /** Seperate by type */
+    const unknownSignals = signals.filter((log) => log.type == SignalType.Unknown);
+    const sysSignals = signals.filter((log) => log.type == SignalType.System);
+    const appSignals = signals.filter((log) => log.type == SignalType.LitHapp);
+
+    /** Dump unknown signals */
+    if (unknownSignals.length) {
+      let logs;
+      if (zomeName) {
+        console.error(`Unknown signals from zome "${zomeName}": ${unknownSignals.length}`);
+        logs = unknownSignals
+          .map((log) => {
+            return {timestamp: prettyDate(new Date(log.ts)), payload: log.payload}
+          });
+      } else {
+        console.error(`Unknown signals: ${unknownSignals.length}`);
+        logs = unknownSignals
+          .map((log) => {
+            return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload: log.payload}
+          });
+      }
       console.table(logs);
-      console.warn(`Dumping Received signal logs for cell "${names}"`);
-      const remoteSignals = validSignals
-        .filter((log) => log.cellId == cellStr)
-        .filter((log) => log.type == SignalType.LitHapp)
-        .filter((log) => encodeHashToBase64(log.payload["from"]) != me)
-        .map((log) => {
-          const payload = log.payload as LitHappSignal;
-          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload: payload.signal, from: payload.from }
-        });
-      console.table(remoteSignals);
-      console.warn(`Dumping System signal logs for cell "${names}"`);
-      const syslogs = validSignals
-        .filter((log) => log.cellId == cellStr)
-        .filter((log) => log.type == SignalType.System)
-        .map((log) => {
-          const payload = (log.payload as SystemSignal).System;
-          return { timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload}
-        });
-      console.table(syslogs);
+    }
+
+    /** Dump System signals */
+    let syslogs;
+    if (cellNames) {
+      if (zomeName) {
+        console.warn(`Unknown signals from zome "${zomeName}" in cell "${cellNames}"`);
+        syslogs = sysSignals.map((log) => {
+            const payload = (log.payload as SystemSignal).System;
+            return {timestamp: prettyDate(new Date(log.ts)), payload}
+          });
+      } else {
+        console.warn(`System signals from cell "${cellNames}"`);
+        syslogs = sysSignals.map((log) => {
+            const payload = (log.payload as SystemSignal).System;
+            return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload}
+          });
+      }
     } else {
-      console.warn("Dumping all App signal logs", )
-      const logs = validSignals
-        .filter((log) => log.type == SignalType.LitHapp)
-        .map((log) => {
+      console.warn(`System signals: ${sysSignals.length}`)
+      syslogs = sysSignals.map((log) => {
+          const app = this._hclMap[log.cellId][0].appId;
+          const cell: string = this._hclMap[log.cellId][0].roleName;
+          const payload = (log.payload as SystemSignal).System;
+          return {timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, payload};
+        });
+    }
+    console.table(syslogs);
+
+    /** Dump App signals */
+    if (!canAppSignals) {
+      return;
+    }
+    let appLogs;
+    if (cellNames) {
+      if (zomeName) {
+        console.warn(`App signals from zome "${zomeName}" in cell "${cellNames}"`);
+        appLogs = appSignals.map((log) => {
+          const payload = log.payload as LitHappSignal;
+          const from = encodeHashToBase64(payload.from) == me ? "self" : encodeHashToBase64(payload.from);
+          return {timestamp: prettyDate(new Date(log.ts)), from, payload: payload.signal}
+        });
+      } else {
+        console.warn(`App signals from cell "${cellNames}"`);
+        appLogs = appSignals.map((log) => {
+          const payload = log.payload as LitHappSignal;
+          const from = encodeHashToBase64(payload.from) == me ? "self" : encodeHashToBase64(payload.from);
+          return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, from, payload: payload.signal}
+        });
+      }
+    } else {
+      console.warn(`App signals: ${appSignals.length}`)
+      appLogs = appSignals.map((log) => {
           const app = this._hclMap[log.cellId][0].appId;
           const cell: string = this._hclMap[log.cellId][0].roleName;
           const signal = log.payload as LitHappSignal;
           const from = encodeHashToBase64(signal.from) == me? "self" : encodeHashToBase64(signal.from);
-          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, payload: signal.signal, from};
+          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, from, payload: signal.signal};
         });
-      console.table(logs);
-      console.warn("Dumping all System signal logs", )
-      const syslogs = validSignals
-        .filter((log) => log.type == SignalType.System)
-        .map((log) => {
-          const app = this._hclMap[log.cellId][0].appId;
-          const cell: string = this._hclMap[log.cellId][0].roleName;
-          const payload = (log.payload as SystemSignal).System;
-          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, payload };
-        });
-      console.table(syslogs);
     }
+    console.table(appLogs);
   }
 }
 

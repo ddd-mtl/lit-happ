@@ -267,17 +267,17 @@ export class HappViewModel {
 
 
   /** */
-  dumpLogs(baseRoleName?: BaseRoleName): void {
+  dumpCallLogs(baseRoleName?: BaseRoleName): void {
     if (baseRoleName) {
       const dvm = this.getDvm(baseRoleName);
       if (dvm) {
-        dvm.dumpLogs();
+        dvm.dumpCallLogs();
       } else {
-        console.error(`dumpLogs() failed. Role "${baseRoleName}" not found in happ "${this.appId}"`)
+        console.error(`dumpCallLogs() failed. Role "${baseRoleName}" not found in happ "${this.appId}"`)
       }
     } else {
       for (const dvm of Object.values(this._dvmMap)) {
-        dvm.dumpLogs();
+        dvm.dumpCallLogs();
       }
     }
   }

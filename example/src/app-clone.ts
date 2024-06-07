@@ -169,7 +169,8 @@ export class PlaygroundCloneApp extends HappElement {
           <cell-context .cell="${realDvm.cell}">
               <h3>
                 ${realDvm.hcl.toString()}
-                <input type="button" value="dump logs" @click=${(e: any) => realDvm.dumpLogs()}>
+                <input type="button" value="dump calls" @click=${(e: any) => realDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(e: any) => realDvm.dumpSignalLogs()}>
               </h3>
               <real-list></real-list>
               <label-list></label-list>
@@ -182,7 +183,7 @@ export class PlaygroundCloneApp extends HappElement {
       <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
-        <input type="button" value="Dump signals" @click=${(e: any) => { this.appProxy.dumpSignals() }}>
+        <input type="button" value="Dump signals" @click=${(e: any) => { this.appProxy.dumpSignalLogs(true) }}>
         <input type="button" value="networkInfos" @click=${async (e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
         <div style="margin-top:5px;">
             <span>Select AppEntryType:</span>
@@ -197,7 +198,8 @@ export class PlaygroundCloneApp extends HappElement {
         <cell-context .cell="${this._integerCell}">
           <h2>
             Integer: ${this.integerDvm.hcl.toString()} 
-            <input type="button" value="dump logs" @click=${(e: any) => this.integerDvm.dumpLogs()}>
+            <input type="button" value="dump calls" @click=${(e: any) => this.integerDvm.dumpCallLogs()}>
+            <input type="button" value="dump signals" @click=${(e: any) => this.integerDvm.dumpSignalLogs()}>
           </h2>
           <integer-list></integer-list>
           <label-list></label-list>
@@ -218,7 +220,8 @@ export class PlaygroundCloneApp extends HappElement {
             <view-cell-context></view-cell-context>
             <h3>
                 Selected: ${selectedDvm.cell.name} - ${selectedDvm.hcl.toString()}
-                <input type="button" value="dump logs" @click=${(e: any) => selectedDvm.dumpLogs()}>
+                <input type="button" value="dump logs" @click=${(e: any) => selectedDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(e: any) => selectedDvm.dumpSignalLogs()}>
             </h3>
             <named-real-inspect></named-real-inspect>
             <real-list></real-list>

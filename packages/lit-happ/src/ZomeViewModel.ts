@@ -1,7 +1,7 @@
 import {Context, createContext} from "@lit/context";
-import {CellProxy, ZomeProxy, ZomeProxyConstructor, CellMixin} from "@ddd-qc/cell-proxy";
+import {CellProxy, ZomeProxy, ZomeProxyConstructor, CellMixin, SignalLog, SignalType} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {AppSignalCb, ZomeName} from "@holochain/client";
+import {AppSignalCb, CellId, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {DnaViewModel} from "./DnaViewModel";
 
@@ -90,6 +90,13 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
         const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.cell.dnaHash)
         //console.log({contextType: typeof context})
         return context
+    }
+
+
+    /** */
+    dumpSignalLogs(signalLogs: SignalLog[]) {
+        console.warn(`All signals from zome "${this.zomeName}"`);
+        console.table(signalLogs);
     }
 }
 

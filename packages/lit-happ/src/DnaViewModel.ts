@@ -22,8 +22,9 @@ import {RoleMixin, RoleSpecific} from "./roleMixin";
 
 /** Interface specific to DnaViewModel class */
 interface IDnaViewModel {
-  dumpLogs(zomeName?: ZomeName): void;
-  /** zomeName -> (AppEntryName, isPublic)[]*/
+  dumpCallLogs(zomeName?: ZomeName): void;
+  dumpSignalLogs(zomeName?: ZomeName): void;
+  /** zomeName -> (AppEntryName, isPublic)[] */
   fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   //getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined;
@@ -186,10 +187,25 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
+  /** */
+  dumpCallLogs(zomeName?: ZomeName): void {
+    this._cellProxy.dumpCallLogs(zomeName);
+  }
+
 
   /** */
-  dumpLogs(zomeName?: ZomeName): void {
-    this._cellProxy.dumpLogs(zomeName);
-    this._cellProxy.dumpSignals();
+  dumpSignalLogs(zomeName?: ZomeName): void {
+    console.warn("Dumping signals in DVM", this.baseRoleName);
+    if (zomeName == undefined) {
+      for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
+        zvm.dumpSignalLogs(this._cellProxy.signalLogs);
+      }
+      return;
+    }
+    if (this._zomeViewModels[zomeName]) {
+      this._zomeViewModels[zomeName].dumpSignalLogs(this._cellProxy.signalLogs);
+    } else {
+      console.error(`Unknown zome ${zomeName} in DVM ${this.baseRoleName}`)
+    }
   }
 }

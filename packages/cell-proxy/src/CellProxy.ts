@@ -80,8 +80,8 @@ export class CellProxy extends CellMixin(Empty) {
     }
     const end = sys as SystemSignalProtocolVariantPostCommitEnd;
     if (!end.succeeded) {
-      this.dumpSignals();
-      this.dumpLogs(signal.zome_name);
+      this.dumpCallLogs(signal.zome_name);
+      this.dumpSignalLogs(signal.zome_name);
     }
     if (end.entry_type !== this._postCommitReleaseEntryType) {
       return;
@@ -118,8 +118,8 @@ export class CellProxy extends CellMixin(Empty) {
       delete this._selfCallRelease;
       const end = sys as SystemSignalProtocolVariantSelfCallEnd;
       if (!end.succeeded) {
-        this.dumpSignals();
-        this.dumpLogs(end.zome_name);
+        this.dumpCallLogs(end.zome_name);
+        this.dumpSignalLogs(end.zome_name);
       }
     }
   }
@@ -146,8 +146,15 @@ export class CellProxy extends CellMixin(Empty) {
 
 
   /** */
-  dumpSignals() {
-    this._appProxy.dumpSignals(this.cell.id);
+  dumpSignalLogs(zomeName?: ZomeName, canAppSignals?: boolean) {
+    this._appProxy.dumpSignalLogs(canAppSignals? canAppSignals : true, this.cell.id, zomeName);
+  }
+
+
+  /** */
+  get signalLogs() {
+    const cellStr = CellIdStr(this.cell.id);
+    return this._appProxy.signalLogs.filter((log) => log.cellId == cellStr);
   }
 
 
@@ -235,8 +242,8 @@ export class CellProxy extends CellMixin(Empty) {
     /** Release */
     release();
     if (respLog.failure) {
-      this.dumpSignals();
-      this.dumpLogs(zome_name);
+      this.dumpCallLogs(zome_name);
+      this.dumpSignalLogs(zome_name);
       return Promise.reject(respLog.failure)
     }
     return respLog.success;
@@ -261,8 +268,8 @@ export class CellProxy extends CellMixin(Empty) {
     }
     const respLog = await this.executeZomeCall(log);
     if (respLog.failure) {
-      this.dumpSignals();
-      this.dumpLogs(zome_name);
+      this.dumpCallLogs(zome_name);
+      this.dumpSignalLogs(zome_name);
       return Promise.reject(respLog.failure)
     }
     return respLog.success;
@@ -335,12 +342,12 @@ export class CellProxy extends CellMixin(Empty) {
   // dumpAllZomes() {
   //   // FIXME get DNA DEF
   //   for (const zomeName of dnaDef) {
-  //     this.dumpLogs(zomeName)
+  //     this.dumpCallLogs(zomeName)
   //   }
   // }
 
   /**  */
-  dumpLogs(zomeName?: ZomeName) {
+  dumpCallLogs(zomeName?: ZomeName) {
     let result = [];
     for (const response of this._responseLog) {
       const requestLog = this._requestLog[response.requestIndex];
