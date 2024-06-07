@@ -69,7 +69,6 @@ export class IntegerZvm extends ZomeViewModel {
 
   /** */
   dumpSignalLogs(signalLogs: SignalLog[]) {
-    //this._dvmParent.dumpSignalLogs(this.zomeName/*, false*/);
     console.warn(`App signals from zome "${this.zomeName}"`);
     const appSignals = signalLogs.filter((log) => log.type == SignalType.LitHapp);
     console.table(appSignals);

@@ -197,13 +197,15 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   dumpSignalLogs(zomeName?: ZomeName): void {
     console.warn("Dumping signals in DVM", this.baseRoleName);
     if (zomeName == undefined) {
-      for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
-        zvm.dumpSignalLogs(this._cellProxy.signalLogs);
+      for (const [name, zvm] of Object.entries(this._zomeViewModels)) {
+        const logs = this._cellProxy.signalLogs.filter((log) => log.zome_name == name)
+        zvm.dumpSignalLogs(logs);
       }
       return;
     }
     if (this._zomeViewModels[zomeName]) {
-      this._zomeViewModels[zomeName].dumpSignalLogs(this._cellProxy.signalLogs);
+      const logs = this._cellProxy.signalLogs.filter((log) => log.zome_name == zomeName)
+      this._zomeViewModels[zomeName].dumpSignalLogs(logs);
     } else {
       console.error(`Unknown zome ${zomeName} in DVM ${this.baseRoleName}`)
     }
