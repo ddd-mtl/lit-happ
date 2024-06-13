@@ -1,7 +1,8 @@
 import {CellId, AppInfo, encodeHashToBase64} from "@holochain/client";
 import {CellType} from "@holochain/client";
 import {intoStem} from "./cell";
-import {BaseRoleName, CellsForRole} from "./types";
+import {BaseRoleName, CellsForRole, str2CellId} from "./types";
+import {SignalLog} from "./AppProxy";
 
 
 export declare type Dictionary<T> = {
@@ -72,6 +73,13 @@ export function prettyDate(date: Date): string {
     + "." + zeroPad(date.getMilliseconds(), 3);
 }
 
+
+export function prettySignalLogs(signalLogs: SignalLog[]) {
+  return signalLogs.map((log) => {
+    const dnaHash = encodeHashToBase64(str2CellId(log.cellId)[0]).slice(-8);
+    return {timestamp: prettyDate(new Date(log.ts)), dnaHash, zome: log.zome_name, type: log.type, payload: log.payload};
+  })
+}
 
 
 /** */

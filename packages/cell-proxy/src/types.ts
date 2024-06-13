@@ -18,8 +18,8 @@ export enum SignalType  {
 export type SignalPayload = unknown | SystemSignal | LitHappSignal;
 export type SystemSignal = {System: SystemSignalProtocol}
 export interface LitHappSignal {
-  from: AgentPubKey
-  signal: unknown
+  from: AgentPubKey,
+  pulses: unknown[],
 }
 
 export type BaseRoleName = string;

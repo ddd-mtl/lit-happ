@@ -13,7 +13,7 @@ pub enum SystemSignalProtocol {
 
 /// Protocol for notifying the ViewModel (UI)
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum SignalProtocol {
+pub enum ExampleSignalProtocol {
     //System(SystemSignalProtocol),
     Custom(String),
 }
@@ -28,15 +28,15 @@ pub struct SystemSignal {
 #[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
 pub struct LitHappSignal {
     pub from: AgentPubKey,
-    pub signal: SignalProtocol,
+    pub pulses: Vec<ExampleSignalProtocol>,
 }
 
 
 ///
-pub fn emit_self_signal(signal: SignalProtocol) -> ExternResult<()> {
+pub fn emit_self_signal(signal: ExampleSignalProtocol) -> ExternResult<()> {
     let signal = LitHappSignal {
         from: agent_info()?.agent_latest_pubkey,
-        signal: signal,
+        pulses: vec![signal],
     };
     return emit_signal(&signal);
 }

@@ -1,5 +1,14 @@
-import {DnaViewModel, SignalLog, SignalType, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
-import {AppSignal, EntryHash, AppSignalCb, ActionHash} from "@holochain/client";
+import {
+  DnaViewModel,
+  prettyDate, prettySignalLogs,
+  SignalLog,
+  SignalType,
+  str2CellId,
+  ZomeProxy,
+  ZomeViewModel,
+  ZvmDef
+} from "@ddd-qc/lit-happ";
+import {AppSignal, EntryHash, AppSignalCb, ActionHash, encodeHashToBase64} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {integerZomeFunctions} from "../fn";
 
@@ -71,7 +80,7 @@ export class IntegerZvm extends ZomeViewModel {
   dumpSignalLogs(signalLogs: SignalLog[]) {
     console.warn(`App signals from zome "${this.zomeName}"`);
     const appSignals = signalLogs.filter((log) => log.type == SignalType.LitHapp);
-    console.table(appSignals);
+    console.table(prettySignalLogs(appSignals));
   }
 
 

@@ -380,7 +380,7 @@ export class AppProxy implements AppClient {
       return [SignalType.Unknown, appSignal.payload];
     }
     const payload = appSignal.payload as Object;
-    if ("signal" in payload && "from" in payload) {
+    if ("pulses" in payload && "from" in payload) {
       return [SignalType.LitHapp, appSignal.payload as LitHappSignal];
     }
     if ("System" in payload) {
@@ -469,14 +469,14 @@ export class AppProxy implements AppClient {
         appLogs = appSignals.map((log) => {
           const payload = log.payload as LitHappSignal;
           const from = encodeHashToBase64(payload.from) == me ? "self" : encodeHashToBase64(payload.from);
-          return {timestamp: prettyDate(new Date(log.ts)), from, payload: payload.signal}
+          return {timestamp: prettyDate(new Date(log.ts)), from, count: payload.pulses.length, payload: payload.pulses}
         });
       } else {
         console.warn(`App signals from cell "${cellNames}"`);
         appLogs = appSignals.map((log) => {
           const payload = log.payload as LitHappSignal;
           const from = encodeHashToBase64(payload.from) == me ? "self" : encodeHashToBase64(payload.from);
-          return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, from, payload: payload.signal}
+          return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, from, count: payload.pulses.length, payload: payload.pulses}
         });
       }
     } else {
@@ -486,7 +486,7 @@ export class AppProxy implements AppClient {
           const cell: string = this._hclMap[log.cellId][0].roleName;
           const signal = log.payload as LitHappSignal;
           const from = encodeHashToBase64(signal.from) == me? "self" : encodeHashToBase64(signal.from);
-          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, from, payload: signal.signal};
+          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, from, count: signal.pulses.length, payload: signal.pulses};
         });
     }
     console.table(appLogs);
