@@ -2,7 +2,7 @@ import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
 import {
-  AdminWebsocket,
+  AdminWebsocket, AgentPubKeyB64,
   GrantedFunctionsType,
   InstalledAppId,
   ZomeName,
@@ -88,10 +88,16 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /* ZomeName -> [EntryName, EntryVisibility] */
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
+  /** list of "known" peers in this DNA */
+  protected _livePeers: AgentPubKeyB64[] = [];
+
   public readonly hcl: HCL;
 
 
+
   /** -- Getters -- */
+
+  get livePeers(): AgentPubKeyB64[] { return this._livePeers };
 
   getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}

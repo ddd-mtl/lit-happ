@@ -1,5 +1,13 @@
 import {Context, createContext} from "@lit/context";
-import {CellProxy, ZomeProxy, ZomeProxyConstructor, CellMixin, SignalLog, SignalType} from "@ddd-qc/cell-proxy";
+import {
+    CellProxy,
+    ZomeProxy,
+    ZomeProxyConstructor,
+    CellMixin,
+    SignalLog,
+    SignalType,
+    prettySignalLogs
+} from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
 import {AppSignalCb, CellId, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
@@ -96,7 +104,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     /** */
     dumpSignalLogs(signalLogs: SignalLog[]) {
         console.warn(`All signals from zome "${this.zomeName}"`);
-        console.table(signalLogs);
+        console.table(prettySignalLogs(signalLogs));
     }
 }
 
