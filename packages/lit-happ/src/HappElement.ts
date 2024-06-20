@@ -38,9 +38,9 @@ export class HappElement extends LitElement {
 
 
   /** Ctor */
-  protected constructor(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL) {
+  protected constructor(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL, defaultTimeout?: number) {
     super();
-    /* await */ this.constructHvm(port_or_socket, appId, adminUrl);
+    /* await */ this.constructHvm(port_or_socket, appId, adminUrl, defaultTimeout);
   }
 
   /** */
@@ -52,7 +52,7 @@ export class HappElement extends LitElement {
 
 
   /** */
-  protected async constructHvm(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL): Promise<void> {
+  protected async constructHvm(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL, defaultTimeout?: number): Promise<void> {
     const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappElement subclass " + this.constructor.name);
@@ -61,7 +61,7 @@ export class HappElement extends LitElement {
     if (appId) {
       hvmDef.id = appId;
     }
-    this.appProxy = await ConductorAppProxy.new(port_or_socket, hvmDef.id, adminUrl);
+    this.appProxy = await ConductorAppProxy.new(port_or_socket, hvmDef.id, adminUrl, defaultTimeout);
     this.hvm = await HappViewModel.new(this, this.appProxy, hvmDef);
     await this.hvm.authorizeAllZomeCalls(this.appProxy.adminWs);
     await this.hvmConstructed();
