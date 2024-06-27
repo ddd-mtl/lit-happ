@@ -494,21 +494,29 @@ export class AppProxy implements AppClient {
 }
 
 
-/** WARN: must be up-to-date with Rust code */
 /** Protocol for notifying the ViewModel (UI) of system level events */
-export type SystemSignalProtocolVariantPostCommitStart = {
-  type: "PostCommitStart"
-  entry_type: string
+export type SystemSignalProtocolVariantPostCommitNewStart = {
+  type: "PostCommitNewStart"
+  app_entry_type: string
 }
-export type SystemSignalProtocolVariantPostCommitEnd = {
-  type: "PostCommitEnd"
-  entry_type: string
+export type SystemSignalProtocolVariantPostCommitNewEnd = {
+  type: "PostCommitNewEnd"
+  app_entry_type: string
+  succeeded: boolean
+}
+export type SystemSignalProtocolVariantPostCommitDeleteStart = {
+  type: "PostCommitDeleteStart"
+  app_entry_type: string
+}
+export type SystemSignalProtocolVariantPostCommitDeleteEnd = {
+  type: "PostCommitDeleteEnd"
+  app_entry_type: string
   succeeded: boolean
 }
 export type SystemSignalProtocolVariantSelfCallStart = {
   type: "SelfCallStart"
   zome_name: string
-  fnName: string
+  fn_name: string
 }
 export type SystemSignalProtocolVariantSelfCallEnd = {
   type: "SelfCallEnd"
@@ -517,7 +525,9 @@ export type SystemSignalProtocolVariantSelfCallEnd = {
   succeeded: boolean
 }
 export type SystemSignalProtocol =
-  | SystemSignalProtocolVariantPostCommitStart
-  | SystemSignalProtocolVariantPostCommitEnd
+  | SystemSignalProtocolVariantPostCommitNewStart
+  | SystemSignalProtocolVariantPostCommitNewEnd
+  | SystemSignalProtocolVariantPostCommitDeleteStart
+  | SystemSignalProtocolVariantPostCommitDeleteEnd
   | SystemSignalProtocolVariantSelfCallStart
   | SystemSignalProtocolVariantSelfCallEnd;

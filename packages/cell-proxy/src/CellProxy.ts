@@ -16,8 +16,7 @@ import MutexInterface from "async-mutex/lib/MutexInterface";
 import {
   AppProxy,
   SignalUnsubscriber,
-  SystemSignalProtocol,
-  SystemSignalProtocolVariantPostCommitEnd,
+  SystemSignalProtocol, SystemSignalProtocolVariantPostCommitNewEnd,
   SystemSignalProtocolVariantSelfCallEnd,
   SystemSignalProtocolVariantSelfCallStart
 } from "./AppProxy";
@@ -70,20 +69,20 @@ export class CellProxy extends CellMixin(Empty) {
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: AppSignal) {
     const [signalType, payload] = this._appProxy.determineSignalType(signal);
-    //console.log("blockUntilPostCommit()", signalType, payload, this._postCommitReleaseEntryType, !!this._postCommitRelease);
+    console.debug("blockUntilPostCommit()", signalType, payload, this._postCommitReleaseEntryType, !!this._postCommitRelease);
     if (signalType != SignalType.System || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
       return;
     }
     const sys = (payload as SystemSignal).System;
-    if (sys.type !== "PostCommitEnd") {
+    if (sys.type !== "PostCommitNewEnd") {
       return;
     }
-    const end = sys as SystemSignalProtocolVariantPostCommitEnd;
+    const end = sys as SystemSignalProtocolVariantPostCommitNewEnd;
     if (!end.succeeded) {
       this.dumpCallLogs(signal.zome_name);
       this.dumpSignalLogs(signal.zome_name);
     }
-    if (end.entry_type !== this._postCommitReleaseEntryType) {
+    if (end.app_entry_type !== this._postCommitReleaseEntryType) {
       return;
     }
     /** Release */
@@ -283,7 +282,7 @@ export class CellProxy extends CellMixin(Empty) {
   async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
     //console.log("callEntryDefs()", zomeName)
     try {
-      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 10 * 1000) as EntryDefsCallbackResult; // Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs
+      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null) as EntryDefsCallbackResult; // Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs
       //console.debug("getEntryDefs() for " + this.zomeName + " result:")
       //console.log({entryDefs})
       let result: [string, boolean][] = []
@@ -383,7 +382,7 @@ export class CellProxy extends CellMixin(Empty) {
 
     let sigResults = [];
     for (const [startTs, startId, startSignal] of startCalls) {
-      const index = endCalls.findIndex(([ts, cellId, signal]) => ts >= startTs && startId == cellId && startSignal.fnName == signal.fn_name)
+      const index = endCalls.findIndex(([ts, cellId, signal]) => ts >= startTs && startId == cellId && startSignal.fn_name == signal.fn_name)
       if (index == -1) {
         continue;
       }
