@@ -6,21 +6,63 @@ import {
 } from "@holochain/client";
 import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
-import {SystemSignalProtocol} from "./AppProxy";
+
+
+/** Signal types */
 
 export enum SignalType  {
   Unknown = "Unknown",
-  System = "System",
-  LitHapp = "LitHapp",
+  Empty = "Empty",
+  Zome = "Zome",
 }
 
-
-export type SignalPayload = unknown | SystemSignal | LitHappSignal;
-export type SystemSignal = {System: SystemSignalProtocol}
+//export type SignalPayload = unknown | LitHappSignal;
+export type SystemPulse = {System: SystemSignalProtocol}
 export interface LitHappSignal {
   from: AgentPubKey,
   pulses: unknown[],
 }
+
+/** Protocol for notifying the ViewModel (UI) of system level events */
+export type SystemSignalProtocolVariantPostCommitNewStart = {
+  type: "PostCommitNewStart"
+  app_entry_type: string
+}
+export type SystemSignalProtocolVariantPostCommitNewEnd = {
+  type: "PostCommitNewEnd"
+  app_entry_type: string
+  succeeded: boolean
+}
+export type SystemSignalProtocolVariantPostCommitDeleteStart = {
+  type: "PostCommitDeleteStart"
+  app_entry_type: string
+}
+export type SystemSignalProtocolVariantPostCommitDeleteEnd = {
+  type: "PostCommitDeleteEnd"
+  app_entry_type: string
+  succeeded: boolean
+}
+export type SystemSignalProtocolVariantSelfCallStart = {
+  type: "SelfCallStart"
+  zome_name: string
+  fn_name: string
+}
+export type SystemSignalProtocolVariantSelfCallEnd = {
+  type: "SelfCallEnd"
+  zome_name: string
+  fn_name: string
+  succeeded: boolean
+}
+export type SystemSignalProtocol =
+  | SystemSignalProtocolVariantPostCommitNewStart
+  | SystemSignalProtocolVariantPostCommitNewEnd
+  | SystemSignalProtocolVariantPostCommitDeleteStart
+  | SystemSignalProtocolVariantPostCommitDeleteEnd
+  | SystemSignalProtocolVariantSelfCallStart
+  | SystemSignalProtocolVariantSelfCallEnd;
+
+
+/** ---- */
 
 export type BaseRoleName = string;
 export type CloneIndex = number;

@@ -10,15 +10,23 @@ import {
 import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
-import {CellIdStr, DnaInfo, EntryDefsCallbackResult, SignalType, SystemSignal, ZomeInfo} from "./types";
+import {
+  CellIdStr,
+  DnaInfo,
+  EntryDefsCallbackResult,
+  SignalType,
+  SystemPulse,
+  SystemSignalProtocol,
+  SystemSignalProtocolVariantPostCommitNewEnd,
+  SystemSignalProtocolVariantSelfCallEnd,
+  SystemSignalProtocolVariantSelfCallStart,
+  ZomeInfo
+} from "./types";
 import {Mutex, withTimeout} from "async-mutex";
 import MutexInterface from "async-mutex/lib/MutexInterface";
 import {
   AppProxy,
   SignalUnsubscriber,
-  SystemSignalProtocol, SystemSignalProtocolVariantPostCommitNewEnd,
-  SystemSignalProtocolVariantSelfCallEnd,
-  SystemSignalProtocolVariantSelfCallStart
 } from "./AppProxy";
 
 
@@ -68,61 +76,70 @@ export class CellProxy extends CellMixin(Empty) {
   private _postCommitRelease?;
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: AppSignal) {
-    const [signalType, payload] = this._appProxy.determineSignalType(signal);
-    console.debug("blockUntilPostCommit()", signalType, payload, this._postCommitReleaseEntryType, !!this._postCommitRelease);
-    if (signalType != SignalType.System || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
+    const zomeSignal = this._appProxy.intoZomeSignal(signal);
+    if (!zomeSignal || zomeSignal.pulses.length == 0) {
       return;
     }
-    const sys = (payload as SystemSignal).System;
-    if (sys.type !== "PostCommitNewEnd") {
+    console.debug("blockUntilPostCommit()", zomeSignal, this._postCommitReleaseEntryType, !!this._postCommitRelease);
+    const signalType = Object.keys(zomeSignal.pulses[0])[0];
+    if (signalType != "System" || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
       return;
     }
-    const end = sys as SystemSignalProtocolVariantPostCommitNewEnd;
-    if (!end.succeeded) {
-      this.dumpCallLogs(signal.zome_name);
-      this.dumpSignalLogs(signal.zome_name);
+    for (const pulse of zomeSignal.pulses) {
+      const sys = (pulse as SystemPulse).System;
+      if (sys.type !== "PostCommitNewEnd") {
+        continue;
+      }
+      const end = sys as SystemSignalProtocolVariantPostCommitNewEnd;
+      if (!end.succeeded) {
+        console.error("System call failed");
+        this.dumpCallLogs(signal.zome_name);
+        this.dumpSignalLogs(signal.zome_name);
+      }
+      if (end.app_entry_type !== this._postCommitReleaseEntryType) {
+        continue;
+      }
+      /** Release */
+      console.debug("blockUntilPostCommit() RELEASE");
+      this._postCommitRelease();
+      delete this._postCommitRelease;
+      delete this._postCommitReleaseEntryType;
+      break;
     }
-    if (end.app_entry_type !== this._postCommitReleaseEntryType) {
-      return;
-    }
-    /** Release */
-    //console.log("blockUntilPostCommit() RELEASE");
-    this._postCommitRelease();
-    delete this._postCommitRelease;
-    delete this._postCommitReleaseEntryType;
   }
 
 
   /** Have a self call acquire & the call Mutex */
   private _selfCallRelease?;
   protected async blockSelfCall(signal: AppSignal) {
-    const [signalType, systemSignal] = this._appProxy.determineSignalType(signal);
-    if (signalType != SignalType.System) {
+    const zomeSignal = this._appProxy.intoZomeSignal(signal);
+    if (!zomeSignal || zomeSignal.pulses.length == 0 || Object.keys(zomeSignal.pulses[0])[0] != 'System') {
       return;
     }
-
-    const sys = systemSignal as SystemSignalProtocol;
-    if (sys.type == "SelfCallStart") {
-      console.log("")
-      /** Acquire lock */
-      try {
-        this._callMutex.acquire().then((r) => this._selfCallRelease = r)
-      } catch (e) {
-        console.error("A Zome self call is initialted during a writing zome call", e);
+    for (const pulse of zomeSignal.pulses) {
+      const sys = (pulse as SystemPulse).System;
+      if (sys.type == "SelfCallStart") {
+        console.log("")
+        /** Acquire lock */
+        try {
+          this._callMutex.acquire().then((r) => this._selfCallRelease = r)
+        } catch (e) {
+          console.error("A Zome self call is initialted during a writing zome call", e);
+        }
       }
-    }
-    if (sys.type == "SelfCallEnd" && this._selfCallRelease) {
-      /** Release */
-      this._selfCallRelease();
-      delete this._selfCallRelease;
-      const end = sys as SystemSignalProtocolVariantSelfCallEnd;
-      if (!end.succeeded) {
-        this.dumpCallLogs(end.zome_name);
-        this.dumpSignalLogs(end.zome_name);
+      if (sys.type == "SelfCallEnd" && this._selfCallRelease) {
+        /** Release */
+        this._selfCallRelease();
+        delete this._selfCallRelease;
+        const end = sys as SystemSignalProtocolVariantSelfCallEnd;
+        if (!end.succeeded) {
+          console.error("Call to self failed.")
+          this.dumpCallLogs(end.zome_name);
+          this.dumpSignalLogs(end.zome_name);
+        }
       }
     }
   }
-
 
   /** -- Fields -- */
 
@@ -371,14 +388,26 @@ export class CellProxy extends CellMixin(Empty) {
 
     /** Parse signal self-call logs */
     //console.log(this._appProxy.signalLogs)
-    const startCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallStart][] = this._appProxy.signalLogs
-      .filter((log) => log.type == SignalType.System && (log.payload as SystemSignalProtocol).type == "SelfCallStart")
-      .map((log) => [log.ts, log.cellId, (log.payload as SystemSignalProtocolVariantSelfCallStart)])
 
-    const endCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallEnd][] = this._appProxy.signalLogs
-      .filter((log) => log.type == SignalType.System && (log.payload as SystemSignalProtocol).type == "SelfCallEnd")
-      .map((log) => [log.ts, log.cellId, (log.payload as SystemSignalProtocolVariantSelfCallEnd)])
+    const zomeSignals = this._appProxy.signalLogs.filter((log) => log.type == SignalType.Zome);
+    const sysSignals = zomeSignals.filter((log) => {
+      const type = Object.keys(log.zomeSignal.pulses[0])[0];
+      type == "System"
+    });
 
+    const startCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallStart][] = [];
+    const endCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallEnd][] = [];
+    sysSignals.map((log) => {
+      for (const pulse of log.zomeSignal.pulses) {
+      const sys = (pulse as SystemPulse).System;
+        if(sys.type == "SelfCallStart") {
+          startCalls.push([log.ts, log.cellId, (sys as SystemSignalProtocolVariantSelfCallStart)]);
+        }
+        if(sys.type == "SelfCallEnd") {
+          endCalls.push([log.ts, log.cellId, (sys as SystemSignalProtocolVariantSelfCallEnd)]);
+        }
+      }
+    })
 
     let sigResults = [];
     for (const [startTs, startId, startSignal] of startCalls) {

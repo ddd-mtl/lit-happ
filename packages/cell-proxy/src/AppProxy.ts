@@ -28,9 +28,7 @@ import {
   CellsForRole,
   LitHappSignal,
   RoleCellsMap,
-  SignalPayload,
-  SignalType,
-  SystemSignal
+  SignalType, SystemPulse,
 } from "./types";
 import {areCellsEqual, Dictionary, prettyDate, printAppInfo} from "./utils";
 import {HCL, HCLString} from "./hcl";
@@ -47,9 +45,10 @@ export interface SignalUnsubscriber {
 export interface SignalLog {
   ts: Timestamp,
   cellId: CellIdStr,
-  zome_name: string,
-  type: SignalType,
-  payload: SignalPayload,
+  zomeName: string,
+  type: string,
+  pulseCount: number,
+  zomeSignal: LitHappSignal,
 }
 
 /**
@@ -368,49 +367,61 @@ export class AppProxy implements AppClient {
 
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
-    const [signalType, payload] = this.determineSignalType(signal);
-    //console.log("signal logged", signal, isSystem)
-    this._signalLogs.push({ts: Date.now(), cellId: CellIdStr(signal.cell_id), zome_name: signal.zome_name, payload, type: signalType})
+    const zomeSignal = this.intoZomeSignal(signal);
+    const log: SignalLog = {ts: Date.now(), cellId: CellIdStr(signal.cell_id), zomeName: signal.zome_name, zomeSignal, type: SignalType.Unknown, pulseCount: 1};
+    if (zomeSignal) {
+      log.pulseCount = zomeSignal.pulses.length;
+      if (zomeSignal.pulses.length == 0) {
+        log.type = SignalType.Empty;
+      } else {
+        log.type = SignalType.Zome;
+      }
+    }
+    this._signalLogs.push(log);
   }
 
 
   /** */
-  determineSignalType(appSignal: AppSignal): [SignalType, unknown | SystemSignal | LitHappSignal] {
+  intoZomeSignal(appSignal: AppSignal): LitHappSignal | undefined {
     if (typeof appSignal.payload !== 'object' || Array.isArray(appSignal.payload) || appSignal.payload === null) {
-      return [SignalType.Unknown, appSignal.payload];
+      return;
     }
     const payload = appSignal.payload as Object;
     if ("pulses" in payload && "from" in payload) {
-      return [SignalType.LitHapp, appSignal.payload as LitHappSignal];
+      return appSignal.payload as LitHappSignal;
     }
-    if ("System" in payload) {
-      return  [SignalType.System, appSignal.payload as SystemSignal];
-    }
-    return [SignalType.Unknown, appSignal.payload];
+    return;
   }
 
 
   /** */
   dumpSignalLogs(canAppSignals: boolean, cellId?: CellId, zomeName?: ZomeName) {
     const me = encodeHashToBase64(this.myPubKey);
-    let signals = this._signalLogs;
+    let logs = this._signalLogs;
     /** Filter by cell and zome */
     let cellNames;
     if (cellId) {
       const cellStr = CellIdStr(cellId);
       const hcls = this._hclMap[cellStr];
       cellNames = hcls.map((hcl) => this.getCellName(hcl));
-      signals = this._signalLogs
+      logs = this._signalLogs
         .filter((log) => log.cellId == cellStr);
       if (zomeName) {
-        signals = this._signalLogs
-          .filter((log) => log.zome_name == zomeName);
+        logs = this._signalLogs
+          .filter((log) => log.zomeName == zomeName);
       }
     }
     /** Seperate by type */
-    const unknownSignals = signals.filter((log) => log.type == SignalType.Unknown);
-    const sysSignals = signals.filter((log) => log.type == SignalType.System);
-    const appSignals = signals.filter((log) => log.type == SignalType.LitHapp);
+    const unknownSignals = logs.filter((log) => log.type == SignalType.Unknown);
+    const zomeSignals = logs.filter((log) => log.type == SignalType.Zome);
+    const appSignals = zomeSignals.filter((log) => {
+      const type = Object.keys(log.zomeSignal.pulses[0])[0];
+      type != "System"
+    });
+    const sysSignals = zomeSignals.filter((log) => {
+      const type = Object.keys(log.zomeSignal.pulses[0])[0];
+      type == "System"
+    });
 
     /** Dump unknown signals */
     if (unknownSignals.length) {
@@ -419,42 +430,48 @@ export class AppProxy implements AppClient {
         console.error(`Unknown signals from zome "${zomeName}": ${unknownSignals.length}`);
         logs = unknownSignals
           .map((log) => {
-            return {timestamp: prettyDate(new Date(log.ts)), payload: log.payload}
+            return {timestamp: prettyDate(new Date(log.ts)), payload: log.zomeSignal}
           });
       } else {
         console.error(`Unknown signals: ${unknownSignals.length}`);
         logs = unknownSignals
           .map((log) => {
-            return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload: log.payload}
+            return {timestamp: prettyDate(new Date(log.ts)), zome: log.zomeName, payload: log.zomeSignal}
           });
       }
       console.table(logs);
     }
 
     /** Dump System signals */
-    let syslogs;
+    let syslogs = [];
     if (cellNames) {
       if (zomeName) {
         console.warn(`Unknown signals from zome "${zomeName}" in cell "${cellNames}"`);
-        syslogs = sysSignals.map((log) => {
-            const payload = (log.payload as SystemSignal).System;
-            return {timestamp: prettyDate(new Date(log.ts)), payload}
+        sysSignals.map((log) => {
+            for (const pulse of log.zomeSignal.pulses) {
+              const payload = (pulse as SystemPulse).System;
+              syslogs.push({timestamp: prettyDate(new Date(log.ts)), payload});
+            }
           });
       } else {
         console.warn(`System signals from cell "${cellNames}"`);
-        syslogs = sysSignals.map((log) => {
-            const payload = (log.payload as SystemSignal).System;
-            return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, payload}
-          });
+        sysSignals.map((log) => {
+          for (const pulse of log.zomeSignal.pulses) {
+            const payload = (pulse as SystemPulse).System;
+            syslogs.push({timestamp: prettyDate(new Date(log.ts)), zome: log.zomeName, payload});
+          }
+        });
       }
     } else {
       console.warn(`System signals: ${sysSignals.length}`)
-      syslogs = sysSignals.map((log) => {
+      sysSignals.map((log) => {
           const app = this._hclMap[log.cellId][0].appId;
           const cell: string = this._hclMap[log.cellId][0].roleName;
-          const payload = (log.payload as SystemSignal).System;
-          return {timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, payload};
-        });
+        for (const pulse of log.zomeSignal.pulses) {
+          const payload = (pulse as SystemPulse).System;
+          syslogs.push({timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, payload});
+        }
+      });
     }
     console.table(syslogs);
 
@@ -467,16 +484,16 @@ export class AppProxy implements AppClient {
       if (zomeName) {
         console.warn(`App signals from zome "${zomeName}" in cell "${cellNames}"`);
         appLogs = appSignals.map((log) => {
-          const payload = log.payload as LitHappSignal;
-          const from = encodeHashToBase64(payload.from) == me ? "self" : encodeHashToBase64(payload.from);
-          return {timestamp: prettyDate(new Date(log.ts)), from, count: payload.pulses.length, payload: payload.pulses}
+          const pulses = log.zomeSignal.pulses;
+          const from = encodeHashToBase64(log.zomeSignal.from) == me ? "self" : encodeHashToBase64(log.zomeSignal.from);
+          return {timestamp: prettyDate(new Date(log.ts)), from, count: pulses.length, payload: pulses}
         });
       } else {
         console.warn(`App signals from cell "${cellNames}"`);
         appLogs = appSignals.map((log) => {
-          const payload = log.payload as LitHappSignal;
-          const from = encodeHashToBase64(payload.from) == me ? "self" : encodeHashToBase64(payload.from);
-          return {timestamp: prettyDate(new Date(log.ts)), zome: log.zome_name, from, count: payload.pulses.length, payload: payload.pulses}
+          const pulses = log.zomeSignal.pulses;
+          const from = encodeHashToBase64(log.zomeSignal.from) == me ? "self" : encodeHashToBase64(log.zomeSignal.from);
+          return {timestamp: prettyDate(new Date(log.ts)), zome: log.zomeName, from, count: pulses.length, payload: pulses}
         });
       }
     } else {
@@ -484,50 +501,12 @@ export class AppProxy implements AppClient {
       appLogs = appSignals.map((log) => {
           const app = this._hclMap[log.cellId][0].appId;
           const cell: string = this._hclMap[log.cellId][0].roleName;
-          const signal = log.payload as LitHappSignal;
-          const from = encodeHashToBase64(signal.from) == me? "self" : encodeHashToBase64(signal.from);
-          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zome_name, from, count: signal.pulses.length, payload: signal.pulses};
+          const pulses = log.zomeSignal.pulses;
+          const from = encodeHashToBase64(log.zomeSignal.from) == me? "self" : encodeHashToBase64(log.zomeSignal.from);
+          return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, from, count: pulses.length, payload: pulses};
         });
     }
     console.table(appLogs);
   }
 }
 
-
-/** Protocol for notifying the ViewModel (UI) of system level events */
-export type SystemSignalProtocolVariantPostCommitNewStart = {
-  type: "PostCommitNewStart"
-  app_entry_type: string
-}
-export type SystemSignalProtocolVariantPostCommitNewEnd = {
-  type: "PostCommitNewEnd"
-  app_entry_type: string
-  succeeded: boolean
-}
-export type SystemSignalProtocolVariantPostCommitDeleteStart = {
-  type: "PostCommitDeleteStart"
-  app_entry_type: string
-}
-export type SystemSignalProtocolVariantPostCommitDeleteEnd = {
-  type: "PostCommitDeleteEnd"
-  app_entry_type: string
-  succeeded: boolean
-}
-export type SystemSignalProtocolVariantSelfCallStart = {
-  type: "SelfCallStart"
-  zome_name: string
-  fn_name: string
-}
-export type SystemSignalProtocolVariantSelfCallEnd = {
-  type: "SelfCallEnd"
-  zome_name: string
-  fn_name: string
-  succeeded: boolean
-}
-export type SystemSignalProtocol =
-  | SystemSignalProtocolVariantPostCommitNewStart
-  | SystemSignalProtocolVariantPostCommitNewEnd
-  | SystemSignalProtocolVariantPostCommitDeleteStart
-  | SystemSignalProtocolVariantPostCommitDeleteEnd
-  | SystemSignalProtocolVariantSelfCallStart
-  | SystemSignalProtocolVariantSelfCallEnd;

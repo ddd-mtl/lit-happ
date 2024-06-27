@@ -204,13 +204,13 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     console.warn("Dumping signals in DVM", this.baseRoleName);
     if (zomeName == undefined) {
       for (const [name, zvm] of Object.entries(this._zomeViewModels)) {
-        const logs = this._cellProxy.signalLogs.filter((log) => log.zome_name == name)
+        const logs = this._cellProxy.signalLogs.filter((log) => log.zomeName == name)
         zvm.dumpSignalLogs(logs);
       }
       return;
     }
     if (this._zomeViewModels[zomeName]) {
-      const logs = this._cellProxy.signalLogs.filter((log) => log.zome_name == zomeName)
+      const logs = this._cellProxy.signalLogs.filter((log) => log.zomeName == zomeName)
       this._zomeViewModels[zomeName].dumpSignalLogs(logs);
     } else {
       console.error(`Unknown zome ${zomeName} in DVM ${this.baseRoleName}`)

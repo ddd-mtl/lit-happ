@@ -77,7 +77,7 @@ export function prettyDate(date: Date): string {
 export function prettySignalLogs(signalLogs: SignalLog[]) {
   return signalLogs.map((log) => {
     const dnaHash = encodeHashToBase64(str2CellId(log.cellId)[0]).slice(-8);
-    return {timestamp: prettyDate(new Date(log.ts)), dnaHash, zome: log.zome_name, type: log.type, payload: log.payload};
+    return {timestamp: prettyDate(new Date(log.ts)), dnaHash, zome: log.zomeName, type: log.type, payload: log.zomeSignal};
   })
 }
 
