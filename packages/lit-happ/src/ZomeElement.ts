@@ -47,7 +47,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
     if (!canRerequest && this._consumer) {
       return;
     }
-    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.cell.dnaHash)
+    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.cell.dnaId)
     console.log(`\t\t Requesting context "${contextType}"`)
     this._consumer = new ContextConsumer(
       this,

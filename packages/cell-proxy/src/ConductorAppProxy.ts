@@ -7,25 +7,22 @@ import {
   DisableCloneCellRequest,
   EnableCloneCellRequest,
   ClonedCell,
-  decodeHashFromBase64,
-  DnaHashB64,
   NetworkInfo,
   NetworkInfoRequest,
-  AgentPubKeyB64,
   Timestamp,
   AppClient,
   AppEvents,
   AppSignalCb,
   AppNetworkInfoRequest,
   NetworkInfoResponse,
-  encodeHashToBase64,
-  AppAuthenticationToken,
   AdminWebsocket,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {CellIdStr} from "./types";
 import {AgentPubKey} from "@holochain/client/lib/types";
+import {AgentId, DnaId} from "./hash";
+import {AgentIdMap} from "./holo-id-map";
 
 
 /**
@@ -89,25 +86,27 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
   /** */
   async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-    const agent = encodeHashToBase64(this._appWs.myPubKey);
+    //const agent = encodeHashToBase64();
+    const agentId = new AgentId(this._appWs.myPubKey);
     /* Call networkInfo */
     const response = await this._appWs.networkInfo({
       dnas: args.dnas,
-      last_time_queried: this._lastTimeQueriedMap[agent]} as NetworkInfoRequest);
-    this._lastTimeQueriedMap[agent] = Date.now();
+      last_time_queried: this._lastTimeQueriedMap.get(agentId)
+    } as NetworkInfoRequest);
+    this._lastTimeQueriedMap.set(agentId, Date.now());
 
     /* Convert result */
     let i = 0;
     //let result = {}
     for (const netInfo of response) {
-      const dnaHash = encodeHashToBase64(args.dnas[i]);
+      const dnaId = new DnaId(args.dnas[i]);
       //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
       /* Store */
-      const cellIdStr = CellIdStr(args.dnas[i], decodeHashFromBase64(agent));
+      const cellIdStr = CellIdStr(dnaId, agentId);
       if (!this._networkInfoLogs[cellIdStr]) {
         this._networkInfoLogs[cellIdStr] = [];
       }
-      this._networkInfoLogs[cellIdStr].push([this._lastTimeQueriedMap[agent], netInfo])
+      this._networkInfoLogs[cellIdStr].push([this._lastTimeQueriedMap.get(agentId), netInfo])
       /* */
       i += 1;
     }
@@ -117,7 +116,9 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
 
   /** Store networkInfo calls */
-  private _lastTimeQueriedMap: Record<AgentPubKeyB64, Timestamp> = {};
+  //private _lastTimeQueriedMap: Record<AgentPubKeyB64, Timestamp> = {};
+  private _lastTimeQueriedMap: AgentIdMap<Timestamp> = new AgentIdMap();
+
   private _networkInfoLogs: Record<CellIdStr, [Timestamp, NetworkInfo][]> = {};
 
   get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return this._networkInfoLogs;}

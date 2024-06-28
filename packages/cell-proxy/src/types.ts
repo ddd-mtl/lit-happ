@@ -1,11 +1,10 @@
 import {
   CellId,
-  decodeHashFromBase64,
-  encodeHashToBase64,
   RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName,
 } from "@holochain/client";
-import {AgentPubKey, DnaHash} from "@holochain/client/lib/types";
 import {Dictionary} from "./utils";
+import {AgentId, dec64, DnaId, enc64} from "./hash";
+import {AgentPubKey} from "@holochain/client/lib/types";
 
 
 /** Signal types */
@@ -91,7 +90,7 @@ export type ZomeInfo = {
 
 export type DnaInfo = {
   name: string,
-  hash: DnaHash,
+  id: DnaId,
   properties: Uint8Array,
   zome_names: ZomeName[],
 }
@@ -140,14 +139,14 @@ export type CellIdStr = string;
 
 const CELL_ID_SEPARATOR = "||"
 
-export function CellIdStr(hash_or_id: DnaHash | CellId, key?: AgentPubKey): CellIdStr {
-  if (Array.isArray(hash_or_id)) {
-    return "" + encodeHashToBase64(hash_or_id[0]) + CELL_ID_SEPARATOR + encodeHashToBase64(hash_or_id[1]);
+export function CellIdStr(dna_or_cell_id: DnaId | CellId, key?: AgentId): CellIdStr {
+  if (Array.isArray(dna_or_cell_id)) {
+    return "" + enc64(dna_or_cell_id[0]) + CELL_ID_SEPARATOR + enc64(dna_or_cell_id[1]);
   }
   if (!key) {
     throw Error("CellIdStr() failed. AgentPubKey not provided");
   }
-  return "" + encodeHashToBase64(hash_or_id) + CELL_ID_SEPARATOR + encodeHashToBase64(key);
+  return "" + dna_or_cell_id.b64 + CELL_ID_SEPARATOR + key.b64;
 }
 
 /** */
@@ -156,5 +155,5 @@ export function str2CellId(str: CellIdStr): CellId {
   if (subs.length != 2) {
     throw Error("str2CellId() failed. Bad input string format");
   }
-  return [decodeHashFromBase64(subs[0]), decodeHashFromBase64(subs[1])]
+  return [dec64(subs[0]), dec64(subs[1])]
 }

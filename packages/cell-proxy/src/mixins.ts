@@ -4,8 +4,8 @@ import {
 } from "@holochain/client";
 import {Cell} from "./cell";
 
-type Constructor<T> = {new (): T};
-type GConstructor<T = {}> = new (...args: any[]) => T;
+export type Constructor<T> = {new (): T};
+export type GConstructor<T = {}> = new (...args: any[]) => T;
 export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
 
 

@@ -85,8 +85,8 @@ export class HappElement extends LitElement {
     if (!dvm) {
       return Promise.reject("No DNA found at given HCL: " + hcl.toString());
     }
-    const netInfoMap = this.appProxy.networkInfo({dnas: [decodeHashFromBase64(dvm.cell.dnaHash)]});
-    return netInfoMap[dvm.cell.dnaHash][1];
+    const netInfoMap = this.appProxy.networkInfo({dnas: [decodeHashFromBase64(dvm.cell.dnaId)]});
+    return netInfoMap[dvm.cell.dnaId][1];
   }
 
 

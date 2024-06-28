@@ -9,11 +9,10 @@ import {
   AppSignalCb,
   AppCreateCloneCellRequest,
   CreateCloneCellResponse,
-  AppNetworkInfoRequest, NetworkInfoResponse, AgentPubKeyB64, InstalledAppId,
+  AppNetworkInfoRequest, NetworkInfoResponse,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
-import {AgentPubKey} from "@holochain/client/lib/types";
 
 
 /**

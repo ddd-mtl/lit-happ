@@ -3,11 +3,9 @@ import {
   AppSignalCb,
   CallZomeRequest,
   CapSecret,
-  encodeHashToBase64,
   Timestamp,
   ZomeName
 } from "@holochain/client";
-import {anyToB64, prettyDate, prettyDuration} from "./utils";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
 import {
@@ -16,7 +14,6 @@ import {
   EntryDefsCallbackResult,
   SignalType,
   SystemPulse,
-  SystemSignalProtocol,
   SystemSignalProtocolVariantPostCommitNewEnd,
   SystemSignalProtocolVariantSelfCallEnd,
   SystemSignalProtocolVariantSelfCallStart,
@@ -28,6 +25,8 @@ import {
   AppProxy,
   SignalUnsubscriber,
 } from "./AppProxy";
+import {prettyDate, prettyDuration} from "./pretty";
+import {anyToB64, enc64} from "./hash";
 
 
 export interface RequestLog {
@@ -373,7 +372,7 @@ export class CellProxy extends CellMixin(Empty) {
       const startTime= prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
-      const input = requestLog.request.payload instanceof Uint8Array ? encodeHashToBase64(requestLog.request.payload) : requestLog.request.payload;
+      const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName
         ? { startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }

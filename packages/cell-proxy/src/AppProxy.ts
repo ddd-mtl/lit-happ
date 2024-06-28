@@ -13,7 +13,6 @@ import {
   CreateCloneCellRequest,
   DisableCloneCellRequest,
   EnableCloneCellRequest,
-  encodeHashToBase64,
   InstalledAppId,
   NetworkInfo,
   NetworkInfoResponse,
@@ -30,10 +29,12 @@ import {
   RoleCellsMap,
   SignalType, SystemPulse,
 } from "./types";
-import {areCellsEqual, Dictionary, prettyDate, printAppInfo} from "./utils";
+import {areCellsEqual, Dictionary} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
 import {AgentPubKey} from "@holochain/client/lib/types";
+import {prettyDate, printAppInfo} from "./pretty";
+import {enc64} from "./hash";
 
 
 /** */
@@ -396,7 +397,7 @@ export class AppProxy implements AppClient {
 
   /** */
   dumpSignalLogs(canAppSignals: boolean, cellId?: CellId, zomeName?: ZomeName) {
-    const me = encodeHashToBase64(this.myPubKey);
+    const me = enc64(this.myPubKey);
     let logs = this._signalLogs;
     /** Filter by cell and zome */
     let cellNames;
@@ -485,14 +486,14 @@ export class AppProxy implements AppClient {
         console.warn(`App signals from zome "${zomeName}" in cell "${cellNames}"`);
         appLogs = appSignals.map((log) => {
           const pulses = log.zomeSignal.pulses;
-          const from = encodeHashToBase64(log.zomeSignal.from) == me ? "self" : encodeHashToBase64(log.zomeSignal.from);
+          const from = enc64(log.zomeSignal.from) == me ? "self" : enc64(log.zomeSignal.from);
           return {timestamp: prettyDate(new Date(log.ts)), from, count: pulses.length, payload: pulses}
         });
       } else {
         console.warn(`App signals from cell "${cellNames}"`);
         appLogs = appSignals.map((log) => {
           const pulses = log.zomeSignal.pulses;
-          const from = encodeHashToBase64(log.zomeSignal.from) == me ? "self" : encodeHashToBase64(log.zomeSignal.from);
+          const from = enc64(log.zomeSignal.from) == me ? "self" : enc64(log.zomeSignal.from);
           return {timestamp: prettyDate(new Date(log.ts)), zome: log.zomeName, from, count: pulses.length, payload: pulses}
         });
       }
@@ -502,7 +503,7 @@ export class AppProxy implements AppClient {
           const app = this._hclMap[log.cellId][0].appId;
           const cell: string = this._hclMap[log.cellId][0].roleName;
           const pulses = log.zomeSignal.pulses;
-          const from = encodeHashToBase64(log.zomeSignal.from) == me? "self" : encodeHashToBase64(log.zomeSignal.from);
+          const from = enc64(log.zomeSignal.from) == me? "self" : enc64(log.zomeSignal.from);
           return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, from, count: pulses.length, payload: pulses};
         });
     }
