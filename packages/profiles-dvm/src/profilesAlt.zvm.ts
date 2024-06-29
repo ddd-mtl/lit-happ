@@ -62,7 +62,7 @@ export class ProfilesAltZvm extends ZomeViewModel {
   private _reversed: Record<string, AgentPubKeyB64> = {};
 
 
-  getMyProfile(): ProfileMat | undefined { return this._profiles[this.cell.agentPubKey] }
+  getMyProfile(): ProfileMat | undefined { return this._profiles[this.cell.agentId.b64] }
 
   getProfile(agent: AgentPubKeyB64): ProfileMat | undefined {return this._profiles[agent]}
 
@@ -165,17 +165,17 @@ export class ProfilesAltZvm extends ZomeViewModel {
 
   /** */
   async createMyProfile(profile: ProfileMat): Promise<void> {
-    const record = await this.zomeProxy.createProfile([profile, decodeHashFromBase64(this.cell.agentPubKey)]);
+    const record = await this.zomeProxy.createProfile([profile, this.cell.agentId.hash]);
     const timestamp = record.signed_action.hashed.content.timestamp;
-    this.storeProfile(this.cell.agentPubKey, profile, timestamp);
+    this.storeProfile(this.cell.agentId.b64, profile, timestamp);
   }
 
 
   /** */
   async updateMyProfile(profile: ProfileMat): Promise<void> {
-    const record = await this.zomeProxy.updateProfile([profile, decodeHashFromBase64(this.cell.agentPubKey)]);
+    const record = await this.zomeProxy.updateProfile([profile, this.cell.agentId.hash]);
     const timestamp = record.signed_action.hashed.content.timestamp;
-    this.storeProfile(this.cell.agentPubKey, profile, timestamp);
+    this.storeProfile(this.cell.agentId.b64, profile, timestamp);
   }
 
 

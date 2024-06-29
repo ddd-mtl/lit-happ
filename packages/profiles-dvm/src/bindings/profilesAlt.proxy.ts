@@ -2,7 +2,6 @@
 
 import {EntryTypes, LinkTypes, Signal, Profile, } from './profilesAlt.types';
 import {
-WebsocketConnectionOptions,
 /** types.ts */
 HoloHash,
 AgentPubKey,

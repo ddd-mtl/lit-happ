@@ -153,7 +153,7 @@ export class NotificationsZvm extends ZomeViewModel {
   private _myNotifier?: AgentPubKey;
   private _myTwilioCredentials?: TwilioCredentials;
 
-  getMyContact(): Contact | undefined { return this._contacts[this.cell.agentPubKey] }
+  getMyContact(): Contact | undefined { return this._contacts[this.cell.agentId.b64] }
 
   getContact(agent: AgentPubKeyB64): Contact | undefined {return this._contacts[agent]}
 
@@ -169,7 +169,7 @@ export class NotificationsZvm extends ZomeViewModel {
       email_address,
     } as Contact;
     const _record = await this.zomeProxy.createContact(contact);
-    this._contacts[this.cell.agentPubKey] = contact;
+    this._contacts[this.cell.agentId.b64] = contact;
     this.notifySubscribers();
   }
 
@@ -227,7 +227,7 @@ export class NotificationsZvm extends ZomeViewModel {
     try {
       const newNotifier = await this.zomeProxy.getMyNotifier();
       if (!previousNotifier || encodeHashToBase64(previousNotifier) != encodeHashToBase64(newNotifier)) {
-        const myContact = this.perspective.contacts[this.cell.agentPubKey];
+        const myContact = this.perspective.contacts[this.cell.agentId.b64];
         if (myContact) {
           await this.zomeProxy.sendContact(myContact);
         }
