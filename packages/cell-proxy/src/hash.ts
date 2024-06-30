@@ -1,5 +1,6 @@
 import {decodeHashFromBase64, encodeHashToBase64, HoloHash, HoloHashB64} from "@holochain/client";
 import {AbstractConstructor, CellMixin, Empty, GConstructor, ZomeMixin, ZomeSpecific} from "./mixins";
+import {Cell} from "./cell";
 
 
 /**
@@ -33,21 +34,27 @@ export function anyToB64(obj: any): any {
 /** ------------------------------------------------------------------------------------------------------------------*/
 
 export enum HoloHashType {
-  Agent = "Agent",
-  Entry = "Entry",
-  Dna = "Dna",
   Action = "Action",
-  External = "External",
+  Agent = "Agent",
   //DhtOp = "DhtOp",
+  Dna = "Dna",
+  Entry = "Entry",
+  External = "External",
+  Network = "Network",
+  //Warrent = "Warrent",
+  Wasm = "Wasm",
 }
 
 export const HASH_TYPE_PREFIX_B64 = {
-  Agent: "uhCAk",
-  Entry: "uhCEk",
-  Dna: "uhC0k",
   Action: "uhCkk",
-  External: "uhC8k",
+  Agent: "uhCAk",
+  Dna: "uhC0k",
   //DhtOp: "hCQk",
+  Entry: "uhCEk",
+  External: "uhC8k",
+  Network: "uhCIk",
+  //Warrent: "Warrent",
+  Wasm: "uhCok",
 };
 
 export function getHashType(hash: HoloHashB64): HoloHashType {
@@ -85,8 +92,8 @@ export function validateHashB64(hash: HoloHashB64) {
   if (!hash || typeof(hash) != 'string') {
     throw new Error("The hash must be a valid string");
   }
-  if (hash.length !== 40) {
-    throw new Error("The hash must be exactly 40 characters long.");
+  if (hash.length !== 53) {
+    throw new Error("The hash must be exactly 53 characters long.");
   }
   if (!hasHoloHashType(hash)) {
     throw new Error("The hash must have a valid HoloHash type.");
@@ -106,50 +113,72 @@ export function enc64(hash: HoloHash): HoloHashB64 {
 }
 
 
-/** HoloHash starts with 'u' has a type and is 40 chars long */
+/** HoloHash starts with 'u' has a type and is 53 chars long */
 export abstract class HoloId {
-  protected readonly value: HoloHashB64;
+  public readonly b64: HoloHashB64;
   //private readonly hash: HoloHash;
 
   /** Validate */
   constructor(input: HoloHashB64 | HoloHash, public readonly type: HoloHashType) {
     if (typeof(input) != 'string') {
-      input = enc64(input);
+      input = encodeHashToBase64(input);
     }
-    if (input.length !== 40) {
-      throw new Error("The hash must be exactly 40 characters long.");
-    }
-    this.value = input;
+    validateHashB64(input);
+    this.b64 = input;
   }
 
-  get b64(): HoloHashB64 { return this.value }
-  get hash(): HoloHash { return dec64(this.value) }
+  get hash(): HoloHash { return dec64(this.b64) }
   /** First 8 chars of the Core */
-  get short(): string { return this.value.slice(5, 13); }
+  get short(): string { return this.b64.slice(5, 13); }
+
+  print(): string { return `${this.short} (${this.type})`}
 }
 
 
-/** */
-export class DnaId extends HoloId {
-  constructor(input: HoloHashB64 | HoloHash) {
-    super(input, HoloHashType.Dna);
-    const type = getHashType(this.value);
-    if (HoloHashType.Dna != type) {
-      throw new Error('The hash does not have the "Dna" type');
+export function createHolodId(hashType: HoloHashType) {
+  class AHoloId extends HoloId {
+    constructor(input: HoloHashB64 | HoloHash) {
+      super(input, hashType);
+      const type = getHashType(this.b64);
+      if (hashType != type) {
+        throw new Error('The hash does not have the correct type. Expected ' + hashType + ', got' + type);
+      }
     }
   }
+  /** */
+  return AHoloId;
 }
 
-/** */
-export class AgentId extends HoloId {
-  constructor(input: HoloHashB64 | HoloHash) {
-    super(input, HoloHashType.Agent);
-    const type = getHashType(this.value);
-    if (HoloHashType.Agent != type) {
-      throw new Error('The hash does not have the "Agent" type');
-    }
-  }
-}
+export class ActionId extends createHolodId(HoloHashType.Action) {}
+export class AgentId extends createHolodId(HoloHashType.Agent) {}
+export class DnaId extends createHolodId(HoloHashType.Dna) {}
+export class EntryId extends createHolodId(HoloHashType.Entry) {}
+export class ExternalId extends createHolodId(HoloHashType.External) {}
+
+
+//
+// /** */
+// export class DnaId extends HoloId {
+//   constructor(input: HoloHashB64 | HoloHash) {
+//     super(input, HoloHashType.Dna);
+//     const type = getHashType(this.value);
+//     if (HoloHashType.Dna != type) {
+//       throw new Error('The hash does not have the "Dna" type');
+//     }
+//   }
+// }
+//
+//
+// /** */
+// export class AgentId extends HoloId {
+//   constructor(input: HoloHashB64 | HoloHash) {
+//     super(input, HoloHashType.Agent);
+//     const type = getHashType(this.value);
+//     if (HoloHashType.Agent != type) {
+//       throw new Error('The hash does not have the "Agent" type');
+//     }
+//   }
+// }
 
 
 /** ------- */
@@ -172,8 +201,8 @@ export class AgentId extends HoloId {
 //         input = enc64(input);
 //       }
 //       this.b64 = input;
-//       if (this.b64.length !== 40) {
-//         throw new Error("The hash must be exactly 40 characters long.");
+//       if (this.b64.length !== 53) {
+//         throw new Error("The hash must be exactly 53 characters long.");
 //       }
 //     }
 //

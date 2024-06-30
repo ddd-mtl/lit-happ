@@ -6,16 +6,13 @@ import {
   ConductorAppProxy,
   HCL,
   flattenCells,
-  CellIdStr, str2CellId
+  CellIdStr, str2CellId, AgentIdMap, DnaId, decomposeCellId
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {CellDef, HvmDef} from "./definitions";
 import {
-  AgentPubKeyB64,
   AppWebsocket,
-  ClonedCell, decodeHashFromBase64,
-  DnaHashB64,
-  encodeHashToBase64,
+  ClonedCell,
   InstalledAppId,
   NetworkInfo, Timestamp
 } from "@holochain/client";
@@ -79,15 +76,15 @@ export class HappElement extends LitElement {
   }
 
 
-  /** */
-  async networkInfoCell(hcl: HCL): Promise<NetworkInfo> {
-    const dvm = this.hvm.getDvm(hcl);
-    if (!dvm) {
-      return Promise.reject("No DNA found at given HCL: " + hcl.toString());
-    }
-    const netInfoMap = this.appProxy.networkInfo({dnas: [decodeHashFromBase64(dvm.cell.dnaId)]});
-    return netInfoMap[dvm.cell.dnaId][1];
-  }
+  // /** */
+  // async networkInfoCell(hcl: HCL): Promise<NetworkInfo> {
+  //   const dvm = this.hvm.getDvm(hcl);
+  //   if (!dvm) {
+  //     return Promise.reject("No DNA found at given HCL: " + hcl.toString());
+  //   }
+  //   const netInfoMap = await this.appProxy.networkInfo({dnas: [dvm.cell.dnaId.hash]});
+  //   return netInfoMap[dvm.cell.dnaId][1];
+  // }
 
 
   /** */
@@ -114,22 +111,24 @@ export class HappElement extends LitElement {
     }
     console.log(`networkInfoAll() cellIds`, cellIds);
     /* Sort by agent key */
-    let dnaMap: Record<AgentPubKeyB64, DnaHashB64[]> = {}
+    let dnaPerAgentMap: AgentIdMap<DnaId[]> = new AgentIdMap();
     for (const cellId of cellIds) {
-      const key = encodeHashToBase64(cellId[1]);
-      if (!dnaMap[key]) {
-        dnaMap[key] = [];
+      const [dnaId, agentId] = decomposeCellId(cellId);
+      if (!dnaPerAgentMap.get(agentId)) {
+        dnaPerAgentMap.set(agentId, []);
       }
-      dnaMap[key].push(encodeHashToBase64(cellId[0]))
+      dnaPerAgentMap.get(agentId).push(dnaId)
     }
-    console.log(`networkInfoAll() dnaMap`, dnaMap);
+    console.log(`networkInfoAll() dnaMap`, dnaPerAgentMap);
     /** Call NetworkInfo per AgentPubKey */
     const allNetInfos = {};
-    for (const [agent, dnaHashes] of Object.entries(dnaMap)) {
-      const netInfos = await this.appProxy.networkInfo({dnas: dnaHashes.map((dna) => decodeHashFromBase64(dna))});
-      for (const [dnaHash, infoPair] of Object.entries(netInfos)) {
-        const idStr = CellIdStr(decodeHashFromBase64(dnaHash), decodeHashFromBase64(agent));
-        allNetInfos[idStr] = infoPair;
+    for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
+      const netInfos = await this.appProxy.networkInfo({dnas: dnaIds.map((dna) => dna.hash)});
+      let i  = 0;
+      for (const netInfo of netInfos) {
+        const idStr = CellIdStr(dnaIds[i], agent);
+        allNetInfos[idStr] = netInfo;
+        i += 1;
       }
     }
     /* Done */
@@ -166,15 +165,13 @@ export class HappElement extends LitElement {
         return;
       }
       const [ts, info] = logs[logs.length - 1];
-      const dnaHash = encodeHashToBase64(cellId[0]);
+      const [dnaId, agentId] = decomposeCellId(cellId);
       const hcl = this.appProxy.getLocations(cellId);
       const cellName = this.appProxy.getCellName(hcl[0]);
-      const dnaName =  dnaHash.slice(-6);
-      const agentName = encodeHashToBase64(cellId[1]).slice(-6);
       return {
             ts,
             name: cellName,
-            dna: dnaName,
+            dna: dnaId.short,
             arc: info.arc_size,
             peers: info.current_number_of_peers,
             total_peers: info.total_network_peers,
@@ -182,7 +179,7 @@ export class HappElement extends LitElement {
             bytes: info.bytes_since_last_time_queried,
             fetch_bytes: info.fetch_pool_info.op_bytes_to_fetch,
             fetch_ops: info.fetch_pool_info.num_ops_to_fetch,
-            agent: agentName,
+            agent: agentId.short,
           }
     })
     console.table(logs);
@@ -199,12 +196,10 @@ export class HappElement extends LitElement {
     }
     for (const [cellIdStr, infoPairs] of Object.entries(logMap)) {
       const cellId = str2CellId(cellIdStr);
-      const dnaHash = encodeHashToBase64(cellId[0]);
+      const [dnaId, agentId] = decomposeCellId(cellId);
       const hcl = this.appProxy.getLocations(cellId);
       const cellName = this.appProxy.getCellName(hcl[0]);
-      const dnaName =  dnaHash.slice(-6);
-      const agentName = encodeHashToBase64(cellId[1]).slice(-6);
-      console.log(`NetworfInfo logs of cell "${cellName}" | [${agentName}, ${dnaName}]`);
+      console.log(`NetworfInfo logs of cell "${cellName}" | [${agentId.short}, ${dnaId.short}]`);
       const logs = infoPairs
         .map(([ts, info]) => {
           return {

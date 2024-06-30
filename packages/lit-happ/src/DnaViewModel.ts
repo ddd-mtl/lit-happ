@@ -2,7 +2,7 @@ import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
 import {
-  AdminWebsocket, AgentPubKeyB64,
+  AdminWebsocket,
   GrantedFunctionsType,
   InstalledAppId,
   ZomeName,
@@ -13,7 +13,7 @@ import {
   CellProxy,
   AppProxy,
   HCL,
-  Dictionary, CellMixin
+  Dictionary, CellMixin, AgentId
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
 
@@ -89,7 +89,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   private _allEntryDefs: Dictionary<[string, boolean][]> = {};
 
   /** list of "known" peers in this DNA */
-  protected _livePeers: AgentPubKeyB64[] = [];
+  protected _livePeers: AgentId[] = [];
 
   public readonly hcl: HCL;
 
@@ -97,7 +97,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   /** -- Getters -- */
 
-  get livePeers(): AgentPubKeyB64[] { return this._livePeers };
+  get livePeers(): AgentId[] { return this._livePeers };
 
   getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
@@ -127,7 +127,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     const grantedFns = { [GrantedFunctionsType.Listed]: allFnNames }
     try {
         console.log("authorizeSigningCredentials: " + this.cell.hcl().toString(), allFnNames);
-        console.log("authorizeSigningCredentials. cell_id = [" + this.cell.dnaId + " ; " + this.cell.agentPubKey + "]");
+        console.log("authorizeSigningCredentials. cell_id = [" + this.cell.dnaId + " ; " + this.cell.agentId.b64 + "]");
         //await adminWs.authorizeSigningCredentials(this.cell.id, grantedFns);
         await adminWs.authorizeSigningCredentials(this.cell.id);
     } catch(e) {

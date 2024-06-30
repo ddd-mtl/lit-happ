@@ -70,7 +70,7 @@ export class PlaygroundApp extends HappElement {
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);
-    const maybeProfile = await this.profilesDvm.profilesZvm.probeProfile(this.profilesDvm.cell.agentPubKey);
+    const maybeProfile = await this.profilesDvm.profilesZvm.probeProfile(this.profilesDvm.cell.agentId);
     console.log("maybeProfile", maybeProfile);
   }
 

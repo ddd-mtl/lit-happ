@@ -1,4 +1,4 @@
-import {ZomeViewModel} from "@ddd-qc/lit-happ";
+import {AgentId, AgentIdMap, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {Profile as ProfileMat} from "./bindings/profiles.types";
 import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64, Timestamp} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
@@ -7,14 +7,14 @@ import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
 
 /** */
 export interface ProfilesAltPerspective {
-  /* AgentPubKeyB64 -> Profile */
-  profiles: Record<AgentPubKeyB64, ProfileMat>,
-  profileDates: Record<AgentPubKeyB64, Timestamp>,
+  /* AgentId -> Profile */
+  profiles: AgentIdMap<ProfileMat>,
+  profileDates: AgentIdMap<Timestamp>,
   ///* AgentPubKeyB64 -> Profile hash */
   //profile_ahs: Record<AgentPubKeyB64, ActionHashB64>,
 
-  /** Nickname -> AgentPubKeyB64 */
-  reversed: Record<string, AgentPubKeyB64>,
+  /** Nickname -> AgentId */
+  reversed: Record<string, AgentId>,
 }
 
 
@@ -56,21 +56,21 @@ export class ProfilesAltZvm extends ZomeViewModel {
     };
   }
 
-  private _profiles: Record<AgentPubKeyB64, ProfileMat> = {};
-  private _profileDates: Record<AgentPubKeyB64, Timestamp> = {};
+  private _profiles: AgentIdMap<ProfileMat> = new AgentIdMap<ProfileMat>();
+  private _profileDates: AgentIdMap<Timestamp> = new AgentIdMap<Timestamp>();
   //private _profile_ahs: Record<AgentPubKeyB64, ActionHashB64> = {};
-  private _reversed: Record<string, AgentPubKeyB64> = {};
+  private _reversed: Record<string, AgentId> = {};
 
 
-  getMyProfile(): ProfileMat | undefined { return this._profiles[this.cell.agentPubKey] }
+  getMyProfile(): ProfileMat | undefined { return this._profiles.get(this.cell.agentId) }
 
-  getProfile(agent: AgentPubKeyB64): ProfileMat | undefined {return this._profiles[agent]}
+  getProfile(agent: AgentId): ProfileMat | undefined {return this._profiles.get(agent)}
 
-  getProfileDate(agent: AgentPubKeyB64): Timestamp | undefined {return this._profileDates[agent]}
+  getProfileDate(agent: AgentId): Timestamp | undefined {return this._profileDates.get(agent)}
 
   //getProfileHash(agent: AgentPubKeyB64): ActionHashB64 | undefined {return this._profile_ahs[agent]}
 
-  getAgents(): AgentPubKeyB64[] { return Object.keys(this._profiles)}
+  getAgents(): AgentId[] { return Array.from(this._profiles.keys())}
 
   getNames(): string[] { return Object.keys(this._reversed)}
 
@@ -85,16 +85,16 @@ export class ProfilesAltZvm extends ZomeViewModel {
 
   /** */
   async importPerspective(json: string, canPublish: boolean) {
-    const profiles = JSON.parse(json) as ProfilesAltPerspective;
+    const perspective = JSON.parse(json) as ProfilesAltPerspective;
     if (canPublish) {
-      for (const [pubKey, profileMat] of Object.entries(profiles)) {
-        await this.createProfile(profileMat, pubKey);
+      for (const [agentId, profileMat] of perspective.profiles.entries()) {
+        await this.createProfile(profileMat, agentId);
       }
       return;
     }
-
-    for (const [pubKey, profileMat] of Object.entries(profiles)) {
-      this.storeProfile(pubKey, profileMat, Date.now());
+    /** */
+    for (const [agentId, profileMat] of perspective.profiles.entries()) {
+      this.storeProfile(agentId, profileMat, Date.now());
     }
   }
 
@@ -114,7 +114,7 @@ export class ProfilesAltZvm extends ZomeViewModel {
 
 
   /** */
-  async probeAllProfiles(): Promise<Record<AgentPubKeyB64, ProfileMat>> {
+  async probeAllProfiles()/*: Promise<Record<AgentPubKeyB64, ProfileMat>>*/ {
     let allAgents;
     /** Attempt a retry on fail as this can create an entry (path anchor) and generate a 'head has moved' error */
     try {
@@ -129,25 +129,25 @@ export class ProfilesAltZvm extends ZomeViewModel {
       }
       const timestamp = maybeProfileRecord.signed_action.hashed.content.timestamp;
       const profile: ProfileMat = decode((maybeProfileRecord.entry as any).Present.entry) as ProfileMat;
-      this.storeProfile(encodeHashToBase64(agentPubKey), profile, timestamp);
+      this.storeProfile(new AgentId(agentPubKey), profile, timestamp);
     }
     this.notifySubscribers();
-    return this._profiles;
+    //return this._profiles;
   }
 
 
   /** */
-  storeProfile(pubKeyB64: AgentPubKeyB64, profile: ProfileMat, ts: Timestamp) {
-    this._profiles[pubKeyB64] = profile;
-    this._profileDates[pubKeyB64] = ts;
-    this._reversed[profile.nickname] = pubKeyB64;
+  storeProfile(agentId: AgentId, profile: ProfileMat, ts: Timestamp) {
+    this._profiles.set(agentId, profile);
+    this._profileDates.set(agentId, ts);
+    this._reversed[profile.nickname] = agentId;
     this.notifySubscribers();
   }
 
 
   /** */
-  async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<ProfileMat | undefined> {
-    const maybeProfileRecord = await this.zomeProxy.getProfile(decodeHashFromBase64(pubKeyB64));
+  async probeProfile(agentId: AgentId): Promise<ProfileMat | undefined> {
+    const maybeProfileRecord = await this.zomeProxy.getProfile(agentId.hash);
     console.log("probeProfile() maybeProfile", maybeProfileRecord);
     if (!maybeProfileRecord) {
       return;
@@ -158,40 +158,40 @@ export class ProfilesAltZvm extends ZomeViewModel {
     const timestamp = maybeProfileRecord.signed_action.hashed.content.timestamp;
     const profile: ProfileMat = decode((maybeProfileRecord.entry as any).Present.entry) as ProfileMat;
     console.log("probeProfile() profile", profile);
-    this.storeProfile(pubKeyB64, profile, timestamp);
+    this.storeProfile(agentId, profile, timestamp);
     return profile;
   }
 
 
   /** */
   async createMyProfile(profile: ProfileMat): Promise<void> {
-    const record = await this.zomeProxy.createProfile([profile, decodeHashFromBase64(this.cell.agentPubKey)]);
+    const record = await this.zomeProxy.createProfile([profile, this.cell.agentId.hash]);
     const timestamp = record.signed_action.hashed.content.timestamp;
-    this.storeProfile(this.cell.agentPubKey, profile, timestamp);
+    this.storeProfile(this.cell.agentId, profile, timestamp);
   }
 
 
   /** */
   async updateMyProfile(profile: ProfileMat): Promise<void> {
-    const record = await this.zomeProxy.updateProfile([profile, decodeHashFromBase64(this.cell.agentPubKey)]);
+    const record = await this.zomeProxy.updateProfile([profile, this.cell.agentId.hash]);
     const timestamp = record.signed_action.hashed.content.timestamp;
-    this.storeProfile(this.cell.agentPubKey, profile, timestamp);
+    this.storeProfile(this.cell.agentId, profile, timestamp);
   }
 
 
   /** */
-  async createProfile(profile: ProfileMat, agent: AgentPubKeyB64): Promise<void> {
-    const record = await this.zomeProxy.createProfile([profile, decodeHashFromBase64(agent)]);
+  async createProfile(profile: ProfileMat, agentId: AgentId): Promise<void> {
+    const record = await this.zomeProxy.createProfile([profile, agentId.hash]);
     const timestamp = record.signed_action.hashed.content.timestamp;
-    this.storeProfile(agent, profile, timestamp);
+    this.storeProfile(agentId, profile, timestamp);
   }
 
 
   /** */
-  async updateProfile(profile: ProfileMat, agent: AgentPubKeyB64): Promise<void> {
-    const record = await this.zomeProxy.updateProfile([profile, decodeHashFromBase64(agent)]);
+  async updateProfile(profile: ProfileMat, agentId: AgentId): Promise<void> {
+    const record = await this.zomeProxy.updateProfile([profile, agentId.hash]);
     const timestamp = record.signed_action.hashed.content.timestamp;
-    this.storeProfile(agent, profile, timestamp);
+    this.storeProfile(agentId, profile, timestamp);
   }
 
 }

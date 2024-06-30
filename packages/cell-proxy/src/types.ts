@@ -133,6 +133,12 @@ export function destructureCloneId(cloneId: CloneId): [BaseRoleName, CloneIndex]
 }
 
 
+/** */
+export function decomposeCellId(cellId: CellId): [DnaId, AgentId] {
+  return [new DnaId(cellId[0]), new AgentId(cellId[1])]
+}
+
+
 /** -- CellIdStr -- */
 
 export type CellIdStr = string;

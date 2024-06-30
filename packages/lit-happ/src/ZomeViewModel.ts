@@ -5,11 +5,10 @@ import {
     ZomeProxyConstructor,
     CellMixin,
     SignalLog,
-    SignalType,
     prettySignalLogs
 } from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {AppSignalCb, CellId, ZomeName} from "@holochain/client";
+import {AppSignalCb, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {DnaViewModel} from "./DnaViewModel";
 

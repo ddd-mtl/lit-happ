@@ -1,8 +1,8 @@
 import {html} from "lit";
 import {LabelZomePerspective, LabelZvm} from "../viewModels/label";
 import {ZomeElement} from "@ddd-qc/lit-happ";
-import {encodeHashToBase64} from "@holochain/client";
 import {customElement} from "lit/decorators.js";
+import {enc64} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -26,7 +26,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
   async onCreate(e: any) {
     const input = this.shadowRoot!.getElementById("labelInput") as HTMLInputElement;
     let res = await this._zvm.createLabel(input.value);
-    console.log("onCreate() res =", encodeHashToBase64(res))
+    console.log("onCreate() res =", enc64(res))
     input.value = "";
   }
 

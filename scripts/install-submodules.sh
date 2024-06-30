@@ -1,8 +1,24 @@
 #!/bin/bash
 
-# Script for downloading prebuilt "hc" binary
+# Script for downloading submodule dependencies
 
 echo Executing \"$0\".
+
+# Check pre-conditions
+if [ $# != 1 ]; then
+  echo 1>&2 "$0: Aborting. Missing argument: holochain version"
+  exit 2
+fi
+
+hcversion=$1
+echo for holochain version $hcversion
+if [ "$hcversion" == "hc" ] || [ "$hcversion" == "" ] ; then
+  echo Missing \"hc-version\" field in \"package.json\".
+  exit 1
+fi
+branchname=hdk-${hcversion:2}
+echo Getting branch: $branchname
+hdkv=for-hdk-v${hcversion}
 
 echo \* Create 'submodules' folder
 rm -rf submodules
@@ -14,10 +30,10 @@ echo \* Download latest notifications zome
 git clone --depth 1 https://github.com/ddd-mtl/notifications
 
 echo \* Download latest profiles zome
-git clone -b "for-hdk-v0.4.0-dev.1" --depth 1 https://github.com/holochain-open-dev/profiles
+git clone -b ${hdkv} --depth 1 https://github.com/holochain-open-dev/profiles
 
 echo \* Download latest profiles-alt zome
-git clone -b "hdk-4.0" --depth 1 https://github.com/ddd-mtl/profiles_alt_zome.git
+git clone -b ${branchname} --depth 1 https://github.com/ddd-mtl/profiles_alt_zome.git
 
 cd ..
 

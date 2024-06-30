@@ -8,7 +8,7 @@ import {
   ZomeViewModel,
   ZvmDef
 } from "@ddd-qc/lit-happ";
-import {AppSignal, EntryHash, AppSignalCb, ActionHash, encodeHashToBase64} from "@holochain/client";
+import {AppSignal, EntryHash, AppSignalCb, ActionHash} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {integerZomeFunctions} from "../fn";
 
