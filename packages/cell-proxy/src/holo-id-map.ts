@@ -1,7 +1,7 @@
 import {
   HoloHashB64,
 } from "@holochain/client";
-import {AgentId, DnaId, HoloId} from "./hash";
+import {ActionId, AgentId, DnaId, EntryId, HoloId} from "./hash";
 import {GConstructor} from "./mixins";
 
 
@@ -77,10 +77,15 @@ export class HoloIdMap<K extends HoloId, V> implements Map<K, V> {
 }
 
 
-// export class EntryHashMap<T> extends HoloHashMap<EntryHash, T> {}
-// export class ActionHashMap<T> extends HoloHashMap<ActionHash, T> {}
+
+export class ActionIdMap<T> extends HoloIdMap<ActionId, T>  {
+  constructor(initialEntries?: Array<[ActionId, T]>) {
+    super(ActionId, initialEntries)
+  }
+}
+
 export class AgentIdMap<T> extends HoloIdMap<AgentId, T>  {
-  constructor(initialEntries?: Array<[DnaId, T]>) {
+  constructor(initialEntries?: Array<[AgentId, T]>) {
     super(AgentId, initialEntries)
   }
 }
@@ -91,3 +96,8 @@ export class DnaIdMap<T> extends HoloIdMap<DnaId, T> {
   }
 }
 
+export class EntryIdMap<T> extends HoloIdMap<EntryId, T>  {
+  constructor(initialEntries?: Array<[EntryId, T]>) {
+    super(EntryId, initialEntries)
+  }
+}

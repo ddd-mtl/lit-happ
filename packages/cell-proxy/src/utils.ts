@@ -23,3 +23,14 @@ export const snake = str => str[0].toLowerCase() + str.slice(1, str.length).repl
 
 /** convert snake case to pascal case */
 export const pascal = str => str[0].toUpperCase() + str.slice(1, str.length).replace(/_([a-z])/g, letter => `${letter[1].toUpperCase()}`);
+
+
+/** */
+export function getVariantByIndex(enumType: any, index: number): string {
+  const keys = Object.keys(enumType);
+  if (index >= 0 && index < keys.length) {
+    const key = keys[index];
+    return enumType[key];
+  }
+  throw Error("Out of bounds index");
+}

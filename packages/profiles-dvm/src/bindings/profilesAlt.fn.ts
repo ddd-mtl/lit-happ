@@ -12,8 +12,10 @@ export const profilesAltFunctionNames: FunctionName[] = [
 	"create_profile",
 	"update_profile",
 	"search_agents",
-	"get_profile",
-	"get_agents_with_profile",];
+	"find_profile",
+	"probe_profiles",
+	"cast_tip",
+];
 
 
 /** Generate tuple array of function names with given zomeName */

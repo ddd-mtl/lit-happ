@@ -30,10 +30,13 @@ echo \* Download latest notifications zome
 git clone --depth 1 https://github.com/ddd-mtl/notifications
 
 echo \* Download latest profiles zome
-git clone -b ${hdkv} --depth 1 https://github.com/holochain-open-dev/profiles
+git clone -b $hdkv --depth 1 https://github.com/holochain-open-dev/profiles
+
+echo \* Download zome-signals repo
+git clone -b $branchname --depth 1 https://github.com/ddd-mtl/zome-signals.git
 
 echo \* Download latest profiles-alt zome
-git clone -b ${branchname} --depth 1 https://github.com/ddd-mtl/profiles_alt_zome.git
+git clone -b $branchname --depth 1 https://github.com/ddd-mtl/profiles_alt_zome.git
 
 cd ..
 

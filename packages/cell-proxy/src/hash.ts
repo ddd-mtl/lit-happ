@@ -155,6 +155,29 @@ export class DnaId extends createHolodId(HoloHashType.Dna) {}
 export class EntryId extends createHolodId(HoloHashType.Entry) {}
 export class ExternalId extends createHolodId(HoloHashType.External) {}
 
+export type AnyDhtId = ActionId | EntryId;
+export type AnyLinkableId = AnyDhtId | ExternalId;
+
+
+export function intoDhtId(input: HoloHashB64 | HoloHash): AnyDhtId {
+  try {
+    const actionId = new ActionId(input);
+    return actionId;
+  } catch(e) {
+      const entryId = new EntryId(input);
+      return entryId;
+  }
+}
+
+export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
+  try {
+    const dhtId = intoDhtId(input);
+    return dhtId;
+  } catch(e) {
+    const externalId = new ExternalId(input);
+    return externalId;
+  }
+}
 
 //
 // /** */
