@@ -1,5 +1,5 @@
 import {ZomeViewModel} from "@ddd-qc/lit-happ";
-import {Profile as ProfileMat} from "./bindings/profiles.types";
+import {Profile} from "./bindings/profiles.types";
 import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64} from "@holochain/client";
 import {ProfilesProxy} from "./bindings/profiles.proxy";
 import {decode} from "@msgpack/msgpack";
@@ -8,7 +8,7 @@ import {decode} from "@msgpack/msgpack";
 /** */
 export interface ProfilesPerspective {
   /* AgentPubKeyB64 -> Profile */
-  profiles: Record<AgentPubKeyB64, ProfileMat>,
+  profiles: Record<AgentPubKeyB64, Profile>,
   ///* AgentPubKeyB64 -> Profile hash */
   //profile_ahs: Record<AgentPubKeyB64, ActionHashB64>,
 
@@ -54,14 +54,14 @@ export class ProfilesZvm extends ZomeViewModel {
     };
   }
 
-  private _profiles: Record<AgentPubKeyB64, ProfileMat> = {};
+  private _profiles: Record<AgentPubKeyB64, Profile> = {};
   //private _profile_ahs: Record<AgentPubKeyB64, ActionHashB64> = {};
   private _reversed: Record<string, AgentPubKeyB64> = {};
 
 
-  getMyProfile(): ProfileMat | undefined { return this._profiles[this.cell.agentId.b64] }
+  getMyProfile(): Profile | undefined { return this._profiles[this.cell.agentId.b64] }
 
-  getProfile(agent: AgentPubKeyB64): ProfileMat | undefined {return this._profiles[agent]}
+  getProfile(agent: AgentPubKeyB64): Profile | undefined {return this._profiles[agent]}
 
   //getProfileHash(agent: AgentPubKeyB64): ActionHashB64 | undefined {return this._profile_ahs[agent]}
 
@@ -79,7 +79,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
   /** */
   importPerspective(json: string, mapping?: Object) {
-    const profiles = JSON.parse(json) as Record<AgentPubKeyB64, ProfileMat>;
+    const profiles = JSON.parse(json) as Record<AgentPubKeyB64, Profile>;
     for (const [pubKey, profileMat] of Object.entries(profiles)) {
       this.storeProfile(pubKey, profileMat);
     }
@@ -100,7 +100,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async probeAllProfiles(): Promise<Record<AgentPubKeyB64, ProfileMat>> {
+  async probeAllProfiles(): Promise<Record<AgentPubKeyB64, Profile>> {
     let allAgents;
     /** Attempt a retry on fail as this can create an entry (path anchor) and generate a 'head has moved' error */
     try {
@@ -113,7 +113,7 @@ export class ProfilesZvm extends ZomeViewModel {
       if (!maybeProfile) {
         continue;
       }
-      const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
+      const profile: Profile = decode((maybeProfile.entry as any).Present.entry) as Profile;
       this.storeProfile(encodeHashToBase64(agentPubKey), profile);
     }
     this.notifySubscribers();
@@ -122,7 +122,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  storeProfile(pubKeyB64: AgentPubKeyB64, profile: ProfileMat) {
+  storeProfile(pubKeyB64: AgentPubKeyB64, profile: Profile) {
     this._profiles[pubKeyB64] = profile;
     this._reversed[profile.nickname] = pubKeyB64;
     this.notifySubscribers();
@@ -130,7 +130,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<ProfileMat | undefined> {
+  async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<Profile | undefined> {
     const maybeProfile = await this.zomeProxy.getAgentProfile(decodeHashFromBase64(pubKeyB64));
     console.log("probeProfile() maybeProfile", maybeProfile);
     if (!maybeProfile) {
@@ -138,8 +138,8 @@ export class ProfilesZvm extends ZomeViewModel {
     }
     // const profileEntry: any = decode((maybeProfile.entry as any).Present.entry);
     // console.log("probeProfile() profileEntry", profileEntry);
-    //const profile: ProfileMat = decode(profileEntry.record.entry.Present.entry) as ProfileMat;
-    const profile: ProfileMat = decode((maybeProfile.entry as any).Present.entry) as ProfileMat;
+    //const profile: Profile = decode(profileEntry.record.entry.Present.entry) as Profile;
+    const profile: Profile = decode((maybeProfile.entry as any).Present.entry) as Profile;
     console.log("probeProfile() profile", profile);
     this.storeProfile(pubKeyB64, profile);
     return profile;
@@ -147,14 +147,14 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async createMyProfile(profile: ProfileMat): Promise<void> {
+  async createMyProfile(profile: Profile): Promise<void> {
     /*const record =*/ await this.zomeProxy.createProfile(profile);
     this.storeProfile(this.cell.agentId.b64, profile);
   }
 
 
   /** */
-  async updateMyProfile(profile: ProfileMat): Promise<void> {
+  async updateMyProfile(profile: Profile): Promise<void> {
     /*const record =*/ await this.zomeProxy.updateProfile(profile);
     this.storeProfile(this.cell.agentId.b64, profile);
   }

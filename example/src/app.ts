@@ -70,7 +70,7 @@ export class PlaygroundApp extends HappElement {
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);
-    const maybeProfile = await this.profilesDvm.profilesZvm.probeProfile(this.profilesDvm.cell.agentId);
+    const maybeProfile = await this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId);
     console.log("maybeProfile", maybeProfile);
   }
 
@@ -144,18 +144,18 @@ export class PlaygroundApp extends HappElement {
         </div>
         <!-- INSPECTORS -->
         <hr class="solid">
-        <cell-context .cell="${this.integerDvm.cell}">
+        <cell-context .cell=${this.integerDvm.cell}>
             <named-integer-inspect></named-integer-inspect>
         </cell-context>
-        <cell-context .cell="${this.realDvm.cell}">
+        <cell-context .cell=${this.realDvm.cell}>
             <named-real-inspect></named-real-inspect>
         </cell-context>
-        <cell-context .cell="${this.impostorDvm.cell}">
+        <cell-context .cell=${this.impostorDvm.cell}>
             <named-real-inspect baseRoleName="rImpostor"></named-real-inspect>
         </cell-context>          
         <!-- Integer cell -->
         <hr class="solid">
-        <cell-context .cell="${this.integerDvm.cell}">
+        <cell-context .cell=${this.integerDvm.cell}>
             <h2>
                 Integer Role: ${this.integerDvm.hcl.toString()}
                 <input type="button" value="dump calls" @click=${(e: any) => this.integerDvm.dumpCallLogs()}>
@@ -165,7 +165,7 @@ export class PlaygroundApp extends HappElement {
             <label-list></label-list>
         </cell-context>
         <!-- Real cell -->
-        <cell-context .cell="${this.realDvm.cell}">
+        <cell-context .cell=${this.realDvm.cell}>
             <hr class="solid">
             <h2>
                 Real Role: ${this.realDvm.hcl.toString()}

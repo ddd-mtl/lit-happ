@@ -2,6 +2,7 @@ export * from "./globals";
 
 export * from "./HappViewModel";
 export * from "./ZomeViewModel";
+export * from "./ZomeViewModelWithSignals";
 export * from "./DnaViewModel";
 export * from "./ViewModel";
 export * from "./ZomeElement";

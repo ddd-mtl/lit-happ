@@ -14,9 +14,7 @@ import {
   EntryDefsCallbackResult,
   SignalType,
   SystemPulse,
-  SystemSignalProtocolVariantPostCommitNewEnd,
-  SystemSignalProtocolVariantSelfCallEnd,
-  SystemSignalProtocolVariantSelfCallStart,
+
   ZomeInfo
 } from "./types";
 import {Mutex, withTimeout} from "async-mutex";
@@ -27,6 +25,11 @@ import {
 } from "./AppProxy";
 import {prettyDate, prettyDuration} from "./pretty";
 import {anyToB64, enc64} from "./hash";
+import {
+  SystemSignalProtocolVariantPostCommitNewEnd,
+  SystemSignalProtocolVariantSelfCallEnd,
+  SystemSignalProtocolVariantSelfCallStart
+} from "./zomeSignals.types";
 
 
 export interface RequestLog {

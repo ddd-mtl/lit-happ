@@ -109,7 +109,7 @@ export class HappElement extends LitElement {
         cellIds = cellIds.concat(flattenCells(cells))
       }
     }
-    console.log(`networkInfoAll() cellIds`, cellIds);
+    console.log(`networkInfoAll() cellIds`, cellIds.map(cellId => CellIdStr(cellId)));
     /* Sort by agent key */
     let dnaPerAgentMap: AgentIdMap<DnaId[]> = new AgentIdMap();
     for (const cellId of cellIds) {

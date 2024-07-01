@@ -64,7 +64,7 @@ export class Cell {
 
   /** */
   print(): string {
-    return `Cell "${this.name}${this.cloneId? "." + this.cloneId: ""}": ${this.dnaId}`;
+    return `Cell "${this.name}${this.cloneId? "." + this.cloneId: ""}": ${this.dnaId.short}`;
   }
 }
 

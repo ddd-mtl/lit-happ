@@ -37,7 +37,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
 
 
   /** Helper for calling a zome function on its zome */
-  protected async call(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
+  async call(fnName: FunctionName, payload: any, maybeSecret?: CapSecret, timeout?: number): Promise<any> {
     //console.log("ZomeProxy.call", this.zomeName)
     if (!(this.constructor as any).FN_NAMES.includes(fnName)) {
       return Promise.reject(`Function "${fnName}()" not part of zome "${this.zomeName}"`);

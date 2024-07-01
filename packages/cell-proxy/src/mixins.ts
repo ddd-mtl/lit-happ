@@ -77,4 +77,3 @@ export function ZomeMixin<TBase extends AbstractConstructor>(Base: TBase) {
 }
 
 export const ZomeSpecific = ZomeMixin(Empty);
-

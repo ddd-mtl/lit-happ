@@ -157,6 +157,7 @@ export class ProfilesAltProxy extends ZomeProxy {
   static readonly FN_NAMES = profilesAltFunctionNames
  
 
+
   async createProfile(pair: [Profile, AgentPubKey]): Promise<ActionHash> {
     return this.callBlocking('create_profile', pair);
   }

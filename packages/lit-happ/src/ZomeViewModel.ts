@@ -5,10 +5,21 @@ import {
     ZomeProxyConstructor,
     CellMixin,
     SignalLog,
-    prettySignalLogs
+    prettySignalLogs,
+    Cell,
+    AbstractConstructor,
+    AgentId,
+    dec64,
+    TipProtocol,
+    ZomeSignalProtocol,
+    TipProtocolVariantEntry,
+    ZomeSignalProtocolVariantEntry,
+    TipProtocolVariantLink,
+    ZomeSignalProtocolVariantLink,
+    TipProtocolVariantApp, prettyDate, ZomeSignal, ZomeSignalProtocolType, EntryPulse, LinkPulse, ActionId, EntryId
 } from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {AppSignalCb, ZomeName} from "@holochain/client";
+import {AgentPubKeyB64, AppSignalCb, Timestamp, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {DnaViewModel} from "./DnaViewModel";
 
@@ -106,4 +117,3 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
         console.table(prettySignalLogs(signalLogs));
     }
 }
-

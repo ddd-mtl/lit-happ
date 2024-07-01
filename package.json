@@ -22,14 +22,16 @@
     "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
     "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w packages/profiles-dvm",
     "build:happ"            : "npm run build:happ -w example && npm run build:happ:clone -w example",
-    "build:libs"            : "npm run build -w packages/cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:notifications",
+
+    "build:cell"            : "bash scripts/ts-bindings.sh && npm run build -w packages/cell-proxy",
+    "build:libs"            : "npm run build:cell && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:notifications",
 
     "start"                 : "npm run start -w example",
     "start:clone"           : "npm run start:clone -w example",
     "devtest"               : "npm run build:happ && npm run build:libs && npm run build -w example && npm run start",
     "devtest:clone"         : "npm run build:happ && npm run build:libs && npm run build -w example && npm run start:clone",
 
-    "publish:cell"          : "npm run build -w packages/cell-proxy && cd packages/cell-proxy && npm publish",
+    "publish:cell"          : "npm run build:cell && cd packages/cell-proxy && npm publish",
     "publish:lit"           : "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
     "publish:we"            : "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
     "publish:profiles"      : "npm run build -w packages/profiles-dvm && cd packages/profiles-dvm && npm publish",

@@ -131,10 +131,13 @@ export abstract class HoloId {
   /** First 8 chars of the Core */
   get short(): string { return this.b64.slice(5, 13); }
 
+  toString(): string {return this.b64;}
+
   print(): string { return `${this.short} (${this.type})`}
 }
 
 
+/** Mixin */
 export function createHolodId(hashType: HoloHashType) {
   class AHoloId extends HoloId {
     constructor(input: HoloHashB64 | HoloHash) {
@@ -159,6 +162,7 @@ export type AnyDhtId = ActionId | EntryId;
 export type AnyLinkableId = AnyDhtId | ExternalId;
 
 
+/** */
 export function intoDhtId(input: HoloHashB64 | HoloHash): AnyDhtId {
   try {
     const actionId = new ActionId(input);
@@ -169,6 +173,8 @@ export function intoDhtId(input: HoloHashB64 | HoloHash): AnyDhtId {
   }
 }
 
+
+/** */
 export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
   try {
     const dhtId = intoDhtId(input);

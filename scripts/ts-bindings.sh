@@ -2,6 +2,8 @@
 
 set -e
 
+zits --no-fn --no-proxy -i submodules/zome-signals -o packages/cell-proxy/src/zomeSignals.ts
+
 zits -i submodules/notifications/zomes/coordinator/notifications -i submodules/notifications/zomes/integrity/notifications -o packages/notifications-dvm/src/bindings/notifications.ts
 
 zits -i submodules/profiles/crates/coordinator -i submodules/profiles/crates/integrity -o packages/profiles-dvm/src/bindings/profiles.ts

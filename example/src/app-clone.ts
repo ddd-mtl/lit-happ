@@ -11,7 +11,6 @@ import {
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealCloneDvm, NamedRealDvm } from "./viewModels/real";
-import { AdminWebsocket } from "@holochain/client";
 
 /** Import custom elements */
 import "./elements/integer-list";

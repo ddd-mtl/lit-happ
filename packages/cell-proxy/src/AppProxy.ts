@@ -25,9 +25,7 @@ import {
   BaseRoleName,
   CellIdStr,
   CellsForRole,
-  LitHappSignal,
-  RoleCellsMap,
-  SignalType, SystemPulse,
+  RoleCellsMap, SignalType, SystemPulse,
 } from "./types";
 import {areCellsEqual, Dictionary} from "./utils";
 import {HCL, HCLString} from "./hcl";
@@ -35,6 +33,7 @@ import {Cell} from "./cell";
 import {AgentPubKey} from "@holochain/client/lib/types";
 import {prettyDate, printAppInfo} from "./pretty";
 import {enc64} from "./hash";
+import {ZomeSignal} from "./zomeSignals.types";
 
 
 /** */
@@ -49,7 +48,7 @@ export interface SignalLog {
   zomeName: string,
   type: string,
   pulseCount: number,
-  zomeSignal: LitHappSignal,
+  zomeSignal: ZomeSignal,
 }
 
 /**
@@ -383,13 +382,13 @@ export class AppProxy implements AppClient {
 
 
   /** */
-  intoZomeSignal(appSignal: AppSignal): LitHappSignal | undefined {
+  intoZomeSignal(appSignal: AppSignal): ZomeSignal | undefined {
     if (typeof appSignal.payload !== 'object' || Array.isArray(appSignal.payload) || appSignal.payload === null) {
       return;
     }
     const payload = appSignal.payload as Object;
     if ("pulses" in payload && "from" in payload) {
-      return appSignal.payload as LitHappSignal;
+      return appSignal.payload as ZomeSignal;
     }
     return;
   }
