@@ -10,5 +10,5 @@ export * from "./mixins";
 export * from "./cell";
 export * from "./pretty";
 export * from "./hash";
-export * from "./holo-id-map";
+export * from "./holochain-id-map";
 export * from "./zomeSignals.types";

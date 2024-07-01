@@ -22,7 +22,7 @@ import {AppProxy} from "./AppProxy";
 import {CellIdStr} from "./types";
 import {AgentPubKey} from "@holochain/client/lib/types";
 import {AgentId, DnaId} from "./hash";
-import {AgentIdMap} from "./holo-id-map";
+import {AgentIdMap} from "./holochain-id-map";
 
 
 /**

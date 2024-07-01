@@ -5,7 +5,7 @@ import {ActionId, AgentId, DnaId, EntryId, HolochainId} from "./hash";
 import {GConstructor} from "./mixins";
 
 
-export class HoloIdMap<K extends HolochainId, V> implements Map<K, V> {
+export class HolochainIdMap<K extends HolochainId, V> implements Map<K, V> {
   _map: Map<HoloHashB64, V>;
 
   constructor(private _ctor: GConstructor<K>, initialEntries?: Array<[K, V]>) {
@@ -78,25 +78,25 @@ export class HoloIdMap<K extends HolochainId, V> implements Map<K, V> {
 
 
 
-export class ActionIdMap<T> extends HoloIdMap<ActionId, T>  {
+export class ActionIdMap<T> extends HolochainIdMap<ActionId, T>  {
   constructor(initialEntries?: Array<[ActionId, T]>) {
     super(ActionId, initialEntries)
   }
 }
 
-export class AgentIdMap<T> extends HoloIdMap<AgentId, T>  {
+export class AgentIdMap<T> extends HolochainIdMap<AgentId, T>  {
   constructor(initialEntries?: Array<[AgentId, T]>) {
     super(AgentId, initialEntries)
   }
 }
 
-export class DnaIdMap<T> extends HoloIdMap<DnaId, T> {
+export class DnaIdMap<T> extends HolochainIdMap<DnaId, T> {
   constructor(initialEntries?: Array<[DnaId, T]>) {
     super(DnaId, initialEntries)
   }
 }
 
-export class EntryIdMap<T> extends HoloIdMap<EntryId, T>  {
+export class EntryIdMap<T> extends HolochainIdMap<EntryId, T>  {
   constructor(initialEntries?: Array<[EntryId, T]>) {
     super(EntryId, initialEntries)
   }
