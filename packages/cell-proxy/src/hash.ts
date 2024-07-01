@@ -114,7 +114,7 @@ export function enc64(hash: HoloHash): HoloHashB64 {
 
 
 /** HoloHash starts with 'u' has a type and is 53 chars long */
-export abstract class HoloId {
+export abstract class HolochainId {
   public readonly b64: HoloHashB64;
   //private readonly hash: HoloHash;
 
@@ -138,8 +138,8 @@ export abstract class HoloId {
 
 
 /** Mixin */
-export function createHolodId(hashType: HoloHashType) {
-  class AHoloId extends HoloId {
+export function createHolochainId(hashType: HoloHashType) {
+  class AHoloId extends HolochainId {
     constructor(input: HoloHashB64 | HoloHash) {
       super(input, hashType);
       const type = getHashType(this.b64);
@@ -152,11 +152,11 @@ export function createHolodId(hashType: HoloHashType) {
   return AHoloId;
 }
 
-export class ActionId extends createHolodId(HoloHashType.Action) {}
-export class AgentId extends createHolodId(HoloHashType.Agent) {}
-export class DnaId extends createHolodId(HoloHashType.Dna) {}
-export class EntryId extends createHolodId(HoloHashType.Entry) {}
-export class ExternalId extends createHolodId(HoloHashType.External) {}
+export class ActionId extends createHolochainId(HoloHashType.Action) {}
+export class AgentId extends createHolochainId(HoloHashType.Agent) {}
+export class DnaId extends createHolochainId(HoloHashType.Dna) {}
+export class EntryId extends createHolochainId(HoloHashType.Entry) {}
+export class ExternalId extends createHolochainId(HoloHashType.External) {}
 
 export type AnyDhtId = ActionId | EntryId;
 export type AnyLinkableId = AnyDhtId | ExternalId;

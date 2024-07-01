@@ -1,11 +1,11 @@
 import {
   HoloHashB64,
 } from "@holochain/client";
-import {ActionId, AgentId, DnaId, EntryId, HoloId} from "./hash";
+import {ActionId, AgentId, DnaId, EntryId, HolochainId} from "./hash";
 import {GConstructor} from "./mixins";
 
 
-export class HoloIdMap<K extends HoloId, V> implements Map<K, V> {
+export class HoloIdMap<K extends HolochainId, V> implements Map<K, V> {
   _map: Map<HoloHashB64, V>;
 
   constructor(private _ctor: GConstructor<K>, initialEntries?: Array<[K, V]>) {
