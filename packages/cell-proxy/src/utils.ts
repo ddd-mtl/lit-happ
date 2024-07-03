@@ -34,3 +34,15 @@ export function getVariantByIndex(enumType: Object, index: number): string {
   }
   throw Error("Out of bounds index");
 }
+
+
+/** */
+export function getIndexByVariant(enumType: Object, variant: string): number {
+  const keys = Object.keys(enumType);
+  for (let i = 0; i < keys.length; i+= 1) {
+    if (keys[i] == variant) {
+      return i;
+    }
+  }
+  throw Error("Unknown variant");
+}

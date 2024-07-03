@@ -5,6 +5,7 @@ import {
 import {Dictionary} from "./utils";
 import {AgentId, dec64, DnaId, enc64} from "./hash";
 import {SystemSignalProtocol} from "./zomeSignals.types";
+import {EntryType} from "@holochain/client/lib/hdk/entry";
 //import {AgentPubKey} from "@holochain/client/lib/types";
 
 

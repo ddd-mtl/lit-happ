@@ -4,6 +4,7 @@ import {AppInfo, CellType} from "@holochain/client";
 import {BaseRoleName, CellsForRole, str2CellId} from "./types";
 import {intoStem} from "./cell";
 import {enc64} from "./hash";
+import {StateChange, StateChangeType} from "./zomeSignals.types";
 
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
@@ -65,4 +66,20 @@ export function printCellsForRole(baseRoleName: BaseRoleName, cells: CellsForRol
     print += `    - (${clone.enabled? "enabled" : "disabled"})${cloneId}: ${clone.name} | ${enc64(clone.cell_id[0])}\n`;
   }
   return print;
+}
+
+
+
+/** */
+export function prettyState(state: StateChange): string {
+  if (StateChangeType.Create in state) {
+    return state.Create? "Create NEW" : "Create";
+  }
+  if (StateChangeType.Update in state) {
+    return state.Update? "Update NEW" : "Update";
+  }
+  if (StateChangeType.Delete in state) {
+    return state.Delete? "Delete NEW" : "Delete";
+  }
+  throw Error("Unknown stateChange type");
 }

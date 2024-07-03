@@ -1,16 +1,17 @@
-import {AppSignalCb, Link, Timestamp} from "@holochain/client";
+import {AppSignalCb, Timestamp} from "@holochain/client";
 import {
   ActionId,
-  AgentId, AnyLinkableId, EntryId,
-  EntryPulse, getVariantByIndex, intoLinkableId, LinkPulse, prettyDate, StateChange,
+  AgentId, AnyLinkableId, Dictionary, EntryDef, EntryId,
+  EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
   ZomeSignalProtocolType, ZomeSignalProtocolVariantEntry, ZomeSignalProtocolVariantLink
 } from "@ddd-qc/cell-proxy";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
-import {ActionHash, AgentPubKey} from "@holochain/client/lib/types";
 import {AnyLinkableHash, LinkType, ZomeIndex} from "@holochain/client/lib/hdk/link";
+import {EntryVisibility} from "@holochain/client/lib/hdk/entry";
+import {ActionHash, AgentPubKey} from "@holochain/client/lib/types";
 
 
 /** */
@@ -69,11 +70,19 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
       if (ZomeSignalProtocolType.Entry in pulse) {
         const entryPulseMat = materializeEntryPulse(pulse.Entry as EntryPulse, (this.constructor as typeof ZomeViewModel).ENTRY_TYPES);
         all.push(this.handleEntryPulse(entryPulseMat, from));
+        /** If new entry from this agent, broadcast to peers as tip */
+        if (entryPulseMat.isNew && from.b64 == this.cell.agentId.b64) {
+          all.push(this.broadcastTip({Entry: pulse.Entry as EntryPulse}));
+        }
         continue;
       }
       if (ZomeSignalProtocolType.Link in pulse) {
         const linkPulseMat = materializeLinkPulse(pulse.Link as LinkPulse, (this.constructor as typeof ZomeViewModel).LINK_TYPES);
         all.push(this.handleLinkPulse(linkPulseMat, from));
+        /** If new Link from this agent, broadcast to peers as tip */
+        if (linkPulseMat.isNew && from.b64 == this.cell.agentId.b64) {
+          all.push(this.broadcastTip({Link: pulse.Link as LinkPulse}));
+        }
         continue;
       }
     }
@@ -163,10 +172,29 @@ export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string
 }
 
 
-export interface LinkMat {
-
+/** */
+export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string[]): EntryPulse {
+  let state: Object = {};
+  state[pulse.state] = pulse.isNew;
+  console.log("dematerializeEntryPulse()", state, entryTypes);
+  /** */
+  return {
+    ah: pulse.ah.hash,
+    state: state as StateChange,
+    ts: pulse.ts,
+    author: pulse.author.hash,
+    eh: pulse.eh.hash,
+    def: {
+      entry_index: getIndexByVariant(entryTypes, pulse.entryType),
+      zome_index: 0, // Should not be used
+      visibility: "Public", // Should not be used, or grab actual value in EntryDefs
+    },
+    bytes: pulse.bytes,
+  }
 }
 
+
+/** */
 export interface LinkPulseMat {
   author: AgentId,
   base: AnyLinkableId;
@@ -187,7 +215,7 @@ export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]):
   const stateStr = Object.keys(linkPulse.state)[0];
   return {
     author: new AgentId(linkPulse.link.author),
-    base: intoLinkableId((linkPulse.link as any).base),
+    base: intoLinkableId(linkPulse.link.base),
     target: intoLinkableId(linkPulse.link.target),
     timestamp: linkPulse.link.timestamp,
     zome_index: linkPulse.link.zome_index,
@@ -196,5 +224,26 @@ export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]):
     create_link_hash: new ActionId(linkPulse.link.create_link_hash),
     state: Object.keys(linkPulse.state)[0],
     isNew: (linkPulse.state as any)[stateStr],
+  }
+}
+
+/** */
+export function dematerializeLinkPulse(pulse: LinkPulseMat, linkTypes: string[]): LinkPulse {
+  let state: Object = {};
+  state[pulse.state] = pulse.isNew;
+  console.log("dematerializeLinkPulse()", state);
+  /** */
+  return {
+    state: state as StateChange,
+    link: {
+      author: pulse.author.hash,
+      base: pulse.base.hash,
+      target: pulse.target.hash,
+      timestamp: pulse.timestamp,
+      zome_index: pulse.zome_index,
+      link_type: getIndexByVariant(linkTypes, pulse.link_type),
+      tag: pulse.tag,
+      create_link_hash: pulse.create_link_hash.hash,
+    }
   }
 }

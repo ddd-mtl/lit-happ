@@ -1,6 +1,6 @@
 import {decodeHashFromBase64, encodeHashToBase64, HoloHash, HoloHashB64} from "@holochain/client";
-import {AbstractConstructor, CellMixin, Empty, GConstructor, ZomeMixin, ZomeSpecific} from "./mixins";
-import {Cell} from "./cell";
+//import {AbstractConstructor, CellMixin, Empty, GConstructor, ZomeMixin, ZomeSpecific} from "./mixins";
+//import {Cell} from "./cell";
 
 
 /**
@@ -184,91 +184,3 @@ export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
     return externalId;
   }
 }
-
-//
-// /** */
-// export class DnaId extends HoloId {
-//   constructor(input: HoloHashB64 | HoloHash) {
-//     super(input, HoloHashType.Dna);
-//     const type = getHashType(this.value);
-//     if (HoloHashType.Dna != type) {
-//       throw new Error('The hash does not have the "Dna" type');
-//     }
-//   }
-// }
-//
-//
-// /** */
-// export class AgentId extends HoloId {
-//   constructor(input: HoloHashB64 | HoloHash) {
-//     super(input, HoloHashType.Agent);
-//     const type = getHashType(this.value);
-//     if (HoloHashType.Agent != type) {
-//       throw new Error('The hash does not have the "Agent" type');
-//     }
-//   }
-// }
-
-
-/** ------- */
-// export type HoloIdConstructor<T = {}> = new (input: HoloHashB64 | HoloHash) => T;
-//
-// export function HoloIdMixin<TBase extends GConstructor>(Base: TBase) {
-//   class AHoloId extends Base {
-//     public readonly b64: HoloHashB64;
-//
-//     //constructor(...args: any[]) {super(args[0])}
-//
-//     /** Validate */
-//     constructor(...args: any[]) {
-//       super(args);
-//       if (args.length != 1) {
-//         throw new Error("HoloId ctor must have exactly 1 argument.");
-//       }
-//       let input = args[0];
-//       if (typeof (input) != 'string') {
-//         input = enc64(input);
-//       }
-//       this.b64 = input;
-//       if (this.b64.length !== 53) {
-//         throw new Error("The hash must be exactly 53 characters long.");
-//       }
-//     }
-//
-//     get hash(): HoloHash {
-//       return dec64(this.b64)
-//     }
-//
-//     /** First 8 chars of the Core */
-//     get short(): string {
-//       return this.b64.slice(5, 13);
-//     }
-//   }
-//   return AHoloId;
-// }
-//
-// export const HoloId = HoloIdMixin(Empty);
-//
-//
-// /** */
-// export class AgentId extends HoloId {
-//   constructor(input: HoloHashB64 | HoloHash) {
-//     super(input, HoloHashType.Agent);
-//     const type = getHashType(this.b64);
-//     if (HoloHashType.Agent != type) {
-//       throw new Error('The hash does not have the correct type: ' + HoloHashType.Agent);
-//     }
-//   }
-// }
-//
-//
-// /** */
-// export class DnaId extends HoloIdMixin(Empty) {
-//   constructor(input: HoloHashB64 | HoloHash) {
-//     super(input, HoloHashType.Dna);
-//     const type = getHashType(this.b64);
-//     if (HoloHashType.Dna != type) {
-//       throw new Error('The hash does not have the correct type: ' + HoloHashType.Dna);
-//     }
-//   }
-// }

@@ -1,10 +1,10 @@
 import {
   ActionId, ActionIdMap,
   AgentId,
-  AgentIdMap,
+  AgentIdMap, dematerializeEntryPulse, dematerializeLinkPulse,
   EntryId,
   getVariantByIndex,
-  intoLinkableId, LinkPulseMat,
+  intoLinkableId, LinkPulseMat, ZomeViewModel,
   ZomeViewModelWithSignals
 } from "@ddd-qc/lit-happ";
 import {Profile} from "./bindings/profiles.types";
@@ -135,10 +135,6 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
         } else {
           this.storeAgentProfile(pulse.base, pulse.target)
         }
-        // FIXME
-        // if (pulse.isNew && from.b64 == this.cell.agentId.b64) {
-        //   await this.broadcastTip({Link: pulse});
-        // }
         break;
     }
   }
@@ -152,10 +148,6 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
         if (pulse.state != StateChangeType.Delete) {
           this.storeProfile(pulse.ah, profile, pulse.ts);
         }
-        // FIXME
-        // if (isNew && from.b64 == this.cell.agentId.b64) {
-        //   await this.broadcastTip({Entry: pulse});
-        // }
         break;
     }
   }
