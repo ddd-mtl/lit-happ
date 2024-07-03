@@ -1,7 +1,7 @@
 import {AppSignalCb, Timestamp} from "@holochain/client";
 import {
   ActionId,
-  AgentId, AnyLinkableId, Dictionary, EntryDef, EntryId,
+  AgentId, AnyLinkableId, EntryId,
   EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
@@ -9,9 +9,7 @@ import {
 } from "@ddd-qc/cell-proxy";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
-import {AnyLinkableHash, LinkType, ZomeIndex} from "@holochain/client/lib/hdk/link";
-import {EntryVisibility} from "@holochain/client/lib/hdk/entry";
-import {ActionHash, AgentPubKey} from "@holochain/client/lib/types";
+import {ZomeIndex} from "@holochain/client/lib/hdk/link";
 
 
 /** */
@@ -41,7 +39,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
   /** */
   private mySignalHandler(appSignal: AppSignal): void {
-    const defaultZomeName = (this.constructor as typeof ZomeViewModelWithSignals).ZOME_PROXY.DEFAULT_ZOME_NAME
+    const defaultZomeName = (this.constructor as typeof ZomeViewModelWithSignals).ZOME_PROXY.DEFAULT_ZOME_NAME;
     console.log("mySignalHandler()", appSignal, defaultZomeName);
     if (appSignal.zome_name !== defaultZomeName) {
       return;
@@ -157,7 +155,7 @@ export interface EntryPulseMat {
 
 /** */
 export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string[]): EntryPulseMat {
-  console.log("materializeEntryPulse()", entryTypes);
+  //console.log("materializeEntryPulse()", entryTypes);
   const stateStr = Object.keys(entryPulse.state)[0];
   return {
     ah: new ActionId(entryPulse.ah),
@@ -176,7 +174,7 @@ export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string
 export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string[]): EntryPulse {
   let state: Object = {};
   state[pulse.state] = pulse.isNew;
-  console.log("dematerializeEntryPulse()", state, entryTypes);
+  //console.log("dematerializeEntryPulse()", state, entryTypes);
   /** */
   return {
     ah: pulse.ah.hash,

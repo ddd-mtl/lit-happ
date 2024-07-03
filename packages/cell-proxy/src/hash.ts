@@ -144,7 +144,7 @@ export function createHolochainId(hashType: HoloHashType) {
       super(input, hashType);
       const type = getHashType(this.b64);
       if (hashType != type) {
-        throw new Error('The hash does not have the correct type. Expected ' + hashType + ', got' + type);
+        throw new Error('The hash does not have the correct type. Expected ' + hashType + ', got: ' + type);
       }
     }
   }
