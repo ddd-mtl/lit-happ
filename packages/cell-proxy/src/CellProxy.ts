@@ -33,23 +33,23 @@ import {
 import {Dictionary} from "./utils";
 
 
-/** */
-export interface EntryDefMat {
-  // index: number
-  id: string,
-  visibility: "Public" | "Private",
-  requiredValidations: number,
-  cacheAtAgentActivity: boolean,
-}
-
-function materializeEntryDef(def: EntryDef): EntryDefMat {
-  return {
-    id: def.id.App,
-    visibility: def.visibility.hasOwnProperty('Public')? 'Public' : "Private",
-    requiredValidations: 0, // FIXME
-    cacheAtAgentActivity: false, // FIXME
-  }
-}
+// /** */
+// export interface EntryDefMat {
+//   // index: number
+//   id: string,
+//   visibility: "Public" | "Private",
+//   requiredValidations: number,
+//   cacheAtAgentActivity: boolean,
+// }
+//
+// function materializeEntryDef(def: EntryDef): EntryDefMat {
+//   return {
+//     id: def.id.App,
+//     visibility: def.visibility,
+//     requiredValidations: 0, // FIXME
+//     cacheAtAgentActivity: false, // FIXME
+//   }
+// }
 
 
 export interface RequestLog {
@@ -318,16 +318,19 @@ export class CellProxy extends CellMixin(Empty) {
    * Calls the `entry_defs()` zome function and
    * Returns an array of all the zome's AppEntryNames and Visibility, i.e. (AppEntryName, isPublic)[]
    */
-  async callEntryDefs(zomeName: ZomeName): Promise<Dictionary<EntryDefMat>> {
+  async callEntryDefs(zomeName: ZomeName): Promise<Dictionary<EntryDef>> {
     //console.log("callEntryDefs()", zomeName)
     try {
       const entryDefs = await this.callZome(zomeName, "entry_defs", null, null) as EntryDefsCallbackResult; // Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs
       console.debug("getEntryDefs() for " + zomeName + " result:")
       console.log({entryDefs})
-      let result: Dictionary<EntryDefMat> =  {}
+      let result: Dictionary<EntryDef> =  {}
       for (const def of entryDefs.Defs) {
-        const name = def.id.App;
-        result[name] = materializeEntryDef(def);
+        let name = Object.keys(def.id)[0];
+        if ("App" in def.id) {
+          name = def.id.App;
+        }
+        result[name] = def;
       }
       //console.log({result})
       return result;

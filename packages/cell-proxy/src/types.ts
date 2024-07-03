@@ -72,7 +72,13 @@ export type CloneIndex = number;
 
 export type ZomeIndex = number;
 
-export type EntryDef = any; // FIXME
+export type EntryDef = {
+  id: { App: string } | { CapClaim: null } | { CapGrant: null },
+  visibility: "Public" | "Private",
+  requiredValidations: number,
+  cacheAtAgentActivity: boolean,
+}
+
 export type EntryDefsCallbackResult = {Defs: EntryDef[]}
 
 export type ScopedZomeTypes = [ZomeIndex, number[]][];

@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { state, property, customElement } from "lit/decorators.js";
 import { DnaViewModel } from "../DnaViewModel";
-import {Dictionary, EntryDefMat} from "@ddd-qc/cell-proxy";
+import {Dictionary, EntryDef} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -12,7 +12,7 @@ export class EntryDefSelect extends LitElement {
 
   /** -- Fields -- */
   @state() private _selectedZomeName = ""
-  @state() private _allEntryDefs: Dictionary<Dictionary<EntryDefMat>> = {};
+  @state() private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
 
   @property({ type: Object, attribute: false })
   dnaViewModel!: DnaViewModel;
@@ -65,7 +65,11 @@ export class EntryDefSelect extends LitElement {
     if (zomeTypes.length > 0) {
       entryTypeOptions = Object.entries(zomeTypes[0]).map(
         ([_zomeName, entryDef]) => {
-          return html`<option>${entryDef.id}</option>`;
+          let name = Object.keys(entryDef.id)[0];
+          if ("App" in entryDef.id) {
+            name = entryDef.id.App;
+          }
+          return html`<option>${name}</option>`;
         });
     }
     //console.log({entryTypeOptions})

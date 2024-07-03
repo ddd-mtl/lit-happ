@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { state, property, customElement } from "lit/decorators.js";
 import { DnaViewModel } from "../DnaViewModel";
-import {Dictionary, EntryDefMat} from "@ddd-qc/cell-proxy";
+import {Dictionary, EntryDef} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -12,7 +12,7 @@ export class DvmInspect extends LitElement {
 
   /** -- Fields -- */
   @state() private _selectedZomeName = ""
-  @state() private _allEntryDefs: Dictionary<Dictionary<EntryDefMat>> = {};
+  @state() private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
 
   @property({ type: Object, attribute: false })
   dnaViewModel!: DnaViewModel;

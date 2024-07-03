@@ -13,7 +13,7 @@ import {
   CellProxy,
   AppProxy,
   HCL,
-  Dictionary, CellMixin, AgentId, EntryDefMat
+  Dictionary, CellMixin, AgentId, EntryDef
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
 
@@ -25,7 +25,7 @@ interface IDnaViewModel {
   dumpCallLogs(zomeName?: ZomeName): void;
   dumpSignalLogs(zomeName?: ZomeName): void;
   /** zomeName -> (AppEntryName, isPublic)[] */
-  fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDefMat>>>;
+  fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDef>>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   //getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined;
   //getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined
@@ -86,7 +86,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /* ZvmCtorName -> ZomeName */
   protected _zomeNames: Dictionary<ZomeName> = {};
   /* ZomeName -> (EntryName -> EntryDef) */
-  private _allEntryDefs: Dictionary<Dictionary<EntryDefMat>> = {};
+  private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
 
   /** list of "known" peers in this DNA */
   protected _livePeers: AgentId[] = [];
@@ -101,7 +101,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   get zomeNames(): ZomeName[] {return Object.values(this._zomeNames);}
 
-  getZomeEntryDefs(zomeName: ZomeName): Dictionary<EntryDefMat> | undefined {return this._allEntryDefs[zomeName]}
+  getZomeEntryDefs(zomeName: ZomeName): Dictionary<EntryDef> | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
   getZomeName(zvm: typeof ZomeViewModel): ZomeName | undefined { return this._zomeNames[zvm.constructor.name]}
 
@@ -180,7 +180,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** Maybe useless since the entry defs are in the integrity zome which is not represented here */
-  async fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDefMat>>> {
+  async fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDef>>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
       const zomeName = zvm.zomeName;
       try {
