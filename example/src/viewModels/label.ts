@@ -1,30 +1,7 @@
-import {ZomeProxy, ZomeViewModel} from "@ddd-qc/lit-happ";
+import {ZomeViewModel} from "@ddd-qc/lit-happ";
 import {AppSignal, AppSignalCb, EntryHash} from "@holochain/client";
-import {labelZomeFunctions} from "../fn";
 import {delay} from "@ddd-qc/cell-proxy";
-
-
-/**
- *
- */
-export class LabelZomeProxy extends ZomeProxy {
-
-  static readonly DEFAULT_ZOME_NAME: string = "zLabel";
-
-  static readonly FN_NAMES = labelZomeFunctions;
-
-
-  async getLabel(eh: EntryHash): Promise<string> {
-    return this.call('get_label', eh);
-  }
-  async createLabel(value: string): Promise<EntryHash> {
-    return this.callBlocking('create_label', value);
-  }
-  async getMyLabels(): Promise<string[]> {
-    return this.call('get_my_labels', null);
-  }
-}
-
+import {LabelProxy} from "../bindings/label.proxy";
 
 /**
  *
@@ -41,8 +18,8 @@ export class LabelZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY = LabelZomeProxy;
-  get zomeProxy(): LabelZomeProxy {return this._zomeProxy as LabelZomeProxy;}
+  static readonly ZOME_PROXY = LabelProxy;
+  get zomeProxy(): LabelProxy {return this._zomeProxy as LabelProxy;}
 
   get perspective(): LabelZomePerspective {return {names: this._values}}
 

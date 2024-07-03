@@ -13,7 +13,7 @@ import {
   CellProxy,
   AppProxy,
   HCL,
-  Dictionary, CellMixin, AgentId
+  Dictionary, CellMixin, AgentId, EntryDefMat
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
 
@@ -25,7 +25,7 @@ interface IDnaViewModel {
   dumpCallLogs(zomeName?: ZomeName): void;
   dumpSignalLogs(zomeName?: ZomeName): void;
   /** zomeName -> (AppEntryName, isPublic)[] */
-  fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>>;
+  fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDefMat>>>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   //getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined;
   //getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined
@@ -85,8 +85,8 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
   /* ZvmCtorName -> ZomeName */
   protected _zomeNames: Dictionary<ZomeName> = {};
-  /* ZomeName -> [EntryName, EntryVisibility] */
-  private _allEntryDefs: Dictionary<[string, boolean][]> = {};
+  /* ZomeName -> (EntryName -> EntryDef) */
+  private _allEntryDefs: Dictionary<Dictionary<EntryDefMat>> = {};
 
   /** list of "known" peers in this DNA */
   protected _livePeers: AgentId[] = [];
@@ -99,7 +99,9 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   get livePeers(): AgentId[] { return this._livePeers };
 
-  getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined {return this._allEntryDefs[zomeName]}
+  get zomeNames(): ZomeName[] {return Object.values(this._zomeNames);}
+
+  getZomeEntryDefs(zomeName: ZomeName): Dictionary<EntryDefMat> | undefined {return this._allEntryDefs[zomeName]}
   getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
   getZomeName(zvm: typeof ZomeViewModel): ZomeName | undefined { return this._zomeNames[zvm.constructor.name]}
 
@@ -178,15 +180,15 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** Maybe useless since the entry defs are in the integrity zome which is not represented here */
-  async fetchAllEntryDefs(): Promise<Dictionary<[string, boolean][]>> {
+  async fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDefMat>>> {
     for (const zvm of Object.values(this._zomeViewModels)) {
       const zomeName = zvm.zomeName;
       try {
         const defs = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize
-        this._allEntryDefs[zomeName] = defs
+        this._allEntryDefs[zomeName] = defs;
       } catch (e) {
         console.warn(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`)
-        this._allEntryDefs[zomeName] = [];
+        this._allEntryDefs[zomeName] = {};
       }
     }
     return this._allEntryDefs;

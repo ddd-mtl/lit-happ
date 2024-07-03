@@ -1,9 +1,3 @@
-#![allow(non_upper_case_globals)]
-#![allow(unused_doc_comments)]
-#![allow(non_camel_case_types)]
-#![allow(non_snake_case)]
-#![allow(unused_attributes)]
-
 use hdk::prelude::*;
 use label_integrity::*;
 
@@ -30,6 +24,7 @@ fn get_label(eh: EntryHash) -> ExternResult<String> {
 
 
 #[hdk_extern]
+#[feature(zits_blocking)]
 fn create_label(name: String)  -> ExternResult<EntryHash> {
   debug!("*** create_label() called");
   let entry = Label {name};

@@ -1,5 +1,3 @@
-#![allow(non_snake_case)]
-
 mod signal_protocol;
 mod callbacks;
 pub use signal_protocol::*;
@@ -29,6 +27,14 @@ fn get_integer(ah: ActionHash) -> ExternResult<u32> {
 
 
 #[hdk_extern]
+#[feature(zits_blocking = "Integer")]
+fn create_blocking_integer(value: u32) -> ExternResult<ActionHash> {
+  return create_integer(value);
+}
+
+
+#[hdk_extern]
+#[feature(zits_blocking)]
 fn create_integer(value: u32) -> ExternResult<ActionHash> {
   debug!("*** create_integer() called");
   let entry = Integer {value};

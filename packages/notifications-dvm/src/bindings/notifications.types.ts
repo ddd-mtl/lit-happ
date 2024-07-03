@@ -145,6 +145,9 @@ ValidationStatus,
 ValidationReceipt,
    } from '@holochain-open-dev/core-types';
 
+/** User defined external dependencies */
+import {NotificationsLinkType as LinkTypes} from "./notifications.integrity"
+
 export interface UpdateContactInput {
   original_contact_hash: ActionHash
   previous_contact_hash: ActionHash
@@ -235,14 +238,6 @@ export type EntryTypes =
  | {type: {Contact: null}, content: Contact}
  | {type: {SentNotification: null}, content: SentNotification}
 
-
-export enum LinkTypes {
-	TwilioCredentialsUpdates = 'TwilioCredentialsUpdates',
-	NotificantToNotifiers = 'NotificantToNotifiers',
-	ContactUpdates = 'ContactUpdates',
-	AnchorToNotifiers = 'AnchorToNotifiers',
-	SentNotificationUpdates = 'SentNotificationUpdates',
-}
 
 export interface SentNotification {
   unique_data: string

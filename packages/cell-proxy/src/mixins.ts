@@ -47,9 +47,10 @@ export function CellMixin<TBase extends AbstractConstructor>(Base: TBase) {
 export function ZomeMixin<TBase extends AbstractConstructor>(Base: TBase) {
   abstract class AZomeSpecific extends Base {
 
-    static readonly DEFAULT_ZOME_NAME: ZomeName;
     zomeName: ZomeName;
-
+    static readonly DEFAULT_ZOME_NAME: ZomeName;
+    static readonly ENTRY_TYPES: string[];
+    static readonly LINK_TYPES: string[];
     static readonly FN_NAMES: FunctionName[];
 
     constructor(...args: any[]){
@@ -60,6 +61,14 @@ export function ZomeMixin<TBase extends AbstractConstructor>(Base: TBase) {
     get defaultZomeName(): ZomeName {
       return (this.constructor as typeof AZomeSpecific).DEFAULT_ZOME_NAME;
     }
+
+    get entryTypes(): string[] {
+      return (this.constructor as typeof AZomeSpecific).ENTRY_TYPES;
+    }
+    get linkTypes(): string[] {
+      return (this.constructor as typeof AZomeSpecific).LINK_TYPES;
+    }
+
 
     /** Tuple array with zome name */
     get fnNames(): [ZomeName, FunctionName][] {

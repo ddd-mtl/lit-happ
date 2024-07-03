@@ -163,12 +163,6 @@ export type EntryTypes =
  | {type: {Profile: null}, content: Profile}
 
 
-export enum LinkTypes {
-	PrefixPath = 'PrefixPath',
-	PathToAgent = 'PathToAgent',
-	AgentToProfile = 'AgentToProfile',
-}
-
 export interface CastTipInput {
   tip: TipProtocol
   peers: AgentPubKey[]

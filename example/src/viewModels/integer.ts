@@ -1,47 +1,14 @@
 import {
   DnaViewModel,
-  prettyDate, prettySignalLogs,
+  prettySignalLogs,
   SignalLog,
   SignalType,
-  str2CellId,
-  ZomeProxy,
-  ZomeViewModel,
+  ZomeViewModel, ZomeViewModelWithSignals,
   ZvmDef
 } from "@ddd-qc/lit-happ";
-import {AppSignal, EntryHash, AppSignalCb, ActionHash} from "@holochain/client";
+import {AppSignal, AppSignalCb, ActionHash} from "@holochain/client";
 import {LabelZvm} from "./label";
-import {integerZomeFunctions} from "../fn";
-
-/**
- *
- */
-export class IntegerZomeProxy extends ZomeProxy {
-
-  static readonly DEFAULT_ZOME_NAME = "zInteger"
-
-  static readonly FN_NAMES = integerZomeFunctions;
-
-
-  async getInteger(ah: ActionHash): Promise<number> {
-    return this.call('get_integer', ah);
-  }
-  async createInteger(value: number): Promise<ActionHash> {
-    return this.callBlocking('create_integer', value);
-  }
-  async createBlockingInteger(value: number): Promise<ActionHash> {
-    return this.callZomeBlockPostCommit('Integer', 'create_integer', value);
-  }
-
-  async getMyValuesLocal(): Promise<[ActionHash, number][]> {
-    return this.call('get_my_values_local', null);
-  }
-  async getMyValues(): Promise<[ActionHash, number][]> {
-    return this.call('get_my_values', null);
-  }
-  async getMyValuesIncremental(ahs: ActionHash[]): Promise<[ActionHash, number][]> {
-    return this.call('get_my_values_incremental', ahs);
-  }
-}
+import {IntegerProxy} from "../bindings/integer.proxy";
 
 
 /** */
@@ -53,16 +20,16 @@ export interface IntegerZomePerspective {
 /**
  *
  */
-export class IntegerZvm extends ZomeViewModel {
+export class IntegerZvm extends ZomeViewModelWithSignals {
 
   /** Test zvmChanged */
   randomValue = "whatever";
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY = IntegerZomeProxy;
+  static readonly ZOME_PROXY = IntegerProxy;
 
-  get zomeProxy(): IntegerZomeProxy {return this._zomeProxy as IntegerZomeProxy;}
+  get zomeProxy(): IntegerProxy {return this._zomeProxy as IntegerProxy;}
 
   protected hasChanged(): boolean {return true}
 

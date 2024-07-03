@@ -55,6 +55,8 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
         return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
 
+
+
     signalHandler?: AppSignalCb;
 
     /** Zome name */
@@ -62,6 +64,13 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
         return this.ZOME_PROXY.DEFAULT_ZOME_NAME;
     }
     zomeName!: ZomeName;
+
+    static get ENTRY_TYPES(): string[] {
+        return this.ZOME_PROXY.ENTRY_TYPES;
+    }
+    static get LINK_TYPES(): string[] {
+        return this.ZOME_PROXY.LINK_TYPES;
+    }
 
     protected _dvmParent: DnaViewModel;
 

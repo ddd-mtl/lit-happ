@@ -1,28 +1,7 @@
-import {CellDef, DnaModifiersOptions, DnaViewModel, ZomeProxy, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
+import {DnaModifiersOptions, DnaViewModel, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
 import {AppSignal, EntryHash} from "@holochain/client";
 import { LabelZvm } from "./label";
-import {realZomeFunctions} from "../fn";
-
-/**
- *
- */
-export class RealZomeProxy extends ZomeProxy {
-
-  static readonly DEFAULT_ZOME_NAME: string = "zReal";
-
-  static readonly FN_NAMES = realZomeFunctions;
-
-
-  async getReal(eh: EntryHash): Promise<number> {
-    return this.call('get_real', eh);
-  }
-  async createReal(value: number): Promise<EntryHash> {
-    return this.callBlocking('create_real', value);
-  }
-  async getMyReals(): Promise<number[]> {
-    return this.call('get_my_reals', null);
-  }
-}
+import {RealProxy} from "../bindings/real.proxy";
 
 
 /** */
@@ -38,12 +17,12 @@ export class RealZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY = RealZomeProxy;
+  static readonly ZOME_PROXY = RealProxy;
 
 
   /** -- ViewModel Interface -- */
 
-  get zomeProxy(): RealZomeProxy { return this._zomeProxy as RealZomeProxy; }
+  get zomeProxy(): RealProxy { return this._zomeProxy as RealProxy; }
 
   protected hasChanged(): boolean { return true }
 

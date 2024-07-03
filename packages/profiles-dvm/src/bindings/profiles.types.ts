@@ -145,6 +145,9 @@ ValidationStatus,
 ValidationReceipt,
    } from '@holochain-open-dev/core-types';
 
+/** User defined external dependencies */
+import {ProfilesLinkType as LinkTypes} from "./profiles.integrity"
+
 export type SignalVariantLinkCreated = {
   type: "LinkCreated"
   action: SignedActionHashed
@@ -196,9 +199,3 @@ export enum EntryTypesType {
 export type EntryTypes = 
  | {type: {Profile: null}, content: Profile}
 
-
-export enum LinkTypes {
-	PrefixPath = 'PrefixPath',
-	PathToAgent = 'PathToAgent',
-	AgentToProfile = 'AgentToProfile',
-}

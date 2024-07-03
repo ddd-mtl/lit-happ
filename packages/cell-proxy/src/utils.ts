@@ -26,7 +26,7 @@ export const pascal = str => str[0].toUpperCase() + str.slice(1, str.length).rep
 
 
 /** */
-export function getVariantByIndex(enumType: any, index: number): string {
+export function getVariantByIndex(enumType: Object, index: number): string {
   const keys = Object.keys(enumType);
   if (index >= 0 && index < keys.length) {
     const key = keys[index];

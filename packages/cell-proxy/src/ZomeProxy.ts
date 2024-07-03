@@ -1,7 +1,8 @@
 import {CapSecret, FunctionName, ZomeName} from "@holochain/client";
 import {CellMixin, ZomeSpecific} from "./mixins";
-import {CellProxy} from "./CellProxy";
+import {CellProxy, EntryDefMat} from "./CellProxy";
 import {DnaInfo, ZomeInfo} from "./types";
+import {Dictionary} from "./utils";
 
 export type ZomeProxyConstructor = {new(cellProxy: CellProxy, zomeName?: ZomeName): ZomeProxy} & typeof ZomeSpecific;
 
@@ -84,7 +85,7 @@ export abstract class ZomeProxy extends CellMixin(ZomeSpecific) {
   }
 
   /** */
-  async callEntryDefs(zomeName: ZomeName): Promise<[string, boolean][]> {
+  async callEntryDefs(zomeName: ZomeName): Promise<Dictionary<EntryDefMat>> {
     return this._cellProxy.callEntryDefs(zomeName);
   }
 }

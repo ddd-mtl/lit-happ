@@ -1,14 +1,17 @@
-import {AppSignalCb, Timestamp, ZomeName} from "@holochain/client";
+import {AppSignalCb, Link, Timestamp} from "@holochain/client";
 import {
-  AgentId, CellProxy,
-  EntryPulse, LinkPulse, prettyDate,
+  ActionId,
+  AgentId, AnyLinkableId, EntryId,
+  EntryPulse, getVariantByIndex, intoLinkableId, LinkPulse, prettyDate, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
   ZomeSignalProtocolType, ZomeSignalProtocolVariantEntry, ZomeSignalProtocolVariantLink
 } from "@ddd-qc/cell-proxy";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
-import {DnaViewModel} from "./DnaViewModel";
+import {ActionHash, AgentPubKey} from "@holochain/client/lib/types";
+import {AnyLinkableHash, LinkType, ZomeIndex} from "@holochain/client/lib/hdk/link";
+
 
 /** */
 export interface CastLog {
@@ -27,8 +30,8 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
   /** Methods to override */
   protected handleAppTip(_appTip: Uint8Array, _from: AgentId): ZomeSignalProtocol | undefined { return undefined;}
-  protected async handleEntryPulse(_pulse: EntryPulse, _from: AgentId): Promise<void> {}
-  protected async handleLinkPulse(_pulse: LinkPulse, _from: AgentId): Promise<void> {}
+  protected async handleEntryPulse(_pulse: EntryPulseMat, _from: AgentId): Promise<void> {}
+  protected async handleLinkPulse(_pulse: LinkPulseMat, _from: AgentId): Promise<void> {}
 
 
   /** */
@@ -64,11 +67,13 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         }
       }
       if (ZomeSignalProtocolType.Entry in pulse) {
-        all.push(this.handleEntryPulse(pulse.Entry as EntryPulse, from));
+        const entryPulseMat = materializeEntryPulse(pulse.Entry as EntryPulse, (this.constructor as typeof ZomeViewModel).ENTRY_TYPES);
+        all.push(this.handleEntryPulse(entryPulseMat, from));
         continue;
       }
       if (ZomeSignalProtocolType.Link in pulse) {
-        all.push(this.handleLinkPulse(pulse.Link as LinkPulse, from));
+        const linkPulseMat = materializeLinkPulse(pulse.Link as LinkPulse, (this.constructor as typeof ZomeViewModel).LINK_TYPES);
+        all.push(this.handleLinkPulse(linkPulseMat, from));
         continue;
       }
     }
@@ -125,5 +130,71 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
       appSignals.push({timestamp: prettyDate(new Date(log.ts)), type, payload, count: log.peers.length, first: log.peers[0]});
     });
     console.table(appSignals);
+  }
+}
+
+
+export interface EntryPulseMat {
+  ah: ActionId,
+  state: string,
+  isNew: Boolean,
+  ts: Timestamp,
+  author: AgentId,
+  eh: EntryId,
+  entryType: string,
+  bytes: Uint8Array,
+}
+
+
+/** */
+export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string[]): EntryPulseMat {
+  console.log("materializeEntryPulse()", entryTypes);
+  const stateStr = Object.keys(entryPulse.state)[0];
+  return {
+    ah: new ActionId(entryPulse.ah),
+    state: stateStr,
+    isNew: (entryPulse.state as any)[stateStr],
+    ts: entryPulse.ts,
+    author: new AgentId(entryPulse.author),
+    eh: new EntryId(entryPulse.eh),
+    entryType: entryTypes[entryPulse.def.entry_index],
+    bytes: entryPulse.bytes,
+  }
+}
+
+
+export interface LinkMat {
+
+}
+
+export interface LinkPulseMat {
+  author: AgentId,
+  base: AnyLinkableId;
+  target: AnyLinkableId,
+  timestamp: Timestamp,
+  zome_index: ZomeIndex,
+  link_type: string,
+  tag: Uint8Array,
+  create_link_hash: ActionId,
+  /** */
+  state: string,
+  isNew: Boolean,
+}
+
+/** */
+export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]): LinkPulseMat {
+  console.log("materializeLinkPulse()", linkTypes);
+  const stateStr = Object.keys(linkPulse.state)[0];
+  return {
+    author: new AgentId(linkPulse.link.author),
+    base: intoLinkableId((linkPulse.link as any).base),
+    target: intoLinkableId(linkPulse.link.target),
+    timestamp: linkPulse.link.timestamp,
+    zome_index: linkPulse.link.zome_index,
+    link_type: linkTypes[linkPulse.link.link_type],
+    tag: linkPulse.link.tag,
+    create_link_hash: new ActionId(linkPulse.link.create_link_hash),
+    state: Object.keys(linkPulse.state)[0],
+    isNew: (linkPulse.state as any)[stateStr],
   }
 }

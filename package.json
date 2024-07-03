@@ -21,7 +21,7 @@
 
     "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
     "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w packages/profiles-dvm",
-    "build:happ"            : "npm run build:happ -w example && npm run build:happ:clone -w example",
+    "build:happ"            : "npm run build:happ -w example && npm run build:happ:clone -w example && bash scripts/ts-bindings-example.sh",
 
     "build:cell"            : "bash scripts/ts-bindings.sh && npm run build -w packages/cell-proxy",
     "build:libs"            : "npm run build:cell && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:notifications",

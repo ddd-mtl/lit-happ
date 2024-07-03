@@ -4,10 +4,10 @@ import {
   AgentIdMap,
   EntryId,
   getVariantByIndex,
-  intoLinkableId,
+  intoLinkableId, LinkPulseMat,
   ZomeViewModelWithSignals
 } from "@ddd-qc/lit-happ";
-import {LinkTypes, Profile} from "./bindings/profiles.types";
+import {Profile} from "./bindings/profiles.types";
 import {Timestamp} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
 import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
@@ -16,6 +16,8 @@ import {
   EntryTypesType,
   LinkPulse, StateChangeType,
 } from "./bindings/profilesAlt.types";
+import {EntryPulseMat} from "@ddd-qc/lit-happ/dist/ZomeViewModelWithSignals";
+import {ProfilesLinkType} from "./bindings/profiles.integrity";
 
 
 /** */
@@ -121,50 +123,39 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  async handleLinkPulse(pulse: LinkPulse, from: AgentId): Promise<void> {
-    const link = pulse.link;
-    const linkAh = new ActionId(link.create_link_hash);
-    const author = new AgentId(link.author);
-    const base = intoLinkableId((link as any).base);
-    const target = intoLinkableId(link.target);
-    const state = Object.keys(pulse.state)[0];
-    const isNew = (pulse.state as any)[state];
+  async handleLinkPulse(pulse: LinkPulseMat, from: AgentId): Promise<void> {
     /** */
-    switch (getVariantByIndex(LinkTypes, link.link_type)) {
-      case LinkTypes.PrefixPath:
-      case LinkTypes.PathToAgent:
+    switch (pulse.link_type) {
+      case ProfilesLinkType.PrefixPath:
+      case ProfilesLinkType.PathToAgent:
         break;
-      case LinkTypes.AgentToProfile:
-        if (state == StateChangeType.Delete) {
-          this.unstoreAgentProfile(base, target)
+      case ProfilesLinkType.AgentToProfile:
+        if (pulse.state == StateChangeType.Delete) {
+          this.unstoreAgentProfile(pulse.base, pulse.target)
         } else {
-          this.storeAgentProfile(base, target)
+          this.storeAgentProfile(pulse.base, pulse.target)
         }
-        if (isNew && from.b64 == this.cell.agentId.b64) {
-          await this.broadcastTip({Link: pulse});
-        }
+        // FIXME
+        // if (pulse.isNew && from.b64 == this.cell.agentId.b64) {
+        //   await this.broadcastTip({Link: pulse});
+        // }
         break;
     }
   }
 
 
   /** */
-  async handleEntryPulse(pulse: EntryPulse, from: AgentId) {
-    const entryType = getVariantByIndex(EntryTypesType, pulse.def.entry_index);
-    const author = new AgentId(pulse.author);
-    const ah = new ActionId(pulse.ah);
-    const eh = new EntryId(pulse.eh);
-    const state = Object.keys(pulse.state)[0];
-    const isNew = (pulse.state as any)[state];
-    switch (entryType) {
+  async handleEntryPulse(pulse: EntryPulseMat, from: AgentId) {
+    switch (pulse.entryType) {
       case EntryTypesType.Profile:
           const profile = decode(pulse.bytes) as Profile;
-        if (state != StateChangeType.Delete) {
-          this.storeProfile(ah, profile, pulse.ts);
+        if (pulse.state != StateChangeType.Delete) {
+          this.storeProfile(pulse.ah, profile, pulse.ts);
         }
-        if (isNew && from.b64 == this.cell.agentId.b64) {
-          await this.broadcastTip({Entry: pulse});
-        }
+        // FIXME
+        // if (isNew && from.b64 == this.cell.agentId.b64) {
+        //   await this.broadcastTip({Entry: pulse});
+        // }
         break;
     }
   }

@@ -136,8 +136,9 @@ export class PlaygroundApp extends HappElement {
         <br/>
         <!-- SELECT ENTRY TYPE -->
         <div style="margin-top: 5px;">
+          <dvm-inspect .dnaViewModel=${this.integerDvm}></dvm-inspect>
           <span>Select AppEntryType:</span>
-          <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
+          <entry-def-select .dnaViewModel=${this.integerDvm} @entrySelected=${this.onEntrySelect}></entry-def-select>
         </div>
         <div style="margin:10px;">
             <span><span id="entryLabel">none</span></span>

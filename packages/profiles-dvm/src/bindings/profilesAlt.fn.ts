@@ -8,8 +8,6 @@ export const profilesAltFunctionNames: FunctionName[] = [
 	"entry_defs", 
 	"get_zome_info", 
 	"get_dna_info",
-
-
 	"create_profile",
 	"update_profile",
 	"search_agents",

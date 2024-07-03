@@ -19,7 +19,6 @@ export const notificationsFunctionNames: FunctionName[] = [
 	"send_notification_tip",
 	"claim_notifier",
 	"find_a_notifier",
-
 	"list_notifiers",
 	"select_notifier",
 	"select_first_notifier",
@@ -29,14 +28,12 @@ export const notificationsFunctionNames: FunctionName[] = [
 	"retrieve_sent_notifications",
 	"was_it_sent",
 	"create_sent_notification",
-
 	"grant_unrestricted_capability",
 	"get_grants",
 	"create_twilio_credentials",
 	"get_twilio_credentials",
 	"update_twilio_credentials",
 	"delete_twilio_credentials",
-
 ];
 
 
