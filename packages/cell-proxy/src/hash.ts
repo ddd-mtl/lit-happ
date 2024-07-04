@@ -1,6 +1,10 @@
-import {decodeHashFromBase64, encodeHashToBase64, HoloHash, HoloHashB64} from "@holochain/client";
-//import {AbstractConstructor, CellMixin, Empty, GConstructor, ZomeMixin, ZomeSpecific} from "./mixins";
-//import {Cell} from "./cell";
+import {
+  decodeHashFromBase64,
+  dhtLocationFrom32,
+  encodeHashToBase64, HASH_TYPE_PREFIX,
+  HoloHash,
+  HoloHashB64,
+  } from "@holochain/client";
 
 
 /**
@@ -147,6 +151,17 @@ export function createHolochainId(hashType: HoloHashType) {
         throw new Error('The hash does not have the correct type. Expected ' + hashType + ', got: ' + type);
       }
     }
+    /** */
+    static from<T extends AHoloId>(start: T): AHoloId {
+      const core = Uint8Array.from(start.hash.slice(3, 35));
+      const newHash = Uint8Array.from([
+        ...HASH_TYPE_PREFIX[hashType],
+        ...core,
+        ...dhtLocationFrom32(core),
+      ]);
+      return new AHoloId(newHash)
+    }
+
   }
   /** */
   return AHoloId;

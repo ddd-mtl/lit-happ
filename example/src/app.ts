@@ -2,7 +2,7 @@ import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
   HvmDef,
-  HappElement,
+  HappElement, EntryId, AgentId,
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
@@ -66,7 +66,7 @@ export class PlaygroundApp extends HappElement {
 
   /** */
   async hvmConstructed(): Promise<void> {
-    console.log("hvmConstructed()")
+    console.log("hvmConstructed()", this.profilesDvm.cell.agentId);
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);
