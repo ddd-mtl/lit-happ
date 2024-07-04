@@ -1,10 +1,8 @@
 import {
   ActionId, ActionIdMap,
   AgentId,
-  AgentIdMap, dematerializeEntryPulse, dematerializeLinkPulse,
-  EntryId,
-  getVariantByIndex,
-  intoLinkableId, LinkPulseMat, ZomeViewModel,
+  AgentIdMap,
+  LinkPulseMat,
   ZomeViewModelWithSignals
 } from "@ddd-qc/lit-happ";
 import {Profile} from "./bindings/profiles.types";
@@ -12,9 +10,8 @@ import {Timestamp} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
 import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
 import {
-  EntryPulse,
   EntryTypesType,
-  LinkPulse, StateChangeType,
+  StateChangeType,
 } from "./bindings/profilesAlt.types";
 import {EntryPulseMat} from "@ddd-qc/lit-happ/dist/ZomeViewModelWithSignals";
 import {ProfilesLinkType} from "./bindings/profiles.integrity";

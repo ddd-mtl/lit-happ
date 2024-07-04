@@ -1,4 +1,4 @@
-import {AppSignalCb, Timestamp} from "@holochain/client";
+import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
 import {
   ActionId,
   AgentId, AnyLinkableId, EntryId,
@@ -69,7 +69,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const entryPulseMat = materializeEntryPulse(pulse.Entry as EntryPulse, (this.constructor as typeof ZomeViewModel).ENTRY_TYPES);
         all.push(this.handleEntryPulse(entryPulseMat, from));
         /** If new entry from this agent, broadcast to peers as tip */
-        if (entryPulseMat.isNew && from.b64 == this.cell.agentId.b64) {
+        if (entryPulseMat.isNew && from.b64 == this.cell.agentId.b64 && entryPulseMat.visibility == "Public") {
           all.push(this.broadcastTip({Entry: pulse.Entry as EntryPulse}));
         }
         continue;
@@ -149,6 +149,7 @@ export interface EntryPulseMat {
   author: AgentId,
   eh: EntryId,
   entryType: string,
+  visibility: EntryVisibility,
   bytes: Uint8Array,
 }
 
@@ -165,6 +166,7 @@ export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string
     author: new AgentId(entryPulse.author),
     eh: new EntryId(entryPulse.eh),
     entryType: entryTypes[entryPulse.def.entry_index],
+    visibility: entryPulse.def.visibility,
     bytes: entryPulse.bytes,
   }
 }
@@ -184,8 +186,8 @@ export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string
     eh: pulse.eh.hash,
     def: {
       entry_index: getIndexByVariant(entryTypes, pulse.entryType),
-      zome_index: 0, // Should not be used
-      visibility: "Public", // Should not be used, or grab actual value in EntryDefs
+      zome_index: 42, // Should not be used
+      visibility: pulse.visibility,
     },
     bytes: pulse.bytes,
   }
