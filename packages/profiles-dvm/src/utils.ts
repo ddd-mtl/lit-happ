@@ -1,7 +1,7 @@
-import {AgentPubKeyB64} from "@holochain/client";
-import {ProfilesPerspective} from "./profiles.zvm";
+import {ProfilesAltPerspective} from "./profilesAlt.zvm";
 import {Profile as ProfileMat} from "./bindings/profiles.types";
 import {html, TemplateResult} from "lit";
+import {AgentId} from "@ddd-qc/cell-proxy";
 
 /** */
 export function getInitials(nickname: string): string {
@@ -18,11 +18,11 @@ export function getInitials(nickname: string): string {
 
 
 /** */
-export function agent2avatar(key: AgentPubKeyB64, profilesPerspective: ProfilesPerspective): [ProfileMat, TemplateResult<1>] {
+export function agent2avatar(key: AgentId, profilesPerspective: ProfilesAltPerspective): [ProfileMat, TemplateResult<1>] {
     let profile = {nickname: "unknown", fields: {}} as ProfileMat;
-    const maybeProfile = profilesPerspective.profiles[key];
-    if (maybeProfile) {
-        profile = maybeProfile;
+    const maybeProfilePair = profilesPerspective.profiles.get(key);
+    if (maybeProfilePair) {
+        profile = maybeProfilePair[0];
     } else {
         console.log("Profile not found for agent", key, profilesPerspective.profiles)
     }

@@ -1,12 +1,12 @@
 import {
   ActionId, ActionIdMap,
   AgentId,
-  AgentIdMap,
+  AgentIdMap, EntryId,
   LinkPulseMat,
   ZomeViewModelWithSignals
 } from "@ddd-qc/lit-happ";
 import {Profile} from "./bindings/profiles.types";
-import {Timestamp} from "@holochain/client";
+import {hashFrom32AndType, Timestamp} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
 import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
 import {
@@ -127,10 +127,13 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
       case ProfilesLinkType.PathToAgent:
         break;
       case ProfilesLinkType.AgentToProfile:
+        const _agentEh = new EntryId(pulse.base.b64); // Make sure its an EntryHash
+        const agentHash = hashFrom32AndType(pulse.base.hash, "Agent");
+        const agentId = new AgentId(agentHash);
         if (pulse.state == StateChangeType.Delete) {
-          this.unstoreAgentProfile(pulse.base, pulse.target)
+          this.unstoreAgentProfile(agentId, pulse.target)
         } else {
-          this.storeAgentProfile(pulse.base, pulse.target)
+          this.storeAgentProfile(agentId, pulse.target)
         }
         break;
     }
