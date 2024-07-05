@@ -292,20 +292,20 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  async importPerspective(json: string, canPublish: boolean) {
+  async importPerspective(json: string, _canPublish: boolean) {
     const perspective = JSON.parse(json) as ProfilesAltPerspectiveCore;
-    if (canPublish) {
-      for (const [agentId, [profile, _ts]] of perspective.profiles.entries()) {
-        await this.createProfile(profile, agentId);
-      }
-      return;
-    }
+    // if (canPublish) {
+    //   for (const [profileAh, [profile, _ts]] of perspective.profiles.entries()) {
+    //     await this.createProfile(profile, agentId);
+    //   }
+    //   return;
+    // }
     /** */
-    for (const [actionId, [profile, ts]] of perspective.profiles.entries()) {
-      this.storeProfile(actionId, profile, ts);
+    for (const [profileAh, [profile, ts]] of perspective.profiles.entries()) {
+      this.storeProfile(profileAh, profile, ts);
     }
-    for (const [agentId, actionId] of perspective.profileByAgent.entries()) {
-      this.storeAgentProfile(agentId, actionId);
+    for (const [agentId, profileAh] of perspective.profileByAgent.entries()) {
+      this.storeAgentProfile(agentId, profileAh);
     }
   }
 

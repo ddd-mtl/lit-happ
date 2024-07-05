@@ -15,6 +15,7 @@
     "importHelpers": true,
     "declaration": true,
     "inlineSources": true,
+    "strictFunctionTypes": true,
     "sourceMap": true
   },
 }

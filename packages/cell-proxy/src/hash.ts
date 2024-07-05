@@ -6,7 +6,6 @@ import {
   HoloHashB64,
   } from "@holochain/client";
 
-
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
  */
@@ -97,7 +96,7 @@ export function validateHashB64(hash: HoloHashB64) {
     throw new Error("The hash must be a valid string");
   }
   if (hash.length !== 53) {
-    throw new Error("The hash must be exactly 53 characters long.");
+    throw new Error("The hash must be exactly 53 characters long. Got: " + hash.length);
   }
   if (!hasHoloHashType(hash)) {
     throw new Error("The hash must have a valid HoloHash type.");
@@ -152,6 +151,16 @@ export function createHolochainId(hashType: HoloHashType) {
       }
     }
     /** */
+    static empty(): AHoloId {
+      const empty = new Uint8Array(32);
+      const newHash = Uint8Array.from([
+        ...HASH_TYPE_PREFIX[hashType],
+        ...empty,
+        ...dhtLocationFrom32(empty),
+      ]);
+      return new AHoloId(newHash);
+    }
+    /** */
     static from<T extends AHoloId>(start: T): AHoloId {
       const core = Uint8Array.from(start.hash.slice(3, 35));
       const newHash = Uint8Array.from([
@@ -159,7 +168,7 @@ export function createHolochainId(hashType: HoloHashType) {
         ...core,
         ...dhtLocationFrom32(core),
       ]);
-      return new AHoloId(newHash)
+      return new AHoloId(newHash);
     }
 
   }
@@ -199,3 +208,33 @@ export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
     return externalId;
   }
 }
+
+
+export function testHoloId() {
+  console.log("testHoloId()");
+  const emptyAgent: AgentId = AgentId.empty();
+  const emptyAction: ActionId = ActionId.empty();
+  console.log("testHoloId()", emptyAction);
+  /** */
+  function printEh(eh: EntryId) {
+    console.log("printEh", eh);
+  }
+
+  printEh(emptyAction);
+}
+
+
+//import {EntryHash, ActionHash, AgentPubKey} from "@spartan-hc/holo-hash"
+
+// export function testHoloHash() {
+//   console.log("testHoloId()");
+//   const agent: AgentPubKey = new AgentPubKey("uhCAkz0Z-ImX9gNx7j4_uFMN1Yl-z8RCjq9jw1VRhViNP8VrddTD-");
+//   const emptyAction: ActionHash = new ActionHash("");
+//   console.log("testHoloId()", typeof emptyAction);
+//   /** */
+//   function printAh(ah: ActionHash) {
+//     console.log("printAh", ah);
+//   }
+//
+//   printAh(agent);
+// }

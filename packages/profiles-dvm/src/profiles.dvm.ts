@@ -23,7 +23,7 @@ export class ProfilesDvm extends DnaViewModel {
 
   /** QoL Helpers */
   get profilesZvm(): ProfilesZvm {
-    return this.getZomeViewModel(ProfilesZvm.DEFAULT_ZOME_NAME) as ProfilesZvm
+    return this.getZomeViewModel(ProfilesZvm.DEFAULT_ZOME_NAME) as ProfilesZvm;
   }
 
   /** -- Perspective -- */
