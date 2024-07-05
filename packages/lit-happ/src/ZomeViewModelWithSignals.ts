@@ -211,7 +211,7 @@ export interface LinkPulseMat {
 
 /** */
 export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]): LinkPulseMat {
-  console.log("materializeLinkPulse()", linkTypes);
+  //console.log("materializeLinkPulse()", linkTypes);
   const stateStr = Object.keys(linkPulse.state)[0];
   return {
     author: new AgentId(linkPulse.link.author),
@@ -231,7 +231,7 @@ export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]):
 export function dematerializeLinkPulse(pulse: LinkPulseMat, linkTypes: string[]): LinkPulse {
   let state: Object = {};
   state[pulse.state] = pulse.isNew;
-  console.log("dematerializeLinkPulse()", state);
+  //console.log("dematerializeLinkPulse()", state);
   /** */
   return {
     state: state as StateChange,

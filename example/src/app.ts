@@ -2,7 +2,7 @@ import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
   HvmDef,
-  HappElement, EntryId, AgentId,
+  HappElement,
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
@@ -12,7 +12,9 @@ import "./elements/integer-list";
 import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
+import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
 import {ProfilesAltDvm} from "@ddd-qc/profiles-dvm/dist/profilesAlt.dvm";
+import {Profile} from "@ddd-qc/profiles-dvm";
 
 
 /**
@@ -177,23 +179,36 @@ export class PlaygroundApp extends HappElement {
             <label-list></label-list>
         </cell-context>
         <!-- Impostor cell -->
-        ${maybeImpostor}          
+        ${maybeImpostor}
+        <!-- Profiles cell -->
+        <cell-context .cell=${this.profilesDvm.cell}>
+            <hr class="solid">
+            <h2>
+                Real Role: ${this.profilesDvm.hcl.toString()}
+                <input type="button" value="dump calls" @click=${(e: any) => this.profilesDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(e: any) => this.profilesDvm.dumpSignalLogs()}>
+            </h2>
+            <profiles-edit-profile 
+                    .profile=${this.profilesDvm.profilesZvm.getMyProfile()}
+                    @save-profile=${(e: CustomEvent<Profile>) => this.onSaveProfile(e.detail)}
+                    @lang-selected=${(e: CustomEvent) => {
+                        console.log("set locale", e.detail);
+                        //setLocale(e.detail)
+                    }}
+            ></profiles-edit-profile>
+        </cell-context>
     `
   }
 
 
-  // /** */
-  // static get scopedElements() {
-  //   return {
-  //     "entry-def-select": EntryDefSelect,
-  //     "named-integer-inspect": NamedIntegerInspect,
-  //     "named-real-inspect": NamedRealInspect,
-  //     "integer-list": IntegerList,
-  //     "real-list": RealList,
-  //     "label-list": LabelList,
-  //     "cell-context": CellContext,
-  //   };
-  // }
+  /** */
+  private async onSaveProfile(profile: Profile) {
+    console.log("onSaveProfile()", profile);
+    try {
+      await this.profilesDvm.profilesZvm.updateMyProfile(profile);
+    } catch(e) {
+      await this.profilesDvm.profilesZvm.createMyProfile(profile);
+    }
+  }
 }
 
-//DummyApp.addInitializer(initializeHapp);

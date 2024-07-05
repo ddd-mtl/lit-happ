@@ -3,7 +3,7 @@ import {
   AppSignal, AppSignalCb,
 } from "@holochain/client";
 import {ProfilesZvm} from "./profiles.zvm";
-import {ProfilesAltZvm} from "./profilesAlt.zvm";
+
 
 /** */
 // export interface ProfilesDnaPerspective {

@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "@ddd-qc/lit-happ": "file:../",
+    "@ddd-qc/profiles-dvm": "file:../",
     "@lit/context": "1.0.1",
     "lit": "3.0.2"
   }

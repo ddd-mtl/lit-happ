@@ -6,7 +6,7 @@ import {
   ZomeViewModelWithSignals
 } from "@ddd-qc/lit-happ";
 import {Profile} from "./bindings/profiles.types";
-import {hashFrom32AndType, Timestamp} from "@holochain/client";
+import {Timestamp} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
 import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
 import {
@@ -77,6 +77,9 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   private _perspective: ProfilesAltPerspective = createProfilesAltPerspective();
 
+
+  /** -- Getters -- */
+
   getMyProfile(): Profile | undefined {
     const pair = this._perspective.profiles.get(this.cell.agentId)
     if (!pair) {
@@ -118,6 +121,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   getNames(): string[] { return Object.keys(this._perspective.agentByName)}
 
 
+  /** -- Signals -- */
 
   /** */
   async handleLinkPulse(pulse: LinkPulseMat, from: AgentId): Promise<void> {
@@ -152,7 +156,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   }
 
 
-  /** -- perspective -- */
+  /** -- Import / Export -- */
 
   /** Dump perspective as JSON */
   exportPerspective(): string {
