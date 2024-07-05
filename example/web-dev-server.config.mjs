@@ -22,7 +22,7 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
   nodeResolve: {
     preferBuiltins: false,
     browser: true,
-    exportConditions: ['browser', 'development'],
+    exportConditions: ['browser', HAPP_BUILD_MODE === 'Debug' ? 'development' : ''],
   },
 
   rootDir: '../',

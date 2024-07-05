@@ -80,14 +80,6 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** -- Getters -- */
 
-  getMyProfile(): Profile | undefined {
-    const pair = this._perspective.profiles.get(this.cell.agentId)
-    if (!pair) {
-      return undefined;
-    }
-    return pair[0];
-  }
-
   getProfileAgent(profileId: ActionId): AgentId | undefined {
     for (const [agentId, profId] of this._perspective.profileByAgent.entries()) {
       if (profileId.b64 == profId.b64) {
@@ -97,14 +89,22 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
     return undefined;
   }
 
+  getMyProfile(): Profile | undefined {
+    return this.getProfile(this.cell.agentId);
+  }
+
   getProfile(agent: AgentId): Profile | undefined {
     const profileAh = this._perspective.profileByAgent.get(agent);
+    console.log("ProfilesAltZvm.getProfile()", agent, profileAh);
     if (!profileAh) {
       return undefined;
     }
     const pair = this._perspective.profiles.get(profileAh);
+    console.log("ProfilesAltZvm.getProfile() pair", pair);
+    if (!pair) {
+      return undefined;
+    }
     return pair[0];
-
   }
 
   getProfileTs(agent: AgentId): Timestamp | undefined {
@@ -128,9 +128,15 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
     /** */
     switch (pulse.link_type) {
       case ProfilesLinkType.PrefixPath:
-      case ProfilesLinkType.PathToAgent:
-        break;
-      case ProfilesLinkType.AgentToProfile:
+      case ProfilesLinkType.PathToAgent: {
+        const agentEh = new EntryId(pulse.target.b64);
+        const agentId = AgentId.from(agentEh);
+        if (pulse.state != StateChangeType.Delete) {
+          await this.findProfile(agentId);
+        }
+      }
+      break;
+      case ProfilesLinkType.AgentToProfile: {
         const agentEh = new EntryId(pulse.base.b64); // Make sure its an EntryHash
         const agentId = AgentId.from(agentEh);
         if (pulse.state == StateChangeType.Delete) {
@@ -138,7 +144,8 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
         } else {
           this.storeAgentProfile(agentId, pulse.target)
         }
-        break;
+      }
+      break;
     }
   }
 
@@ -154,6 +161,84 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
         break;
     }
   }
+
+
+
+  /** -- Store -- */
+
+  /** */
+  storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
+    console.log("ProfilesAltZvm.storeProfile()", profileAh, profile.nickname);
+    this._perspective.profiles.set(profileAh, [profile, ts]);
+    const agentId = this.getProfileAgent(profileAh);
+    if (agentId) {
+      this._perspective.agentByName[profile.nickname] = agentId;
+    }
+  }
+
+  /** */
+  storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
+    console.log("ProfilesAltZvm.storeAgentProfile()", agentId, profileAh);
+    this._perspective.profileByAgent.set(agentId, profileAh);
+    const pair = this._perspective.profiles.get(profileAh);
+    if (pair) {
+      this._perspective.agentByName[pair[0].nickname] = agentId;
+    }
+  }
+
+  /** */
+  unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
+    console.log("ProfilesAltZvm.unstoreAgentProfile()", agentId, profileAh);
+    this._perspective.profileByAgent.delete(agentId);
+    const pair = this._perspective.profiles.get(profileAh);
+    if (pair) {
+      delete this._perspective.agentByName[pair[0].nickname];
+    }
+  }
+
+
+  /** -- Methods -- */
+
+  /** */
+  async probeAllProfiles()/*: Promise<Record<AgentPubKeyB64, ProfileMat>>*/ {
+    await this.zomeProxy.probeProfiles();
+  }
+
+
+  /** */
+  async findProfile(agentId: AgentId): Promise<Profile | undefined> {
+    const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
+    console.log("findProfile() maybeProfilePair", maybeProfilePair);
+    if (!maybeProfilePair) {
+      return;
+    }
+    return maybeProfilePair[1];
+  }
+
+
+  /** */
+  async createMyProfile(profile: Profile): Promise<void> {
+    const _ah = await this.zomeProxy.createProfile([profile, this.cell.agentId.hash]);
+  }
+
+
+  /** */
+  async updateMyProfile(profile: Profile): Promise<void> {
+    const _ah = await this.zomeProxy.updateProfile([profile, this.cell.agentId.hash]);
+  }
+
+
+  /** */
+  async createProfile(profile: Profile, agentId: AgentId): Promise<void> {
+    const _ah = await this.zomeProxy.createProfile([profile, agentId.hash]);
+  }
+
+
+  /** */
+  async updateProfile(profile: Profile, agentId: AgentId): Promise<void> {
+    const _ah = await this.zomeProxy.updateProfile([profile, agentId.hash]);
+  }
+
 
 
   /** -- Import / Export -- */
@@ -184,78 +269,5 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
     }
   }
 
-
-  /** -- Store -- */
-
-
-  /** */
-  storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
-    this._perspective.profiles.set(profileAh, [profile, ts]);
-    const agentId = this.getProfileAgent(profileAh);
-    if (agentId) {
-      this._perspective.agentByName[profile.nickname] = agentId;
-    }
-  }
-
-  /** */
-  storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    this._perspective.profileByAgent.set(agentId, profileAh);
-    const pair = this._perspective.profiles.get(profileAh);
-    if (pair) {
-      this._perspective.agentByName[pair[0].nickname] = agentId;
-    }
-  }
-
-  /** */
-  unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    this._perspective.profileByAgent.delete(agentId);
-    const pair = this._perspective.profiles.get(profileAh);
-    if (pair) {
-      delete this._perspective.agentByName[pair[0].nickname];
-    }
-  }
-
-
-  /** -- Methods -- */
-
-  /** */
-  async probeAllProfiles()/*: Promise<Record<AgentPubKeyB64, ProfileMat>>*/ {
-    await this.zomeProxy.probeProfiles();
-  }
-
-
-  /** */
-  async findProfile(agentId: AgentId): Promise<Profile | undefined> {
-    const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
-    console.log("probeProfile() maybeProfilePair", maybeProfilePair);
-    if (!maybeProfilePair) {
-      return;
-    }
-    return maybeProfilePair[1];
-  }
-
-
-  /** */
-  async createMyProfile(profile: Profile): Promise<void> {
-    const _ah = await this.zomeProxy.createProfile([profile, this.cell.agentId.hash]);
-  }
-
-
-  /** */
-  async updateMyProfile(profile: Profile): Promise<void> {
-    const _ah = await this.zomeProxy.updateProfile([profile, this.cell.agentId.hash]);
-  }
-
-
-  /** */
-  async createProfile(profile: Profile, agentId: AgentId): Promise<void> {
-    const _ah = await this.zomeProxy.createProfile([profile, agentId.hash]);
-  }
-
-
-  /** */
-  async updateProfile(profile: Profile, agentId: AgentId): Promise<void> {
-    const _ah = await this.zomeProxy.updateProfile([profile, agentId.hash]);
-  }
 
 }

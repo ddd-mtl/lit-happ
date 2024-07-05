@@ -72,8 +72,13 @@ export class PlaygroundApp extends HappElement {
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);
-    const maybeProfile = await this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId);
-    console.log("maybeProfile", maybeProfile);
+    // const maybeProfile = await this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId);
+    // console.log("maybeProfile", maybeProfile);
+    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId).then((maybeProfile) => {
+      console.log("maybeProfile", maybeProfile);
+      this.requestUpdate();
+    })
+
   }
 
 
@@ -109,7 +114,8 @@ export class PlaygroundApp extends HappElement {
 
   /** */
   render() {
-    console.log("<playground-app> render()", this.hvm);
+    const myProfile = this.profilesDvm.profilesZvm.getMyProfile();
+    console.log("<playground-app> render()", myProfile, this.hvm);
 
     if (!this._initializedOffline) {
       return html`<span>Loading...</span>`;
@@ -189,7 +195,7 @@ export class PlaygroundApp extends HappElement {
                 <input type="button" value="dump signals" @click=${(e: any) => this.profilesDvm.dumpSignalLogs()}>
             </h2>
             <profiles-edit-profile 
-                    .profile=${this.profilesDvm.profilesZvm.getMyProfile()}
+                    .profile=${myProfile}
                     @save-profile=${(e: CustomEvent<Profile>) => this.onSaveProfile(e.detail)}
                     @lang-selected=${(e: CustomEvent) => {
                         console.log("set locale", e.detail);
