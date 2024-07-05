@@ -5,12 +5,11 @@ import {
   AgentIdMap,
   enc64,
   EntryId,
-  getVariantByIndex,
   LinkPulseMat, materializeEntryPulse, materializeLinkPulse,
   prettyDate,
   prettyState,
   SignalLog,
-  SignalType,
+  SignalType, StateChangeType,
   TipProtocol,
   ZomeSignal,
   ZomeSignalProtocol,
@@ -21,10 +20,6 @@ import {Profile} from "./bindings/profiles.types";
 import {Timestamp} from "@holochain/client";
 import {decode} from "@msgpack/msgpack";
 import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
-import {
-  EntryTypesType,
-  StateChangeType,
-} from "./bindings/profilesAlt.types";
 import {EntryPulseMat} from "@ddd-qc/lit-happ/dist/ZomeViewModelWithSignals";
 import {ProfilesLinkType} from "./bindings/profiles.integrity";
 import {ProfilesAltLinkType, ProfilesAltUnitEnum} from "./bindings/profilesAlt.integrity";
@@ -166,7 +161,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   /** */
   async handleEntryPulse(pulse: EntryPulseMat, from: AgentId) {
     switch (pulse.entryType) {
-      case EntryTypesType.Profile:
+      case ProfilesAltUnitEnum.Profile:
           const profile = decode(pulse.bytes) as Profile;
         if (pulse.state != StateChangeType.Delete) {
           this.storeProfile(pulse.ah, profile, pulse.ts);
