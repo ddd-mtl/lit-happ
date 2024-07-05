@@ -8,4 +8,4 @@ zits -d 'import {NotificationsLinkType as LinkTypes} from "./notifications.integ
 
 zits -d 'import {ProfilesLinkType as LinkTypes} from "./profiles.integrity"' -i submodules/profiles/crates/coordinator -i submodules/profiles/crates/integrity -o packages/profiles-dvm/src/bindings/profiles.ts
 
-zits --default-zome-name profiles -i submodules/profiles_alt_zome/crates/alt_coordinator -i submodules/profiles/crates/integrity -o packages/profiles-dvm/src/bindings/profilesAlt.ts
+zits --default-zome-name profiles -f "cast_tip" -i submodules/profiles_alt_zome/crates/alt_coordinator -i submodules/profiles/crates/integrity -o packages/profiles-dvm/src/bindings/profilesAlt.ts
