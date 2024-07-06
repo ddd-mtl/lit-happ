@@ -146,11 +146,12 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
       break;
       case ProfilesLinkType.AgentToProfile: {
         const agentEh = new EntryId(pulse.base.b64); // Make sure its an EntryHash
-        const agentId: AgentId = AgentId.from(agentEh);
+        const agentId = AgentId.from(agentEh);
+        const profileAh = ActionId.from(pulse.target);
         if (pulse.state == StateChangeType.Delete) {
-          this.unstoreAgentProfile(agentId, pulse.target)
+          this.unstoreAgentProfile(agentId, profileAh)
         } else {
-          this.storeAgentProfile(agentId, pulse.target)
+          this.storeAgentProfile(agentId, profileAh)
         }
       }
       break;

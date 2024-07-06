@@ -98,7 +98,7 @@ export function validateHashB64(hash: HoloHashB64, hashType?: HoloHashType) {
   if (hash.length !== 53) {
     throw new Error("The hash must be exactly 53 characters long. Got: " + hash.length);
   }
-  if(hashType && !hasHoloHashType(hashType) || !hasHoloHashType(hash)) {
+  if((hashType && !isHashTypeB64(hash, hashType)) || !hasHoloHashType(hash)) {
     throw new Error("The hash must have a valid HoloHash type.");
   }
 }
@@ -126,15 +126,38 @@ export abstract class HolochainId {
     return (this.constructor as typeof HolochainId).HASH_TYPE;
   }
 
-  /** Validate */
+  /** ctor: validate */
   constructor(input: HoloHashB64 | HoloHash) {
     if (typeof(input) != 'string') {
       input = encodeHashToBase64(input);
     }
-    console.log("HolochainId.ctor()", HolochainId.HASH_TYPE, this.hashType)
     validateHashB64(input, this.hashType);
     this.b64 = input;
   }
+
+  /** */
+  static empty<T extends HolochainId>(this: any): T {
+    const empty = new Uint8Array(32);
+    const newHash = Uint8Array.from([
+      ...HASH_TYPE_PREFIX[this.HASH_TYPE],
+      ...empty,
+      ...dhtLocationFrom32(empty),
+    ]);
+    return new this(newHash);
+  }
+
+  /** */
+  static from<T extends HolochainId, Z extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => Z, start: T): Z {
+    const core = Uint8Array.from(start.hash.slice(3, 35));
+    const hashType = (this as unknown as typeof HolochainId).HASH_TYPE;
+    const newHash = Uint8Array.from([
+      ...HASH_TYPE_PREFIX[hashType],
+      ...core,
+      ...dhtLocationFrom32(core),
+    ]);
+    return new this(newHash);
+  }
+
 
   toString(): string {return this.b64;}
 
@@ -143,73 +166,8 @@ export abstract class HolochainId {
   get short(): string { return this.b64.slice(5, 13); }
 
   print(): string { return `${this.short} (${this.hashType})`}
-
-  static empty<T extends HolochainId>(): T {
-    const hashType = (this.constructor as typeof HolochainId).HASH_TYPE;
-    const empty = new Uint8Array(32);
-    const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[hashType],
-      ...empty,
-      ...dhtLocationFrom32(empty),
-    ]);
-    return this.constructor(newHash) as T;
-  }
-
-  static from<T extends HolochainId, Z extends HolochainId>(start: T): Z {
-    const hashType = (this.constructor as typeof HolochainId).HASH_TYPE;
-    const core = Uint8Array.from(start.hash.slice(3, 35));
-    const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[hashType],
-      ...core,
-      ...dhtLocationFrom32(core),
-    ]);
-    return this.constructor(newHash) as Z;
-  }
 }
 
-
-
-// /** Mixin */
-// export function createHolochainId(hashType: HoloHashType) {
-//   abstract class AHoloId extends HolochainId {
-//     constructor(input: HoloHashB64 | HoloHash) {
-//       super(input, hashType);
-//       const type = getHashType(this.b64);
-//       if (hashType != type) {
-//         throw new Error('The hash does not have the correct type. Expected ' + hashType + ', got: ' + type);
-//       }
-//     }
-//     /** */
-//     static empty<T extends AHoloId>(): T {
-//       const empty = new Uint8Array(32);
-//       const newHash = Uint8Array.from([
-//         ...HASH_TYPE_PREFIX[hashType],
-//         ...empty,
-//         ...dhtLocationFrom32(empty),
-//       ]);
-//       return new AHoloId(newHash) as T;
-//     }
-//     /** */
-//     static from<T extends AHoloId, Z extends AHoloId>(start: T): Z {
-//       const core = Uint8Array.from(start.hash.slice(3, 35));
-//       const newHash = Uint8Array.from([
-//         ...HASH_TYPE_PREFIX[hashType],
-//         ...core,
-//         ...dhtLocationFrom32(core),
-//       ]);
-//       return new AHoloId(newHash) as Z;
-//     }
-
-//   }
-//   /** */
-//   return AHoloId;
-// }
-
-// export class ActionId extends createHolochainId(HoloHashType.Action) { action() {} }
-// export class AgentId extends createHolochainId(HoloHashType.Agent) { agent() {} }
-// export class DnaId extends createHolochainId(HoloHashType.Dna) { dna() {}}
-// export class EntryId extends createHolochainId(HoloHashType.Entry) { entry() {} }
-// export class ExternalId extends createHolochainId(HoloHashType.External) { external() {}}
 
 export class ActionId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Action; action() {} }
 export class AgentId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Agent; agent() {} }
@@ -249,9 +207,9 @@ export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
 /** */
 export function testHoloId() {
   console.log("testHoloId()");
-  const emptyAgent: AgentId = AgentId.empty();
-  const emptyAction: ActionId = ActionId.empty();
-  const emptyEntry: EntryId = EntryId.from(emptyAgent);
+  const emptyAgent = AgentId.empty();
+  const emptyAction = ActionId.empty();
+  const emptyEntry = EntryId.from(emptyAgent);
 
   console.log("testHoloId()", emptyAction);
   /** */
