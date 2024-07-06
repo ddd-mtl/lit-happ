@@ -15,7 +15,7 @@ import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
 import {ProfilesAltDvm} from "@ddd-qc/profiles-dvm/dist/profilesAlt.dvm";
 import {Profile} from "@ddd-qc/profiles-dvm";
-
+import {testHoloId} from "@ddd-qc/cell-proxy"
 
 /**
  *
@@ -116,7 +116,7 @@ export class PlaygroundApp extends HappElement {
   render() {
     const myProfile = this.profilesDvm.profilesZvm.getMyProfile();
     console.log("<playground-app> render()", myProfile, this.hvm);
-    //testHoloHash();
+    testHoloId();
 
     if (!this._initializedOffline) {
       return html`<span>Loading...</span>`;
@@ -191,7 +191,7 @@ export class PlaygroundApp extends HappElement {
         <cell-context .cell=${this.profilesDvm.cell}>
             <hr class="solid">
             <h2>
-                Real Role: ${this.profilesDvm.hcl.toString()}
+                Profiles Role: ${this.profilesDvm.hcl.toString()}
                 <input type="button" value="dump calls" @click=${(e: any) => this.profilesDvm.dumpCallLogs()}>
                 <input type="button" value="dump signals" @click=${(e: any) => this.profilesDvm.dumpSignalLogs()}>
             </h2>
