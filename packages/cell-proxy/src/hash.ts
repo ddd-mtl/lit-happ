@@ -158,8 +158,8 @@ export abstract class HolochainId {
     return new this(newHash);
   }
 
-
-  toString(): string {return this.b64;}
+  // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit
+  //toString(): string {return this.b64;}
 
   get hash(): HoloHash { return dec64(this.b64) }
   /** First 8 chars of the Core */
