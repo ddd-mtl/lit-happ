@@ -159,6 +159,8 @@ export abstract class HolochainId {
   }
 
   // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit
+  toString(): string {throw Error("Implicit conversion of HolochainId to string")}
+
   //toString(): string {return this.b64;}
 
   get hash(): HoloHash { return dec64(this.b64) }

@@ -1,8 +1,8 @@
 import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
 import {
   ActionId,
-  AgentId, AnyLinkableId, EntryId,
-  EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, StateChange,
+  AgentId, AnyLinkableId, enc64, EntryId,
+  EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, prettyState, SignalLog, SignalType, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
   ZomeSignalProtocolType, ZomeSignalProtocolVariantEntry, ZomeSignalProtocolVariantLink
@@ -10,6 +10,8 @@ import {
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {ZomeIndex} from "@holochain/client/lib/hdk/link";
+import {ProfilesAltLinkType, ProfilesAltUnitEnum} from "@ddd-qc/profiles-dvm/dist/bindings/profilesAlt.integrity";
+import {decode} from "@msgpack/msgpack";
 
 
 /** */
@@ -138,8 +140,42 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     });
     console.table(appSignals);
   }
+
+  /** */
+  dumpSignalLogs(signalLogs: SignalLog[]) {
+    this.dumpCastLogs();
+    console.warn(`Signals received from zome "${this.zomeName}"`);
+    let appSignals: any[] = [];
+    signalLogs
+      .filter((log) => log.type == SignalType.Zome)
+      .map((log) => {
+        const signal = log.zomeSignal as ZomeSignal;
+        const pulses = signal.pulses as ZomeSignalProtocol[];
+        const timestamp = prettyDate(new Date(log.ts));
+        const from = enc64(signal.from) == this.cell.agentId.b64? "self" : new AgentId(signal.from);
+        for (const pulse of pulses) {
+          if (ZomeSignalProtocolType.Tip in pulse) {
+            const tip: TipProtocol = pulse.Tip;
+            const type = Object.keys(tip)[0];
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Tip, type, payload: tip});
+          }
+          if (ZomeSignalProtocolType.Entry in pulse) {
+            const entryPulse = materializeEntryPulse(pulse.Entry, Object.values(this.zomeProxy.entryTypes));
+            const typedEntry = decode(entryPulse.bytes);
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Entry, state: prettyState(pulse.Entry.state), type: entryPulse.entryType, payload: typedEntry, ah_base: entryPulse.ah.short, eh_target: entryPulse.eh.short});
+          }
+          if (ZomeSignalProtocolType.Link in pulse) {
+            const linkPulse = materializeLinkPulse(pulse.Link, Object.values(this.zomeProxy.linkTypes));
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Link, state: prettyState(pulse.Link.state), type: linkPulse.link_type, payload: linkPulse.tag, ah_base: linkPulse.base.print(), eh_target: linkPulse.target.print()});
+          }
+        }
+      });
+    console.table(appSignals);
+  }
 }
 
+
+/** -- Materialze -- */
 
 export interface EntryPulseMat {
   ah: ActionId,

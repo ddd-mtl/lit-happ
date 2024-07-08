@@ -11,19 +11,21 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
   /** */
   constructor() {
+    console.log(`<integer-list>.ctor()`)
     super(IntegerZvm.DEFAULT_ZOME_NAME)
   }
 
 
   /** */
   async onProbe(e: any) {
+    console.log(`\t\t <integer-list>.onProbe()`)
     await this._zvm.probeAll();
   }
 
 
 
   protected async zvmUpdated(newZvm: IntegerZvm, oldZvm?: IntegerZvm): Promise<void> {
-    console.log(`\t\t IntegerList zvmUpdated() called`)
+    console.log(`\t\t <integer-list>.zvmUpdated()`)
   }
 
 
@@ -40,7 +42,7 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
   /** */
   render() {
-    console.log("<integer-list> render(): " + this.cell.print());
+    console.log("<integer-list>.render(): " + this.cell.print());
 
     //console.log("integer-list:", this.perspective.values)
 

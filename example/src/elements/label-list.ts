@@ -33,7 +33,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
   /** */
   render() {
-    console.log(`<label-list> render(): ${this.cell.print()}`);
+    console.log(`<label-list>.render(): ${this.cell.print()}`);
 
     //console.log("label-list:", this.perspective.names)
 

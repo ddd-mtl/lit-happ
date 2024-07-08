@@ -38,17 +38,17 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   private _values: number[] = [];
   private _knowns: ActionHash[] = [];
 
-  readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
-    console.warn("Signal for zInteger zome received:", appSignal);
-  }
-
-
-  /** */
-  dumpSignalLogs(signalLogs: SignalLog[]) {
-    console.warn(`App signals from zome "${this.zomeName}"`);
-    const appSignals = signalLogs.filter((log) => log.type == SignalType.Zome);
-    console.table(prettySignalLogs(appSignals));
-  }
+  // readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
+  //   console.warn("Signal for zInteger zome received:", appSignal);
+  // }
+  //
+  //
+  // /** */
+  // dumpSignalLogs(signalLogs: SignalLog[]) {
+  //   console.warn(`App signals from zome "${this.zomeName}"`);
+  //   const appSignals = signalLogs.filter((log) => log.type == SignalType.Zome);
+  //   console.table(prettySignalLogs(appSignals));
+  // }
 
 
   /** */
