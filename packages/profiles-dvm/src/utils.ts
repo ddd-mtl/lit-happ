@@ -1,4 +1,3 @@
-import {ProfilesAltPerspective} from "./profilesAlt.zvm";
 import {Profile as ProfileMat} from "./bindings/profiles.types";
 import {html, TemplateResult} from "lit";
 import {AgentId} from "@ddd-qc/cell-proxy";
@@ -18,18 +17,10 @@ export function getInitials(nickname: string): string {
 
 
 /** */
-export function agent2avatar(key: AgentId, profilesPerspective: ProfilesAltPerspective): [ProfileMat, TemplateResult<1>] {
-    const maybeProfileId = profilesPerspective.profileByAgent.get(key);
-    if (!maybeProfileId) {
-        console.log("ProfileAh not found for agent", key, profilesPerspective.profiles);
-        throw Error("ProfileAh not found for agent")
-    }
-    let profile = {nickname: "unknown", fields: {}} as ProfileMat;
-    const maybeProfilePair = profilesPerspective.profiles.get(maybeProfileId);
-    if (maybeProfilePair) {
-        profile = maybeProfilePair[0]
-    } else {
-        console.log("Profile not found for agent", key, profilesPerspective.profiles);
+export function agent2avatar(key: AgentId, profile?: ProfileMat): [ProfileMat, TemplateResult<1>] {
+    if (!profile) {
+        console.warn("agent2avatar() No Profile arg", key);
+        profile = {nickname: "unknown", fields: {}} as ProfileMat;
     }
     const initials = getInitials(profile.nickname);
     const avatarUrl = profile.fields['avatar'];
