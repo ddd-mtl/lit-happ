@@ -2,17 +2,27 @@ import {
     AdminWebsocket,
     Record,
     AppWebsocket,
-    ListAppsResponse,
+    ListAppsResponse, CellId,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
 import { setBasePath, getBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
-import {EntryId, HappElement} from "@ddd-qc/lit-happ";
+import {DnaId, EntryId, HappElement} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 import {emptyRenderInfo} from "./mocks/renderInfoMock";
 import {AppletViewInfo} from "./index";
 import {AppletView, RenderInfo} from "@lightningrodlabs/we-applet";
 import {AgentPubKeyMap} from "@holochain-open-dev/utils";
+
+export class ProfilesZomeMockFix extends ProfilesZomeMock {
+    get cellId() {
+        return [
+            DnaId.empty(112).hash,
+            this.myPubKey,
+        ] as CellId;
+    }
+
+}
 
 
 /** */
@@ -26,10 +36,13 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     const localStorageId = names.installed_app_id + "-id";
 
     /** Store AppletId in LocalStorage, so we can retrieve it when refereshing webpage */
-    let devtestAppletId = window.localStorage[localStorageId];
-    if (!devtestAppletId) {
+    let devtestAppletId;
+    let devtestAppletIdB64 = window.localStorage[localStorageId];
+    if (!devtestAppletIdB64) {
         devtestAppletId = await EntryId.random();
-        window.localStorage[localStorageId] = devtestAppletId;
+        window.localStorage[localStorageId] = devtestAppletId.b64;
+    } else {
+        devtestAppletId = new EntryId(devtestAppletIdB64);
     }
     console.log("setupDevtest() devtestAppletId", devtestAppletId);
 
@@ -68,7 +81,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     }
 
     /** Creating mock lobby app with profiles dna & zome */
-    const mockProfilesZome = new ProfilesZomeMock(new AgentPubKeyMap<Record>(), mainCellId[1]);
+    const mockProfilesZome = new ProfilesZomeMockFix(new AgentPubKeyMap<Record>(), mainCellId[1]);
     //console.log("mock agentId", mockProfilesZome.myPubKey);
     //mockProfilesZome.myPubKey = mainCellId[1];
     //console.log("mock agentId", encodeHashToBase64(mockProfilesZome.myPubKey));
@@ -82,6 +95,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     renderInfo.profilesClient = new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby");
     renderInfo.appletClient = appAgentWs;
     renderInfo.appletHash = devtestAppletId.b64;
+    console.log("setupDevtest() renderInfo", renderInfo);
     /** Determine renderInfo.view */
     if (appletView) {
         renderInfo.view = appletView;

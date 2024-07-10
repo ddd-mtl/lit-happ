@@ -9,7 +9,7 @@ import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 
 /** */
 export async function setup(appletServices: AppletServices, createApplet: CreateAppletFn, devtestNames: DevTestNames, createWeServicesMock?: CreateWeServicesMockFn): Promise<HappElement> {
-    console.log("HAPP_ENV", HAPP_ENV);
+    //console.log("HAPP_ENV", HAPP_ENV);
     if (HAPP_ENV == HappEnvType.DevtestWe) {
         return setupDevtest(createApplet, devtestNames, createWeServicesMock? createWeServicesMock : createDefaultWeServicesMock);
     } else {

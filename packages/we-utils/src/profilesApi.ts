@@ -14,7 +14,10 @@ import {ProfilesClient} from "@holochain-open-dev/profiles";
  */
 export class ProfilesApi implements AppClient {
 
-  constructor(private _profilesClient: ProfilesClient/*, public appId: InstalledAppId*/) { }
+  constructor(private _profilesClient: ProfilesClient/*, public appId: InstalledAppId*/) {
+    this.myPubKey = _profilesClient.client.myPubKey;
+    this.installedAppId = _profilesClient.client.installedAppId;
+  }
 
   /** -- AppClient -- */
 
