@@ -103,12 +103,12 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   getProfile(agent: AgentId): Profile | undefined {
     const profileAh = this._perspective.profileByAgent.get(agent);
-    console.log("ProfilesAltZvm.getProfile()", agent, profileAh);
+    //console.log("ProfilesAltZvm.getProfile()", agent, profileAh);
     if (!profileAh) {
       return undefined;
     }
     const pair = this._perspective.profiles.get(profileAh);
-    console.log("ProfilesAltZvm.getProfile() pair", pair);
+    //console.log("ProfilesAltZvm.getProfile() pair", pair);
     if (!pair) {
       return undefined;
     }
@@ -209,7 +209,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
-    console.log("ProfilesAltZvm.storeProfile()", profileAh, profile.nickname);
+    //console.log("ProfilesAltZvm.storeProfile()", profileAh, profile.nickname);
     this._perspective.profiles.set(profileAh, [profile, ts]);
     const agentId = this.getProfileAgent(profileAh);
     if (agentId) {
@@ -219,7 +219,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    console.log("ProfilesAltZvm.storeAgentProfile()", agentId, profileAh);
+    //console.log("ProfilesAltZvm.storeAgentProfile()", agentId, profileAh);
     this._perspective.profileByAgent.set(agentId, profileAh);
     const pair = this._perspective.profiles.get(profileAh);
     if (pair) {
@@ -229,7 +229,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    console.log("ProfilesAltZvm.unstoreAgentProfile()", agentId, profileAh);
+    //console.log("ProfilesAltZvm.unstoreAgentProfile()", agentId, profileAh);
     this._perspective.profileByAgent.delete(agentId);
     const pair = this._perspective.profiles.get(profileAh);
     if (pair) {
@@ -249,7 +249,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   /** */
   async findProfile(agentId: AgentId): Promise<Profile | undefined> {
     const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
-    console.log("findProfile() maybeProfilePair", maybeProfilePair);
+    console.log("findProfile()", agentId, maybeProfilePair);
     if (!maybeProfilePair) {
       return;
     }

@@ -1,15 +1,14 @@
-import {AgentPubKey} from "@holochain/client/lib/types";
-import {AppInfo, AppInfoResponse, fakeAgentPubKey, fakeDnaHash, InstalledAppId} from "@holochain/client";
+import {AppInfo, AppInfoResponse, InstalledAppId} from "@holochain/client";
 import {CellInfo} from "@holochain/client/lib/api/admin/types";
-import {ConductorAppProxy} from "@ddd-qc/cell-proxy";
+import {AgentId, ConductorAppProxy, DnaId} from "@ddd-qc/cell-proxy";
 
 
 /** */
-async function generateFakeProfilesAppInfo(myKey: AgentPubKey): Promise<AppInfo> {
+async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
     const fakeProfilesDnaCellInfo: CellInfo = {
         provisioned: {
             name: "profiles",
-            cell_id: [await fakeDnaHash(), myKey],
+            cell_id: [DnaId.empty(80).hash, agentId.hash],
             dna_modifiers: {
                 network_seed: "profiles-mock-ns",
                 properties: new Uint8Array(),
@@ -20,7 +19,7 @@ async function generateFakeProfilesAppInfo(myKey: AgentPubKey): Promise<AppInfo>
     }
     /** AppInfo */
     return {
-        agent_pub_key: myKey,
+        agent_pub_key: agentId.hash,
         installed_app_id: "profiles",
         cell_info: {
             profiles: [fakeProfilesDnaCellInfo],
@@ -32,14 +31,14 @@ async function generateFakeProfilesAppInfo(myKey: AgentPubKey): Promise<AppInfo>
 
 /** */
 export class ConductorProxyProfilesMock extends ConductorAppProxy {
-    constructor(public readonly myKey: AgentPubKey, public readonly appId: InstalledAppId) {
-        super(10 * 1000, appId, myKey);
+    constructor(public readonly agentId: AgentId, public readonly appId: InstalledAppId) {
+        super(10 * 1000, appId, agentId);
     }
 
 
     /** */
     async appInfo(): Promise<AppInfoResponse> {
-        return generateFakeProfilesAppInfo(await fakeAgentPubKey());
+        return generateFakeProfilesAppInfo(AgentId.empty(80));
     }
 
 }

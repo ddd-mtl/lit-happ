@@ -5,8 +5,6 @@ import {
 import {Dictionary} from "./utils";
 import {AgentId, dec64, DnaId, enc64} from "./hash";
 import {SystemSignalProtocol} from "./zomeSignals.types";
-import {EntryType} from "@holochain/client/lib/hdk/entry";
-//import {AgentPubKey} from "@holochain/client/lib/types";
 
 
 /** Signal types */
@@ -19,52 +17,6 @@ export enum SignalType  {
 
 export type SystemPulse = {System: SystemSignalProtocol}
 
-//
-// //export type SignalPayload = unknown | LitHappSignal;
-
-// export interface LitHappSignal {
-//   from: AgentPubKey,
-//   pulses: unknown[],
-// }
-//
-// /** Protocol for notifying the ViewModel (UI) of system level events */
-// export type SystemSignalProtocolVariantPostCommitNewStart = {
-//   type: "PostCommitNewStart"
-//   app_entry_type: string
-// }
-// export type SystemSignalProtocolVariantPostCommitNewEnd = {
-//   type: "PostCommitNewEnd"
-//   app_entry_type: string
-//   succeeded: boolean
-// }
-// export type SystemSignalProtocolVariantPostCommitDeleteStart = {
-//   type: "PostCommitDeleteStart"
-//   app_entry_type: string
-// }
-// export type SystemSignalProtocolVariantPostCommitDeleteEnd = {
-//   type: "PostCommitDeleteEnd"
-//   app_entry_type: string
-//   succeeded: boolean
-// }
-// export type SystemSignalProtocolVariantSelfCallStart = {
-//   type: "SelfCallStart"
-//   zome_name: string
-//   fn_name: string
-// }
-// export type SystemSignalProtocolVariantSelfCallEnd = {
-//   type: "SelfCallEnd"
-//   zome_name: string
-//   fn_name: string
-//   succeeded: boolean
-// }
-// export type SystemSignalProtocol =
-//   | SystemSignalProtocolVariantPostCommitNewStart
-//   | SystemSignalProtocolVariantPostCommitNewEnd
-//   | SystemSignalProtocolVariantPostCommitDeleteStart
-//   | SystemSignalProtocolVariantPostCommitDeleteEnd
-//   | SystemSignalProtocolVariantSelfCallStart
-//   | SystemSignalProtocolVariantSelfCallEnd;
-//
 
 /** ---- */
 
@@ -126,6 +78,7 @@ export function flattenCells(cells: CellsForRole): CellId[] {
 
 
 /** -- CloneId -- */
+
 export type CloneId = RoleName;
 /** type for string "<baseRoleName>.<cloneIndex>" */
 export function createCloneName(baseRoleName: BaseRoleName, cloneIndex: CloneIndex): string {

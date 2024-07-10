@@ -1,15 +1,12 @@
 import {
   ActionHash,
-  decodeHashFromBase64, encodeHashToBase64,
-  EntryHash, fakeActionHash,
-  fakeDnaHash, fakeEntryHash
+  EntryHash,
 } from "@holochain/client";
 import {
   AppletInfo, PeerStatusUpdate, WeaveServices,
   weaveUrlFromWal,
 } from "@lightningrodlabs/we-applet";
 import {
-  AppletHash,
   AssetLocationAndInfo,
   FrameNotification,
   OpenWalMode,
@@ -17,6 +14,7 @@ import {
 } from "@lightningrodlabs/we-applet/dist/types";
 import {mdiFileExcelOutline} from "@mdi/js";
 import {wrapPathInSvg} from "../utils";
+import {ActionId, DnaId, EntryId, intoDhtId} from "@ddd-qc/cell-proxy";
 
 
 /** Build fake AttachmentTypes */
@@ -58,36 +56,36 @@ export const emptyWeServicesMock: WeaveServices = {
 var _mockClipboard = undefined;
 
 /** Create default WeServices Mock */
-export async function createDefaultWeServicesMock(devtestAppletId: string): Promise<WeaveServices> {
+export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Promise<WeaveServices> {
   console.log("createDefaultWeServicesMock() devtestAppletId", devtestAppletId);
   const weServicesMock = emptyWeServicesMock;
   /** Implement appletInfo */
   weServicesMock.appletInfo = async (appletHash) => {
-    const appletId = encodeHashToBase64(appletHash);
+    const appletId = new EntryId(appletHash);
     console.log("DefaultWeServicesMock.appletInfo()", appletId, devtestAppletId);
-    if (appletId == devtestAppletId) {
+    if (appletId.b64 == devtestAppletId.b64) {
       return {
-        appletBundleId: await fakeActionHash(),
+        appletBundleId: ActionId.empty(87).hash,
         appletName: "DevTestWeApplet",
         appletIcon: "",
-        groupsHashes: [await fakeDnaHash()],
+        groupsHashes: [DnaId.empty(71).hash],
       } as AppletInfo;
     }
     return {
-      appletBundleId: await fakeActionHash(),
+      appletBundleId: ActionId.empty(87).hash,
       appletName: "MockApplet: " + appletId,
       appletIcon: "",
-      groupsHashes: [await fakeDnaHash()],
+      groupsHashes: [DnaId.empty(71).hash],
     } as AppletInfo;
   };
   /** Implement entryInfo */
   weServicesMock.assetInfo = async (wal) => {
     console.log("DefaultWeServicesMock.assetInfo()", wal);
     return {
-      appletHash: decodeHashFromBase64(devtestAppletId),
+      appletHash: devtestAppletId.hash,
       assetInfo: {
         icon_src: wrapPathInSvg(mdiFileExcelOutline),
-        name: "MockEntry: " + encodeHashToBase64(wal.hrl[1]),
+        name: "MockEntry: " + intoDhtId(wal.hrl[1]).short,
       }
     } as AssetLocationAndInfo;
   }
@@ -99,7 +97,7 @@ export async function createDefaultWeServicesMock(devtestAppletId: string): Prom
       return copy;
     }
     return {
-      hrl: [await fakeDnaHash(), await fakeEntryHash()],
+      hrl: [(await DnaId.random()).hash, (await EntryId.random()).hash],
       context: null,
     } as WAL;
   }

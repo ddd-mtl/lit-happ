@@ -1,4 +1,3 @@
-
 import {SignalLog} from "./AppProxy";
 import {AppInfo, CellType} from "@holochain/client";
 import {BaseRoleName, CellsForRole, str2CellId} from "./types";

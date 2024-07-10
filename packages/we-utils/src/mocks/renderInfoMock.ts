@@ -1,31 +1,33 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
-import {fakeDnaHash, fakeEntryHash} from "@holochain/client";
 import {AppletViewInfo, AssetViewInfo} from "../index";
 import {AppletHash, ReadonlyPeerStatusStore} from "@lightningrodlabs/we-applet/dist/types";
+import {DnaId, EntryId} from "@ddd-qc/cell-proxy";
 
 
 /** Empty AppletViews */
-export const emptyMainAppletView = {
+export const emptyMainAppletView: AppletView = {
     type: "main"
-} as AppletView;
+};
 
 
-export const emptyBlockAppletView = {
+export const emptyBlockAppletView: AppletView = {
     type: "block",
     block: "",
     context: null,
-} as AppletView;
+};
 
-export const emptyEntryAppletView = {
+export const emptyEntryAppletView: AssetViewInfo = {
     type: "asset",
-    roleName: "",
-    integrityZomeName: "",
-    entryType: "",
     wal: {
-        hrl: [await fakeDnaHash(), await fakeEntryHash()],
+        hrl: [DnaId.empty().hash, EntryId.empty().hash],
         context: null,
     },
-} as AssetViewInfo;
+    recordInfo: {
+        roleName: "",
+        integrityZomeName: "",
+        entryType: "",
+    },
+};
 
 
 
@@ -46,6 +48,6 @@ export const emptyRenderInfo: RenderInfo = {
     appletClient: undefined,
     profilesClient: undefined,
     peerStatusStore: undefined,
-    appletHash: await fakeEntryHash() as AppletHash,
+    appletHash: EntryId.empty(42).hash as AppletHash,
     groupProfiles: [{name: "fakeGroup", icon_src: "https://lightningrodlabs.org/lrl_logo.png"}],
 };

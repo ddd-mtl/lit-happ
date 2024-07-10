@@ -1,16 +1,14 @@
-import {asCell, BaseRoleName, Cell, CellProxy, ConductorAppProxy} from "@ddd-qc/cell-proxy";
+import {asCell, BaseRoleName, Cell, CellProxy, ConductorAppProxy, DnaId, enc64} from "@ddd-qc/cell-proxy";
 import {
   AppClient,
   AppWebsocket,
   CellInfo,
-  DnaHash,
-  encodeHashToBase64, EntryHash,
   InstalledAppId
 } from "@holochain/client";
 
 
 /** */
-export async function getCellInfo(client: AppClient, maybeDnaHash: DnaHash | undefined, baseRoleName: BaseRoleName): Promise<CellInfo | null> {
+export async function getCellInfo(client: AppClient, maybeDnaId: DnaId | undefined, baseRoleName: BaseRoleName): Promise<CellInfo | null> {
   const appInfo = await client.appInfo();
   const cells = appInfo.cell_info[baseRoleName];
   for (const cellInfo of cells) {
@@ -19,13 +17,13 @@ export async function getCellInfo(client: AppClient, maybeDnaHash: DnaHash | und
       continue;
     }
     /** return first found cell if no DnaHash given ; assuming provisioned */
-    if (!maybeDnaHash) {
+    if (!maybeDnaId) {
       console.log("getCellInfo() taking first cell:", cellInfo);
       return cellInfo;
     }
     /** otherwise check if cell has given dnaHash */
     const cellId = cell.cell_id;
-    if (encodeHashToBase64(cellId[0]) == encodeHashToBase64(maybeDnaHash)) {
+    if (enc64(cellId[0]) == maybeDnaId.b64) {
       return cellInfo;
     }
   }
@@ -34,9 +32,9 @@ export async function getCellInfo(client: AppClient, maybeDnaHash: DnaHash | und
 
 
 /** */
-export async function asCellProxy(client: AppClient, maybeDnaHash: DnaHash | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
+export async function asCellProxy(client: AppClient, maybeDnaId: DnaId | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
   const appProxy = await ConductorAppProxy.new(client as AppWebsocket, appId);
-  const cellInfo = await getCellInfo(client, maybeDnaHash, baseRoleName);
+  const cellInfo = await getCellInfo(client, maybeDnaId, baseRoleName);
   const cell = Cell.from(cellInfo, appId, baseRoleName)
   const cellProxy = new CellProxy(appProxy, cell);
   return cellProxy;
@@ -52,11 +50,4 @@ export function wrapPathInSvg(path) {
 /** Wraps a path from @mdi/js into a svg, to be used inside an <sl-icon src=""></sl-icon> */
 export function wrapPathInSvgWithoutPrefix(path) {
   return `<svg style='fill: currentColor' viewBox='0 0 24 24'><path d='${path}'></path></svg>`;
-}
-
-
-/** */
-export async function emptyAppletHash(): Promise<EntryHash> {
-  const zeroBytes = new Uint8Array(36).fill(0);
-  return new Uint8Array([0x84, 0x21, 0x24, ...zeroBytes]);
 }

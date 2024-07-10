@@ -1,7 +1,7 @@
 import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
 import {
   ActionId,
-  AgentId, AnyLinkableId, enc64, EntryId,
+  AgentId, AnyLinkableId, anyToB64, enc64, EntryId,
   EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, prettyState, SignalLog, SignalType, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
@@ -157,12 +157,12 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
           if (ZomeSignalProtocolType.Tip in pulse) {
             const tip: TipProtocol = pulse.Tip;
             const type = Object.keys(tip)[0];
-            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Tip, type, payload: tip});
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Tip, type, payload: anyToB64(tip)});
           }
           if (ZomeSignalProtocolType.Entry in pulse) {
             const entryPulse = materializeEntryPulse(pulse.Entry, Object.values(this.zomeProxy.entryTypes));
             const typedEntry = decode(entryPulse.bytes);
-            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Entry, state: prettyState(pulse.Entry.state), type: entryPulse.entryType, payload: typedEntry, ah_base: entryPulse.ah.short, eh_target: entryPulse.eh.short});
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Entry, state: prettyState(pulse.Entry.state), type: entryPulse.entryType, payload: anyToB64(typedEntry), ah_base: entryPulse.ah.short, eh_target: entryPulse.eh.short});
           }
           if (ZomeSignalProtocolType.Link in pulse) {
             const linkPulse = materializeLinkPulse(pulse.Link, Object.values(this.zomeProxy.linkTypes));

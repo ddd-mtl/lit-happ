@@ -16,6 +16,8 @@ export class ProfilesApi implements AppClient {
 
   constructor(private _profilesClient: ProfilesClient/*, public appId: InstalledAppId*/) { }
 
+  /** -- AppClient -- */
+
   myPubKey: AgentPubKey;
   installedAppId: InstalledAppId;
 

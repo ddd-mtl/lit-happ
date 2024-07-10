@@ -9,42 +9,37 @@ import {
 } from "@lightningrodlabs/we-applet/dist/types";
 import {
   ActionHash,
-  decodeHashFromBase64,
-  DnaHash,
-  DnaHashB64,
-  encodeHashToBase64,
   EntryHash,
-  EntryHashB64
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
+import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
 
 
 /** */
 export interface WeServicesCache {
-  assetInfos: Record<string, AssetLocationAndInfo | undefined>;
-  groupProfiles: Record<string, any | undefined>;
-  appletInfos: Record<AppletId, AppletInfo | undefined>;
+  assetInfos: DnaIdMap<AssetLocationAndInfo | undefined>;
+  groupProfiles: DnaIdMap<any | undefined>;
+  appletInfos: EntryIdMap<AppletInfo | undefined>;
 }
 
 
 /** WeServices wrapper that caches requested infos */
 export class WeServicesEx implements WeaveServices {
 
-  constructor(private _inner: WeaveServices, private _thisAppletId: AppletId) {
+  constructor(private _inner: WeaveServices, private _thisAppletId: EntryId) {
     this.cacheFullAppletInfo(_thisAppletId).then(([_appletId, groupProfiles]) => {
       this._groupProfiles = groupProfiles;
     })
   }
 
   /** groupId -> groupProfile */
-  private _groupProfiles: Record<DnaHashB64, GroupProfile> = {};
-  /** wurl -> AssetLocationAndInfo */
-  private _assetInfoCache: Record<string, AssetLocationAndInfo | undefined> = {};
+  private _groupProfiles: DnaIdMap<GroupProfile> = new DnaIdMap();
   /** DnaHashB64 -> groupProfile */
-  private _groupProfileCache: Record<string, any | undefined> = {};
+  private _groupProfileCache: DnaIdMap<any | undefined> = new DnaIdMap();
   /** appletId -> AppletInfo */
-  private _appletInfoCache: Record<AppletId, AppletInfo | undefined> = {};
-
+  private _appletInfoCache: EntryIdMap<AppletInfo | undefined> = new EntryIdMap();
+  /** wurl -> AssetLocationAndInfo */
+  private _assetInfoCache: DnaIdMap<AssetLocationAndInfo | undefined> = new DnaIdMap();
 
   /** -- Getters -- */
 
@@ -56,9 +51,9 @@ export class WeServicesEx implements WeaveServices {
     };
   }
 
-  get appletId(): AppletId {return this._thisAppletId}
+  get appletId(): AppletId {return this._thisAppletId.b64}
 
-  get groupProfiles(): Record<DnaHashB64, GroupProfile> {return this._groupProfiles}
+  get groupProfiles(): DnaIdMap<GroupProfile> {return this._groupProfiles}
 
   assetInfoCached(wal_or_wurl: WAL | string): AssetLocationAndInfo | undefined {
     let wurl = wal_or_wurl as string;
@@ -67,43 +62,33 @@ export class WeServicesEx implements WeaveServices {
     }
     return this._assetInfoCache[wurl];
   }
-  groupProfileCached(groupdId: DnaHash | DnaHashB64): any | undefined {
-    let index = groupdId as DnaHashB64;
-    if (typeof groupdId != 'string') {
-      index = encodeHashToBase64(groupdId);
-    }
-    return this._groupProfileCache[index];
+  groupProfileCached(groupId: DnaId): any | undefined {
+    return this._groupProfileCache.get(groupId);
   }
-  appletInfoCached(appletId: EntryHash | EntryHashB64): AppletInfo | undefined {
-    let index = appletId as EntryHashB64;
-    if (typeof appletId != 'string') {
-      index = encodeHashToBase64(appletId);
-    }
-    return this._appletInfoCache[index];
+  appletInfoCached(appletId: EntryId): AppletInfo | undefined {
+    return this._appletInfoCache.get(appletId);
   }
 
 
   /** -- Call & cache info  -- */
 
   /** */
-  async cacheFullAppletInfo(appletId: EntryHash | EntryHashB64): Promise<[AppletInfo, Record<DnaHashB64, GroupProfile>] | undefined> {
-    let index = appletId as EntryHash;
-    if (typeof appletId == 'string') {
-      index = decodeHashFromBase64(appletId);
-    }
+  async cacheFullAppletInfo(appletId: EntryId): Promise<[AppletInfo, DnaIdMap<GroupProfile>] | undefined> {
     /* Grab appletInfo and all groupProfiles */
-    const appletInfo = await this.appletInfo(index);
+    const appletInfo = await this.appletInfo(appletId.b64);
     if (!appletInfo) {
       return undefined;
     }
-    const groupProfiles: Record<DnaHashB64, GroupProfile> = {};
+    const groupProfiles: DnaIdMap<GroupProfile> = new DnaIdMap();
     for (const groupHash of appletInfo.groupsHashes) {
       const gp = await this.groupProfile(groupHash);
-      groupProfiles[encodeHashToBase64(groupHash)] = gp;
+      groupProfiles.set( new DnaId(groupHash), gp);
     }
     return [appletInfo, groupProfiles];
   }
 
+
+  /** -- WeaveServices API -- */
 
   /** */
   async assetInfo(wal: WAL): Promise<AssetLocationAndInfo | undefined> {
@@ -117,24 +102,24 @@ export class WeServicesEx implements WeaveServices {
 
 
   /** */
-  async groupProfile(groupId: DnaHash): Promise<any> {
-    const groupIdB64 = encodeHashToBase64(groupId);
-    if (this._groupProfileCache[groupIdB64]) {
-      return this._groupProfileCache[groupIdB64];
+  async groupProfile(groupHash: any): Promise<any> {
+    const groupId = new DnaId(groupHash);
+    if (this._groupProfileCache.get(groupId)) {
+      return this._groupProfileCache.get(groupId);
     }
-    this._groupProfileCache[groupIdB64] = await this._inner.groupProfile(groupId);
-    return this._groupProfileCache[groupIdB64];
+    this._groupProfileCache.set(groupId, await this._inner.groupProfile(groupId));
+    return this._groupProfileCache.get(groupId);
   }
 
 
   /** */
-  async appletInfo(appletHash: EntryHash): Promise<AppletInfo | undefined> {
-    const appletId = encodeHashToBase64(appletHash);
-    if (this._appletInfoCache[appletId]) {
-      return this._appletInfoCache[appletId];
+  async appletInfo(appletHash: any): Promise<AppletInfo | undefined> {
+    const appletId = new EntryId(appletHash);
+    if (this._appletInfoCache.get(appletId)) {
+      return this._appletInfoCache.get(appletId);
     }
-    this._appletInfoCache[appletId] = await this._inner.appletInfo(appletHash);
-    return this._appletInfoCache[appletId];
+    this._appletInfoCache.set(appletId, await this._inner.appletInfo(appletHash));
+    return this._appletInfoCache.get(appletId);
   }
 
 

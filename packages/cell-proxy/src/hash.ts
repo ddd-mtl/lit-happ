@@ -3,8 +3,8 @@ import {
   dhtLocationFrom32,
   encodeHashToBase64, HASH_TYPE_PREFIX,
   HoloHash,
-  HoloHashB64,
-  } from "@holochain/client";
+  HoloHashB64, randomByteArray,
+} from "@holochain/client";
 
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
@@ -136,8 +136,10 @@ export abstract class HolochainId {
   }
 
   /** */
-  static empty<T extends HolochainId>(this: any): T {
+  static empty<T extends HolochainId>(this: any, byte?: number): T {
     const empty = new Uint8Array(32);
+    byte = byte? byte : 0;
+    empty.fill(byte);
     const newHash = Uint8Array.from([
       ...HASH_TYPE_PREFIX[this.HASH_TYPE],
       ...empty,
@@ -157,6 +159,19 @@ export abstract class HolochainId {
     ]);
     return new this(newHash);
   }
+
+
+  /** */
+  static async random<T extends HolochainId>(this: any): Promise<T> {
+    const core = await randomByteArray(32);
+    const newHash = Uint8Array.from([
+      ...HASH_TYPE_PREFIX[this.HASH_TYPE],
+      ...core,
+      ...dhtLocationFrom32(core),
+    ]);
+    return new this(newHash);
+  }
+
 
   // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit
   toString(): string {throw Error("Implicit conversion of HolochainId to string")}

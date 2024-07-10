@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ",
-  "version": "0.26.5",
+  "version": "0.26.6",
   "description": "MVVM Framework for holochain apps using Lit",
   "main": "dist/index.js",
   "module": "dist/index.js",

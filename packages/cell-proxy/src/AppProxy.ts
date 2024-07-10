@@ -32,7 +32,7 @@ import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
 import {AgentPubKey} from "@holochain/client/lib/types";
 import {prettyDate, printAppInfo} from "./pretty";
-import {enc64} from "./hash";
+import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
 
 
@@ -192,11 +192,11 @@ export class AppProxy implements AppClient {
   /** -- Creation -- */
 
   /** Ctor */
-  /*protected*/ constructor(defaultTimeout: number, appId: InstalledAppId, agentId: AgentPubKey, adminWs?: AdminWebsocket) {
+  /*protected*/ constructor(defaultTimeout: number, appId: InstalledAppId, agentId: AgentId, adminWs?: AdminWebsocket) {
     this.defaultTimeout = defaultTimeout;
     this.adminWs = adminWs;
     this.installedAppId = appId;
-    this.myPubKey = agentId;
+    this.myPubKey = agentId.hash;
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 

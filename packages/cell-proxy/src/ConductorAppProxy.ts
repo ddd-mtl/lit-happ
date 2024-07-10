@@ -20,7 +20,6 @@ import {
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {CellIdStr} from "./types";
-import {AgentPubKey} from "@holochain/client/lib/types";
 import {AgentId, DnaId} from "./hash";
 import {AgentIdMap} from "./holochain-id-map";
 
@@ -144,7 +143,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
           token = issued.token;
         }
         const appWs = await AppWebsocket.connect({url: wsUrl, defaultTimeout: timeout, token});
-        let conductor = new ConductorAppProxy(timeout, appId, appWs.myPubKey, adminWs);
+        let conductor = new ConductorAppProxy(timeout, appId, new AgentId(appWs.myPubKey), adminWs);
         conductor._appWs = appWs;
         conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)});
         return conductor;
@@ -159,7 +158,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
   /** */
   private static async fromSocket(appWebsocket: AppWebsocket, defaultTimeout: number): Promise<ConductorAppProxy> {
     try {
-      let conductor = new ConductorAppProxy(defaultTimeout, appWebsocket.installedAppId, appWebsocket.myPubKey);
+      let conductor = new ConductorAppProxy(defaultTimeout, appWebsocket.installedAppId, new AgentId(appWebsocket.myPubKey));
       conductor._appWs = appWebsocket;
       conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
       return conductor;
@@ -171,7 +170,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
 
   /** Ctor */
-  /*protected*/ constructor(public defaultTimeout: number, appId: InstalledAppId, agentId: AgentPubKey, adminWs?: AdminWebsocket) {
+  /*protected*/ constructor(public defaultTimeout: number, appId: InstalledAppId, agentId: AgentId, adminWs?: AdminWebsocket) {
     super(defaultTimeout, appId, agentId, adminWs);
   }
 
