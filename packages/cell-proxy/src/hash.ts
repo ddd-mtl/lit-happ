@@ -136,12 +136,12 @@ export abstract class HolochainId {
   }
 
   /** */
-  static empty<T extends HolochainId>(this: any, byte?: number): T {
+  static empty<T extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => T, byte?: number): T {
     const empty = new Uint8Array(32);
     byte = byte? byte : 0;
     empty.fill(byte);
     const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[this.HASH_TYPE],
+      ...HASH_TYPE_PREFIX[(this as unknown as typeof HolochainId).HASH_TYPE],
       ...empty,
       ...dhtLocationFrom32(empty),
     ]);
@@ -162,10 +162,10 @@ export abstract class HolochainId {
 
 
   /** */
-  static async random<T extends HolochainId>(this: any): Promise<T> {
+  static async random<T extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => T): Promise<T> {
     const core = await randomByteArray(32);
     const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[this.HASH_TYPE],
+      ...HASH_TYPE_PREFIX[(this as unknown as typeof HolochainId).HASH_TYPE],
       ...core,
       ...dhtLocationFrom32(core),
     ]);
@@ -193,12 +193,13 @@ export class DnaId extends HolochainId { static readonly HASH_TYPE = HoloHashTyp
 export class ExternalId extends HolochainId { static readonly HASH_TYPE = HoloHashType.External; external() {} }
 
 
-export type AnyDhtId = ActionId | EntryId;
-export type AnyLinkableId = AnyDhtId | ExternalId;
+export type DhtId = ActionId | EntryId;
+export type LinkableId = DhtId | ExternalId;
+export type AnyId = LinkableId | AgentId | DnaId;
 
 
 /** */
-export function intoDhtId(input: HoloHashB64 | HoloHash): AnyDhtId {
+export function intoDhtId(input: HoloHashB64 | HoloHash): DhtId {
   try {
     const actionId = new ActionId(input);
     return actionId;
@@ -210,7 +211,7 @@ export function intoDhtId(input: HoloHashB64 | HoloHash): AnyDhtId {
 
 
 /** */
-export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
+export function intoLinkableId(input: HoloHashB64 | HoloHash): LinkableId {
   try {
     const dhtId = intoDhtId(input);
     return dhtId;
@@ -222,11 +223,13 @@ export function intoLinkableId(input: HoloHashB64 | HoloHash): AnyLinkableId {
 
 
 /** */
-export function testHoloId() {
+export async function testHoloId() {
   console.log("testHoloId()");
-  const emptyAgent = AgentId.empty();
   const emptyAction = ActionId.empty();
-  const emptyEntry = EntryId.from(emptyAgent);
+  const emptyEntry = EntryId.empty();
+  const emptyAgent = AgentId.from(emptyEntry);
+  const emptyEntry2 = EntryId.from(emptyAgent);
+  const randomEh = await EntryId.random();
 
   console.log("testHoloId()", emptyAction);
   /** */
@@ -235,5 +238,8 @@ export function testHoloId() {
   }
 
   printEh(emptyEntry);
+  printEh(emptyEntry2);
+  printEh(randomEh);
+  //printEh(emptyAction); // Should error at compile time
 }
 

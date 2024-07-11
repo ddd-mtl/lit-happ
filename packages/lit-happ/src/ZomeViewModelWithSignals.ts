@@ -1,7 +1,7 @@
 import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
 import {
   ActionId,
-  AgentId, AnyLinkableId, anyToB64, enc64, EntryId,
+  AgentId, LinkableId, anyToB64, enc64, EntryId,
   EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, prettyState, SignalLog, SignalType, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
@@ -233,8 +233,8 @@ export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string
 /** */
 export interface LinkPulseMat {
   author: AgentId,
-  base: AnyLinkableId;
-  target: AnyLinkableId,
+  base: LinkableId;
+  target: LinkableId,
   timestamp: Timestamp,
   zome_index: ZomeIndex,
   link_type: string,

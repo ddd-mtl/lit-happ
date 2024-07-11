@@ -116,7 +116,7 @@ export class PlaygroundApp extends HappElement {
   render() {
     const myProfile = this.profilesDvm.profilesZvm.getMyProfile();
     console.log("<playground-app> render()", myProfile, this.hvm);
-    //testHoloId();
+    testHoloId();
 
     if (!this._initializedOffline) {
       return html`<span>Loading...</span>`;
