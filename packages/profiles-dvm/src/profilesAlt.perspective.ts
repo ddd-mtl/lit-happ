@@ -1,11 +1,11 @@
 import {ActionId, ActionIdMap, AgentId, AgentIdMap} from "@ddd-qc/cell-proxy";
 import {Profile} from "./bindings/profiles.types";
-import {Timestamp} from "@holochain/client";
+import {ActionHashB64, AgentPubKeyB64, Timestamp} from "@holochain/client";
 
 /** */
 export interface ProfilesAltPerspectiveCore {
   /* ActionId -> Profile */
-   profiles: ActionIdMap<[Profile, Timestamp]>,
+  profiles: ActionIdMap<[Profile, Timestamp]>,
   /* AgentId -> ActionId */
   profileByAgent: AgentIdMap<ActionId>,
 }
@@ -18,6 +18,13 @@ export interface ProfilesAltPerspectiveCore {
 // export type ProfilesAltPerspectiveFull = ProfilesAltPerspectiveCore & ProfilesAltPerspectiveExtra;
 
 
+/** */
+export interface ProfilesAltPerspectiveSnapshot {
+  all: [AgentPubKeyB64, ActionHashB64, Profile, Timestamp][];
+}
+
+
+/** */
 export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
 
   /* Core */
@@ -130,23 +137,28 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
   /** -- Memento -- */
 
   /** TODO: deep copy */
-  makeSnapshot(): ProfilesAltPerspectiveCore {
-    return {
-      profiles: this.profiles,
-      profileByAgent: this.profileByAgent,
+  makeSnapshot(): ProfilesAltPerspectiveSnapshot {
+    let all = [];
+    for (const [agentId, profileAh] of this.profileByAgent.entries()) {
+      const [profile, ts] = this.profiles.get(profileAh);
+      all.push([agentId, profileAh, profile, ts])
     }
+    /** */
+    return {all}
   }
 
-  restore(core: ProfilesAltPerspectiveCore) {
+
+  /** */
+  restore(snapshot: ProfilesAltPerspectiveSnapshot) {
     /** Clear */
     this.profiles.clear();
     this.profileByAgent.clear();
     this._agentByName = {};
     /** */
-    for (const [agentId, profileAh] of core.profileByAgent.entries()) {
+    for (const [agent, profileB64, profile, ts] of snapshot.all) {
+      const agentId = new AgentId(agent);
+      const profileAh = new ActionId(profileB64);
       this.storeAgentProfile(agentId, profileAh);
-    }
-    for (const [profileAh, [profile, ts]] of core.profiles.entries()) {
       this.storeProfile(profileAh, profile, ts);
     }
   }
