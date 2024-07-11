@@ -10,7 +10,6 @@ import {
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {ZomeIndex} from "@holochain/client/lib/hdk/link";
-import {ProfilesAltLinkType, ProfilesAltUnitEnum} from "@ddd-qc/profiles-dvm/dist/bindings/profilesAlt.integrity";
 import {decode} from "@msgpack/msgpack";
 
 
@@ -180,7 +179,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 export interface EntryPulseMat {
   ah: ActionId,
   state: string,
-  isNew: Boolean,
+  isNew: boolean,
   ts: Timestamp,
   author: AgentId,
   eh: EntryId,
