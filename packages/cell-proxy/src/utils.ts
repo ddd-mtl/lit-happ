@@ -25,9 +25,12 @@ export const snake = str => str[0].toLowerCase() + str.slice(1, str.length).repl
 export const pascal = str => str[0].toUpperCase() + str.slice(1, str.length).replace(/_([a-z])/g, letter => `${letter[1].toUpperCase()}`);
 
 
-/** */
-export function getVariantByIndex(enumType: Object, index: number): string {
-  const keys = Object.keys(enumType);
+/** enumType = enum or Object.values(enum) */
+export function getVariantByIndex(enumType: Object | string[], index: number): string {
+  let keys = enumType as string[];
+  if (!Array.isArray(enumType)) {
+    keys = Object.keys(enumType);
+  }
   if (index >= 0 && index < keys.length) {
     const key = keys[index];
     return enumType[key];
@@ -36,11 +39,15 @@ export function getVariantByIndex(enumType: Object, index: number): string {
 }
 
 
-/** */
-export function getIndexByVariant(enumType: Object, variant: string): number {
-  for (const [i, cur] of Object.entries(enumType)) {
-    if (cur == variant) {
-      return Number(i);
+/** enumType = enum or Object.values(enum) */
+export function getIndexByVariant(enumType: Object | string[], value: string): number {
+  let variants = enumType as string[];
+  if (!Array.isArray(enumType)) {
+    variants = Object.keys(enumType).filter(key => isNaN(Number(key))); // Filter out numeric keys if present
+  }
+  for (let i = 0; i < variants.length; i++) {
+    if (variants[i] === value) {
+      return i;
     }
   }
   throw Error("Unknown variant");

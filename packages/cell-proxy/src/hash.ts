@@ -115,7 +115,9 @@ export function enc64(hash: HoloHash): HoloHashB64 {
   return b64;
 }
 
-
+function isUint8Array(value: any): boolean {
+  return value instanceof Uint8Array;
+}
 
 /** A HoloHash starts with 'u' has a type and is 53 chars long */
 export abstract class HolochainId {
@@ -135,6 +137,23 @@ export abstract class HolochainId {
     validateHashB64(input, this.hashType);
     this.b64 = input;
   }
+
+  /** */
+  equals<T extends HolochainId>(other: T | HoloHash | string): boolean {
+    //console.log("equals", other, isUint8Array(other));
+    let b64;
+    if (typeof(other) == 'string') {
+      b64 = other;
+    } else {
+      if (isUint8Array(other)) {
+        b64 = enc64(other as HoloHash);
+      } else {
+        b64 = (other as T).b64;
+      }
+    }
+    return b64 == this.b64;
+  }
+
 
   /** */
   static empty<T extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => T, byte?: number): T {
@@ -242,6 +261,10 @@ export async function testHoloId() {
   printEh(emptyEntry);
   printEh(emptyEntry2);
   printEh(randomEh);
+  console.log("testHoloId.emptyEntry", emptyEntry.equals(emptyEntry), emptyEntry.equals(emptyEntry.b64), emptyEntry.equals(emptyEntry.hash));
+  console.log("testHoloId.emptyEntry2", emptyEntry.equals(emptyEntry2), emptyEntry.equals(emptyEntry2.b64), emptyEntry.equals(emptyEntry2.hash));
+  console.log("testHoloId.randomEh", emptyEntry.equals(randomEh), emptyEntry.equals(emptyAgent), emptyEntry.equals(emptyAgent.hash), emptyEntry.equals(emptyAgent.b64));
+
   //printEh(emptyAction); // Should error at compile time
 }
 
