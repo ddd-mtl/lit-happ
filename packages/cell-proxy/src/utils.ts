@@ -38,10 +38,9 @@ export function getVariantByIndex(enumType: Object, index: number): string {
 
 /** */
 export function getIndexByVariant(enumType: Object, variant: string): number {
-  const keys = Object.keys(enumType);
-  for (let i = 0; i < keys.length; i+= 1) {
-    if (keys[i] == variant) {
-      return i;
+  for (const [i, cur] of Object.entries(enumType)) {
+    if (cur == variant) {
+      return Number(i);
     }
   }
   throw Error("Unknown variant");

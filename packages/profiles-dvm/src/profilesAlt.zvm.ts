@@ -12,7 +12,11 @@ import {ProfilesAltProxy} from "./bindings/profilesAlt.proxy";
 import {EntryPulseMat} from "@ddd-qc/lit-happ/dist/ZomeViewModelWithSignals";
 import {ProfilesLinkType} from "./bindings/profiles.integrity";
 import {ProfilesAltUnitEnum} from "./bindings/profilesAlt.integrity";
-import {ProfilesAltPerspective, ProfilesAltPerspectiveCore} from "./profilesAlt.perspective";
+import {
+  ProfilesAltPerspective,
+  ProfilesAltPerspectiveCore,
+  ProfilesAltPerspectiveSnapshot
+} from "./profilesAlt.perspective";
 
 
 /**
@@ -157,7 +161,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   import(json: string, _canPublish: boolean) {
-    const core = JSON.parse(json) as ProfilesAltPerspectiveCore;
+    const core = JSON.parse(json) as ProfilesAltPerspectiveSnapshot;
     // if (canPublish) {
     //   for (const [profileAh, [profile, _ts]] of perspective.profiles.entries()) {
     //     await this.createProfile(profile, agentId);

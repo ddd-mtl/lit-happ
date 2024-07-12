@@ -102,22 +102,24 @@ export class EntryIdMap<T> extends HolochainIdMap<EntryId, T>  {
   }
 }
 
+//
+// export class DhtIdMap<T> extends HolochainIdMap<DhtId, T>  {
+//   constructor(initialEntries?: Array<[DhtId, T]>) {
+//     super(HoloHashB64, initialEntries)
+//   }
+// }
+//
+// export class LinkableIdMap<T> extends HolochainIdMap<LinkableId, T>  {
+//   constructor(initialEntries?: Array<[LinkableId, T]>) {
+//     super(LinkableId, initialEntries)
+//   }
+// }
 
-export class DhtIdMap<T> extends HolochainIdMap<DhtId, T>  {
-  constructor(initialEntries?: Array<[ActionId, T]>) {
-    super(ActionId, initialEntries)
-  }
-}
 
-export class LinkableIdMap<T> extends HolochainIdMap<LinkableId, T>  {
-  constructor(initialEntries?: Array<[ActionId, T]>) {
-    super(ActionId, initialEntries)
-  }
-}
+// export class AnyIdMap<T> extends HolochainIdMap<AnyId, T>  {
+//   constructor(initialEntries?: Array<[AnyId, T]>) {
+//     super(AnyId, initialEntries)
+//   }
+// }
 
-
-export class AnyIdMap<T> extends HolochainIdMap<AnyId, T>  {
-  constructor(initialEntries?: Array<[ActionId, T]>) {
-    super(ActionId, initialEntries)
-  }
-}
+export class AnyIdMap<T> extends Map<HoloHashB64, T> {}

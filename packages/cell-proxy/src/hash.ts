@@ -108,6 +108,7 @@ export function dec64(hash: HoloHashB64): HoloHash {
   validateHashB64(hash);
   return decodeHashFromBase64(hash);
 }
+
 export function enc64(hash: HoloHash): HoloHashB64 {
   let b64 = encodeHashToBase64(hash);
   validateHashB64(b64);
@@ -116,7 +117,7 @@ export function enc64(hash: HoloHash): HoloHashB64 {
 
 
 
-/** HoloHash starts with 'u' has a type and is 53 chars long */
+/** A HoloHash starts with 'u' has a type and is 53 chars long */
 export abstract class HolochainId {
   public readonly b64: HoloHashB64;
 
@@ -192,6 +193,7 @@ export class EntryId extends HolochainId { static readonly HASH_TYPE = HoloHashT
 export class DnaId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Dna; dna() {} }
 export class ExternalId extends HolochainId { static readonly HASH_TYPE = HoloHashType.External; external() {} }
 
+//export class AnyId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Any; any() {} }
 
 export type DhtId = ActionId | EntryId;
 export type LinkableId = DhtId | ExternalId;
