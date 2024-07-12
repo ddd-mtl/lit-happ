@@ -141,6 +141,9 @@ export abstract class HolochainId {
   /** */
   equals<T extends HolochainId>(other: T | HoloHash | string): boolean {
     //console.log("equals", other, isUint8Array(other));
+    if (!other) {
+      return false;
+    }
     let b64;
     if (typeof(other) == 'string') {
       b64 = other;
