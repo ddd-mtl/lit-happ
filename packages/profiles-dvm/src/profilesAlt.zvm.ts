@@ -14,8 +14,7 @@ import {ProfilesLinkType} from "./bindings/profiles.integrity";
 import {ProfilesAltUnitEnum} from "./bindings/profilesAlt.integrity";
 import {
   ProfilesAltPerspective,
-  ProfilesAltPerspectiveCore,
-  ProfilesAltPerspectiveSnapshot
+  ProfilesAltSnapshot
 } from "./profilesAlt.perspective";
 
 
@@ -67,7 +66,6 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   async handleLinkPulse(pulse: LinkPulseMat, _from: AgentId): Promise<void> {
-    /** */
     switch (pulse.link_type) {
       case ProfilesLinkType.PrefixPath:
       case ProfilesLinkType.PathToAgent: {
@@ -154,14 +152,14 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   /** Dump perspective as JSON */
   export(): string {
     //console.log("exportPerspective()", perspMat);
-    const core = this._perspective.makeSnapshot();
-    return JSON.stringify(core, null, 2);
+    const snapshot = this._perspective.makeSnapshot();
+    return JSON.stringify(snapshot, null, 2);
   }
 
 
   /** */
   import(json: string, _canPublish: boolean) {
-    const core = JSON.parse(json) as ProfilesAltPerspectiveSnapshot;
+    const snapshot = JSON.parse(json) as ProfilesAltSnapshot;
     // if (canPublish) {
     //   for (const [profileAh, [profile, _ts]] of perspective.profiles.entries()) {
     //     await this.createProfile(profile, agentId);
@@ -169,6 +167,6 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
     //   return;
     // }
     /** */
-    this._perspective.restore(core)
+    this._perspective.restore(snapshot)
   }
 }

@@ -140,6 +140,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     console.table(appSignals);
   }
 
+
   /** */
   dumpSignalLogs(signalLogs: SignalLog[]) {
     this.dumpCastLogs();

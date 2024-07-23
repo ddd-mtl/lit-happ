@@ -1,6 +1,7 @@
 import {ActionId, ActionIdMap, AgentId, AgentIdMap} from "@ddd-qc/cell-proxy";
 import {Profile} from "./bindings/profiles.types";
 import {ActionHashB64, AgentPubKeyB64, Timestamp} from "@holochain/client";
+import assert from "assert";
 
 /** */
 export interface ProfilesAltPerspectiveCore {
@@ -10,16 +11,9 @@ export interface ProfilesAltPerspectiveCore {
   profileByAgent: AgentIdMap<ActionId>,
 }
 
-// export interface ProfilesAltPerspectiveExtra {
-//   /** Nickname -> AgentId */
-//   agentByName: Record<string, AgentId>,
-// }
-//
-// export type ProfilesAltPerspectiveFull = ProfilesAltPerspectiveCore & ProfilesAltPerspectiveExtra;
-
 
 /** */
-export interface ProfilesAltPerspectiveSnapshot {
+export interface ProfilesAltSnapshot {
   all: [AgentPubKeyB64, ActionHashB64, Profile, Timestamp][];
 }
 
@@ -92,6 +86,9 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
       return undefined;
     }
     const pair = this.profiles.get(profileAh);
+    if (!pair) {
+      return undefined;
+    }
     return pair[1];
   }
 
@@ -105,7 +102,8 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
 
   /** */
   storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
-    //console.log("ProfilesAltZvm.storeProfile()", profileAh, profile.nickname);
+    console.debug("ProfilesAltZvm.storeProfile()", profileAh.short, profile.nickname);
+    assert(profileAh != undefined && profile != undefined, "Missing argument");
     this.profiles.set(profileAh, [profile, ts]);
     const agentId = this.getProfileAgent(profileAh);
     if (agentId) {
@@ -115,7 +113,8 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
 
   /** */
   storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    //console.log("ProfilesAltZvm.storeAgentProfile()", agentId, profileAh);
+    console.debug("ProfilesAltZvm.storeAgentProfile()", agentId.short, profileAh.short);
+    assert(agentId != undefined && profileAh != undefined, "Missing argument");
     this.profileByAgent.set(agentId, profileAh);
     const pair = this.profiles.get(profileAh);
     if (pair) {
@@ -125,7 +124,8 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
 
   /** */
   unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    //console.log("ProfilesAltZvm.unstoreAgentProfile()", agentId, profileAh);
+    console.debug("ProfilesAltZvm.unstoreAgentProfile()", agentId.short, profileAh.short);
+    assert(agentId != undefined && profileAh != undefined, "Missing argument");
     this.profileByAgent.delete(agentId);
     const pair = this.profiles.get(profileAh);
     if (pair) {
@@ -137,11 +137,13 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
   /** -- Memento -- */
 
   /** TODO: deep copy */
-  makeSnapshot(): ProfilesAltPerspectiveSnapshot {
+  makeSnapshot(): ProfilesAltSnapshot {
     let all = [];
     for (const [agentId, profileAh] of this.profileByAgent.entries()) {
-      const [profile, ts] = this.profiles.get(profileAh);
-      all.push([agentId, profileAh, profile, ts])
+      const pair = this.profiles.get(profileAh);
+      if (pair) {
+        all.push([agentId, profileAh, pair[0], pair[1]])
+      }
     }
     /** */
     return {all}
@@ -149,7 +151,7 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
 
 
   /** */
-  restore(snapshot: ProfilesAltPerspectiveSnapshot) {
+  restore(snapshot: ProfilesAltSnapshot) {
     /** Clear */
     this.profiles.clear();
     this.profileByAgent.clear();
