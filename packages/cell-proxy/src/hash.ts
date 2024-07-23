@@ -1,13 +1,14 @@
+import {decode, encode, ExtensionCodec} from "@msgpack/msgpack";
+import blake2b from "@bitgo/blake2b";
+import { Base64 } from "js-base64";
 import {
   ActionHashB64,
   AgentPubKeyB64,
-  decodeHashFromBase64,
-  dhtLocationFrom32,
-  encodeHashToBase64, EntryHashB64, HASH_TYPE_PREFIX,
+  EntryHashB64, HASH_TYPE_PREFIX,
   HoloHashB64, randomByteArray,
 } from "@holochain/client";
-import {decode, encode, ExtensionCodec} from "@msgpack/msgpack";
 import {getIndexByVariant} from "./utils";
+
 
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
@@ -15,7 +16,7 @@ import {getIndexByVariant} from "./utils";
 export function anyToB64(obj: any): any {
   /** Check if it's a hash */
   if (obj instanceof Uint8Array) {
-    return encodeHashToBase64(obj);
+    return enc64(obj);
   } else {
     /** Check if it's an array of hashes */
     if (Array.isArray(obj)) {
@@ -27,7 +28,7 @@ export function anyToB64(obj: any): any {
       if (isUint8Array) {
         let result = [];
         for (const cur of obj) {
-          result.push(encodeHashToBase64(cur));
+          result.push(enc64(cur));
         }
         return result;
       }
@@ -36,6 +37,33 @@ export function anyToB64(obj: any): any {
   return obj;
 }
 
+
+/** ------------------------------------------------------------------------------------------------------------------*/
+
+function decodeHashFromBase64(hash: HoloHashB64): Uint8Array {
+  return Base64.toUint8Array(hash.slice(1));
+}
+
+
+function encodeHashToBase64(hash: Uint8Array): HoloHashB64 {
+  return `u${Base64.fromUint8Array(hash, true)}`;
+}
+
+
+export function dhtLocationFrom32(hashCore: Uint8Array): Uint8Array {
+  const hash = new Uint8Array(16);
+  blake2b(hash.length).update(hashCore).digest(hash);
+
+  const out = hash.slice(0, 4);
+  [4, 8, 12].forEach((i) => {
+    out[0] ^= hash[i];
+    out[1] ^= hash[i + 1];
+    out[2] ^= hash[i + 2];
+    out[3] ^= hash[i + 3];
+  });
+
+  return out;
+}
 
 /** ------------------------------------------------------------------------------------------------------------------*/
 

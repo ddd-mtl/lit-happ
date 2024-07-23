@@ -1,6 +1,27 @@
+
+
 export declare type Dictionary<T> = {
   [key: string]: T;
 };
+
+
+/** */
+export function assertIsDefined<T>(value: T | undefined): asserts value is T {
+  if (value === undefined) {
+    throw new Error('Value is undefined');
+  }
+}
+
+
+/** */
+export function assertAllDefined(...args: any[]): void {
+  for (const arg of args) {
+    if (arg === undefined) {
+      throw new Error('One or more arguments are undefined');
+    }
+  }
+}
+
 
 /** */
 export function areArraysEqual(first: Uint8Array, second: Uint8Array) {

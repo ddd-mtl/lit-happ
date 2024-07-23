@@ -1,7 +1,7 @@
-import {ActionId, ActionIdMap, AgentId, AgentIdMap} from "@ddd-qc/cell-proxy";
+import {ActionId, ActionIdMap, AgentId, AgentIdMap, assertAllDefined} from "@ddd-qc/cell-proxy";
 import {Profile} from "./bindings/profiles.types";
 import {ActionHashB64, AgentPubKeyB64, Timestamp} from "@holochain/client";
-import assert from "assert";
+
 
 /** */
 export interface ProfilesAltSnapshot {
@@ -120,7 +120,7 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
   /** */
   storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
     console.debug("ProfilesAltZvm.storeProfile()", profileAh.short, profile.nickname);
-    assert(profileAh != undefined && profile != undefined, "Missing argument");
+    assertAllDefined(profileAh, profile, ts);
     this.profiles.set(profileAh, [profile, ts]);
     const agentId = this.getProfileAgent(profileAh);
     if (agentId) {
@@ -131,7 +131,7 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
   /** */
   storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
     console.debug("ProfilesAltZvm.storeAgentProfile()", agentId.short, profileAh.short);
-    assert(agentId != undefined && profileAh != undefined, "Missing argument");
+    assertAllDefined(agentId, profileAh);
     this.profileByAgent.set(agentId, profileAh);
     const pair = this.profiles.get(profileAh);
     if (pair) {
@@ -142,7 +142,7 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
   /** */
   unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
     console.debug("ProfilesAltZvm.unstoreAgentProfile()", agentId.short, profileAh.short);
-    assert(agentId != undefined && profileAh != undefined, "Missing argument");
+    assertAllDefined(agentId, profileAh);
     this.profileByAgent.delete(agentId);
     const pair = this.profiles.get(profileAh);
     if (pair) {

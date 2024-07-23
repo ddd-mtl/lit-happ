@@ -1,6 +1,7 @@
-import {Profile as ProfileMat} from "./bindings/profiles.types";
 import {html, TemplateResult} from "lit";
 import {AgentId} from "@ddd-qc/cell-proxy";
+import {Profile as ProfileMat} from "./bindings/profiles.types";
+
 
 /** */
 export function getInitials(nickname: string): string {

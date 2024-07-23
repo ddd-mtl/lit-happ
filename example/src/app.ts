@@ -6,6 +6,8 @@ import {
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
+import {Profile, ProfilesAltDvm} from "@ddd-qc/profiles-dvm";
+import {testHoloId} from "@ddd-qc/cell-proxy"
 
 /** Import custom elements */
 import "./elements/integer-list";
@@ -13,9 +15,7 @@ import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
-import {ProfilesAltDvm} from "@ddd-qc/profiles-dvm/dist/profilesAlt.dvm";
-import {Profile} from "@ddd-qc/profiles-dvm";
-import {testHoloId} from "@ddd-qc/cell-proxy"
+
 
 /**
  *
@@ -24,6 +24,7 @@ export class PlaygroundApp extends HappElement {
 
   /** Ctor */
   constructor() {
+    console.log("PlaygroundApp.ctor()");
     super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
   }
 
