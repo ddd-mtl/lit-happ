@@ -1,6 +1,6 @@
-import {AppInfo, AppInfoResponse, InstalledAppId} from "@holochain/client";
+import {AppInfo, AppInfoResponse, HoloHash, InstalledAppId} from "@holochain/client";
 import {CellInfo} from "@holochain/client/lib/api/admin/types";
-import {AgentId, ConductorAppProxy, DnaId} from "@ddd-qc/cell-proxy";
+import {AgentId, CellAddress, ConductorAppProxy, DnaId} from "@ddd-qc/cell-proxy";
 
 
 /** */
@@ -8,7 +8,7 @@ async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
     const fakeProfilesDnaCellInfo: CellInfo = {
         provisioned: {
             name: "profiles",
-            cell_id: [DnaId.empty(80).hash, agentId.hash],
+            cell_id: new CellAddress(DnaId.empty(80), agentId).intoId(),
             dna_modifiers: {
                 network_seed: "profiles-mock-ns",
                 properties: new Uint8Array(),
@@ -19,7 +19,7 @@ async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
     }
     /** AppInfo */
     return {
-        agent_pub_key: agentId.hash,
+        agent_pub_key: new HoloHash(agentId.hash),
         installed_app_id: "profiles",
         cell_info: {
             profiles: [fakeProfilesDnaCellInfo],

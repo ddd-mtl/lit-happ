@@ -2,7 +2,7 @@ import {
   AppSignal,
   AppSignalCb,
   CallZomeRequest,
-  CapSecret, Entry,
+  CapSecret, HoloHash,
   Timestamp,
   ZomeName
 } from "@holochain/client";
@@ -185,14 +185,13 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** */
   dumpSignalLogs(zomeName?: ZomeName, canAppSignals?: boolean) {
-    this._appProxy.dumpSignalLogs(canAppSignals? canAppSignals : true, this.cell.id, zomeName);
+    this._appProxy.dumpSignalLogs(canAppSignals? canAppSignals : true, this.cell.address, zomeName);
   }
 
 
   /** */
   get signalLogs() {
-    const cellStr = CellIdStr(this.cell.id);
-    return this._appProxy.signalLogs.filter((log) => log.cellId == cellStr);
+    return this._appProxy.signalLogs.filter((log) => log.cellAddr.equals(this.cell.address));
   }
 
 
@@ -233,8 +232,8 @@ export class CellProxy extends CellMixin(Empty) {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cell.id,
-      provenance: this.cell.id[1],
+      cell_id: this.cell.address.intoId(),
+      provenance: new HoloHash(this.cell.address.agentId.hash),
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
@@ -261,8 +260,8 @@ export class CellProxy extends CellMixin(Empty) {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cell.id,
-      provenance: this.cell.id[1],
+      cell_id: this.cell.address.intoId(),
+      provenance: new HoloHash(this.cell.address.agentId.hash),
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
@@ -293,8 +292,8 @@ export class CellProxy extends CellMixin(Empty) {
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
-      cell_id: this.cell.id,
-      provenance: this.cell.id[1],
+      cell_id: this.cell.address.intoId(),
+      provenance: new HoloHash(this.cell.address.agentId.hash),
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     try {
@@ -405,7 +404,7 @@ export class CellProxy extends CellMixin(Empty) {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn(`Dumping logs for cell "${this._appProxy.getLocations(this.cell.id)}"`)
+    console.warn(`Dumping logs for cell "${this._appProxy.getLocations(this.cell.address)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }
@@ -426,10 +425,10 @@ export class CellProxy extends CellMixin(Empty) {
       for (const pulse of log.zomeSignal.pulses) {
       const sys = (pulse as SystemPulse).System;
         if(sys.type == "SelfCallStart") {
-          startCalls.push([log.ts, log.cellId, (sys as SystemSignalProtocolVariantSelfCallStart)]);
+          startCalls.push([log.ts, log.cellAddr.str, (sys as SystemSignalProtocolVariantSelfCallStart)]);
         }
         if(sys.type == "SelfCallEnd") {
-          endCalls.push([log.ts, log.cellId, (sys as SystemSignalProtocolVariantSelfCallEnd)]);
+          endCalls.push([log.ts, log.cellAddr.str, (sys as SystemSignalProtocolVariantSelfCallEnd)]);
         }
       }
     })

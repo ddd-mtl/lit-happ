@@ -1,6 +1,6 @@
 import {SignalLog} from "./AppProxy";
 import {AppInfo, CellType} from "@holochain/client";
-import {BaseRoleName, CellsForRole, str2CellId} from "./types";
+import {BaseRoleName, CellsForRole} from "./types";
 import {intoStem} from "./cell";
 import {enc64} from "./hash";
 import {StateChange, StateChangeType} from "./zomeSignals.types";
@@ -24,8 +24,7 @@ export function prettyDate(date: Date): string {
 
 export function prettySignalLogs(signalLogs: SignalLog[]) {
   return signalLogs.map((log) => {
-    const dnaHash = enc64(str2CellId(log.cellId)[0]).slice(-8);
-    return {timestamp: prettyDate(new Date(log.ts)), dnaHash, zome: log.zomeName, type: log.type, payload: log.zomeSignal};
+    return {timestamp: prettyDate(new Date(log.ts)), dnaHash: log.cellAddr.dnaId.short, zome: log.zomeName, type: log.type, payload: log.zomeSignal};
   })
 }
 

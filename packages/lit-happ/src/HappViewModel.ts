@@ -2,7 +2,7 @@ import {AdminWebsocket, ClonedCell, CreateCloneCellRequest, InstalledAppId} from
 import { ReactiveElement } from "lit";
 import {
   AppProxy,
-  BaseRoleName,
+  BaseRoleName, CellAddress,
   CloneIndex,
   createCloneName,
   Dictionary,
@@ -11,7 +11,6 @@ import {
 import { CellDef, DvmDef, HvmDef } from "./definitions";
 import { DnaViewModel } from "./DnaViewModel";
 import { AppSignal } from "@holochain/client/lib/api/app/types";
-import { CellId } from "@holochain/client/lib/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -41,7 +40,7 @@ export class HappViewModel {
   }
 
   /** */
-  getCellDvms(cellId: CellId): Dictionary<DnaViewModel> | undefined {
+  getCellDvms(cellId: CellAddress): Dictionary<DnaViewModel> | undefined {
     const hcls = this._appProxy.getLocations(cellId);
     if (hcls === undefined) return undefined;
     let dict: Dictionary<DnaViewModel> = {};
@@ -218,7 +217,7 @@ export class HappViewModel {
     /** Create Cell */
     const clonedCell = await this._appProxy.createCloneCell(request);
     //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
-    const cell = await this._appProxy.fetchCell(this.appId, clonedCell.cell_id);
+    const cell = await this._appProxy.fetchCell(this.appId, CellAddress.from(clonedCell.cell_id));
     console.log("clone created:", cell);
     const hcl = new HCL(this.appId, baseRoleName, cell.cloneId);
     /** Get created cell */

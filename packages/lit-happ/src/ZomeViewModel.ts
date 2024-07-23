@@ -6,20 +6,9 @@ import {
     CellMixin,
     SignalLog,
     prettySignalLogs,
-    Cell,
-    AbstractConstructor,
-    AgentId,
-    dec64,
-    TipProtocol,
-    ZomeSignalProtocol,
-    TipProtocolVariantEntry,
-    ZomeSignalProtocolVariantEntry,
-    TipProtocolVariantLink,
-    ZomeSignalProtocolVariantLink,
-    TipProtocolVariantApp, prettyDate, ZomeSignal, ZomeSignalProtocolType, EntryPulse, LinkPulse, ActionId, EntryId
 } from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {AgentPubKeyB64, AppSignalCb, Timestamp, ZomeName} from "@holochain/client";
+import {AppSignalCb, ZomeName} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {DnaViewModel} from "./DnaViewModel";
 
@@ -54,7 +43,6 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     getProxyConstructor(): ZomeProxyConstructor {
         return (this.constructor as typeof ZomeViewModel).ZOME_PROXY;
     }
-
 
 
     signalHandler?: AppSignalCb;
@@ -114,7 +102,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
     /** */
     getContext(): Context<unknown, unknown> {
-        const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.cell.dnaId.b64)
+        const context = createContext<typeof this>('zvm/'+ this._zomeProxy.defaultZomeName +'/' + this.cell.address.dnaId.b64)
         //console.log({contextType: typeof context})
         return context
     }

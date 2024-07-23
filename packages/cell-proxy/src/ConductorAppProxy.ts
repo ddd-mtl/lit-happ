@@ -19,7 +19,7 @@ import {
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
-import {CellIdStr} from "./types";
+import {CellAddress, CellIdStr} from "./types";
 import {AgentId, DnaId} from "./hash";
 import {AgentIdMap} from "./holochain-id-map";
 
@@ -101,11 +101,11 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
       const dnaId = new DnaId(args.dnas[i]);
       //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
       /* Store */
-      const cellIdStr = CellIdStr(dnaId, agentId);
-      if (!this._networkInfoLogs[cellIdStr]) {
-        this._networkInfoLogs[cellIdStr] = [];
+      const cellAddr = new CellAddress(dnaId, agentId);
+      if (!this._networkInfoLogs[cellAddr.str]) {
+        this._networkInfoLogs[cellAddr.str] = [];
       }
-      this._networkInfoLogs[cellIdStr].push([this._lastTimeQueriedMap.get(agentId), netInfo])
+      this._networkInfoLogs[cellAddr.str].push([this._lastTimeQueriedMap.get(agentId), netInfo])
       /* */
       i += 1;
     }

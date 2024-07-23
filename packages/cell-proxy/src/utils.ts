@@ -1,6 +1,3 @@
-import {CellId} from "@holochain/client";
-
-
 export declare type Dictionary<T> = {
   [key: string]: T;
 };
@@ -10,10 +7,6 @@ export function areArraysEqual(first: Uint8Array, second: Uint8Array) {
   return first.length === second.length && first.every((value, index) => value === second[index])
 }
 
-/** */
-export function areCellsEqual(cellA: CellId, cellB: CellId) {
-  return areArraysEqual(cellA[0], cellB[0]) && areArraysEqual(cellA[1], cellB[1])
-}
 
 /**  */
 export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))

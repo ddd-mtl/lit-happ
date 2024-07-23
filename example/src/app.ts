@@ -68,13 +68,13 @@ export class PlaygroundApp extends HappElement {
 
   /** */
   async hvmConstructed(): Promise<void> {
-    console.log("hvmConstructed()", this.profilesDvm.cell.agentId);
+    console.log("hvmConstructed()", this.profilesDvm.cell.address.agentId);
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
     console.log("maybeProfile", maybeMyProfile);
     // const maybeProfile = await this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId);
     // console.log("maybeProfile", maybeProfile);
-    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId).then((maybeProfile) => {
+    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.address.agentId).then((maybeProfile) => {
       console.log("maybeProfile", maybeProfile);
       this.requestUpdate();
     })

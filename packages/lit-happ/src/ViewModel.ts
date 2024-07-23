@@ -5,12 +5,13 @@ import {AppSignalCb} from "@holochain/client";
 import { Mutex } from 'async-mutex';
 
 
-enum InitializationState {
-  Uninitialized = "Uninitialized",
-  InitializingOffline = "InitializingOffline",
-  InitializingOnline = "InitializingOnline",
-  Initialized = "Initialized",
-}
+// enum InitializationState {
+//   Uninitialized = "Uninitialized",
+//   InitializingOffline = "InitializingOffline",
+//   InitializingOnline = "InitializingOnline",
+//   Initialized = "Initialized",
+// }
+
 
 /**
  * ABC of a ViewModel.

@@ -159,7 +159,7 @@ export class PlaygroundCloneApp extends HappElement {
 
     /** Render selected clone */
     const selectedDvm = this.hvm.getDvm(this._selectedClone)!;
-    console.log("selectedDvm", selectedDvm, selectedDvm.cell.id);
+    console.log("selectedDvm", selectedDvm, selectedDvm.cell.address.str);
 
     /** render all clones */
     const clones = Object.values(this.realDvmClones).map((realDvm) => {

@@ -13,7 +13,7 @@
     "ci:tsc": "tsc --version",
     "lint": "eslint --ext .ts .",
     "build": "rm -rf dist && tsc",
-    "build:watch": "tsc -w --incremental --preserveWatchOutput",
+    "build:watch": "tsc -w --preserveWatchOutput",
     "build:wasm": "CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
     "build:dna": "npm run build:wasm && hc dna pack --output=../artifacts/named_real.dna workdir && hc dna pack --output=../artifacts/named_integer.dna workdir_named_integer && npm run build:profiles",
     "build:profiles": "hc dna pack -o ../artifacts/profiles.dna workdir_profiles",

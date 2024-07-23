@@ -38,7 +38,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
 
   /** -- Methods -- */
 
-  /** Request zvm from Context based on current CellId */
+  /** Request zvm from Context based on current CellAddress */
   private requestZvm(canRerequest: boolean = false) {
     if (!this._cell_via_context) {
       throw Error(`Context "${cellContext}" not found from ZomeElement "${this.constructor.name}"`)
@@ -47,7 +47,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
     if (!canRerequest && this._consumer) {
       return;
     }
-    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.cell.dnaId.b64)
+    const contextType = createContext<ZVM>('zvm/'+ this.defaultZomeName + '/' + this.cell.address.dnaId.b64)
     console.log(`\t\t Requesting context "${contextType}"`)
     this._consumer = new ContextConsumer(
       this,

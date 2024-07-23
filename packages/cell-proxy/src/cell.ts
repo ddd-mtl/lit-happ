@@ -1,17 +1,14 @@
 import {
-  CellId,
   CellInfo,
   CellType,
   DnaModifiers,
-  ProvisionedCell, StemCell, ClonedCell, InstalledAppId
+  ProvisionedCell, StemCell, ClonedCell, InstalledAppId,
 } from "@holochain/client";
 import {RoleName} from "@holochain/client/lib/types";
 import {HCL} from "./hcl";
-import {BaseRoleName} from "./types";
-import {AgentId, DnaId, enc64} from "./hash";
+import {AnyCell, BaseRoleName, CellAddress} from "./types";
+import {enc64} from "./hash";
 
-
-export type AnyCell = ProvisionedCell | ClonedCell;
 
 
 /**
@@ -31,16 +28,22 @@ export class Cell {
     return new Cell(cellInfo.provisioned, appId, baseRoleName);
   }
 
+  private readonly _address: CellAddress;
 
   /** Ctor */
-  constructor(private readonly _cell: AnyCell, public readonly appId: InstalledAppId, public readonly baseRoleName: BaseRoleName) {}
+  constructor(private readonly _cell: AnyCell, public readonly appId: InstalledAppId, public readonly baseRoleName: BaseRoleName) {
+    this._address = CellAddress.from((this._cell as any).cell_id);
+  }
 
 
   /** -- Getters -- */
 
-  get id(): CellId { return (this._cell as any).cell_id }
-  get dnaId(): DnaId { return new DnaId(this.id[0]) }
-  get agentId(): AgentId { return new AgentId(this.id[1]) }
+  //get id(): CellId { return (this._cell as any).cell_id }
+  //get dnaId(): DnaId { return new DnaId(this.id[0]) }
+  //get agentId(): AgentId { return new AgentId(this.id[1]) }
+
+  get address(): CellAddress { return this._address; }
+
   get name(): string {return (this._cell as any).name}
   get dnaModifiers(): DnaModifiers {return (this._cell as any).dna_modifiers}
 
@@ -64,7 +67,7 @@ export class Cell {
 
   /** */
   print(): string {
-    return `Cell "${this.name}${this.cloneId? "." + this.cloneId: ""}": ${this.dnaId.short}`;
+    return `Cell "${this.name}${this.cloneId? "." + this.cloneId: ""}": ${this._address.dnaId.short}`;
   }
 }
 

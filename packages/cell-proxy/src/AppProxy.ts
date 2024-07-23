@@ -1,5 +1,5 @@
 import {
-  AdminWebsocket,
+  AdminWebsocket, AgentPubKey,
   AppClient,
   AppEvents,
   AppInfoResponse,
@@ -7,12 +7,11 @@ import {
   AppSignal,
   AppSignalCb,
   CallZomeRequest,
-  CellId,
   CellType,
   ClonedCell,
   CreateCloneCellRequest,
   DisableCloneCellRequest,
-  EnableCloneCellRequest,
+  EnableCloneCellRequest, HoloHash,
   InstalledAppId,
   NetworkInfo,
   NetworkInfoResponse,
@@ -22,15 +21,14 @@ import {
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
 import {
-  BaseRoleName,
+  BaseRoleName, CellAddress,
   CellIdStr,
   CellsForRole,
   RoleCellsMap, SignalType, SystemPulse,
 } from "./types";
-import {areCellsEqual, Dictionary} from "./utils";
+import {Dictionary} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
-import {AgentPubKey} from "@holochain/client/lib/types";
 import {prettyDate, printAppInfo} from "./pretty";
 import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
@@ -44,7 +42,7 @@ export interface SignalUnsubscriber {
 
 export interface SignalLog {
   ts: Timestamp,
-  cellId: CellIdStr,
+  cellAddr: CellAddress,
   zomeName: string,
   type: string,
   pulseCount: number,
@@ -97,8 +95,8 @@ export class AppProxy implements AppClient {
   get signalLogs(): SignalLog[]  { return this._signalLogs }
 
   /** */
-  getLocations(cellId: CellId): HCL[] | undefined {
-    return this._hclMap[CellIdStr(cellId)];
+  getLocations(adr: CellAddress): HCL[] | undefined {
+    return this._hclMap[adr.str];
   }
 
   /** */
@@ -119,14 +117,14 @@ export class AppProxy implements AppClient {
 
 
   /** Get stored CellProxy or attempt to create it */
-  getCellProxy(cellIdOrLoc: HCL | CellId): CellProxy {
+  getCellProxy(cellIdOrLoc: HCL | CellAddress): CellProxy {
     if (cellIdOrLoc instanceof HCL) {
       const cell = this.getCell(cellIdOrLoc);
-      const maybeProxy = this.getCellProxy(cell.id);
-      if (!maybeProxy) throw Error("getCellProxy() failed. Proxy not found for cell " + CellIdStr(cell.id));
+      const maybeProxy = this.getCellProxy(cell.address);
+      if (!maybeProxy) throw Error("getCellProxy() failed. Proxy not found for cell " + cell.address.str);
       return maybeProxy;
     }
-    const sId = CellIdStr(cellIdOrLoc);
+    const sId = cellIdOrLoc.str;
     const maybeProxy = this._cellProxies[sId];
     if (maybeProxy === undefined) throw Error("getCellProxy() failed. Proxy not found for cell " + sId);
     return maybeProxy;
@@ -196,7 +194,7 @@ export class AppProxy implements AppClient {
     this.defaultTimeout = defaultTimeout;
     this.adminWs = adminWs;
     this.installedAppId = appId;
-    this.myPubKey = agentId.hash;
+    this.myPubKey = new HoloHash(agentId.hash);
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
@@ -206,7 +204,7 @@ export class AppProxy implements AppClient {
   get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return {}}
 
   /** */
-  async fetchCell(appId: InstalledAppId, cellId: CellId): Promise<Cell> {
+  async fetchCell(appId: InstalledAppId, cellAddr: CellAddress): Promise<Cell> {
     const appInfo = await this.appInfo();
     //console.log("fetchCell", appInfo);
     if (appInfo == null) {
@@ -221,7 +219,7 @@ export class AppProxy implements AppClient {
           // skip stem cell
           continue;
         }
-        if (areCellsEqual(cell.id, cellId)) {
+        if (cell.address.equals(cellAddr)) {
           return cell;
         }
       }
@@ -298,7 +296,7 @@ export class AppProxy implements AppClient {
     console.log("createCellProxy() for", hcl.toString(), cloneName);
     /** Make sure cell exists */
     const cell = this.getCell(hcl);
-    const sCellId = CellIdStr(cell.id);
+    const sCellId = cell.address.str;
     /** Create proxy for this cell if none exist yet, otherwise reuse */
     let cellProxy = this._cellProxies[sCellId];
     if (!cellProxy) {
@@ -306,7 +304,7 @@ export class AppProxy implements AppClient {
       cellProxy = new CellProxy(this, cell, this.defaultTimeout);
       this._cellProxies[sCellId] = cellProxy;
     }
-    /** Create CellId -> HCL mapping */
+    /** Create CellAddress -> HCL mapping */
     //console.log("CreateCellProxy() adding to hclMap", sCellId, hcl.toString())
     if (this._hclMap[sCellId]) {
       this._hclMap[sCellId].push(hcl);
@@ -325,7 +323,7 @@ export class AppProxy implements AppClient {
   /** */
   onSignal(signal: AppSignal): void {
     /** Grab cell specific handlers */
-    const hcls = this.getLocations(signal.cell_id);
+    const hcls = this.getLocations(CellAddress.from(signal.cell_id));
     const handlerss: AppSignalCb[][]  = hcls? hcls.map((hcl) => this._signalHandlers[hcl.toString()]) : [];
     //console.log("onSignal()", hcls? hcls.toString() : "unknown cell: " + encodeHashToBase64(signal.cell_id[0]), handlerss);
     /** Grab common handler  */
@@ -368,7 +366,7 @@ export class AppProxy implements AppClient {
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
     const zomeSignal = this.intoZomeSignal(signal);
-    const log: SignalLog = {ts: Date.now(), cellId: CellIdStr(signal.cell_id), zomeName: signal.zome_name, zomeSignal, type: SignalType.Unknown, pulseCount: 1};
+    const log: SignalLog = {ts: Date.now(), cellAddr: CellAddress.from(signal.cell_id), zomeName: signal.zome_name, zomeSignal, type: SignalType.Unknown, pulseCount: 1};
     if (zomeSignal) {
       log.pulseCount = zomeSignal.pulses.length;
       if (zomeSignal.pulses.length == 0) {
@@ -395,17 +393,16 @@ export class AppProxy implements AppClient {
 
 
   /** */
-  dumpSignalLogs(canAppSignals: boolean, cellId?: CellId, zomeName?: ZomeName) {
+  dumpSignalLogs(canAppSignals: boolean, cellAddr?: CellAddress, zomeName?: ZomeName) {
     const me = enc64(this.myPubKey);
     let logs = this._signalLogs;
     /** Filter by cell and zome */
     let cellNames;
-    if (cellId) {
-      const cellStr = CellIdStr(cellId);
-      const hcls = this._hclMap[cellStr];
+    if (cellAddr) {
+      const hcls = this._hclMap[cellAddr.str];
       cellNames = hcls.map((hcl) => this.getCellName(hcl));
       logs = this._signalLogs
-        .filter((log) => log.cellId == cellStr);
+        .filter((log) => log.cellAddr.equals(cellAddr));
       if (zomeName) {
         logs = this._signalLogs
           .filter((log) => log.zomeName == zomeName);
@@ -465,8 +462,8 @@ export class AppProxy implements AppClient {
     } else {
       console.warn(`System signals: ${sysSignals.length}`)
       sysSignals.map((log) => {
-          const app = this._hclMap[log.cellId][0].appId;
-          const cell: string = this._hclMap[log.cellId][0].roleName;
+          const app = this._hclMap[log.cellAddr.str][0].appId;
+          const cell: string = this._hclMap[log.cellAddr.str][0].roleName;
         for (const pulse of log.zomeSignal.pulses) {
           const payload = (pulse as SystemPulse).System;
           syslogs.push({timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, payload});
@@ -499,8 +496,8 @@ export class AppProxy implements AppClient {
     } else {
       console.warn(`App signals: ${appSignals.length}`)
       appLogs = appSignals.map((log) => {
-          const app = this._hclMap[log.cellId][0].appId;
-          const cell: string = this._hclMap[log.cellId][0].roleName;
+          const app = this._hclMap[log.cellAddr.str][0].appId;
+          const cell: string = this._hclMap[log.cellAddr.str][0].roleName;
           const pulses = log.zomeSignal.pulses;
           const from = enc64(log.zomeSignal.from) == me? "self" : enc64(log.zomeSignal.from);
           return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, from, count: pulses.length, payload: pulses};

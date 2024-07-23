@@ -1,11 +1,13 @@
 import {
   CellId,
-  RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName,
+  RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName, HoloHash,
 } from "@holochain/client";
 import {Dictionary} from "./utils";
-import {AgentId, dec64, DnaId, enc64} from "./hash";
+import {AgentId, DnaId} from "./hash";
 import {SystemSignalProtocol} from "./zomeSignals.types";
 
+
+export type AnyCell = ProvisionedCell | ClonedCell;
 
 /** Signal types */
 
@@ -70,9 +72,9 @@ export type CellsForRole = {
 export type RoleCellsMap = Dictionary<CellsForRole>;
 
 /** */
-export function flattenCells(cells: CellsForRole): CellId[] {
-  let res: CellId[] = Object.entries(cells.clones).map(([cloneId, clone]) => clone.cell_id);
-  res.push(cells.provisioned.cell_id);
+export function flattenCells(cells: CellsForRole): CellAddress[] {
+  let res: CellAddress[] = Object.entries(cells.clones).map(([cloneId, clone]) => CellAddress.from(clone.cell_id));
+  res.push(CellAddress.from(cells.provisioned.cell_id));
   return res;
 }
 
@@ -97,33 +99,43 @@ export function destructureCloneId(cloneId: CloneId): [BaseRoleName, CloneIndex]
 }
 
 
-/** */
-export function decomposeCellId(cellId: CellId): [DnaId, AgentId] {
-  return [new DnaId(cellId[0]), new AgentId(cellId[1])]
-}
-
-
-/** -- CellIdStr -- */
+/** -- CellAddress -- */
 
 export type CellIdStr = string;
 
 const CELL_ID_SEPARATOR = "||"
 
-export function CellIdStr(dna_or_cell_id: DnaId | CellId, key?: AgentId): CellIdStr {
-  if (Array.isArray(dna_or_cell_id)) {
-    return "" + enc64(dna_or_cell_id[0]) + CELL_ID_SEPARATOR + enc64(dna_or_cell_id[1]);
+
+export class CellAddress {
+  constructor(public readonly dnaId: DnaId, public readonly agentId: AgentId) {}
+
+  static from(id_or_str: CellId | CellIdStr): CellAddress {
+    if (typeof id_or_str == 'string') {
+      const subs = id_or_str.split(CELL_ID_SEPARATOR);
+      if (subs.length != 2) {
+        throw Error("CellAddress.from() failed. Bad input string format");
+      }
+      return new CellAddress(new DnaId(subs[0]), new AgentId(subs[1]));
+    }
+    return new CellAddress(new DnaId(id_or_str[0]), new AgentId(id_or_str[1]));
   }
-  if (!key) {
-    throw Error("CellIdStr() failed. AgentPubKey not provided");
+
+  intoId(): CellId {
+    return [new HoloHash(this.dnaId.hash), new HoloHash(this.agentId.hash)]
   }
-  return "" + dna_or_cell_id.b64 + CELL_ID_SEPARATOR + key.b64;
+
+  // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit
+  toString(): string {throw Error("Implicit conversion of HolochainId to string")}
+
+
+  get str(): CellIdStr {
+    return "" + this.dnaId.b64 + CELL_ID_SEPARATOR + this.agentId.b64;
+  }
+
+  /** */
+  equals(other: CellAddress): boolean {
+    return this.str == other.str;
+  }
 }
 
-/** */
-export function str2CellId(str: CellIdStr): CellId {
-  const subs = str.split(CELL_ID_SEPARATOR);
-  if (subs.length != 2) {
-    throw Error("str2CellId() failed. Bad input string format");
-  }
-  return [dec64(subs[0]), dec64(subs[1])]
-}
+

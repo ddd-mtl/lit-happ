@@ -5,7 +5,7 @@ import {
   AppSignal,
   AppSignalCb,
   decodeHashFromBase64,
-  encodeHashToBase64
+  encodeHashToBase64, HoloHash
 } from "@holochain/client";
 import {NotificationsProxy} from "../bindings/notifications.proxy";
 import {AgentPubKeyWithTag, Contact, NotificationTip, TwilioCredentials} from "../bindings/notifications.types";
@@ -153,7 +153,7 @@ export class NotificationsZvm extends ZomeViewModel {
   private _myNotifier?: AgentPubKey;
   private _myTwilioCredentials?: TwilioCredentials;
 
-  getMyContact(): Contact | undefined { return this._contacts[this.cell.agentId.b64] }
+  getMyContact(): Contact | undefined { return this._contacts[this.cell.address.agentId.b64] }
 
   getContact(agent: AgentPubKeyB64): Contact | undefined {return this._contacts[agent]}
 
@@ -163,13 +163,13 @@ export class NotificationsZvm extends ZomeViewModel {
   /** */
   async createMyContact(text_number?: string, whatsapp_number?: string, email_address?: string) {
     const contact = {
-      agent_pub_key: this.cell.id[1],
+      agent_pub_key: new HoloHash(this.cell.address.agentId.hash),
       text_number,
       whatsapp_number,
       email_address,
     } as Contact;
     const _record = await this.zomeProxy.createContact(contact);
-    this._contacts[this.cell.agentId.b64] = contact;
+    this._contacts[this.cell.address.agentId.b64] = contact;
     this.notifySubscribers();
   }
 
@@ -227,7 +227,7 @@ export class NotificationsZvm extends ZomeViewModel {
     try {
       const newNotifier = await this.zomeProxy.getMyNotifier();
       if (!previousNotifier || encodeHashToBase64(previousNotifier) != encodeHashToBase64(newNotifier)) {
-        const myContact = this.perspective.contacts[this.cell.agentId.b64];
+        const myContact = this.perspective.contacts[this.cell.address.agentId.b64];
         if (myContact) {
           await this.zomeProxy.sendContact(myContact);
         }

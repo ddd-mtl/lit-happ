@@ -1,10 +1,13 @@
 import {
+  ActionHashB64,
+  AgentPubKeyB64,
   decodeHashFromBase64,
   dhtLocationFrom32,
-  encodeHashToBase64, HASH_TYPE_PREFIX,
-  HoloHash,
+  encodeHashToBase64, EntryHashB64, HASH_TYPE_PREFIX,
   HoloHashB64, randomByteArray,
 } from "@holochain/client";
+import {decode, encode, ExtensionCodec} from "@msgpack/msgpack";
+import {getIndexByVariant} from "./utils";
 
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
@@ -99,17 +102,17 @@ export function validateHashB64(hash: HoloHashB64, hashType?: HoloHashType) {
     throw new Error("The hash must be exactly 53 characters long. Got: " + hash.length);
   }
   if((hashType && !isHashTypeB64(hash, hashType)) || !hasHoloHashType(hash)) {
-    throw new Error("The hash must have a valid HoloHash type.");
+    throw new Error("The hash must have a valid HoloHashB64 type.");
   }
 }
 
 
-export function dec64(hash: HoloHashB64): HoloHash {
+export function dec64(hash: HoloHashB64): Uint8Array {
   validateHashB64(hash);
   return decodeHashFromBase64(hash);
 }
 
-export function enc64(hash: HoloHash): HoloHashB64 {
+export function enc64(hash: Uint8Array): HoloHashB64 {
   let b64 = encodeHashToBase64(hash);
   validateHashB64(b64);
   return b64;
@@ -130,7 +133,7 @@ export abstract class HolochainId {
   }
 
   /** ctor: validate */
-  constructor(input: HoloHashB64 | HoloHash) {
+  constructor(input: HoloHashB64 | Uint8Array) {
     if (typeof(input) != 'string') {
       input = encodeHashToBase64(input);
     }
@@ -139,7 +142,7 @@ export abstract class HolochainId {
   }
 
   /** */
-  equals<T extends HolochainId>(other: T | HoloHash | string): boolean {
+  equals<T extends HolochainId>(other: T | Uint8Array | string): boolean {
     //console.log("equals", other, isUint8Array(other));
     if (!other) {
       return false;
@@ -149,7 +152,7 @@ export abstract class HolochainId {
       b64 = other;
     } else {
       if (isUint8Array(other)) {
-        b64 = enc64(other as HoloHash);
+        b64 = enc64(other as Uint8Array);
       } else {
         b64 = (other as T).b64;
       }
@@ -159,7 +162,7 @@ export abstract class HolochainId {
 
 
   /** */
-  static empty<T extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => T, byte?: number): T {
+  static empty<T extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => T, byte?: number): T {
     const empty = new Uint8Array(32);
     byte = byte? byte : 0;
     empty.fill(byte);
@@ -172,7 +175,7 @@ export abstract class HolochainId {
   }
 
   /** */
-  static from<T extends HolochainId, Z extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => Z, start: T): Z {
+  static from<T extends HolochainId, Z extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => Z, start: T): Z {
     const core = Uint8Array.from(start.hash.slice(3, 35));
     const hashType = (this as unknown as typeof HolochainId).HASH_TYPE;
     const newHash = Uint8Array.from([
@@ -185,7 +188,7 @@ export abstract class HolochainId {
 
 
   /** */
-  static async random<T extends HolochainId>(this: new (input: HoloHashB64 | HoloHash) => T): Promise<T> {
+  static async random<T extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => T): Promise<T> {
     const core = await randomByteArray(32);
     const newHash = Uint8Array.from([
       ...HASH_TYPE_PREFIX[(this as unknown as typeof HolochainId).HASH_TYPE],
@@ -201,7 +204,7 @@ export abstract class HolochainId {
 
   //toString(): string {return this.b64;}
 
-  get hash(): HoloHash { return dec64(this.b64) }
+  get hash(): Uint8Array { return dec64(this.b64) }
   /** First 8 chars of the Core */
   get short(): string { return this.b64.slice(5, 13); }
 
@@ -222,8 +225,10 @@ export type LinkableId = DhtId | ExternalId;
 export type AnyId = LinkableId | AgentId | DnaId;
 
 
+
+
 /** */
-export function intoDhtId(input: HoloHashB64 | HoloHash): DhtId {
+export function intoDhtId(input: HoloHashB64 | Uint8Array): DhtId {
   try {
     const actionId = new ActionId(input);
     return actionId;
@@ -235,7 +240,7 @@ export function intoDhtId(input: HoloHashB64 | HoloHash): DhtId {
 
 
 /** */
-export function intoLinkableId(input: HoloHashB64 | HoloHash): LinkableId {
+export function intoLinkableId(input: HoloHashB64 | Uint8Array): LinkableId {
   try {
     const dhtId = intoDhtId(input);
     return dhtId;
@@ -245,6 +250,74 @@ export function intoLinkableId(input: HoloHashB64 | HoloHash): LinkableId {
   }
 }
 
+
+/** -- MsgPack ExtensionCodec for HolochainId -- */
+
+export const HOLOCHAIN_ID_EXT_CODEC = new ExtensionCodec();
+
+HOLOCHAIN_ID_EXT_CODEC.register({
+  type: getIndexByVariant(HoloHashType, HoloHashType.Agent),
+  encode: (object: unknown): Uint8Array | null => {
+    if (object instanceof AgentId) {
+      return encode(object.b64);
+    } else {
+      return null;
+    }
+  },
+  decode: (data: Uint8Array) => {
+    const b64 = decode(data) as AgentPubKeyB64;
+    return new AgentId(b64);
+  },
+});
+
+HOLOCHAIN_ID_EXT_CODEC.register({
+  type: getIndexByVariant(HoloHashType, HoloHashType.Entry),
+  encode: (object: unknown): Uint8Array | null => {
+    if (object instanceof EntryId) {
+      return encode(object.b64);
+    } else {
+      return null;
+    }
+  },
+  decode: (data: Uint8Array) => {
+    const b64 = decode(data) as EntryHashB64;
+    return new EntryId(b64);
+  },
+});
+
+
+HOLOCHAIN_ID_EXT_CODEC.register({
+  type: getIndexByVariant(HoloHashType, HoloHashType.Action),
+  encode: (object: unknown): Uint8Array | null => {
+    if (object instanceof ActionId) {
+      return encode(object.b64);
+    } else {
+      return null;
+    }
+  },
+  decode: (data: Uint8Array) => {
+    const b64 = decode(data) as ActionHashB64;
+    return new ActionId(b64);
+  },
+});
+
+HOLOCHAIN_ID_EXT_CODEC.register({
+  type: getIndexByVariant(HoloHashType, HoloHashType.Dna),
+  encode: (object: unknown): Uint8Array | null => {
+    if (object instanceof DnaId) {
+      return encode(object.b64);
+    } else {
+      return null;
+    }
+  },
+  decode: (data: Uint8Array) => {
+    const b64 = decode(data) as ActionHashB64;
+    return new DnaId(b64);
+  },
+});
+
+
+/** -- TESTING -- */
 
 /** */
 export async function testHoloId() {

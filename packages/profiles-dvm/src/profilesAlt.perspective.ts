@@ -4,41 +4,34 @@ import {ActionHashB64, AgentPubKeyB64, Timestamp} from "@holochain/client";
 import assert from "assert";
 
 /** */
-export interface ProfilesAltPerspectiveCore {
-  /* ActionId -> Profile */
-  profiles: ActionIdMap<[Profile, Timestamp]>,
-  /* AgentId -> ActionId */
-  profileByAgent: AgentIdMap<ActionId>,
-}
-
-
-/** */
 export interface ProfilesAltSnapshot {
   all: [AgentPubKeyB64, ActionHashB64, Profile, Timestamp][];
 }
 
 
 /** */
-export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
-
-  /* Core */
+export class ProfilesAltPerspective {
+  /* ActionId -> Profile */
   profiles: ActionIdMap<[Profile, Timestamp]> = new ActionIdMap();
+  /* AgentId -> ActionId */
   profileByAgent: AgentIdMap<ActionId> = new AgentIdMap();
-  /** Extra */
-  private _agentByName: Record<string, AgentId> = {};
+
+  /** -- Extra  -- */
+  /* Name -> AgentId */
+  agentByName: Record<string, AgentId> = {};
 
 
-  // /* */
-  // diff(core: ProfilesAltPerspectiveCore): boolean {
-  //   // TODO
-  //   return true;
-  // }
+  /** -- Methods -- */
 
+  equals(_other: ProfilesAltPerspective) {
+    // TODO
+    return false;
+  }
 
   /** -- Getters -- */
 
   get agents(): AgentId[] { return Array.from(this.profileByAgent.keys())}
-  get names(): string[] { return Object.keys(this._agentByName)}
+  get names(): string[] { return Object.keys(this.agentByName)}
 
   /** */
   getProfileAgent(profileId: ActionId): AgentId | undefined {
@@ -54,7 +47,7 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
   /** */
   getProfile(agent: AgentId | string): Profile | undefined {
     if (typeof agent == "string") {
-      agent = this._agentByName[agent];
+      agent = this.agentByName[agent];
       if (!agent) {
         return;
       }
@@ -76,7 +69,7 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
   /** */
   getProfileTs(agent: AgentId | string): Timestamp | undefined {
     if (typeof agent == "string") {
-      agent = this._agentByName[agent];
+      agent = this.agentByName[agent];
       if (!agent) {
         return;
       }
@@ -94,43 +87,7 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
 
   /** */
   getAgent(nickname: string): AgentId | undefined {
-      return this._agentByName[nickname];
-  }
-
-
-  /** -- Store -- */
-
-  /** */
-  storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
-    console.debug("ProfilesAltZvm.storeProfile()", profileAh.short, profile.nickname);
-    assert(profileAh != undefined && profile != undefined, "Missing argument");
-    this.profiles.set(profileAh, [profile, ts]);
-    const agentId = this.getProfileAgent(profileAh);
-    if (agentId) {
-      this._agentByName[profile.nickname] = agentId;
-    }
-  }
-
-  /** */
-  storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    console.debug("ProfilesAltZvm.storeAgentProfile()", agentId.short, profileAh.short);
-    assert(agentId != undefined && profileAh != undefined, "Missing argument");
-    this.profileByAgent.set(agentId, profileAh);
-    const pair = this.profiles.get(profileAh);
-    if (pair) {
-      this._agentByName[pair[0].nickname] = agentId;
-    }
-  }
-
-  /** */
-  unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
-    console.debug("ProfilesAltZvm.unstoreAgentProfile()", agentId.short, profileAh.short);
-    assert(agentId != undefined && profileAh != undefined, "Missing argument");
-    this.profileByAgent.delete(agentId);
-    const pair = this.profiles.get(profileAh);
-    if (pair) {
-      delete this._agentByName[pair[0].nickname];
-    }
+    return this.agentByName[nickname];
   }
 
 
@@ -148,15 +105,61 @@ export class ProfilesAltPerspective implements ProfilesAltPerspectiveCore {
     /** */
     return {all}
   }
+}
 
+
+/** */
+export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
+
+  get readonly(): ProfilesAltPerspective {
+    return this;
+  }
+
+  /** -- Store -- */
+
+  /** */
+  storeProfile(profileAh: ActionId, profile: Profile, ts: Timestamp) {
+    console.debug("ProfilesAltZvm.storeProfile()", profileAh.short, profile.nickname);
+    assert(profileAh != undefined && profile != undefined, "Missing argument");
+    this.profiles.set(profileAh, [profile, ts]);
+    const agentId = this.getProfileAgent(profileAh);
+    if (agentId) {
+      this.agentByName[profile.nickname] = agentId;
+    }
+  }
+
+  /** */
+  storeAgentProfile(agentId: AgentId, profileAh: ActionId) {
+    console.debug("ProfilesAltZvm.storeAgentProfile()", agentId.short, profileAh.short);
+    assert(agentId != undefined && profileAh != undefined, "Missing argument");
+    this.profileByAgent.set(agentId, profileAh);
+    const pair = this.profiles.get(profileAh);
+    if (pair) {
+      this.agentByName[pair[0].nickname] = agentId;
+    }
+  }
+
+  /** */
+  unstoreAgentProfile(agentId: AgentId, profileAh: ActionId) {
+    console.debug("ProfilesAltZvm.unstoreAgentProfile()", agentId.short, profileAh.short);
+    assert(agentId != undefined && profileAh != undefined, "Missing argument");
+    this.profileByAgent.delete(agentId);
+    const pair = this.profiles.get(profileAh);
+    if (pair) {
+      delete this.agentByName[pair[0].nickname];
+    }
+  }
+
+
+  /** -- Memento -- */
 
   /** */
   restore(snapshot: ProfilesAltSnapshot) {
     /** Clear */
     this.profiles.clear();
     this.profileByAgent.clear();
-    this._agentByName = {};
-    /** */
+    this.agentByName = {};
+    /** Store */
     for (const [agent, profileB64, profile, ts] of snapshot.all) {
       const agentId = new AgentId(agent);
       const profileAh = new ActionId(profileB64);

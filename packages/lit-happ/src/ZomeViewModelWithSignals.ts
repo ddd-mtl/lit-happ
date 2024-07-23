@@ -1,4 +1,4 @@
-import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
+import {AppSignalCb, EntryVisibility, HoloHash, Timestamp} from "@holochain/client";
 import {
   ActionId,
   AgentId, LinkableId, anyToB64, enc64, EntryId,
@@ -70,7 +70,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const entryPulseMat = materializeEntryPulse(pulse.Entry as EntryPulse, (this.constructor as typeof ZomeViewModel).ENTRY_TYPES);
         all.push(this.handleEntryPulse(entryPulseMat, from));
         /** If new entry from this agent, broadcast to peers as tip */
-        if (entryPulseMat.isNew && from.b64 == this.cell.agentId.b64 && entryPulseMat.visibility == "Public") {
+        if (entryPulseMat.isNew && from.b64 == this.cell.address.agentId.b64 && entryPulseMat.visibility == "Public") {
           all.push(this.broadcastTip({Entry: pulse.Entry as EntryPulse}));
         }
         continue;
@@ -79,7 +79,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const linkPulseMat = materializeLinkPulse(pulse.Link as LinkPulse, (this.constructor as typeof ZomeViewModel).LINK_TYPES);
         all.push(this.handleLinkPulse(linkPulseMat, from));
         /** If new Link from this agent, broadcast to peers as tip */
-        if (linkPulseMat.isNew && from.b64 == this.cell.agentId.b64) {
+        if (linkPulseMat.isNew && from.b64 == this.cell.address.agentId.b64) {
           all.push(this.broadcastTip({Link: pulse.Link as LinkPulse}));
         }
         continue;
@@ -112,9 +112,9 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
   async broadcastTip(tip: TipProtocol, agents?: Array<AgentId>): Promise<void> {
     agents = agents? agents : this._dvmParent.livePeers;
     /** Skip if no recipients or sending to self only */
-    const filtered = agents.filter((key) => key.b64 != this.cell.agentId.b64);
+    const filtered = agents.filter((key) => key.b64 != this.cell.address.agentId.b64);
     const tipType = Object.keys(tip)[0];
-    console.log(`broadcastTip() Sending Tip "${tipType}" to`, filtered, this.cell.agentId.short);
+    console.log(`broadcastTip() Sending Tip "${tipType}" to`, filtered, this.cell.address.agentId.short);
     //if (!agents || agents.length == 1 && agents[0] === this._cellProxy.cell.agentPubKey) {
     if (!filtered || filtered.length == 0) {
       console.log("broadcastTip() aborted: No recipients")
@@ -152,7 +152,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const signal = log.zomeSignal as ZomeSignal;
         const pulses = signal.pulses as ZomeSignalProtocol[];
         const timestamp = prettyDate(new Date(log.ts));
-        const from = enc64(signal.from) == this.cell.agentId.b64? "self" : new AgentId(signal.from);
+        const from = enc64(signal.from) == this.cell.address.agentId.b64? "self" : new AgentId(signal.from);
         for (const pulse of pulses) {
           if (ZomeSignalProtocolType.Tip in pulse) {
             const tip: TipProtocol = pulse.Tip;
@@ -215,11 +215,11 @@ export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string
   //console.log("dematerializeEntryPulse()", state, entryTypes);
   /** */
   return {
-    ah: pulse.ah.hash,
+    ah: new HoloHash(pulse.ah.hash),
     state: state as StateChange,
     ts: pulse.ts,
-    author: pulse.author.hash,
-    eh: pulse.eh.hash,
+    author: new HoloHash(pulse.author.hash),
+    eh: new HoloHash(pulse.eh.hash),
     def: {
       entry_index: getIndexByVariant(entryTypes, pulse.entryType),
       zome_index: 42, // Should not be used
@@ -272,14 +272,14 @@ export function dematerializeLinkPulse(pulse: LinkPulseMat, linkTypes: string[])
   return {
     state: state as StateChange,
     link: {
-      author: pulse.author.hash,
-      base: pulse.base.hash,
-      target: pulse.target.hash,
+      author: new HoloHash(pulse.author.hash),
+      base: new HoloHash(pulse.base.hash),
+      target: new HoloHash(pulse.target.hash),
       timestamp: pulse.timestamp,
       zome_index: pulse.zome_index,
       link_type: getIndexByVariant(linkTypes, pulse.link_type),
       tag: pulse.tag,
-      create_link_hash: pulse.create_link_hash.hash,
+      create_link_hash: new HoloHash(pulse.create_link_hash.hash),
     }
   }
 }

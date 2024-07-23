@@ -59,7 +59,7 @@ export class ProfilesZvm extends ZomeViewModel {
   private _reversed: Record<string, AgentPubKeyB64> = {};
 
 
-  getMyProfile(): Profile | undefined { return this._profiles[this.cell.agentId.b64] }
+  getMyProfile(): Profile | undefined { return this._profiles[this.cell.address.agentId.b64] }
 
   getProfile(agent: AgentPubKeyB64): Profile | undefined {return this._profiles[agent]}
 
@@ -149,14 +149,14 @@ export class ProfilesZvm extends ZomeViewModel {
   /** */
   async createMyProfile(profile: Profile): Promise<void> {
     /*const record =*/ await this.zomeProxy.createProfile(profile);
-    this.storeProfile(this.cell.agentId.b64, profile);
+    this.storeProfile(this.cell.address.agentId.b64, profile);
   }
 
 
   /** */
   async updateMyProfile(profile: Profile): Promise<void> {
     /*const record =*/ await this.zomeProxy.updateProfile(profile);
-    this.storeProfile(this.cell.agentId.b64, profile);
+    this.storeProfile(this.cell.address.agentId.b64, profile);
   }
 
 }
