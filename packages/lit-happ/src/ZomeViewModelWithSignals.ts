@@ -215,11 +215,11 @@ export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string
   //console.log("dematerializeEntryPulse()", state, entryTypes);
   /** */
   return {
-    ah: new HoloHash(pulse.ah.hash),
+    ah: pulse.ah.hash,
     state: state as StateChange,
     ts: pulse.ts,
-    author: new HoloHash(pulse.author.hash),
-    eh: new HoloHash(pulse.eh.hash),
+    author: pulse.author.hash,
+    eh: pulse.eh.hash,
     def: {
       entry_index: getIndexByVariant(entryTypes, pulse.entryType),
       zome_index: 42, // Should not be used
@@ -273,7 +273,7 @@ export function dematerializeLinkPulse(pulse: LinkPulseMat, linkTypes: string[])
     state: state as StateChange,
     link: {
       author: new HoloHash(pulse.author.hash),
-      base: new HoloHash(pulse.base.hash),
+      base:  new HoloHash(pulse.base.hash),
       target: new HoloHash(pulse.target.hash),
       timestamp: pulse.timestamp,
       zome_index: pulse.zome_index,

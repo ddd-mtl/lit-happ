@@ -17,7 +17,6 @@ import {
   ProfilesAltPerspectiveMutable,
   ProfilesAltSnapshot
 } from "./profilesAlt.perspective";
-import {HoloHash} from "@holochain/client";
 
 
 /**
@@ -120,7 +119,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   async findProfile(agentId: AgentId): Promise<Profile | undefined> {
-    const maybeProfilePair = await this.zomeProxy.findProfile(new HoloHash(agentId.hash));
+    const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
     console.log("findProfile()", agentId, maybeProfilePair);
     if (!maybeProfilePair) {
       return;
@@ -131,25 +130,25 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   async createMyProfile(profile: Profile): Promise<void> {
-    const _ah = await this.zomeProxy.createProfile([profile, new HoloHash(this.cell.address.agentId.hash)]);
+    const _ah = await this.zomeProxy.createProfile([profile, this.cell.address.agentId.hash]);
   }
 
 
   /** */
   async updateMyProfile(profile: Profile): Promise<void> {
-    const _ah = await this.zomeProxy.updateProfile([profile, new HoloHash(this.cell.address.agentId.hash)]);
+    const _ah = await this.zomeProxy.updateProfile([profile, this.cell.address.agentId.hash]);
   }
 
 
   /** */
   async createProfile(profile: Profile, agentId: AgentId): Promise<void> {
-    const _ah = await this.zomeProxy.createProfile([profile, new HoloHash(agentId.hash)]);
+    const _ah = await this.zomeProxy.createProfile([profile, agentId.hash]);
   }
 
 
   /** */
   async updateProfile(profile: Profile, agentId: AgentId): Promise<void> {
-    const _ah = await this.zomeProxy.updateProfile([profile, new HoloHash(agentId.hash)]);
+    const _ah = await this.zomeProxy.updateProfile([profile, agentId.hash]);
   }
 
 

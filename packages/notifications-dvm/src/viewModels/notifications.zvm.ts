@@ -2,7 +2,7 @@ import {AgentId, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {
   AgentPubKeyB64,
   AppSignal,
-  AppSignalCb, HoloHash,
+  AppSignalCb,
 } from "@holochain/client";
 import {NotificationsProxy} from "../bindings/notifications.proxy";
 import {AgentPubKeyWithTag, Contact, NotificationTip, TwilioCredentials} from "../bindings/notifications.types";
@@ -161,7 +161,7 @@ export class NotificationsZvm extends ZomeViewModel {
   /** */
   async createMyContact(text_number?: string, whatsapp_number?: string, email_address?: string) {
     const contact = {
-      agent_pub_key: new HoloHash(this.cell.address.agentId.hash),
+      agent_pub_key: this.cell.address.agentId.hash,
       text_number,
       whatsapp_number,
       email_address,
