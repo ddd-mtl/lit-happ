@@ -1,9 +1,10 @@
 import {
+  ActionId, AgentId,
   DnaViewModel,
   ZomeViewModel, ZomeViewModelWithSignals,
   ZvmDef
 } from "@ddd-qc/lit-happ";
-import {AppSignal, AppSignalCb, ActionHash} from "@holochain/client";
+import {AppSignal, AppSignalCb} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {IntegerProxy} from "../bindings/integer.proxy";
 
@@ -33,14 +34,14 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   get perspective(): IntegerZomePerspective {return {values: this._values}}
 
   private _values: number[] = [];
-  private _knowns: ActionHash[] = [];
+  private _knowns: ActionId[] = [];
 
 
   /** */
   async initializePerspectiveOffline(): Promise<void> {
     const pairs = await this.zomeProxy.getMyValuesLocal();
     this._values = pairs.map(([a, b]) => b);
-    this._knowns = pairs.map(([a, b]) => a);
+    this._knowns = pairs.map(([a, b]) => new ActionId(a));
     this.notifySubscribers();
   }
 
@@ -48,7 +49,7 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   async initializePerspectiveOnline(): Promise<void> {
     const pairs = await this.zomeProxy.getMyValues();
     this._values = pairs.map(([a, b]) => b);
-    this._knowns = pairs.map(([a, b]) => a);
+    this._knowns = pairs.map(([a, b]) => new ActionId(a));
     this.notifySubscribers();
   }
 
@@ -56,10 +57,10 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
    probeAllInner(): void {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
-    this.zomeProxy.getMyValuesIncremental(this._knowns).then((pairs) => {
+    this.zomeProxy.getMyValuesIncremental(this._knowns.map((id) => id.hash)).then((pairs) => {
         pairs.map(([a, b]) => {
           this._values.push(b);
-          this._knowns.push(a);
+          this._knowns.push(new ActionId(a));
         });
       this.notifySubscribers();
     })
@@ -69,7 +70,7 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   /** -- Integer specific methods -- */
 
   /**  */
-  async createInteger(value: number, canBlock: boolean): Promise<ActionHash> {
+  async createInteger(value: number, canBlock: boolean): Promise<ActionId> {
     const zi = await this.zomeProxy.zomeInfo();
     console.log({zi});
     const di = await this.zomeProxy.dnaInfo();

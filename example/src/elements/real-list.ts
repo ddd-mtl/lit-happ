@@ -1,7 +1,6 @@
 import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {ZomeElement} from "@ddd-qc/lit-happ";
-import {encodeHashToBase64} from "@holochain/client";
 import {customElement} from "lit/decorators.js";
 
 /**
@@ -25,7 +24,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
     const input = this.shadowRoot!.getElementById("realInput") as HTMLInputElement;
     const value = Number(input.value);
     let res = await this._zvm.createReal(value);
-    console.log("onCreate() res =", encodeHashToBase64(res))
+    console.log("onCreate() res =", res)
     input.value = "";
   }
 

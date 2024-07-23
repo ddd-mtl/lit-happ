@@ -394,7 +394,7 @@ export class AppProxy implements AppClient {
 
   /** */
   dumpSignalLogs(canAppSignals: boolean, cellAddr?: CellAddress, zomeName?: ZomeName) {
-    const me = enc64(this.myPubKey);
+    const me = enc64(this.myPubKey.toBytes());
     let logs = this._signalLogs;
     /** Filter by cell and zome */
     let cellNames;

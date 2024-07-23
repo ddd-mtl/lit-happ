@@ -3,14 +3,14 @@
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -123,6 +123,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -198,7 +207,7 @@ export interface SystemSignal {
 }
 
 export interface LitHappSignal {
-  from: AgentPubKey
+  from: AgentArray
   pulses: ExampleSignalProtocol[]
 }
 

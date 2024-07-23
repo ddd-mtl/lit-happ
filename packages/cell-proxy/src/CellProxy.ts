@@ -397,7 +397,17 @@ export class CellProxy extends CellMixin(Empty) {
       const startTime= prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
-      const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
+      let input = null;
+      if (requestLog.request.payload instanceof HoloHash) {
+        //console.log("instanceof HoloHash", requestLog.request.payload);
+        input = enc64(requestLog.request.payload.toBytes())
+      } else {
+        if (requestLog.request.payload instanceof Uint8Array) {
+          //console.log("instanceof Uint8Array", requestLog.request.payload);
+          input = enc64(requestLog.request.payload)
+        }
+      }
+      //const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName
         ? { startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }

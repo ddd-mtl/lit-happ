@@ -3,14 +3,14 @@
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -123,6 +123,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -147,7 +156,7 @@ ValidationReceipt,
 
 export interface CastTipInput {
   tip: TipProtocol
-  peers: AgentPubKey[]
+  peers: AgentArray[]
 }
 
 /** Bool: True if state change just happened (real-time) */
@@ -168,18 +177,18 @@ export interface LinkPulse {
 }
 
 export interface EntryPulse {
-  ah: ActionHash
+  ah: ActionArray
   state: StateChange
   ts: Timestamp
-  author: AgentPubKey
-  eh: EntryHash
+  author: AgentArray
+  eh: EntryArray
   def: AppEntryDef
   bytes: Uint8Array
 }
 
 /**  */
 export interface ZomeSignal {
-  from: AgentPubKey
+  from: AgentArray
   pulses: ZomeSignalProtocol[]
 }
 
@@ -243,8 +252,8 @@ export enum TipProtocolType {
 	Link = 'Link',
 	App = 'App',
 }
-export type TipProtocolVariantPing = {Ping: AgentPubKey}
-export type TipProtocolVariantPong = {Pong: AgentPubKey}
+export type TipProtocolVariantPing = {Ping: AgentArray}
+export type TipProtocolVariantPong = {Pong: AgentArray}
 export type TipProtocolVariantEntry = {Entry: EntryPulse}
 export type TipProtocolVariantLink = {Link: LinkPulse}
 export type TipProtocolVariantApp = {App: Uint8Array}

@@ -13,7 +13,7 @@ import {getIndexByVariant} from "./utils";
 /**
  * Checks if obj is a Hash or list of hashes and tries to convert it a B64 or list of B64
  */
-export function anyToB64(obj: any): any {
+export function anyToB64(obj: unknown): unknown {
   /** Check if it's a hash */
   if (obj instanceof Uint8Array) {
     return enc64(obj);

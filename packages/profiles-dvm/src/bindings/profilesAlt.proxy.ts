@@ -4,14 +4,14 @@ import {EntryTypes, Profile, } from './profilesAlt.types';
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -124,6 +124,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -159,19 +168,19 @@ export class ProfilesAltProxy extends ZomeProxy {
   static readonly ENTRY_TYPES = Object.values(ProfilesAltUnitEnum);
   static readonly LINK_TYPES = Object.values(ProfilesAltLinkType);
  
-  async createProfile(pair: [Profile, AgentPubKey]): Promise<ActionHash> {
+  async createProfile(pair: [Profile, AgentArray]): Promise<ActionArray> {
     return this.callBlocking('create_profile', pair);
   }
 
-  async updateProfile(pair: [Profile, AgentPubKey]): Promise<ActionHash> {
+  async updateProfile(pair: [Profile, AgentArray]): Promise<ActionArray> {
     return this.callBlocking('update_profile', pair);
   }
 
-  async searchAgents(nicknameFilter: string): Promise<AgentPubKey[]> {
+  async searchAgents(nicknameFilter: string): Promise<AgentArray[]> {
     return this.call('search_agents', nicknameFilter);
   }
 
-  async findProfile(agentPubKey: AgentPubKey): Promise<[ActionHash, Profile] | null> {
+  async findProfile(agentPubKey: AgentArray): Promise<[ActionArray, Profile] | null> {
     return this.call('find_profile', agentPubKey);
   }
 

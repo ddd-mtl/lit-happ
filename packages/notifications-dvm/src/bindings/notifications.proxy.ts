@@ -4,14 +4,14 @@ import {EntryTypes, Signal, AgentPubKeyWithTag, Contact, NotificationTip, Remove
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -124,6 +124,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -178,7 +187,7 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('create_contact', contact);
   }
 
-  async getContacts(agentPubKeys: AgentPubKey[]): Promise<Contact[]> {
+  async getContacts(agentPubKeys: AgentArray[]): Promise<Contact[]> {
     return this.call('get_contacts', agentPubKeys);
   }
 
@@ -186,7 +195,7 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('update_contact', input);
   }
 
-  async deleteContact(originalContactHash: ActionHash): Promise<ActionHash> {
+  async deleteContact(originalContactHash: ActionArray): Promise<ActionArray> {
     return this.call('delete_contact', originalContactHash);
   }
 
@@ -202,7 +211,7 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('claim_notifier', description);
   }
 
-  async findANotifier(): Promise<AgentPubKey> {
+  async findANotifier(): Promise<AgentArray> {
     return this.call('find_a_notifier', null);
   }
 
@@ -210,7 +219,7 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('list_notifiers', null);
   }
 
-  async selectNotifier(input: AgentPubKey): Promise<void> {
+  async selectNotifier(input: AgentArray): Promise<void> {
     return this.call('select_notifier', input);
   }
 
@@ -218,11 +227,11 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('select_first_notifier', null);
   }
 
-  async getNotifiersForNotificant(notificant: AgentPubKey): Promise<AgentPubKey[]> {
+  async getNotifiersForNotificant(notificant: AgentArray): Promise<AgentArray[]> {
     return this.call('get_notifiers_for_notificant', notificant);
   }
 
-  async getMyNotifier(): Promise<AgentPubKey> {
+  async getMyNotifier(): Promise<AgentArray> {
     return this.call('get_my_notifier', null);
   }
 
@@ -262,7 +271,7 @@ export class NotificationsProxy extends ZomeProxy {
     return this.call('update_twilio_credentials', input);
   }
 
-  async deleteTwilioCredentials(originalTwilioCredentialsHash: ActionHash): Promise<ActionHash> {
+  async deleteTwilioCredentials(originalTwilioCredentialsHash: ActionArray): Promise<ActionArray> {
     return this.call('delete_twilio_credentials', originalTwilioCredentialsHash);
   }
 }

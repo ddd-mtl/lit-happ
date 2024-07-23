@@ -1,11 +1,8 @@
-import {ZomeViewModel} from "@ddd-qc/lit-happ";
+import {AgentId, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {
-  AgentPubKey,
   AgentPubKeyB64,
   AppSignal,
-  AppSignalCb,
-  decodeHashFromBase64,
-  encodeHashToBase64, HoloHash
+  AppSignalCb, HoloHash,
 } from "@holochain/client";
 import {NotificationsProxy} from "../bindings/notifications.proxy";
 import {AgentPubKeyWithTag, Contact, NotificationTip, TwilioCredentials} from "../bindings/notifications.types";
@@ -17,7 +14,7 @@ export interface NotificationsPerspective {
   notifiers: AgentPubKeyWithTag[],
   contacts: Record<AgentPubKeyB64, Contact>,
 
-  myNotifier?: AgentPubKey,
+  myNotifier?: AgentId,
   myTwilioCredentials?: TwilioCredentials,
 }
 
@@ -122,7 +119,8 @@ export class NotificationsZvm extends ZomeViewModel {
   /** */
   async probeMyNotifier() {
     try {
-      this._myNotifier = await this.zomeProxy.getMyNotifier();
+      const hash = await this.zomeProxy.getMyNotifier();
+      this._myNotifier = new AgentId(hash);
       this.notifySubscribers();
     } catch (e) {
       console.warn("No notifier found for this agent.", e);
@@ -150,7 +148,7 @@ export class NotificationsZvm extends ZomeViewModel {
 
   private _notifiers: AgentPubKeyWithTag[] = []
   private _contacts: Record<AgentPubKeyB64, Contact> = {}
-  private _myNotifier?: AgentPubKey;
+  private _myNotifier?: AgentId;
   private _myTwilioCredentials?: TwilioCredentials;
 
   getMyContact(): Contact | undefined { return this._contacts[this.cell.address.agentId.b64] }
@@ -176,9 +174,9 @@ export class NotificationsZvm extends ZomeViewModel {
 
   /** */
   async probeContacts(agents: AgentPubKeyB64[]) {
-    const contacts = await this.zomeProxy.getContacts(agents.map((agent) => decodeHashFromBase64(agent)));
+    const contacts = await this.zomeProxy.getContacts(agents.map((agent) => new AgentId(agent).hash));
     for (const contact of contacts) {
-      this._contacts[encodeHashToBase64(contact.agent_pub_key)] = contact;
+      this._contacts[new AgentId(contact.agent_pub_key).b64] = contact;
     }
     this.notifySubscribers();
   }
@@ -190,7 +188,7 @@ export class NotificationsZvm extends ZomeViewModel {
       retry_count: 5,
       status: "",
       message,
-      notificants: notificants.map((agent) => decodeHashFromBase64(agent)),
+      notificants: notificants.map((agent) => new AgentId(agent).hash),
       contacts: [],
       extra_context,
       message_id: "",
@@ -205,7 +203,7 @@ export class NotificationsZvm extends ZomeViewModel {
 
 
   /** */
-  async selectNotifier(agent?: AgentPubKeyB64): Promise<AgentPubKey | undefined>  {
+  async selectNotifier(agent?: AgentPubKeyB64): Promise<AgentId | undefined>  {
     if (!agent) {
       try {
         await this.zomeProxy.selectFirstNotifier();
@@ -215,18 +213,18 @@ export class NotificationsZvm extends ZomeViewModel {
       }
     } else {
       await this.probeNotifiers();
-      const notifiers = this._notifiers.map((notifier) => encodeHashToBase64(notifier.agent));
+      const notifiers = this._notifiers.map((notifier) => new AgentId(notifier.agent).b64);
       console.log("NotificationsZvm selectNotifier()", notifiers, agent);
       if (!notifiers.includes(agent)) {
         throw Error("Agent is not a known notifier");
       }
-      await this.zomeProxy.selectNotifier(decodeHashFromBase64(agent));
+      await this.zomeProxy.selectNotifier(new AgentId(agent).hash);
     }
     /** Send my contact to new notifier */
     const previousNotifier = this._myNotifier;
     try {
-      const newNotifier = await this.zomeProxy.getMyNotifier();
-      if (!previousNotifier || encodeHashToBase64(previousNotifier) != encodeHashToBase64(newNotifier)) {
+      const newNotifier = new AgentId(await this.zomeProxy.getMyNotifier());
+      if (!previousNotifier || !previousNotifier.equals(newNotifier)) {
         const myContact = this.perspective.contacts[this.cell.address.agentId.b64];
         if (myContact) {
           await this.zomeProxy.sendContact(myContact);

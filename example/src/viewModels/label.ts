@@ -1,5 +1,5 @@
-import {ZomeViewModel} from "@ddd-qc/lit-happ";
-import {AppSignal, AppSignalCb, EntryHash} from "@holochain/client";
+import {EntryId, ZomeViewModel} from "@ddd-qc/lit-happ";
+import {AppSignal, AppSignalCb} from "@holochain/client";
 import {delay} from "@ddd-qc/cell-proxy";
 import {LabelProxy} from "../bindings/label.proxy";
 
@@ -43,11 +43,11 @@ export class LabelZvm extends ZomeViewModel {
   /** -- API  -- */
 
   /**  */
-  async createLabel(value: string): Promise<EntryHash> {
+  async createLabel(value: string): Promise<EntryId> {
     const res = await this.zomeProxy.createLabel(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();
-    return res;
+    return new EntryId(res);
   }
 }

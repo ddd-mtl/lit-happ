@@ -3,14 +3,14 @@
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -123,6 +123,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -149,13 +158,13 @@ ValidationReceipt,
 import {NotificationsLinkType as LinkTypes} from "./notifications.integrity"
 
 export interface UpdateContactInput {
-  original_contact_hash: ActionHash
-  previous_contact_hash: ActionHash
+  original_contact_hash: ActionArray
+  previous_contact_hash: ActionArray
   updated_contact: Contact
 }
 
 export interface Contact {
-  agent_pub_key: AgentPubKey
+  agent_pub_key: AgentArray
   text_number?: string
   whatsapp_number?: string
   email_address?: string
@@ -165,7 +174,7 @@ export interface NotificationTip {
   retry_count: number
   status: string
   message: string
-  notificants: AgentPubKey[]
+  notificants: AgentArray[]
   contacts: Contact[]
   extra_context: string
   message_id: string
@@ -206,23 +215,23 @@ export type Signal =
   | SignalVariantEntryDeleted;
 
 export interface AgentPubKeyWithTag {
-  agent: AgentPubKey
+  agent: AgentArray
   tag: string
 }
 
 export interface RemoveNotifierForNotificantInput {
-  base_notificant: AgentPubKey
-  target_notifier: AgentPubKey
+  base_notificant: AgentArray
+  target_notifier: AgentArray
 }
 
 export interface UpdateTwilioCredentialsInput {
-  original_twilio_credentials_hash: ActionHash
-  previous_twilio_credentials_hash: ActionHash
+  original_twilio_credentials_hash: ActionArray
+  previous_twilio_credentials_hash: ActionArray
   updated_twilio_credentials: TwilioCredentials
 }
 
 export interface Contact {
-  agent_pub_key: AgentPubKey
+  agent_pub_key: AgentArray
   text_number?: string
   whatsapp_number?: string
   email_address?: string

@@ -4,14 +4,14 @@ import {RealEntry, Real, } from './real.types';
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -124,6 +124,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -159,11 +168,11 @@ export class RealProxy extends ZomeProxy {
   static readonly ENTRY_TYPES = Object.values(RealUnitEnum);
   static readonly LINK_TYPES = Object.values(RealLinkType);
  
-  async getReal(eh: EntryHash): Promise<number> {
+  async getReal(eh: EntryArray): Promise<number> {
     return this.call('get_real', eh);
   }
 
-  async createReal(value: number): Promise<EntryHash> {
+  async createReal(value: number): Promise<EntryArray> {
     return this.callBlocking('create_real', value);
   }
 

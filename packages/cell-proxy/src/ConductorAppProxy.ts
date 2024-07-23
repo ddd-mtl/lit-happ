@@ -85,7 +85,6 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
   /** */
   async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-    //const agent = encodeHashToBase64();
     const agentId = new AgentId(this._appWs.myPubKey);
     /* Call networkInfo */
     const response = await this._appWs.networkInfo({
@@ -98,7 +97,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
     let i = 0;
     //let result = {}
     for (const netInfo of response) {
-      const dnaId = new DnaId(args.dnas[i]);
+      const dnaId = new DnaId(args.dnas[i].toBytes());
       //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
       /* Store */
       const cellAddr = new CellAddress(dnaId, agentId);
@@ -143,7 +142,9 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
           token = issued.token;
         }
         const appWs = await AppWebsocket.connect({url: wsUrl, defaultTimeout: timeout, token});
-        let conductor = new ConductorAppProxy(timeout, appId, new AgentId(appWs.myPubKey), adminWs);
+        const agentId = new AgentId(appWs.myPubKey);
+        //console.log("appWs.myPubKey", appWs.myPubKey, agentId);
+        let conductor = new ConductorAppProxy(timeout, appId, agentId, adminWs);
         conductor._appWs = appWs;
         conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)});
         return conductor;

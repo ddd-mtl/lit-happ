@@ -1,5 +1,5 @@
-import {DnaModifiersOptions, DnaViewModel, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
-import {AppSignal, EntryHash} from "@holochain/client";
+import {DnaModifiersOptions, DnaViewModel, EntryId, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
+import {AppSignal} from "@holochain/client";
 import { LabelZvm } from "./label";
 import {RealProxy} from "../bindings/real.proxy";
 
@@ -39,12 +39,12 @@ export class RealZvm extends ZomeViewModel {
   }
 
   /**  */
-  async createReal(value: number): Promise<EntryHash> {
+  async createReal(value: number): Promise<EntryId> {
     const res = await this.zomeProxy.createReal(value);
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();
-    return res;
+    return new EntryId(res);
   }
 }
 

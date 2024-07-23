@@ -4,14 +4,14 @@ import {ExampleSignalProtocol, IntegerEntry, SystemSignalProtocol, Integer, LitH
 import {
 WebsocketConnectionOptions,
 /** types.ts */
-HoloHash,
-AgentPubKey,
-DnaHash,
-WasmHash,
-EntryHash,
-ActionHash,
-AnyDhtHash,
-ExternalHash,
+//HoloHash,
+//AgentPubKey,
+//DnaHash,
+//WasmHash,
+//EntryHash,
+//ActionHash,
+//AnyDhtHash,
+//ExternalHash,
 KitsuneAgent,
 KitsuneSpace,
 HoloHashB64,
@@ -124,6 +124,15 @@ NetworkSeed,
 ZomeLocation,
    } from '@holochain/client';
 
+
+/// Simple Hashes
+type AgentArray = Uint8Array;
+type DnaArray = Uint8Array;
+type WasmArray = Uint8Array;
+type EntryArray = Uint8Array;
+type ActionArray = Uint8Array;
+type AnyDhtArray = Uint8Array;
+
 import {
 /** Common */
 DhtOpHashB64,
@@ -159,27 +168,27 @@ export class IntegerProxy extends ZomeProxy {
   static readonly ENTRY_TYPES = Object.values(IntegerUnitEnum);
   static readonly LINK_TYPES = Object.values(IntegerLinkType);
  
-  async getInteger(ah: ActionHash): Promise<number> {
+  async getInteger(ah: ActionArray): Promise<number> {
     return this.call('get_integer', ah);
   }
 
-  async createBlockingInteger(value: number): Promise<ActionHash> {
+  async createBlockingInteger(value: number): Promise<ActionArray> {
     return this.callZomeBlockPostCommit('Integer','create_blocking_integer', value);
   }
 
-  async createInteger(value: number): Promise<ActionHash> {
+  async createInteger(value: number): Promise<ActionArray> {
     return this.callBlocking('create_integer', value);
   }
 
-  async getMyValuesLocal(): Promise<[ActionHash, number][]> {
+  async getMyValuesLocal(): Promise<[ActionArray, number][]> {
     return this.call('get_my_values_local', null);
   }
 
-  async getMyValues(): Promise<[ActionHash, number][]> {
+  async getMyValues(): Promise<[ActionArray, number][]> {
     return this.call('get_my_values', null);
   }
 
-  async getMyValuesIncremental(knowns: ActionHash[]): Promise<[ActionHash, number][]> {
+  async getMyValuesIncremental(knowns: ActionArray[]): Promise<[ActionArray, number][]> {
     return this.call('get_my_values_incremental', knowns);
   }
 }
