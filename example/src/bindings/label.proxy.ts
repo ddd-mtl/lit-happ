@@ -132,6 +132,7 @@ type WasmArray = Uint8Array;
 type EntryArray = Uint8Array;
 type ActionArray = Uint8Array;
 type AnyDhtArray = Uint8Array;
+type AnyLinkableArray = Uint8Array;
 
 import {
 /** Common */

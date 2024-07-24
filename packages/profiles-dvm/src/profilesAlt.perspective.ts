@@ -95,15 +95,15 @@ export class ProfilesAltPerspective {
 
   /** TODO: deep copy */
   makeSnapshot(): ProfilesAltSnapshot {
-    let all = [];
+    let all: [AgentPubKeyB64, ActionHashB64, Profile, Timestamp][] = [];
     for (const [agentId, profileAh] of this.profileByAgent.entries()) {
       const pair = this.profiles.get(profileAh);
       if (pair) {
-        all.push([agentId, profileAh, pair[0], pair[1]])
+        all.push([agentId.b64, profileAh.b64, pair[0], pair[1]])
       }
     }
     /** */
-    return {all}
+    return {all};
   }
 }
 
@@ -160,8 +160,8 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
     this.profileByAgent.clear();
     this.agentByName = {};
     /** Store */
-    for (const [agent, profileB64, profile, ts] of snapshot.all) {
-      const agentId = new AgentId(agent);
+    for (const [agentB64, profileB64, profile, ts] of snapshot.all) {
+      const agentId = new AgentId(agentB64);
       const profileAh = new ActionId(profileB64);
       this.storeAgentProfile(agentId, profileAh);
       this.storeProfile(profileAh, profile, ts);
