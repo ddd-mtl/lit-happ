@@ -33,6 +33,7 @@ import {ActionId, DnaId, EntryId, intoDhtId} from "@ddd-qc/cell-proxy";
 export const emptyWeServicesMock: WeaveServices = {
   //attachmentTypes: new HoloHashMap<AppletHash, Record<AttachmentName, AttachmentType>>(),
   //attachmentTypes: fakeAttachmentTypes,
+  mossVersion: (): string => {throw new Error("mossVersion() is not implemented on WeServicesMock."); },
   onPeerStatusUpdate: (callback: (payload: PeerStatusUpdate) => any) => {throw new Error("onPeerStatusUpdate() is not implemented on WeServicesMock."); },
   openAppletMain: (appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
   openAppletBlock: (appletHash: EntryHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
@@ -48,6 +49,7 @@ export const emptyWeServicesMock: WeaveServices = {
   notifyFrame: (notifications: Array<FrameNotification>): Promise<any> => {throw new Error("notifyFrame() is not implemented on WeServicesMock.");},
   userSelectScreen: (): Promise<string> => {throw new Error("userSelectScreen() is not implemented on WeServicesMock.");},
   requestBind: (srcWal: WAL, dstWal: WAL) => {throw new Error("requestBind() is not implemented on WeServicesMock.");},
+  requestClose: (): Promise<void> => {throw new Error("requestClose() is not implemented on WeServicesMock.");},
   myGroupPermissionType: () => {throw new Error("myGroupPermissionType() is not implemented on WeServicesMock.");},
 
 };

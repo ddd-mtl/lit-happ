@@ -33,8 +33,8 @@
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain-open-dev/profiles": "^0.400.0-dev.1",
-    "@holochain/client": "^0.18.0-dev.4",
-    "@lightningrodlabs/we-applet": "0.17.0-dev.3",
+    "@holochain/client": "^0.18.0-dev.9",
+    "@lightningrodlabs/we-applet": "0.17.1",
     "@mdi/js": "^7.2.0"
   },
   "engines": {

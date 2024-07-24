@@ -124,6 +124,7 @@ export class WeServicesEx implements WeaveServices {
 
 
   /** -- Passthrough  -- */
+  mossVersion(): string {return this._inner.mossVersion();}
   onPeerStatusUpdate(callback: (payload: PeerStatusUpdate) => any): UnsubscribeFunction {return this._inner.onPeerStatusUpdate(callback)}
   async openAppletMain(appletHash: EntryHash): Promise<void> {return this._inner.openAppletMain(appletHash)}
   async openAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void> {return this._inner.openAppletBlock(appletHash, block, context)}
@@ -136,5 +137,6 @@ export class WeServicesEx implements WeaveServices {
   async notifyFrame(notifications: Array<FrameNotification>): Promise<any>  {return this._inner.notifyFrame(notifications)}
   async userSelectScreen(): Promise<string>  {return this._inner.userSelectScreen()}
   async requestBind(srcWal: WAL, dstWal: WAL) {return this._inner.requestBind(srcWal, dstWal)}
+  async requestClose() {return this._inner.requestClose()}
   async myGroupPermissionType(): Promise<GroupPermissionType> {return this._inner.myGroupPermissionType()}
 }
