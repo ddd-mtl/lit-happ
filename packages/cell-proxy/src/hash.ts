@@ -203,8 +203,14 @@ export abstract class HolochainId {
   }
 
   /** */
-  static from<T extends HolochainId, Z extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => Z, start: T): Z {
-    const core = Uint8Array.from(start.hash.slice(3, 35));
+  static from<T extends HolochainId, Z extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => Z, start: T | string): Z {
+    let hash;
+    if (typeof start == 'string') {
+      hash = dec64(start);
+    } else {
+      hash = start.hash;
+    }
+    const core = Uint8Array.from(hash.slice(3, 35));
     const hashType = (this as unknown as typeof HolochainId).HASH_TYPE;
     const newHash = Uint8Array.from([
       ...HASH_TYPE_PREFIX[hashType],
@@ -276,6 +282,39 @@ export function intoLinkableId(input: HoloHashB64 | Uint8Array): LinkableId {
     const externalId = new ExternalId(input);
     return externalId;
   }
+}
+
+
+/** */
+export function intoAnyId(input: HoloHashB64 | Uint8Array): AnyId {
+  try {
+    const dhtId = intoLinkableId(input);
+    return dhtId;
+  } catch(e) {
+    try {
+      const dnaId = new AgentId(input);
+      return dnaId;
+    } catch(e) {
+      const id = new DnaId(input);
+      return id;
+    }
+  }
+}
+
+
+/** -- JSON -- */
+
+export function holoIdReviver(key:any, value:any) {
+  if(typeof value === 'object' && value !== null) {
+    // if (value.dataType === 'HolochainId') {
+    //   return intoAnyId(value.value);
+    // }
+    const keys = Object.keys(value);
+    if (keys.length == 1 && keys[0] == "b64") {
+      return intoAnyId(value.b64);
+    }
+  }
+  return value;
 }
 
 
@@ -355,6 +394,7 @@ export async function testHoloId() {
   const emptyAgent = AgentId.from(emptyEntry);
   const emptyEntry2 = EntryId.from(emptyAgent);
   const randomEh = await EntryId.random();
+  const randomEh2 = EntryId.from(randomEh.b64);
 
   console.log("testHoloId()", emptyAction);
   /** */
@@ -368,6 +408,7 @@ export async function testHoloId() {
   console.log("testHoloId.emptyEntry", emptyEntry.equals(emptyEntry), emptyEntry.equals(emptyEntry.b64), emptyEntry.equals(emptyEntry.hash));
   console.log("testHoloId.emptyEntry2", emptyEntry.equals(emptyEntry2), emptyEntry.equals(emptyEntry2.b64), emptyEntry.equals(emptyEntry2.hash));
   console.log("testHoloId.randomEh", emptyEntry.equals(randomEh), emptyEntry.equals(emptyAgent), emptyEntry.equals(emptyAgent.hash), emptyEntry.equals(emptyAgent.b64));
+  console.log("testHoloId.randomEh2", randomEh.equals(randomEh2));
 
   //printEh(emptyAction); // Should error at compile time
 }

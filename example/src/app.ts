@@ -195,6 +195,12 @@ export class PlaygroundApp extends HappElement {
                 Profiles Role: ${this.profilesDvm.hcl.toString()}
                 <input type="button" value="dump calls" @click=${(e: any) => this.profilesDvm.dumpCallLogs()}>
                 <input type="button" value="dump signals" @click=${(e: any) => this.profilesDvm.dumpSignalLogs()}>
+                <input type="button" value="export" @click=${(e: any) => {
+                  const json = this.profilesDvm.exportPerspective();
+                  this.downloadTextFile("dump_profiles.json", json);
+                }}>
+                <input type="button" value="import only" @click=${(e: any) => this.importDvm(false)}>
+                <input type="button" value="import & publish" @click=${(e: any) => this.importDvm(true)}>
             </h2>
             <profiles-edit-profile 
                     .profile=${myProfile}
@@ -206,6 +212,45 @@ export class PlaygroundApp extends HappElement {
             ></profiles-edit-profile>
         </cell-context>
     `
+  }
+
+
+  /** */
+  downloadTextFile(filename: string, content: string): void {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+
+  /** */
+  private importDvm(canPublish: boolean) {
+    console.log("importDvm()");
+    //console.log("<store-dialog> localOnly", localOnly, this._localOnly);
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = ".json";
+    input.onchange = async (e:any) => {
+      console.log("onImport() target download file", e);
+      const file = e.target.files[0];
+      if (!file) {
+        console.error("No file selected");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const contents = reader.result as string;
+        //console.log(contents);
+        this.profilesDvm.importPerspective(contents, canPublish);
+      };
+      // Read the file as text
+      reader.readAsText(file);
+    }
+    input.click();
   }
 
 

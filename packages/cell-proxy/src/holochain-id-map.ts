@@ -1,7 +1,7 @@
 import {
   HoloHashB64,
 } from "@holochain/client";
-import {ActionId, AgentId, AnyId, DhtId, DnaId, EntryId, ExternalId, HolochainId, LinkableId} from "./hash";
+import {ActionId, AgentId, DnaId, EntryId, HolochainId} from "./hash";
 import {GConstructor} from "./mixins";
 
 

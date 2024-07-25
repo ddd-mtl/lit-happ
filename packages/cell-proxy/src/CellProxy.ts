@@ -24,7 +24,7 @@ import {
   SignalUnsubscriber,
 } from "./AppProxy";
 import {prettyDate, prettyDuration} from "./pretty";
-import {anyToB64, enc64} from "./hash";
+import {anyToB64, enc64, intoAnyId} from "./hash";
 import {
   SystemSignalProtocolVariantPostCommitNewEnd,
   SystemSignalProtocolVariantSelfCallEnd,
@@ -397,14 +397,14 @@ export class CellProxy extends CellMixin(Empty) {
       const startTime= prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
-      let input = null;
+      let input = requestLog.request.payload;
       if (requestLog.request.payload instanceof HoloHash) {
         //console.log("instanceof HoloHash", requestLog.request.payload);
-        input = enc64(requestLog.request.payload.toBytes())
+        input = intoAnyId(requestLog.request.payload.toBytes()).print();
       } else {
         if (requestLog.request.payload instanceof Uint8Array) {
           //console.log("instanceof Uint8Array", requestLog.request.payload);
-          input = enc64(requestLog.request.payload)
+          input = intoAnyId(requestLog.request.payload).print();
         }
       }
       //const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;

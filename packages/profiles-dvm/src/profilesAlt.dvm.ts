@@ -1,4 +1,4 @@
-import {delay, DnaViewModel} from "@ddd-qc/lit-happ";
+import {delay, DnaViewModel, holoIdReviver} from "@ddd-qc/lit-happ";
 import {
   AppSignal, AppSignalCb,
 } from "@holochain/client";
@@ -45,6 +45,26 @@ export class ProfilesAltDvm extends DnaViewModel {
     if (signal.zome_name !== ProfilesZvm.DEFAULT_ZOME_NAME) {
       return;
     }
+  }
+
+
+  /** -- Import / Export -- */
+
+  /** Dump perspective as JSON */
+  exportPerspective(): string {
+    const dvmExport = {};
+    const tJson = this.profilesZvm.export();
+    dvmExport[ProfilesZvm.DEFAULT_ZOME_NAME] = JSON.parse(tJson);
+    return JSON.stringify(dvmExport, null, 2);
+  }
+
+
+  /** */
+  async importPerspective(json: string, canPublish: boolean) {
+    const external = JSON.parse(json, holoIdReviver) as any;
+    const profiles = external[ProfilesZvm.DEFAULT_ZOME_NAME];
+    this.profilesZvm.import(JSON.stringify(profiles), canPublish);
+    this.notifySubscribers();
   }
 
 

@@ -1,11 +1,11 @@
 import {ActionId, ActionIdMap, AgentId, AgentIdMap, assertAllDefined} from "@ddd-qc/cell-proxy";
 import {Profile} from "./bindings/profiles.types";
-import {ActionHashB64, AgentPubKeyB64, Timestamp} from "@holochain/client";
+import {Timestamp} from "@holochain/client";
 
 
 /** */
 export interface ProfilesAltSnapshot {
-  all: [AgentPubKeyB64, ActionHashB64, Profile, Timestamp][];
+  all: [AgentId, ActionId, Profile, Timestamp][];
 }
 
 
@@ -44,7 +44,7 @@ export class ProfilesAltPerspective {
   }
 
 
-  /** */
+  /** AgentId or Name */
   getProfile(agent: AgentId | string): Profile | undefined {
     if (typeof agent == "string") {
       agent = this.agentByName[agent];
@@ -95,11 +95,11 @@ export class ProfilesAltPerspective {
 
   /** TODO: deep copy */
   makeSnapshot(): ProfilesAltSnapshot {
-    let all: [AgentPubKeyB64, ActionHashB64, Profile, Timestamp][] = [];
+    let all: [AgentId, ActionId, Profile, Timestamp][] = [];
     for (const [agentId, profileAh] of this.profileByAgent.entries()) {
       const pair = this.profiles.get(profileAh);
       if (pair) {
-        all.push([agentId.b64, profileAh.b64, pair[0], pair[1]])
+        all.push([agentId, profileAh, pair[0], pair[1]])
       }
     }
     /** */
@@ -160,9 +160,7 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
     this.profileByAgent.clear();
     this.agentByName = {};
     /** Store */
-    for (const [agentB64, profileB64, profile, ts] of snapshot.all) {
-      const agentId = new AgentId(agentB64);
-      const profileAh = new ActionId(profileB64);
+    for (const [agentId, profileAh, profile, ts] of snapshot.all) {
       this.storeAgentProfile(agentId, profileAh);
       this.storeProfile(profileAh, profile, ts);
     }

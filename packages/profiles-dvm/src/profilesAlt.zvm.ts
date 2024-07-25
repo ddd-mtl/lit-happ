@@ -1,7 +1,7 @@
 import {
   ActionId,
   AgentId,
-  EntryId,
+  EntryId, holoIdReviver,
   LinkPulseMat,
   StateChangeType,
   ZomeViewModelWithSignals
@@ -156,22 +156,30 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** Dump perspective as JSON */
   export(): string {
-    //console.log("exportPerspective()", perspMat);
     const snapshot = this._perspective.makeSnapshot();
     return JSON.stringify(snapshot, null, 2);
   }
 
 
   /** */
-  import(json: string, _canPublish: boolean) {
-    const snapshot = JSON.parse(json) as ProfilesAltSnapshot;
-    // if (canPublish) {
-    //   for (const [profileAh, [profile, _ts]] of perspective.profiles.entries()) {
-    //     await this.createProfile(profile, agentId);
-    //   }
-    //   return;
-    // }
+  import(json: string, canPublish: boolean) {
+    const snapshot = JSON.parse(json, holoIdReviver) as ProfilesAltSnapshot;
+    if (canPublish) {
+      for (const [agentId, _profileAh, profile, _ts] of snapshot.all) {
+        console.log("ProfilesAltZvm.import() publish profile", agentId.short, profile.nickname);
+        const maybe = this._perspective.getProfile(agentId);
+        if (!maybe) {
+          /*await*/ this.createProfile(profile, agentId);
+        } else {
+          if (maybe != profile) {
+            this.updateProfile(profile, agentId);
+          }
+        }
+      }
+      return;
+    }
     /** */
-    this._perspective.restore(snapshot)
+    this._perspective.restore(snapshot);
+    this.notifySubscribers();
   }
 }
