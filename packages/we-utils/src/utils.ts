@@ -1,10 +1,26 @@
-import {asCell, BaseRoleName, Cell, CellProxy, ConductorAppProxy, DnaId, enc64} from "@ddd-qc/cell-proxy";
+import {
+  asCell,
+  BaseRoleName,
+  Cell,
+  CellProxy,
+  ConductorAppProxy,
+  DhtId,
+  DnaId,
+  enc64,
+  EntryId
+} from "@ddd-qc/cell-proxy";
 import {
   AppClient,
   AppWebsocket,
-  CellInfo,
+  CellInfo, HoloHash,
   InstalledAppId
 } from "@holochain/client";
+import {Hrl} from "@lightningrodlabs/we-applet";
+
+
+export function intoHrl(dna: DnaId, dht: DhtId): Hrl {
+  return [new HoloHash(dna.hash), new HoloHash(dht.hash)];
+}
 
 
 /** */

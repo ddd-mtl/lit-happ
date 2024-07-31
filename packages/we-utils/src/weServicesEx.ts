@@ -9,7 +9,7 @@ import {
 } from "@lightningrodlabs/we-applet/dist/types";
 import {
   ActionHash,
-  EntryHash,
+  EntryHash, HoloHashB64,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
@@ -75,14 +75,14 @@ export class WeServicesEx implements WeaveServices {
   /** */
   async cacheFullAppletInfo(appletId: EntryId): Promise<[AppletInfo, DnaIdMap<GroupProfile>] | undefined> {
     /* Grab appletInfo and all groupProfiles */
-    const appletInfo = await this.appletInfo(appletId.b64);
+    const appletInfo = await this.appletInfo(appletId.hash);
     if (!appletInfo) {
       return undefined;
     }
     const groupProfiles: DnaIdMap<GroupProfile> = new DnaIdMap();
     for (const groupHash of appletInfo.groupsHashes) {
-      const gp = await this.groupProfile(groupHash);
-      groupProfiles.set( new DnaId(groupHash), gp);
+      const gp = await this.groupProfile(groupHash.bytes());
+      groupProfiles.set(new DnaId(groupHash), gp);
     }
     return [appletInfo, groupProfiles];
   }
@@ -102,23 +102,23 @@ export class WeServicesEx implements WeaveServices {
 
 
   /** */
-  async groupProfile(groupHash: any): Promise<any> {
+  async groupProfile(groupHash: HoloHashB64 | Uint8Array): Promise<any> {
     const groupId = new DnaId(groupHash);
     if (this._groupProfileCache.get(groupId)) {
       return this._groupProfileCache.get(groupId);
     }
-    this._groupProfileCache.set(groupId, await this._inner.groupProfile(groupId));
+    this._groupProfileCache.set(groupId, await this._inner.groupProfile(groupId.hash));
     return this._groupProfileCache.get(groupId);
   }
 
 
   /** */
-  async appletInfo(appletHash: any): Promise<AppletInfo | undefined> {
+  async appletInfo(appletHash: HoloHashB64 | Uint8Array): Promise<AppletInfo | undefined> {
     const appletId = new EntryId(appletHash);
     if (this._appletInfoCache.get(appletId)) {
       return this._appletInfoCache.get(appletId);
     }
-    this._appletInfoCache.set(appletId, await this._inner.appletInfo(appletHash));
+    this._appletInfoCache.set(appletId, await this._inner.appletInfo(appletId.hash));
     return this._appletInfoCache.get(appletId);
   }
 

@@ -2,7 +2,7 @@ import {
     AdminWebsocket,
     Record,
     AppWebsocket,
-    ListAppsResponse, CellId,
+    ListAppsResponse, CellId, Entry, HoloHash,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
@@ -36,7 +36,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     const localStorageId = names.installed_app_id + "-id";
 
     /** Store AppletId in LocalStorage, so we can retrieve it when refereshing webpage */
-    let devtestAppletId;
+    let devtestAppletId: EntryId;
     let devtestAppletIdB64 = window.localStorage[localStorageId];
     if (!devtestAppletIdB64) {
         devtestAppletId = await EntryId.random();
@@ -94,7 +94,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     let renderInfo= emptyRenderInfo as unknown as AppletViewInfo;
     renderInfo.profilesClient = new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby");
     renderInfo.appletClient = appAgentWs;
-    renderInfo.appletHash = devtestAppletId.b64;
+    renderInfo.appletHash = new HoloHash(devtestAppletId.hash);
     console.log("setupDevtest() renderInfo", renderInfo);
     /** Determine renderInfo.view */
     if (appletView) {

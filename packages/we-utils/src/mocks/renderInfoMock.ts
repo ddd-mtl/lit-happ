@@ -1,7 +1,7 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
-import {AppletViewInfo, AssetViewInfo} from "../index";
-import {AppletHash, ReadonlyPeerStatusStore} from "@lightningrodlabs/we-applet/dist/types";
+import {AssetViewInfo, intoHrl} from "../index";
 import {DnaId, EntryId} from "@ddd-qc/cell-proxy";
+import {HoloHash} from "@holochain/client";
 
 
 /** Empty AppletViews */
@@ -19,7 +19,7 @@ export const emptyBlockAppletView: AppletView = {
 export const emptyEntryAppletView: AssetViewInfo = {
     type: "asset",
     wal: {
-        hrl: [DnaId.empty().hash, EntryId.empty().hash],
+        hrl: intoHrl(DnaId.empty(), EntryId.empty()),
         context: null,
     },
     recordInfo: {
@@ -48,6 +48,6 @@ export const emptyRenderInfo: RenderInfo = {
     appletClient: undefined,
     profilesClient: undefined,
     peerStatusStore: undefined,
-    appletHash: EntryId.empty(42).hash as AppletHash,
+    appletHash: new HoloHash(EntryId.empty(42).hash),
     groupProfiles: [{name: "fakeGroup", icon_src: "https://lightningrodlabs.org/lrl_logo.png"}],
 };

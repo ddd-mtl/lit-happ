@@ -1,6 +1,6 @@
 import {
   ActionHash,
-  EntryHash,
+  EntryHash, HoloHash,
 } from "@holochain/client";
 import {
   AppletInfo, PeerStatusUpdate, WeaveServices,
@@ -13,7 +13,7 @@ import {
   WAL
 } from "@lightningrodlabs/we-applet/dist/types";
 import {mdiFileExcelOutline} from "@mdi/js";
-import {wrapPathInSvg} from "../utils";
+import {intoHrl, wrapPathInSvg} from "../utils";
 import {ActionId, DnaId, EntryId, intoDhtId} from "@ddd-qc/cell-proxy";
 
 
@@ -67,27 +67,27 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
     console.log("DefaultWeServicesMock.appletInfo()", appletId, devtestAppletId);
     if (appletId.b64 == devtestAppletId.b64) {
       return {
-        appletBundleId: ActionId.empty(87).hash,
+        appletBundleId: new HoloHash(ActionId.empty(87).hash),
         appletName: "DevTestWeApplet",
         appletIcon: "",
-        groupsHashes: [DnaId.empty(71).hash],
+        groupsHashes: [new HoloHash(DnaId.empty(71).hash)],
       } as AppletInfo;
     }
     return {
-      appletBundleId: ActionId.empty(87).hash,
+      appletBundleId: new HoloHash(ActionId.empty(87).hash),
       appletName: "MockApplet: " + appletId,
       appletIcon: "",
-      groupsHashes: [DnaId.empty(71).hash],
+      groupsHashes: [new HoloHash(DnaId.empty(71).hash)],
     } as AppletInfo;
   };
   /** Implement entryInfo */
   weServicesMock.assetInfo = async (wal) => {
     console.log("DefaultWeServicesMock.assetInfo()", wal);
     return {
-      appletHash: devtestAppletId.hash,
+      appletHash: new HoloHash(devtestAppletId.hash),
       assetInfo: {
         icon_src: wrapPathInSvg(mdiFileExcelOutline),
-        name: "MockEntry: " + intoDhtId(wal.hrl[1]).short,
+        name: "MockEntry: " + intoDhtId(wal.hrl[1].bytes()).short,
       }
     } as AssetLocationAndInfo;
   }
@@ -99,7 +99,7 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
       return copy;
     }
     return {
-      hrl: [(await DnaId.random()).hash, (await EntryId.random()).hash],
+      hrl: intoHrl(await DnaId.random(), await EntryId.random()),
       context: null,
     } as WAL;
   }
