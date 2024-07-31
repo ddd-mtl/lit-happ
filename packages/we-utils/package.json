@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/we-utils",
-  "version": "0.27.2",
+  "version": "0.27.3",
   "description": "Helpers for creating we-applets out of HappElements from lit-happ",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -34,7 +34,7 @@
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain-open-dev/profiles": "^0.400.0-dev.1",
     "@holochain/client": "^0.18.0-dev.9",
-    "@lightningrodlabs/we-applet": "0.17.1",
+    "@lightningrodlabs/we-applet": "0.17.2-dev.0",
     "@mdi/js": "^7.2.0"
   },
   "engines": {
