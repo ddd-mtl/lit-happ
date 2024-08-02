@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
-    "@holochain/client": "^0.18.0-dev.4",
+    "@holochain/client": "=0.18.0-dev.4",
     "@lit/context": "1.0.1",
     "lit": "3.0.2",
     "async-mutex": "0.4.0"

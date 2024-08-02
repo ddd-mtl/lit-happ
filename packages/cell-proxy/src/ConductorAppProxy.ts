@@ -97,7 +97,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
     let i = 0;
     //let result = {}
     for (const netInfo of response) {
-      const dnaId = new DnaId(args.dnas[i].toBytes());
+      const dnaId = new DnaId(args.dnas[i]);
       //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
       /* Store */
       const cellAddr = new CellAddress(dnaId, agentId);

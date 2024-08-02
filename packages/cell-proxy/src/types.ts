@@ -1,6 +1,6 @@
 import {
   CellId,
-  RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName, HoloHash,
+  RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName,
 } from "@holochain/client";
 import {Dictionary} from "./utils";
 import {AgentId, DnaId} from "./hash";
@@ -121,7 +121,8 @@ export class CellAddress {
   }
 
   intoId(): CellId {
-    return [new HoloHash(this.dnaId.hash), new HoloHash(this.agentId.hash)]
+    //return [new HoloHash(this.dnaId.hash), new HoloHash(this.agentId.hash)]
+    return [this.dnaId.hash, this.agentId.hash];
   }
 
   // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit

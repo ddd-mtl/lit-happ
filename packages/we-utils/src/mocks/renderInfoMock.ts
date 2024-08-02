@@ -1,7 +1,6 @@
 import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
 import {AssetViewInfo, intoHrl} from "../index";
 import {DnaId, EntryId} from "@ddd-qc/cell-proxy";
-import {HoloHash} from "@holochain/client";
 
 
 /** Empty AppletViews */
@@ -48,6 +47,6 @@ export const emptyRenderInfo: RenderInfo = {
     appletClient: undefined,
     profilesClient: undefined,
     peerStatusStore: undefined,
-    appletHash: new HoloHash(EntryId.empty(42).hash),
+    appletHash: EntryId.empty(42).hash,
     groupProfiles: [{name: "fakeGroup", icon_src: "https://lightningrodlabs.org/lrl_logo.png"}],
 };

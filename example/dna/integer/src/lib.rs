@@ -97,6 +97,7 @@ fn get_my_values_incremental(knowns: Vec<ActionHash>) -> ExternResult<Vec<(Actio
     let value = get_integer(ah.clone()).unwrap();
     return (ah, value);
   }).collect();
+  debug!("*** get_my_values_incremental(): numbers = {:?}", numbers);
   Ok(numbers)
 }
 

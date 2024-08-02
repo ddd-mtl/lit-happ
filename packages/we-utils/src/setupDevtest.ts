@@ -2,7 +2,7 @@ import {
     AdminWebsocket,
     Record,
     AppWebsocket,
-    ListAppsResponse, CellId, Entry, HoloHash,
+    ListAppsResponse, CellId,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
@@ -94,7 +94,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     let renderInfo= emptyRenderInfo as unknown as AppletViewInfo;
     renderInfo.profilesClient = new ProfilesClient((mockProfilesZome as any), /*mockProfilesZome.roleName*/ "lobby");
     renderInfo.appletClient = appAgentWs;
-    renderInfo.appletHash = new HoloHash(devtestAppletId.hash);
+    renderInfo.appletHash = devtestAppletId.hash;
     console.log("setupDevtest() renderInfo", renderInfo);
     /** Determine renderInfo.view */
     if (appletView) {

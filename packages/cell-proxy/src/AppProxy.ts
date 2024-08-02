@@ -11,7 +11,7 @@ import {
   ClonedCell,
   CreateCloneCellRequest,
   DisableCloneCellRequest,
-  EnableCloneCellRequest, HoloHash,
+  EnableCloneCellRequest,
   InstalledAppId,
   NetworkInfo,
   NetworkInfoResponse,
@@ -194,7 +194,7 @@ export class AppProxy implements AppClient {
     this.defaultTimeout = defaultTimeout;
     this.adminWs = adminWs;
     this.installedAppId = appId;
-    this.myPubKey = new HoloHash(agentId.hash);
+    this.myPubKey = agentId.hash;
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
@@ -394,7 +394,7 @@ export class AppProxy implements AppClient {
 
   /** */
   dumpSignalLogs(canAppSignals: boolean, cellAddr?: CellAddress, zomeName?: ZomeName) {
-    const me = enc64(this.myPubKey.toBytes());
+    const me = enc64(this.myPubKey);
     let logs = this._signalLogs;
     /** Filter by cell and zome */
     let cellNames;

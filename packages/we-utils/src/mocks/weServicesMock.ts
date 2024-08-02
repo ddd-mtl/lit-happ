@@ -1,6 +1,6 @@
 import {
   ActionHash,
-  EntryHash, HoloHash,
+  EntryHash,
 } from "@holochain/client";
 import {
   AppletInfo, PeerStatusUpdate, WeaveServices,
@@ -67,27 +67,27 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
     console.log("DefaultWeServicesMock.appletInfo()", appletId, devtestAppletId);
     if (appletId.b64 == devtestAppletId.b64) {
       return {
-        appletBundleId: new HoloHash(ActionId.empty(87).hash),
+        appletBundleId: ActionId.empty(87).hash,
         appletName: "DevTestWeApplet",
         appletIcon: "",
-        groupsHashes: [new HoloHash(DnaId.empty(71).hash)],
+        groupsHashes: [DnaId.empty(71).hash],
       } as AppletInfo;
     }
     return {
-      appletBundleId: new HoloHash(ActionId.empty(87).hash),
+      appletBundleId: ActionId.empty(87).hash,
       appletName: "MockApplet: " + appletId,
       appletIcon: "",
-      groupsHashes: [new HoloHash(DnaId.empty(71).hash)],
+      groupsHashes: [DnaId.empty(71).hash],
     } as AppletInfo;
   };
   /** Implement entryInfo */
   weServicesMock.assetInfo = async (wal) => {
     console.log("DefaultWeServicesMock.assetInfo()", wal);
     return {
-      appletHash: new HoloHash(devtestAppletId.hash),
+      appletHash: devtestAppletId.hash,
       assetInfo: {
         icon_src: wrapPathInSvg(mdiFileExcelOutline),
-        name: "MockEntry: " + intoDhtId(wal.hrl[1].bytes()).short,
+        name: "MockEntry: " + intoDhtId(wal.hrl[1]).short,
       }
     } as AssetLocationAndInfo;
   }

@@ -1,5 +1,5 @@
 import {
-  ActionId, AgentId,
+  ActionId,
   DnaViewModel,
   ZomeViewModel, ZomeViewModelWithSignals,
   ZvmDef
@@ -56,8 +56,9 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   /** */
    probeAllInner(): void {
     //let entryDefs = await this._proxy.getEntryDefs();
-    //console.log({entryDefs})
-    this.zomeProxy.getMyValuesIncremental(this._knowns.map((id) => id.hash)).then((pairs) => {
+    const knowns = this._knowns.map((id) => id.hash);
+    console.log("knowns", this._knowns, knowns);
+    this.zomeProxy.getMyValuesIncremental(knowns).then((pairs) => {
         pairs.map(([a, b]) => {
           this._values.push(b);
           this._knowns.push(new ActionId(a));
@@ -75,17 +76,18 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
     console.log({zi});
     const di = await this.zomeProxy.dnaInfo();
     console.log({di});
-    let ah;
+    let ah: Uint8Array;
     if (canBlock) {
       ah = await this.zomeProxy.createBlockingInteger(value);
     } else {
       ah = await this.zomeProxy.createInteger(value);
     }
+    const action = new ActionId(ah);
     /** Add directly to perspective */
     this._values.push(value);
-    this._knowns.push(ah);
+    this._knowns.push(action);
     this.notifySubscribers();
-    return ah;
+    return action;
   }
 }
 

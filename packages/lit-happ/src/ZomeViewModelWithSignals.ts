@@ -1,4 +1,4 @@
-import {AppSignalCb, EntryVisibility, HoloHash, Timestamp} from "@holochain/client";
+import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
 import {
   ActionId,
   AgentId, LinkableId, anyToB64, enc64, EntryId,
@@ -272,14 +272,14 @@ export function dematerializeLinkPulse(pulse: LinkPulseMat, linkTypes: string[])
   return {
     state: state as StateChange,
     link: {
-      author: new HoloHash(pulse.author.hash),
-      base:  new HoloHash(pulse.base.hash),
-      target: new HoloHash(pulse.target.hash),
+      author: pulse.author.hash,
+      base:  pulse.base.hash,
+      target: pulse.target.hash,
       timestamp: pulse.timestamp,
       zome_index: pulse.zome_index,
       link_type: getIndexByVariant(linkTypes, pulse.link_type),
       tag: pulse.tag,
-      create_link_hash: new HoloHash(pulse.create_link_hash.hash),
+      create_link_hash: pulse.create_link_hash.hash,
     }
   }
 }

@@ -81,8 +81,8 @@ export class WeServicesEx implements WeaveServices {
     }
     const groupProfiles: DnaIdMap<GroupProfile> = new DnaIdMap();
     for (const groupHash of appletInfo.groupsHashes) {
-      const gp = await this.groupProfile(groupHash.bytes());
-      groupProfiles.set(new DnaId(groupHash.bytes()), gp);
+      const gp = await this.groupProfile(groupHash);
+      groupProfiles.set(new DnaId(groupHash), gp);
     }
     return [appletInfo, groupProfiles];
   }

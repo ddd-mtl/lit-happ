@@ -2,7 +2,7 @@ import {
   AppSignal,
   AppSignalCb,
   CallZomeRequest,
-  CapSecret, HoloHash,
+  CapSecret,
   Timestamp,
   ZomeName
 } from "@holochain/client";
@@ -233,7 +233,7 @@ export class CellProxy extends CellMixin(Empty) {
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
-      provenance: new HoloHash(this.cell.address.agentId.hash),
+      provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
@@ -261,7 +261,7 @@ export class CellProxy extends CellMixin(Empty) {
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
-      provenance: new HoloHash(this.cell.address.agentId.hash),
+      provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
 
@@ -293,7 +293,7 @@ export class CellProxy extends CellMixin(Empty) {
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
-      provenance: new HoloHash(this.cell.address.agentId.hash),
+      provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     try {
@@ -398,15 +398,15 @@ export class CellProxy extends CellMixin(Empty) {
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
       let input = requestLog.request.payload;
-      if (requestLog.request.payload instanceof HoloHash) {
-        //console.log("instanceof HoloHash", requestLog.request.payload);
-        input = intoAnyId(requestLog.request.payload.toBytes()).print();
-      } else {
+      // if (requestLog.request.payload instanceof HoloHash) {
+      //   //console.log("instanceof HoloHash", requestLog.request.payload);
+      //   input = intoAnyId(requestLog.request.payload.toBytes()).print();
+      // } else {
         if (requestLog.request.payload instanceof Uint8Array) {
           //console.log("instanceof Uint8Array", requestLog.request.payload);
           input = intoAnyId(requestLog.request.payload).print();
         }
-      }
+      //}
       //const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName

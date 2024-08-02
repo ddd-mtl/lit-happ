@@ -11,7 +11,7 @@ import {HappViewModel} from "./HappViewModel";
 import {CellDef, HvmDef} from "./definitions";
 import {
   AppWebsocket,
-  ClonedCell, HoloHash,
+  ClonedCell,
   InstalledAppId,
   NetworkInfo, Timestamp
 } from "@holochain/client";
@@ -121,7 +121,7 @@ export class HappElement extends LitElement {
     /** Call NetworkInfo per AgentId */
     const allNetInfos = {};
     for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
-      const netInfos = await this.appProxy.networkInfo({dnas: dnaIds.map((dna) => new HoloHash(dna.hash))});
+      const netInfos = await this.appProxy.networkInfo({dnas: dnaIds.map((dna) => dna.hash)});
       let i  = 0;
       for (const netInfo of netInfos) {
         const idStr = new CellAddress(dnaIds[i], agent).str;

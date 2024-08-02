@@ -12,14 +12,15 @@ import {
 import {
   AppClient,
   AppWebsocket,
-  CellInfo, HoloHash,
+  CellInfo,
   InstalledAppId
 } from "@holochain/client";
 import {Hrl} from "@lightningrodlabs/we-applet";
 
 
 export function intoHrl(dna: DnaId, dht: DhtId): Hrl {
-  return [new HoloHash(dna.hash), new HoloHash(dht.hash)];
+  //return [new HoloHash(dna.hash), new HoloHash(dht.hash)];
+  return [dna.hash, dht.hash];
 }
 
 
