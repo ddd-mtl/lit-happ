@@ -22,7 +22,7 @@ export enum HappBuildModeType {
 
 console.log("[lit-happ] Initializaing LIT-HAPP global consts", window);
 
-let buildMode: HappBuildModeType;
+let buildMode: HappBuildModeType | undefined = undefined;
 let happEnv: HappEnvType;
 
 

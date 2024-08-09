@@ -16,7 +16,7 @@ export class ViewCellContext extends LitElement {
   @property({type: Object})
   cell!: Cell;
 
-  render() {
+  override render() {
     const cellName = this.cell === undefined? "undefined" : this.cell.name;
     return html`
     <div>

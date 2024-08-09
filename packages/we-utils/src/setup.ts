@@ -1,5 +1,5 @@
 import {AppletServices, WeaveClient} from "@lightningrodlabs/we-applet";
-import {setBasePath, getBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js';
+import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import {delay, HappElement, HAPP_ENV, HappEnvType} from "@ddd-qc/lit-happ";
 import {setupDevtest} from "./setupDevtest";
 import {createDefaultWeServicesMock} from "./mocks/weServicesMock";
@@ -27,8 +27,8 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
     const weClient = await WeaveClient.connect(appletServices);
     //console.log("weClient", weClient);
     if (weClient.renderInfo.type != "applet-view") {
-        console.error("Setup called for non 'applet-view' type")
-        return;
+        console.error("Setup called for non 'applet-view' type");
+        throw Promise.reject("Setup called for non 'applet-view' type")
     }
 
     /** Delay because of We 'CellDisabled' bug at startup race condition */

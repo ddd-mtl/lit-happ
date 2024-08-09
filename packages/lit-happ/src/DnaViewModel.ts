@@ -2,8 +2,7 @@ import {ZomeViewModel} from "./ZomeViewModel";
 import {ReactiveElement} from "lit";
 import {ViewModel} from "./ViewModel";
 import {
-  AdminWebsocket,
-  GrantedFunctionsType,
+  AdminWebsocket, FunctionName,
   InstalledAppId,
   ZomeName,
 } from "@holochain/client";
@@ -108,7 +107,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /** -- Methods -- */
 
   /** Override so we can provide context of all zvms */
-  /*private*/ provideContext(host: ReactiveElement): void {
+  /*private*/ override provideContext(host: ReactiveElement): void {
     //console.log("DVM.provideContext()", host, this)
     super.provideContext(host);
     for (const zvm of Object.values(this._zomeViewModels)) {
@@ -122,11 +121,11 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   /** */
   async authorizeZomeCalls(adminWs: AdminWebsocket): Promise<void> {
-    let allFnNames = [];
+    let allFnNames: [ZomeName, FunctionName][] = [];
     for (const [_zomeName, zvm] of Object.entries(this._zomeViewModels)) {
       allFnNames = allFnNames.concat(zvm.zomeProxy.fnNames)
     }
-    const grantedFns = { [GrantedFunctionsType.Listed]: allFnNames }
+    //const grantedFns = { [GrantedFunctionsType.Listed]: allFnNames }
     try {
         console.log("authorizeSigningCredentials: " + this.cell.hcl().toString(), allFnNames);
         console.log("authorizeSigningCredentials. cell_id = " + this.cell.address.str);
@@ -145,7 +144,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** Not async on purpose as we except this to be long. Post-processing should be done via Observer pattern */
-  protected probeAllInner(): void {
+  protected override probeAllInner(): void {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
       zvm.probeAll();
@@ -154,11 +153,11 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** */
-  zvmChanged(zvm: ZomeViewModel): void {}
+  zvmChanged(_zvm: ZomeViewModel): void {}
 
 
   /** */
-  async initializePerspectiveOffline(): Promise<void> {
+  override async initializePerspectiveOffline(): Promise<void> {
     const all = [];
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       const p = zvm.initializePerspectiveOffline();
@@ -169,7 +168,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** */
-  async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveOnline(): Promise<void> {
     const all = [];
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       const p = zvm.initializePerspectiveOnline();
@@ -213,7 +212,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     }
     if (this._zomeViewModels[zomeName]) {
       const logs = this._cellProxy.signalLogs.filter((log) => log.zomeName == zomeName)
-      this._zomeViewModels[zomeName].dumpSignalLogs(logs);
+      this._zomeViewModels[zomeName]!.dumpSignalLogs(logs);
     } else {
       console.error(`Unknown zome ${zomeName} in DVM ${this.baseRoleName}`)
     }

@@ -26,7 +26,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** -- Concret -- */
 
-  static readonly ZOME_PROXY = ProfilesAltProxy;
+  static override readonly ZOME_PROXY = ProfilesAltProxy;
   get zomeProxy(): ProfilesAltProxy {return this._zomeProxy as ProfilesAltProxy;}
 
 
@@ -37,13 +37,13 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveOnline(): Promise<void> {
     await this.probeAllProfiles();
   }
 
 
   /** */
-  probeAllInner() {
+  override probeAllInner() {
     this.probeAllProfiles();
   }
 
@@ -70,7 +70,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   /** -- Signals -- */
 
   /** */
-  async handleLinkPulse(pulse: LinkPulseMat, _from: AgentId): Promise<void> {
+  override async handleLinkPulse(pulse: LinkPulseMat, _from: AgentId): Promise<void> {
     switch (pulse.link_type) {
       case ProfilesLinkType.PrefixPath:
       case ProfilesLinkType.PathToAgent: {
@@ -97,7 +97,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  async handleEntryPulse(pulse: EntryPulseMat, _from: AgentId) {
+  override async handleEntryPulse(pulse: EntryPulseMat, _from: AgentId) {
     switch (pulse.entryType) {
       case ProfilesAltUnitEnum.Profile:
           const profile = decode(pulse.bytes) as Profile;
@@ -130,25 +130,25 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   async createMyProfile(profile: Profile): Promise<void> {
-    const _ah = await this.zomeProxy.createProfile([profile, this.cell.address.agentId.hash]);
+    await this.zomeProxy.createProfile([profile, this.cell.address.agentId.hash]);
   }
 
 
   /** */
   async updateMyProfile(profile: Profile): Promise<void> {
-    const _ah = await this.zomeProxy.updateProfile([profile, this.cell.address.agentId.hash]);
+    await this.zomeProxy.updateProfile([profile, this.cell.address.agentId.hash]);
   }
 
 
   /** */
   async createProfile(profile: Profile, agentId: AgentId): Promise<void> {
-    const _ah = await this.zomeProxy.createProfile([profile, agentId.hash]);
+    await this.zomeProxy.createProfile([profile, agentId.hash]);
   }
 
 
   /** */
   async updateProfile(profile: Profile, agentId: AgentId): Promise<void> {
-    const _ah = await this.zomeProxy.updateProfile([profile, agentId.hash]);
+    await this.zomeProxy.updateProfile([profile, agentId.hash]);
   }
 
 

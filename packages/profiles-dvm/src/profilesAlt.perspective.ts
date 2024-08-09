@@ -47,10 +47,11 @@ export class ProfilesAltPerspective {
   /** AgentId or Name */
   getProfile(agent: AgentId | string): Profile | undefined {
     if (typeof agent == "string") {
-      agent = this.agentByName[agent];
-      if (!agent) {
+      const maybe = this.agentByName[agent];
+      if (!maybe) {
         return;
       }
+      agent = maybe;
     }
     const profileAh = this.profileByAgent.get(agent);
     //console.log("ProfilesAltZvm.getProfile()", agent, profileAh);
@@ -69,10 +70,11 @@ export class ProfilesAltPerspective {
   /** */
   getProfileTs(agent: AgentId | string): Timestamp | undefined {
     if (typeof agent == "string") {
-      agent = this.agentByName[agent];
-      if (!agent) {
+      const maybe = this.agentByName[agent];
+      if (!maybe) {
         return;
       }
+      agent = maybe;
     }
     const profileAh = this.profileByAgent.get(agent);
     if (!profileAh) {
@@ -173,7 +175,8 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
   async generateRandomProfile(nickname: string, ts?: Timestamp, fields?: Record<string, string>) {
     const agentId = await AgentId.random();
     const profileAh = await ActionId.random();
-    const profile: Profile = {nickname, fields};
+    const profile: Profile = {nickname, fields: {}};
+    if (fields) profile.fields = fields;
     this.storeAgentProfile(agentId, profileAh);
     this.storeProfile(profileAh, profile, ts? ts : 0);
   }

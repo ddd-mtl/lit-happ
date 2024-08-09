@@ -17,7 +17,7 @@ import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
 
 /** */
 export interface WeServicesCache {
-  assetInfos: DnaIdMap<AssetLocationAndInfo | undefined>;
+  assetInfos: Record<string, AssetLocationAndInfo | undefined>;
   groupProfiles: DnaIdMap<any | undefined>;
   appletInfos: EntryIdMap<AppletInfo | undefined>;
 }
@@ -27,8 +27,10 @@ export interface WeServicesCache {
 export class WeServicesEx implements WeaveServices {
 
   constructor(private _inner: WeaveServices, private _thisAppletId: EntryId) {
-    this.cacheFullAppletInfo(_thisAppletId).then(([_appletId, groupProfiles]) => {
-      this._groupProfiles = groupProfiles;
+    this.cacheFullAppletInfo(_thisAppletId).then((maybePair) => {
+      if (maybePair) {
+        this._groupProfiles = maybePair[1];
+      }
     })
   }
 
@@ -39,7 +41,7 @@ export class WeServicesEx implements WeaveServices {
   /** appletId -> AppletInfo */
   private _appletInfoCache: EntryIdMap<AppletInfo | undefined> = new EntryIdMap();
   /** wurl -> AssetLocationAndInfo */
-  private _assetInfoCache: DnaIdMap<AssetLocationAndInfo | undefined> = new DnaIdMap();
+  private _assetInfoCache: Record<string, AssetLocationAndInfo | undefined> = {};
 
   /** -- Getters -- */
 

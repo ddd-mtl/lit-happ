@@ -73,6 +73,7 @@ ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
 
 /** User defined external dependencies */
+// @ts-ignore
 import {ProfilesLinkType as LinkTypes} from "./profiles.integrity"
 
 export type SignalVariantLinkCreated = {

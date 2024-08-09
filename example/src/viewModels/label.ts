@@ -18,7 +18,7 @@ export class LabelZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY = LabelProxy;
+  static override readonly ZOME_PROXY = LabelProxy;
   get zomeProxy(): LabelProxy {return this._zomeProxy as LabelProxy;}
 
   get perspective(): LabelZomePerspective {return {names: this._values}}
@@ -27,12 +27,12 @@ export class LabelZvm extends ZomeViewModel {
 
   private _values: string[] = [];
 
-  readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
+  override readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
     console.warn("Signal for zLabel zome received:", appSignal);
   }
 
   /** */
-  async probeAllInner(): Promise<void> {
+  override async probeAllInner(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     await delay(1000); // for testing probeAll mutex

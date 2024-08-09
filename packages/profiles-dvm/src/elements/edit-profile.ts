@@ -1,5 +1,5 @@
 import {css, html, LitElement} from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { localized, msg, str } from '@lit/localize';
 import { onSubmit, sharedStyles } from '@holochain-open-dev/elements';
 
@@ -44,7 +44,7 @@ export class EditProfile extends LitElement {
     const nickname = formFields['nickname'];
     delete formFields['nickname'];
 
-    const fields = {}
+    const fields: Record<string, string> = {}
     //fields['email'] = formFields['email'];
     fields['avatar'] = formFields['avatar']? formFields['avatar'] : "";
     fields['lang'] = formFields['option']? formFields['option'] : "";
@@ -74,7 +74,7 @@ export class EditProfile extends LitElement {
 
 
   /** */
-  render() {
+  override render() {
     console.log("<profiles-edit-profile>.render()", this.profile);
 
     /** */
@@ -120,7 +120,7 @@ export class EditProfile extends LitElement {
   }
 
 
-  static styles = [sharedStyles, css`
+  static override styles = [sharedStyles, css`
 
     sl-radio {
       font-size: larger;

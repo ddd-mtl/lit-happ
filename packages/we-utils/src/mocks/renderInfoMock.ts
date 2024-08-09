@@ -44,8 +44,11 @@ export const emptyEntryAppletView: AssetViewInfo = {
 export const emptyRenderInfo: RenderInfo = {
     type: "applet-view",
     view: emptyMainAppletView,
+    // @ts-ignore
     appletClient: undefined,
+    // @ts-ignore
     profilesClient: undefined,
+    // @ts-ignore
     peerStatusStore: undefined,
     appletHash: EntryId.empty(42).hash,
     groupProfiles: [{name: "fakeGroup", icon_src: "https://lightningrodlabs.org/lrl_logo.png"}],

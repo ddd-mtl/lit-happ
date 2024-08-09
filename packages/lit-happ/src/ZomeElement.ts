@@ -33,6 +33,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
+  // @ts-ignore
   private _consumer?;
 
 
@@ -52,7 +53,7 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
     this._consumer = new ContextConsumer(
       this,
       contextType,
-      async (value: ZVM, dispose?: () => void): Promise<void> => {
+      async (value: ZVM, _dispose?: () => void): Promise<void> => {
         console.log(`\t\t Received value for context "${contextType}"`)
         await this.zvmUpdated(value, this._zvm);
         if (this._zvm) {
@@ -68,13 +69,13 @@ export class ZomeElement<P, ZVM extends ZomeViewModel> extends CellMixin(LitElem
 
 
   /** Subclass can override this to get notified when a new ZVM has been received */
-  protected async zvmUpdated(newZvm: ZVM, oldZvm?: ZVM): Promise<void> {
+  protected async zvmUpdated(_newZvm: ZVM, _oldZvm?: ZVM): Promise<void> {
     //console.log(`\t\t Default zvmUpdated() called`)
   }
 
 
   /** */
-  shouldUpdate(changedProperties: PropertyValues<this>) {
+  override shouldUpdate(changedProperties: PropertyValues<this>) {
     //console.log("ZomeElement.shouldUpdate() start", !!this._zvm, this.installedCell);
     if (changedProperties.has("_cell_via_context")) {
       //console.log("ZomeElement.shouldUpdate()", this._cell_via_context)

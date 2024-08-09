@@ -16,13 +16,13 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
   }
 
   /** */
-  async onProbe(e: any) {
+  async onProbe(_e: any) {
     await this._zvm.probeAll();
   }
 
 
   /** */
-  async onCreate(e: any) {
+  async onCreate(_e: any) {
     const input = this.shadowRoot!.getElementById("labelInput") as HTMLInputElement;
     let res = await this._zvm.createLabel(input.value);
     console.log("onCreate() res =", res.short)
@@ -31,7 +31,7 @@ export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 
 
   /** */
-  render() {
+  override render() {
     console.log(`<label-list>.render(): ${this.cell.print()}`);
 
     //console.log("label-list:", this.perspective.names)

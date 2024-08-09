@@ -14,13 +14,13 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
   }
 
   /** */
-  async onProbe(e: any) {
+  async onProbe(_e: any) {
     await this._zvm.probeAll();
   }
 
 
   /** */
-  async onCreate(e: any) {
+  async onCreate(_e: any) {
     const input = this.shadowRoot!.getElementById("realInput") as HTMLInputElement;
     const value = Number(input.value);
     let res = await this._zvm.createReal(value);
@@ -30,7 +30,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
 
   /** */
-  render() {
+  override render() {
     console.log(`<label-list> render(): ${this.cell.print()}`);
 
     //console.log("real-list:", this.perspective.floats)

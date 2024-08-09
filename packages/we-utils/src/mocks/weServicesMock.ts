@@ -34,28 +34,28 @@ export const emptyWeServicesMock: WeaveServices = {
   //attachmentTypes: new HoloHashMap<AppletHash, Record<AttachmentName, AttachmentType>>(),
   //attachmentTypes: fakeAttachmentTypes,
   mossVersion: (): string => {throw new Error("mossVersion() is not implemented on WeServicesMock."); },
-  onPeerStatusUpdate: (callback: (payload: PeerStatusUpdate) => any) => {throw new Error("onPeerStatusUpdate() is not implemented on WeServicesMock."); },
-  openAppletMain: (appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
-  openAppletBlock: (appletHash: EntryHash, block: string, context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
-  openCrossAppletMain: (appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
-  openCrossAppletBlock: (appletBundleId: ActionHash, block: string, context: any): Promise<void> => {throw new Error("openCrossAppletBlock() is not implemented on WeServicesMock.");},
-  openWal: (wal: WAL, mode?: OpenWalMode) : Promise<void> => {throw new Error("openWal() is not implemented on WeServicesMock.");},
-  groupProfile: (groupId): Promise<any> => {throw new Error("groupProfile() is not implemented on WeServicesMock.");},
-  appletInfo: (appletHash): Promise<AppletInfo | undefined> => {throw new Error("appletInfo() is not implemented on WeServicesMock.");},
-  assetInfo: (wal: WAL): Promise<AssetLocationAndInfo | undefined> => {throw new Error("assetInfo() is not implemented on WeServicesMock.");},
-  walToPocket: (wal: WAL): Promise<void> => {throw new Error("hrlToClipboard() is not implemented on WeServicesMock.");},
+  onPeerStatusUpdate: (_callback: (payload: PeerStatusUpdate) => any) => {throw new Error("onPeerStatusUpdate() is not implemented on WeServicesMock."); },
+  openAppletMain: (_appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
+  openAppletBlock: (_appletHash: EntryHash, _block: string, _context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
+  openCrossAppletMain: (_appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
+  openCrossAppletBlock: (_appletBundleId: ActionHash, _block: string, _context: any): Promise<void> => {throw new Error("openCrossAppletBlock() is not implemented on WeServicesMock.");},
+  openWal: (_wal: WAL, _mode?: OpenWalMode) : Promise<void> => {throw new Error("openWal() is not implemented on WeServicesMock.");},
+  groupProfile: (_groupId): Promise<any> => {throw new Error("groupProfile() is not implemented on WeServicesMock.");},
+  appletInfo: (_appletHash): Promise<AppletInfo | undefined> => {throw new Error("appletInfo() is not implemented on WeServicesMock.");},
+  assetInfo: (_wal: WAL): Promise<AssetLocationAndInfo | undefined> => {throw new Error("assetInfo() is not implemented on WeServicesMock.");},
+  walToPocket: (_wal: WAL): Promise<void> => {throw new Error("hrlToClipboard() is not implemented on WeServicesMock.");},
   //search: (searchFilter: string): Promise<any> => {throw new Error("search() is not implemented on WeServicesMock.");},
   userSelectWal: (): Promise<WAL | undefined> => {throw new Error("userSelectWal() is not implemented on WeServicesMock.");},
-  notifyFrame: (notifications: Array<FrameNotification>): Promise<any> => {throw new Error("notifyFrame() is not implemented on WeServicesMock.");},
+  notifyFrame: (_notifications: Array<FrameNotification>): Promise<any> => {throw new Error("notifyFrame() is not implemented on WeServicesMock.");},
   userSelectScreen: (): Promise<string> => {throw new Error("userSelectScreen() is not implemented on WeServicesMock.");},
-  requestBind: (srcWal: WAL, dstWal: WAL) => {throw new Error("requestBind() is not implemented on WeServicesMock.");},
+  requestBind: (_srcWal: WAL, _dstWal: WAL) => {throw new Error("requestBind() is not implemented on WeServicesMock.");},
   requestClose: (): Promise<void> => {throw new Error("requestClose() is not implemented on WeServicesMock.");},
   myGroupPermissionType: () => {throw new Error("myGroupPermissionType() is not implemented on WeServicesMock.");},
 
 };
 
 
-var _mockClipboard = undefined;
+var _mockClipboard: any = undefined;
 
 /** Create default WeServices Mock */
 export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Promise<WeaveServices> {
@@ -104,7 +104,7 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
     } as WAL;
   }
   /** Implement groupProfile */
-  weServicesMock.groupProfile = async (groupId) => {
+  weServicesMock.groupProfile = async (_groupId) => {
     return {
       name: "FakeGroupeName",
       logo_src: "",

@@ -84,7 +84,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
 
     /** Notify DVM parent */
-    protected notifySubscribers(): boolean {
+    protected override notifySubscribers(): boolean {
         const hasChanged = super.notifySubscribers();
         if (hasChanged) {
             this._dvmParent.zvmChanged(this);

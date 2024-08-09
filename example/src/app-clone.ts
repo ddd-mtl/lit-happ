@@ -29,7 +29,7 @@ export class PlaygroundCloneApp extends HappElement {
   }
 
   /** HvmDef */
-  static HVM_DEF: HvmDef = {
+  static override HVM_DEF: HvmDef = {
     id: "playground-clone",
     dvmDefs: [
       {
@@ -64,7 +64,7 @@ export class PlaygroundCloneApp extends HappElement {
   @state() private _selectedClone: HCL = new HCL("playground-clone", NamedRealDvm.DEFAULT_BASE_ROLE_NAME)
 
   /** override */
-  async hvmConstructed(): Promise<void> {
+  override async hvmConstructed(): Promise<void> {
     console.log("hvmConstructed()")
     /** Grab cells */
     const cells = await this.appProxy.fetchCells(PlaygroundCloneApp.HVM_DEF.id, NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME);
@@ -73,21 +73,21 @@ export class PlaygroundCloneApp extends HappElement {
   }
 
   /** */
-  async perspectiveInitializedOffline(): Promise<void> {
+  override async perspectiveInitializedOffline(): Promise<void> {
     console.log("perspectiveInitializedOffline()")
     this._initializedOffline = true;
   }
 
 
   /** */
-  async perspectiveInitializedOnline(): Promise<void> {
+  override async perspectiveInitializedOnline(): Promise<void> {
     console.log("perspectiveInitializedOnline()")
     this._initializedOnline = true;
   }
 
 
   /** */
-  async onProbe(e: any) {
+  async onProbe(_e: any) {
     await this.hvm.probeAll();
   }
 
@@ -111,13 +111,13 @@ export class PlaygroundCloneApp extends HappElement {
 
 
   /** */
-  async onAddClone(e: any) {
+  async onAddClone(_e: any) {
     await this.hvm.cloneDvm(NamedRealCloneDvm.DEFAULT_BASE_ROLE_NAME)
     this.requestUpdate();
   }
 
   /** */
-  async onAddNamedClone(e: any) {
+  async onAddNamedClone(_e: any) {
     const input = this.shadowRoot!.getElementById("namedInput") as HTMLInputElement;
     const name = String(input.value);
     const cellDef: CellDef = { modifiers: { network_seed: name }, cloneName: name };
@@ -128,7 +128,7 @@ export class PlaygroundCloneApp extends HappElement {
 
 
   /** */
-  async onCloneSelect(e: any) {
+  async onCloneSelect(_e: any) {
     const input = this.shadowRoot!.getElementById("cloneSelector") as HTMLInputElement;
     console.log("onCloneSelect()", input.value);
     this._selectedClone = HCL.parse(String(input.value));
@@ -144,7 +144,7 @@ export class PlaygroundCloneApp extends HappElement {
 
 
   /** */
-  render() {
+  override render() {
     console.log("<playground-clone-app> render()", this._selectedClone);
 
     if (!this._initializedOffline) {
@@ -168,8 +168,8 @@ export class PlaygroundCloneApp extends HappElement {
           <cell-context .cell="${realDvm.cell}">
               <h3>
                 ${realDvm.hcl.toString()}
-                <input type="button" value="dump calls" @click=${(e: any) => realDvm.dumpCallLogs()}>
-                <input type="button" value="dump signals" @click=${(e: any) => realDvm.dumpSignalLogs()}>
+                <input type="button" value="dump calls" @click=${(_e: any) => realDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(_e: any) => realDvm.dumpSignalLogs()}>
               </h3>
               <real-list></real-list>
               <label-list></label-list>
@@ -182,8 +182,8 @@ export class PlaygroundCloneApp extends HappElement {
       <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
-        <input type="button" value="Dump signals" @click=${(e: any) => { this.appProxy.dumpSignalLogs(true) }}>
-        <input type="button" value="networkInfos" @click=${async (e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
+        <input type="button" value="Dump signals" @click=${(_e: any) => { this.appProxy.dumpSignalLogs(true) }}>
+        <input type="button" value="networkInfos" @click=${async (_e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
         <div style="margin-top:5px;">
             <span>Select AppEntryType:</span>
             <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>
@@ -197,8 +197,8 @@ export class PlaygroundCloneApp extends HappElement {
         <cell-context .cell="${this._integerCell}">
           <h2>
             Integer: ${this.integerDvm.hcl.toString()} 
-            <input type="button" value="dump calls" @click=${(e: any) => this.integerDvm.dumpCallLogs()}>
-            <input type="button" value="dump signals" @click=${(e: any) => this.integerDvm.dumpSignalLogs()}>
+            <input type="button" value="dump calls" @click=${(_e: any) => this.integerDvm.dumpCallLogs()}>
+            <input type="button" value="dump signals" @click=${(_e: any) => this.integerDvm.dumpSignalLogs()}>
           </h2>
           <integer-list></integer-list>
           <label-list></label-list>
@@ -219,8 +219,8 @@ export class PlaygroundCloneApp extends HappElement {
             <view-cell-context></view-cell-context>
             <h3>
                 Selected: ${selectedDvm.cell.name} - ${selectedDvm.hcl.toString()}
-                <input type="button" value="dump logs" @click=${(e: any) => selectedDvm.dumpCallLogs()}>
-                <input type="button" value="dump signals" @click=${(e: any) => selectedDvm.dumpSignalLogs()}>
+                <input type="button" value="dump logs" @click=${(_e: any) => selectedDvm.dumpCallLogs()}>
+                <input type="button" value="dump signals" @click=${(_e: any) => selectedDvm.dumpSignalLogs()}>
             </h3>
             <named-real-inspect></named-real-inspect>
             <real-list></real-list>

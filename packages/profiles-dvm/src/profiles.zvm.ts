@@ -22,7 +22,7 @@ export interface ProfilesPerspective {
  */
 export class ProfilesZvm extends ZomeViewModel {
 
-  static readonly ZOME_PROXY = ProfilesProxy;
+  static override readonly ZOME_PROXY = ProfilesProxy;
   get zomeProxy(): ProfilesProxy {return this._zomeProxy as ProfilesProxy;}
 
 
@@ -34,12 +34,12 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveOnline(): Promise<void> {
     await this.probeAllProfiles();
   }
 
   /** */
-  probeAllInner() {
+  override probeAllInner() {
     this.probeAllProfiles();
   }
 
@@ -78,7 +78,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  importPerspective(json: string, mapping?: Object) {
+  importPerspective(json: string, _mapping?: Object) {
     const profiles = JSON.parse(json) as Record<AgentPubKeyB64, Profile>;
     for (const [pubKey, profileMat] of Object.entries(profiles)) {
       this.storeProfile(pubKey, profileMat);
@@ -89,10 +89,10 @@ export class ProfilesZvm extends ZomeViewModel {
 
   /* */
   findProfiles(names: string[]): AgentPubKeyB64[] {
-    let res  = []
+    let res: AgentPubKeyB64[] = []
     for (const name of names) {
       if (this._reversed[name]) {
-        res.push(this._reversed[name])
+        res.push(this._reversed[name]!)
       }
     }
     return res;

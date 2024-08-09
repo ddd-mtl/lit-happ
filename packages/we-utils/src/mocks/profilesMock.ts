@@ -37,7 +37,7 @@ export class ConductorProxyProfilesMock extends ConductorAppProxy {
 
 
     /** */
-    async appInfo(): Promise<AppInfoResponse> {
+    override async appInfo(): Promise<AppInfoResponse> {
         return generateFakeProfilesAppInfo(AgentId.empty(80));
     }
 

@@ -1,5 +1,5 @@
 import {html} from "lit";
-import { property, customElement } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import {IntegerZomePerspective, NamedIntegerDvm} from "../viewModels/integer";
 import {DnaElement} from "@ddd-qc/lit-happ";
 import { NamedRealDvm, RealZomePerspective } from "../viewModels/real";
@@ -17,7 +17,7 @@ export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, Name
 
 
   /** */
-  render() {
+  override render() {
     console.log(`<named-integer-inspect> render(): ${this.cell.print()}`);
     /** render all */
     return html`
@@ -47,12 +47,12 @@ export class NamedIntegerInspect extends DnaElement<IntegerZomePerspective, Name
   }
 
 
-  protected async dvmUpdated(newDvm: NamedRealDvm, oldDvm?: NamedRealDvm): Promise<void> {
+  protected override async dvmUpdated(_newDvm: NamedRealDvm, _oldDvm?: NamedRealDvm): Promise<void> {
     console.log(`\t\t NamedRealInspect dvmUpdated() called`)
   }
 
   /** */
-  render() {
+  override render() {
     console.log(`<named-real-inspect> render(): ${this.cell.print()}`);
     /** render all */
     return html`

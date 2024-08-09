@@ -29,6 +29,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
   @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
   perspective!: P;
 
+  // @ts-ignore
   private _consumer?;
 
 
@@ -50,7 +51,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
     this._consumer = new ContextConsumer(
       this,
       contextType,
-      async (value: DVM, dispose?: () => void): Promise<void> => {
+      async (value: DVM, _dispose?: () => void): Promise<void> => {
         console.log(`\t\t Received value for context "${contextType}"`)
         await this.dvmUpdated(value, this._dvm);
         if (this._dvm) {
@@ -69,13 +70,13 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
    * To be overriden by subclasses
    * Example: Have a subclass unsubscribe to oldDvm's zvms and subscribe to the new ones
    */
-  protected async dvmUpdated(newDvm: DVM, oldDvm?: DVM): Promise<void> {
+  protected async dvmUpdated(_newDvm: DVM, _oldDvm?: DVM): Promise<void> {
     //console.log(`\t\t Default dvmUpdated() called`)
   }
 
 
   /** */
-  shouldUpdate(changedProperties: PropertyValues<this>) {
+  override shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("_cell_via_context")) {
       this._cell = this._cell_via_context;
     }
@@ -87,7 +88,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
 
 
   /** */
-  protected willUpdate(changedProperties: PropertyValues<this>) {
+  protected override willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("_cell_via_context")) {
       this.requestDvm(true);
     }

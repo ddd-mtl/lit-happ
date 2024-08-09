@@ -7,7 +7,6 @@ import {
   DhtId,
   DnaId,
   enc64,
-  EntryId
 } from "@ddd-qc/cell-proxy";
 import {
   AppClient,
@@ -27,7 +26,13 @@ export function intoHrl(dna: DnaId, dht: DhtId): Hrl {
 /** */
 export async function getCellInfo(client: AppClient, maybeDnaId: DnaId | undefined, baseRoleName: BaseRoleName): Promise<CellInfo | null> {
   const appInfo = await client.appInfo();
+  if (!appInfo) {
+    return null;
+  }
   const cells = appInfo.cell_info[baseRoleName];
+  if (!cells) {
+    return null;
+  }
   for (const cellInfo of cells) {
     const cell = asCell(cellInfo);
     if (!cell) {
@@ -52,6 +57,9 @@ export async function getCellInfo(client: AppClient, maybeDnaId: DnaId | undefin
 export async function asCellProxy(client: AppClient, maybeDnaId: DnaId | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
   const appProxy = await ConductorAppProxy.new(client as AppWebsocket, appId);
   const cellInfo = await getCellInfo(client, maybeDnaId, baseRoleName);
+  if (!cellInfo) {
+    throw Promise.reject("CellInfo not found");
+  }
   const cell = Cell.from(cellInfo, appId, baseRoleName)
   const cellProxy = new CellProxy(appProxy, cell);
   return cellProxy;
@@ -60,11 +68,11 @@ export async function asCellProxy(client: AppClient, maybeDnaId: DnaId | undefin
 
 
 /** Wraps a path from @mdi/js into a svg, to be used inside an <sl-icon src=""></sl-icon> */
-export function wrapPathInSvg(path) {
+export function wrapPathInSvg(path: string) {
   return `data:image/svg+xml;utf8,${wrapPathInSvgWithoutPrefix(path)}`;
 }
 
 /** Wraps a path from @mdi/js into a svg, to be used inside an <sl-icon src=""></sl-icon> */
-export function wrapPathInSvgWithoutPrefix(path) {
+export function wrapPathInSvgWithoutPrefix(path: string) {
   return `<svg style='fill: currentColor' viewBox='0 0 24 24'><path d='${path}'></path></svg>`;
 }

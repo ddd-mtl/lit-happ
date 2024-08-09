@@ -25,7 +25,7 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY = IntegerProxy;
+  static override readonly ZOME_PROXY = IntegerProxy;
 
   get zomeProxy(): IntegerProxy {return this._zomeProxy as IntegerProxy;}
 
@@ -38,23 +38,23 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  async initializePerspectiveOffline(): Promise<void> {
+  override async initializePerspectiveOffline(): Promise<void> {
     const pairs = await this.zomeProxy.getMyValuesLocal();
-    this._values = pairs.map(([a, b]) => b);
-    this._knowns = pairs.map(([a, b]) => new ActionId(a));
+    this._values = pairs.map(([_a, b]) => b);
+    this._knowns = pairs.map(([a, _b]) => new ActionId(a));
     this.notifySubscribers();
   }
 
   /** */
-  async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveOnline(): Promise<void> {
     const pairs = await this.zomeProxy.getMyValues();
-    this._values = pairs.map(([a, b]) => b);
-    this._knowns = pairs.map(([a, b]) => new ActionId(a));
+    this._values = pairs.map(([_a, b]) => b);
+    this._knowns = pairs.map(([a, _b]) => new ActionId(a));
     this.notifySubscribers();
   }
 
   /** */
-   probeAllInner(): void {
+  override probeAllInner(): void {
     //let entryDefs = await this._proxy.getEntryDefs();
     const knowns = this._knowns.map((id) => id.hash);
     console.log("knowns", this._knowns, knowns);
@@ -99,8 +99,8 @@ export class NamedIntegerDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "rNamedInteger";
-  static readonly ZVM_DEFS: ZvmDef[] = [IntegerZvm, [LabelZvm, "zIntegerLabel"]];
+  static override readonly DEFAULT_BASE_ROLE_NAME = "rNamedInteger";
+  static override readonly ZVM_DEFS: ZvmDef[] = [IntegerZvm, [LabelZvm, "zIntegerLabel"]];
 
   readonly signalHandler: AppSignalCb = this.handleSignal;
 
@@ -118,7 +118,7 @@ export class NamedIntegerDvm extends DnaViewModel {
 
   /** Methods */
 
-  zvmChanged(zvm: ZomeViewModel): void {
+  override zvmChanged(zvm: ZomeViewModel): void {
     console.log("NamedIntegerDvm.zvmChanged()", zvm.zomeName);
     if (zvm.zomeName == IntegerZvm.DEFAULT_ZOME_NAME) {
       const typed = zvm as IntegerZvm;

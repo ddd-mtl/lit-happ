@@ -1,4 +1,4 @@
-import {delay, DnaViewModel, holoIdReviver} from "@ddd-qc/lit-happ";
+import {DnaViewModel, holoIdReviver} from "@ddd-qc/lit-happ";
 import {
   AppSignal, AppSignalCb,
 } from "@holochain/client";
@@ -16,8 +16,8 @@ import {ProfilesAltZvm} from "./profilesAlt.zvm";
  */
 export class ProfilesAltDvm extends DnaViewModel {
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "profiles";
-  static readonly ZVM_DEFS = [ProfilesAltZvm]
+  static override readonly DEFAULT_BASE_ROLE_NAME = "profiles";
+  static override readonly ZVM_DEFS = [ProfilesAltZvm]
   readonly signalHandler?: AppSignalCb = this.handleSignal;
 
 
@@ -52,7 +52,7 @@ export class ProfilesAltDvm extends DnaViewModel {
 
   /** Dump perspective as JSON */
   exportPerspective(): string {
-    const dvmExport = {};
+    const dvmExport: any = {};
     const tJson = this.profilesZvm.export();
     dvmExport[ProfilesZvm.DEFAULT_ZOME_NAME] = JSON.parse(tJson);
     return JSON.stringify(dvmExport, null, 2);

@@ -18,11 +18,12 @@ export class CellContext extends LitElement {
   cell!: Cell;
 
   @property({type: Object})
-  dvm: DnaViewModel;
+  dvm!: DnaViewModel;
 
   /* create a provider controller */
   /*@state()*/ private _cellProvider = new ContextProvider(this, cellContext, this.cell);
 
+  // @ts-ignore
   private _dnaProvider?;
 
 
@@ -31,7 +32,7 @@ export class CellContext extends LitElement {
 
 
   /** */
-  firstUpdated() {
+  override firstUpdated() {
     /** Cell */
     if (!this.cell) throw Error('"cell" property not defined in <cell-context>')
     //this._provider = new ContextProvider(this, cellContext, this.cell);
@@ -47,7 +48,7 @@ export class CellContext extends LitElement {
 
 
   /** Set provider to cell */
-  protected willUpdate(changedProperties: PropertyValues<this>) {
+  protected override willUpdate(changedProperties: PropertyValues<this>) {
     //console.log("<cell-context>.willUpdate()", changedProperties)
     if (changedProperties.has("cell")) {
       //console.log("<cell-context>.willUpdate() changed installed cell", this.cell.name)
@@ -65,7 +66,7 @@ export class CellContext extends LitElement {
 
 
   /** */
-  render() {
+  override render() {
     if (!this._initialized) {
       return html``;
     }

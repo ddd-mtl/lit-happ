@@ -35,7 +35,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
-  signalHandler?: AppSignalCb = this.mySignalHandler;
+  override signalHandler?: AppSignalCb = this.mySignalHandler;
 
 
   /** */
@@ -105,6 +105,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         return this.handleAppTip((tip as TipProtocolVariantApp).App, from);
         break;
     }
+    return undefined;
   }
 
 
@@ -133,7 +134,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     console.warn(`Tips sent from zome "${this.zomeName}"`);
     let appSignals: any[] = [];
     this._castLogs.map((log) => {
-      const type = Object.keys(log.tip)[0];
+      const type = Object.keys(log.tip)[0]!;
       const payload = (log.tip as any)[type];
       appSignals.push({timestamp: prettyDate(new Date(log.ts)), type, payload, count: log.peers.length, first: log.peers[0]});
     });
@@ -142,7 +143,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
-  dumpSignalLogs(signalLogs: SignalLog[]) {
+  override dumpSignalLogs(signalLogs: SignalLog[]) {
     this.dumpCastLogs();
     console.warn(`Signals received from zome "${this.zomeName}"`);
     let appSignals: any[] = [];
@@ -193,7 +194,7 @@ export interface EntryPulseMat {
 /** */
 export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string[]): EntryPulseMat {
   //console.log("materializeEntryPulse()", entryTypes);
-  const stateStr = Object.keys(entryPulse.state)[0];
+  const stateStr = Object.keys(entryPulse.state)[0]!;
   return {
     ah: new ActionId(entryPulse.ah),
     state: stateStr,
@@ -201,7 +202,7 @@ export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string
     ts: entryPulse.ts,
     author: new AgentId(entryPulse.author),
     eh: new EntryId(entryPulse.eh),
-    entryType: entryTypes[entryPulse.def.entry_index],
+    entryType: entryTypes[entryPulse.def.entry_index]!,
     visibility: entryPulse.def.visibility,
     bytes: entryPulse.bytes,
   }
@@ -211,6 +212,7 @@ export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string
 /** */
 export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string[]): EntryPulse {
   let state: Object = {};
+  // @ts-ignore
   state[pulse.state] = pulse.isNew;
   //console.log("dematerializeEntryPulse()", state, entryTypes);
   /** */
@@ -248,17 +250,17 @@ export interface LinkPulseMat {
 /** */
 export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]): LinkPulseMat {
   //console.log("materializeLinkPulse()", linkTypes);
-  const stateStr = Object.keys(linkPulse.state)[0];
+  const stateStr = Object.keys(linkPulse.state)[0]!;
   return {
     author: new AgentId(linkPulse.link.author),
     base: intoLinkableId(linkPulse.link.base),
     target: intoLinkableId(linkPulse.link.target),
     timestamp: linkPulse.link.timestamp,
     zome_index: linkPulse.link.zome_index,
-    link_type: linkTypes[linkPulse.link.link_type],
+    link_type: linkTypes[linkPulse.link.link_type]!,
     tag: linkPulse.link.tag,
     create_link_hash: new ActionId(linkPulse.link.create_link_hash),
-    state: Object.keys(linkPulse.state)[0],
+    state: Object.keys(linkPulse.state)[0]!,
     isNew: (linkPulse.state as any)[stateStr],
   }
 }
@@ -266,6 +268,7 @@ export function materializeLinkPulse(linkPulse: LinkPulse, linkTypes: string[]):
 /** */
 export function dematerializeLinkPulse(pulse: LinkPulseMat, linkTypes: string[]): LinkPulse {
   let state: Object = {};
+  // @ts-ignore
   state[pulse.state] = pulse.isNew;
   //console.log("dematerializeLinkPulse()", state);
   /** */

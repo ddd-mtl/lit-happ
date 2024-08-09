@@ -17,7 +17,7 @@ export class RealZvm extends ZomeViewModel {
 
   /** -- ZomeViewModel Interface -- */
 
-  static readonly ZOME_PROXY = RealProxy;
+  static override readonly ZOME_PROXY = RealProxy;
 
 
   /** -- ViewModel Interface -- */
@@ -31,7 +31,7 @@ export class RealZvm extends ZomeViewModel {
   private _values: number[] = [];
 
 
-  async probeAllInner(): Promise<void> {
+  override async probeAllInner(): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this._values = await this.zomeProxy.getMyReals();
@@ -58,8 +58,8 @@ export class NamedRealDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "rNamedReal";
-  static readonly ZVM_DEFS = REAL_DEF;
+  static override readonly DEFAULT_BASE_ROLE_NAME = "rNamedReal";
+  static override readonly ZVM_DEFS = REAL_DEF;
   readonly signalHandler = this.handleRealSignal;
 
   /** QoL Helpers */
@@ -92,9 +92,9 @@ export class NamedRealCloneDvm extends DnaViewModel {
 
   /** -- DnaViewModel Interface -- */
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "rNamedReal";
-  static readonly ZVM_DEFS = REAL_DEF;
-  static readonly DNA_MODIFIERS = REAL_DNA_MODIFIERS;
+  static override readonly DEFAULT_BASE_ROLE_NAME = "rNamedReal";
+  static override readonly ZVM_DEFS = REAL_DEF;
+  static override readonly DNA_MODIFIERS = REAL_DNA_MODIFIERS;
 
   readonly signalHandler = this.handleRealSignal;
 
@@ -110,7 +110,7 @@ export class NamedRealCloneDvm extends DnaViewModel {
   get perspective(): number { return 3.1418 }
 
   /** methods */
-  handleRealSignal(appSignal: AppSignal): void {
+  handleRealSignal(_appSignal: AppSignal): void {
     //console.warn("RealSignal received:", appSignal);
   }
 

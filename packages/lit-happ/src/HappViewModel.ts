@@ -132,6 +132,9 @@ export class HappViewModel {
     const appInstalledCells = this._appProxy.getAppCells(this.appId)!;
     for (const [baseRoleName, roleCells] of Object.entries(appInstalledCells)) {
       const def = this._defMap[baseRoleName];
+      if (!def) {
+        throw Error("No definition found for given baseRoleName");
+      }
       for (const [cloneId, clone] of Object.entries(roleCells.clones)) {
         const hcl = new HCL(this.appId, baseRoleName, cloneId);
         this._appProxy.createCellProxy(hcl, clone.name);
@@ -211,8 +214,8 @@ export class HappViewModel {
     /** Modify request according to CellDef */
     if (cellDef) {
       request.modifiers = cellDef.modifiers;
-      request.membrane_proof = cellDef.membraneProof;
-      request.name = cellDef.cloneName;
+      if (cellDef.membraneProof) request.membrane_proof = cellDef.membraneProof;
+      if (cellDef.cloneName) request.name = cellDef.cloneName;
     }
     /** Create Cell */
     const clonedCell = await this._appProxy.createCloneCell(request);

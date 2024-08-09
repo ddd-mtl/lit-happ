@@ -20,19 +20,19 @@ export class EntryDefSelect extends LitElement {
 
   /** -- Methods -- */
 
-  async firstUpdated() {
+  override async firstUpdated() {
     this._allEntryDefs = await this.dnaViewModel.fetchAllEntryDefs()
   }
 
   /** */
-  async onZomeSelect(e: any) {
+  async onZomeSelect(_e: any) {
     //console.log("onZomeSelect() CALLED", e)
     const zomeSelector = this.shadowRoot!.getElementById("selectedZome") as HTMLSelectElement;
     this._selectedZomeName = zomeSelector.value;
   }
 
   /** */
-  async onEntrySelect(e: any) {
+  async onEntrySelect(_e: any) {
     // console.log("onEntrySelect() CALLED", e)
     const entrySelector = this.shadowRoot!.getElementById("selectedEntryType") as HTMLSelectElement;
     const options = {
@@ -45,7 +45,7 @@ export class EntryDefSelect extends LitElement {
 
 
   /** */
-  render() {
+  override render() {
     //console.log("<entry-def-select> render()", this.dnaViewModel)
     // if (!this.dnaViewModel) {
     //   return html`<span>Loading...</span>`;
@@ -63,7 +63,7 @@ export class EntryDefSelect extends LitElement {
 
     let entryTypeOptions = null;
     if (zomeTypes.length > 0) {
-      entryTypeOptions = Object.entries(zomeTypes[0]).map(
+      entryTypeOptions = Object.entries(zomeTypes[0]!).map(
         ([_zomeName, entryDef]) => {
           let name = Object.keys(entryDef.id)[0];
           if ("App" in entryDef.id) {

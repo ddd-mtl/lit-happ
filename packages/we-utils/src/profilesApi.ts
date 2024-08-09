@@ -25,7 +25,7 @@ export class ProfilesApi implements AppClient {
   installedAppId: InstalledAppId;
 
   /** Undo crap by ProfilesClient */
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+  async callZome(req: CallZomeRequest, _timeout?: number): Promise<unknown> {
     if (req.zome_name != "profiles") {
       throw new Error("Unknown zome_name requested");
     }

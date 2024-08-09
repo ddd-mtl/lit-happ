@@ -17,31 +17,31 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
 
 
   /** */
-  async onProbe(e: any) {
+  async onProbe(_e: any) {
     console.log(`\t\t <integer-list>.onProbe()`)
     await this._zvm.probeAll();
   }
 
 
 
-  protected async zvmUpdated(newZvm: IntegerZvm, oldZvm?: IntegerZvm): Promise<void> {
+  protected override async zvmUpdated(_newZvm: IntegerZvm, _oldZvm?: IntegerZvm): Promise<void> {
     console.log(`\t\t <integer-list>.zvmUpdated()`)
   }
 
 
 
   /** */
-  async onCreateInteger(e: any) {
+  async onCreateInteger(_e: any) {
     const input = this.shadowRoot!.getElementById("integerInput") as HTMLInputElement;
     const value = Number(input.value);
-    let res = await this._zvm.createInteger(value, true);
+    await this._zvm.createInteger(value, true);
     //console.log("onCreateDummy() res =", serializeHash(res))
     input.value = "";
   }
 
 
   /** */
-  render() {
+  override render() {
     console.log("<integer-list>.render(): " + this.cell.print());
 
     //console.log("integer-list:", this.perspective.values)

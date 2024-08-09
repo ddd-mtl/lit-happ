@@ -1,4 +1,4 @@
-import {delay, DnaViewModel} from "@ddd-qc/lit-happ";
+import {DnaViewModel} from "@ddd-qc/lit-happ";
 import {
   AppSignal, AppSignalCb,
 } from "@holochain/client";
@@ -16,8 +16,8 @@ import {ProfilesZvm} from "./profiles.zvm";
  */
 export class ProfilesDvm extends DnaViewModel {
 
-  static readonly DEFAULT_BASE_ROLE_NAME = "profiles";
-  static readonly ZVM_DEFS = [ProfilesZvm]
+  static override readonly DEFAULT_BASE_ROLE_NAME = "profiles";
+  static override readonly ZVM_DEFS = [ProfilesZvm]
   readonly signalHandler?: AppSignalCb = this.handleSignal;
 
 

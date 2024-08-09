@@ -73,6 +73,7 @@ ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
 
 /** User defined external dependencies */
+// @ts-ignore
 import {NotificationsLinkType as LinkTypes} from "./notifications.integrity"
 
 export interface UpdateContactInput {

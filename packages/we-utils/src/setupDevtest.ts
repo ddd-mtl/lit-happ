@@ -15,7 +15,7 @@ import {AppletView, RenderInfo} from "@lightningrodlabs/we-applet";
 import {AgentPubKeyMap} from "@holochain-open-dev/utils";
 
 export class ProfilesZomeMockFix extends ProfilesZomeMock {
-    get cellId() {
+    override get cellId() {
         return [
             DnaId.empty(112).hash,
             this.myPubKey,
@@ -50,11 +50,14 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     const myWeServicesMock = await createWeServicesMock(devtestAppletId);
 
     /** AdminWebsocket */
-    let mainCellId;
+    let mainCellId: CellId | undefined = undefined;
     const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
     const apps: ListAppsResponse = await adminWs.listApps({});
     console.log("setupDevtest() apps", apps);
-    const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: apps[0].installed_app_id});
+    if (apps.length == 0) {
+        throw Promise.reject("Empty Apps list");
+    }
+    const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: apps[0]!.installed_app_id});
     const token = issued.token;
 
 
@@ -67,7 +70,7 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
     /** Authorize Zome functions */
     for (const [roleName, cells] of Object.entries(appInfo.cell_info)) {
         for (const cell of cells) {
-            let cellId;
+            let cellId: CellId;
             if ("provisioned" in cell) {
                 cellId = cell.provisioned.cell_id;
                 if (roleName == names.provisionedRoleName) {
@@ -80,6 +83,9 @@ export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestN
         }
     }
 
+    if (!mainCellId) {
+        throw Promise.reject("No main cell found");
+    }
     /** Creating mock lobby app with profiles dna & zome */
     const mockProfilesZome = new ProfilesZomeMockFix(new AgentPubKeyMap<Record>(), mainCellId[1]);
     //console.log("mock agentId", mockProfilesZome.myPubKey);

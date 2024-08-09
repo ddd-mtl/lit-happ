@@ -5,7 +5,7 @@ import {
   AppProxy,
   ConductorAppProxy,
   flattenCells,
-  CellIdStr, AgentIdMap, DnaId, CellAddress
+  CellIdStr, AgentIdMap, DnaId, CellAddress,
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {CellDef, HvmDef} from "./definitions";
@@ -17,6 +17,7 @@ import {
 } from "@holochain/client";
 import {DnaViewModel} from "./DnaViewModel";
 //import {CellId} from "@holochain/client/lib/types";
+// @ts-ignore
 import * as net from "net";
 
 
@@ -46,6 +47,10 @@ export class HappElement extends LitElement {
   /** */
   async perspectiveInitializedOnline(): Promise<void> {}
 
+  /** */
+  override shouldUpdate() {
+    return !!this.hvm;
+  }
 
   /** */
   protected async constructHvm(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL, defaultTimeout?: number): Promise<void> {
@@ -115,17 +120,17 @@ export class HappElement extends LitElement {
       if (!dnaPerAgentMap.get(cellAddr.agentId)) {
         dnaPerAgentMap.set(cellAddr.agentId, []);
       }
-      dnaPerAgentMap.get(cellAddr.agentId).push(cellAddr.dnaId);
+      dnaPerAgentMap.get(cellAddr.agentId)!.push(cellAddr.dnaId);
     }
     console.log(`networkInfoAll() dnaMap`, dnaPerAgentMap);
     /** Call NetworkInfo per AgentId */
-    const allNetInfos = {};
+    const allNetInfos: Record<CellIdStr, [Timestamp, NetworkInfo]> = {};
     for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
       const netInfos = await this.appProxy.networkInfo({dnas: dnaIds.map((dna) => dna.hash)});
       let i  = 0;
       for (const netInfo of netInfos) {
-        const idStr = new CellAddress(dnaIds[i], agent).str;
-        allNetInfos[idStr] = netInfo;
+        const idStr = new CellAddress(dnaIds[i]!, agent).str;
+        allNetInfos[idStr] = [Date.now(), netInfo];
         i += 1;
       }
     }
@@ -148,7 +153,7 @@ export class HappElement extends LitElement {
     if (baseRoleName) {
       const cfr = cellMap[baseRoleName];
       if (!cfr) {
-        return Promise.reject("No cells found at given baseRoleName: " + baseRoleName);
+        throw Promise.reject("No cells found at given baseRoleName: " + baseRoleName);
       }
       cellAddrs = flattenCells(cfr);
     } else {
@@ -158,12 +163,12 @@ export class HappElement extends LitElement {
     }
     let logs = cellAddrs.map((cellAddr) => {
       const logs = this.appProxy.networkInfoLogs[cellAddr.str];
-      if (logs.length === 0) {
+      if (!logs || logs.length === 0) {
         return;
       }
-      const [ts, info] = logs[logs.length - 1];
-      const hcl = this.appProxy.getLocations(cellAddr);
-      const cellName = this.appProxy.getCellName(hcl[0]);
+      const [ts, info] = logs[logs.length - 1]!;
+      const hcl = this.appProxy.getLocations(cellAddr)!;
+      const cellName = this.appProxy.getCellName(hcl[0]!);
       return {
             ts,
             name: cellName,
@@ -188,12 +193,12 @@ export class HappElement extends LitElement {
     let logMap = this.appProxy.networkInfoLogs;
     if (cellIdStr) {
       logMap = {};
-      logMap[cellIdStr] = this.appProxy.networkInfoLogs[cellIdStr];
+      logMap[cellIdStr] = this.appProxy.networkInfoLogs[cellIdStr]!;
     }
     for (const [cellIdStr, infoPairs] of Object.entries(logMap)) {
       const cellAddr = CellAddress.from(cellIdStr);
-      const hcl = this.appProxy.getLocations(cellAddr);
-      const cellName = this.appProxy.getCellName(hcl[0]);
+      const hcl = this.appProxy.getLocations(cellAddr)!;
+      const cellName = this.appProxy.getCellName(hcl[0]!);
       console.log(`NetworfInfo logs of cell "${cellName}" | [${cellAddr.agentId.short}, ${cellAddr.dnaId.short}]`);
       const logs = infoPairs
         .map(([ts, info]) => {
@@ -216,12 +221,6 @@ export class HappElement extends LitElement {
   /** */
   async createClone(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[ClonedCell, DnaViewModel]> {
     return this.hvm.cloneDvm(baseRoleName, cellDef);
-  }
-
-
-  /** */
-  shouldUpdate() {
-    return !!this.hvm;
   }
 
 }
