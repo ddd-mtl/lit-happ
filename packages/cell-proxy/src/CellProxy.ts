@@ -24,7 +24,7 @@ import {
   SignalUnsubscriber,
 } from "./AppProxy";
 import {prettyDate, prettyDuration} from "./pretty";
-import {anyToB64, enc64, intoAnyId} from "./hash";
+import {anyToB64, intoAnyId} from "./hash";
 import {
   SystemSignalProtocolVariantPostCommitNewEnd,
   SystemSignalProtocolVariantSelfCallEnd,
@@ -95,7 +95,7 @@ export class CellProxy extends CellMixin(Empty) {
 
 
   /** Have a PostCommitEnd release the Mutex */
-  private _postCommitRelease?;
+  private _postCommitRelease?: MutexInterface.Releaser;
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: AppSignal) {
     const zomeSignal = this._appProxy.intoZomeSignal(signal);
@@ -103,7 +103,7 @@ export class CellProxy extends CellMixin(Empty) {
       return;
     }
     console.debug("blockUntilPostCommit()", zomeSignal, this._postCommitReleaseEntryType, !!this._postCommitRelease);
-    const signalType = Object.keys(zomeSignal.pulses[0])[0];
+    const signalType = Object.keys(zomeSignal.pulses[0]!)[0];
     if (signalType != "System" || !this._postCommitRelease || !this._postCommitReleaseEntryType) {
       return;
     }
@@ -132,10 +132,10 @@ export class CellProxy extends CellMixin(Empty) {
 
 
   /** Have a self call acquire & the call Mutex */
-  private _selfCallRelease?;
+  private _selfCallRelease?: MutexInterface.Releaser;
   protected async blockSelfCall(signal: AppSignal) {
     const zomeSignal = this._appProxy.intoZomeSignal(signal);
-    if (!zomeSignal || zomeSignal.pulses.length == 0 || Object.keys(zomeSignal.pulses[0])[0] != 'System') {
+    if (!zomeSignal || zomeSignal.pulses.length == 0 || Object.keys(zomeSignal.pulses[0]!)[0] != 'System') {
       return;
     }
     for (const pulse of zomeSignal.pulses) {
@@ -329,7 +329,7 @@ export class CellProxy extends CellMixin(Empty) {
         if ("App" in def.id) {
           name = def.id.App;
         }
-        result[name] = def;
+        result[name!] = def;
       }
       //console.log({result})
       return result;
@@ -391,7 +391,7 @@ export class CellProxy extends CellMixin(Empty) {
     let result = [];
     for (const response of this._responseLog) {
       const requestLog = this._requestLog[response.requestIndex];
-      if (zomeName && requestLog.request.zome_name != zomeName) {
+      if (!requestLog || (zomeName && requestLog.request.zome_name != zomeName)) {
         continue;
       }
       const startTime= prettyDate(new Date(requestLog.requestTimestamp));
@@ -425,7 +425,7 @@ export class CellProxy extends CellMixin(Empty) {
 
     const zomeSignals = this._appProxy.signalLogs.filter((log) => log.type == SignalType.Zome);
     const sysSignals = zomeSignals.filter((log) => {
-      const type = Object.keys(log.zomeSignal.pulses[0])[0];
+      const type = Object.keys(log.zomeSignal.pulses[0]!)[0];
       type == "System"
     });
 
@@ -449,7 +449,7 @@ export class CellProxy extends CellMixin(Empty) {
       if (index == -1) {
         continue;
       }
-      const first = endCalls.splice(index, 1)[0];
+      const first = endCalls.splice(index, 1)[0]!;
       const [endTs, _cId, endSignal] = first;
       const duration = prettyDuration(new Date(endTs - startTs));
       const log = { startTime: startTs, zomeName: endSignal.zome_name, fnName: endSignal.fn_name, succeeded: endSignal.succeeded, duration }

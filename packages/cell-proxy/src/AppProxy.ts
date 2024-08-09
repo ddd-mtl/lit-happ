@@ -61,7 +61,7 @@ export class AppProxy implements AppClient {
   /** -- Fields -- */
 
   public defaultTimeout: number;
-  public adminWs?: AdminWebsocket;
+  public adminWs: AdminWebsocket | undefined = undefined;
 
   /** Signal logs */
   private _signalLogs: SignalLog[] = [];
@@ -89,7 +89,7 @@ export class AppProxy implements AppClient {
   }
 
   /** */
-  getCellName(hcl: HCL): string {return this._cellNames[hcl.toString()]}
+  getCellName(hcl: HCL): string | undefined {return this._cellNames[hcl.toString()]}
 
 
   get signalLogs(): SignalLog[]  { return this._signalLogs }
@@ -105,7 +105,7 @@ export class AppProxy implements AppClient {
     if (!roleCellsMap) throw Error(`getCell() failed. No hApp with ID "${hcl.appId}" found.`);
     const roleCells = roleCellsMap[hcl.baseRoleName];
     if (!roleCells) throw Error(`getCell() failed: BaseRoleName "${hcl.baseRoleName}" not found in happ "${hcl.appId}"`);
-    let cell = roleCells.provisioned;
+    let cell: ProvisionedCell | ClonedCell | undefined = roleCells.provisioned;
     if (hcl.cloneId !== undefined) {
       cell = roleCells.clones[hcl.cloneId];
       if (!cell) {
@@ -133,8 +133,11 @@ export class AppProxy implements AppClient {
 
   /** */
   getAppRoles(installedAppId: InstalledAppId): BaseRoleName[] | undefined {
-    if (!this._cellsByApp[installedAppId]) return undefined;
-    return Object.values(this._cellsByApp[installedAppId]).map((roleCells) => {
+    const cellMap = this._cellsByApp[installedAppId];
+    if (!cellMap) {
+      return undefined;
+    }
+    return Object.values(cellMap).map((roleCells) => {
       return roleCells.provisioned.name;
     });
   }
@@ -155,13 +158,13 @@ export class AppProxy implements AppClient {
   myPubKey: AgentPubKey;
   installedAppId: InstalledAppId;
 
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+  async callZome(_req: CallZomeRequest, _timeout?: number): Promise<unknown> {
     throw new Error("Method not implemented.");
   }
 
   on<Name extends keyof AppEvents>(
-    eventName: Name | readonly Name[],
-    listener: AppSignalCb
+    _eventName: Name | readonly Name[],
+    _listener: AppSignalCb
   ): UnsubscribeFunction {
     throw new Error("Method not implemented.");
   }
@@ -170,19 +173,19 @@ export class AppProxy implements AppClient {
     throw new Error("Method not implemented.");
   }
 
-  async createCloneCell(request: CreateCloneCellRequest): Promise<ClonedCell> {
+  async createCloneCell(_request: CreateCloneCellRequest): Promise<ClonedCell> {
     throw new Error("Method not implemented.");
   }
 
-  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
+  async enableCloneCell(_request: EnableCloneCellRequest): Promise<ClonedCell> {
     throw new Error("Method not implemented.");
   }
 
-  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
+  async disableCloneCell(_request: DisableCloneCellRequest): Promise<void> {
     throw new Error("Method not implemented.");
   }
 
-  networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+  networkInfo(_args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
     throw new Error("Method not implemented.");
   }
 
@@ -264,7 +267,7 @@ export class AppProxy implements AppClient {
     }
     let roleInstalledCells: CellsForRole = {provisioned: provisioned!, clones}
     /** Store it*/
-    this._cellsByApp[appId][baseRoleName] = roleInstalledCells;
+    this._cellsByApp[appId]![baseRoleName] = roleInstalledCells;
     return roleInstalledCells;
   }
 
@@ -272,7 +275,7 @@ export class AppProxy implements AppClient {
   /** */
   addClone(hcl: HCL, cloneCell: ClonedCell): void {
     if (!this._cellsByApp[hcl.appId]) throw Error("addClone() failed. no appId. " + hcl.toString());
-    if (!this._cellsByApp[hcl.appId][hcl.baseRoleName]) throw Error("addClone() failed. no baseRoleName. " + hcl.toString());
+    if (!this._cellsByApp[hcl.appId]![hcl.baseRoleName]) throw Error("addClone() failed. no baseRoleName. " + hcl.toString());
     if (hcl.cloneId === undefined) throw Error("addClone() failed. Cell is not a CloneCell: " + hcl.toString());
 
     // let cloneName = hcl.cloneId;
@@ -280,7 +283,7 @@ export class AppProxy implements AppClient {
     //   const cloneIndex: number = Object.keys(this._cellsByApp[hcl.appId][hcl.baseRoleName].clones).length;
     //   cloneName = createCloneName(hcl.baseRoleName, cloneIndex);
     // }
-    this._cellsByApp[hcl.appId][hcl.baseRoleName].clones[cloneCell.clone_id] = cloneCell;
+    this._cellsByApp[hcl.appId]![hcl.baseRoleName]!.clones[cloneCell.clone_id] = cloneCell;
     // const sCellId = CellIdStr(cloneCell.cell_id);
     // console.log("CreateCellProxy() adding to hclMap", sCellId, cellLoc.asHcl())
     // if (this._hclMap[sCellId]) {
@@ -307,7 +310,7 @@ export class AppProxy implements AppClient {
     /** Create CellAddress -> HCL mapping */
     //console.log("CreateCellProxy() adding to hclMap", sCellId, hcl.toString())
     if (this._hclMap[sCellId]) {
-      this._hclMap[sCellId].push(hcl);
+      this._hclMap[sCellId]!.push(hcl);
     } else {
       this._hclMap[sCellId] = [hcl];
     }
@@ -324,14 +327,19 @@ export class AppProxy implements AppClient {
   onSignal(signal: AppSignal): void {
     /** Grab cell specific handlers */
     const hcls = this.getLocations(CellAddress.from(signal.cell_id));
-    const handlerss: AppSignalCb[][]  = hcls? hcls.map((hcl) => this._signalHandlers[hcl.toString()]) : [];
+    if (!hcls) {
+      return;
+    }
+    const handlerss: (AppSignalCb[] | undefined)[]  = hcls
+      .map((hcl) => this._signalHandlers[hcl.toString()])
+      .filter((arr) => arr != undefined);
     //console.log("onSignal()", hcls? hcls.toString() : "unknown cell: " + encodeHashToBase64(signal.cell_id[0]), handlerss);
     /** Grab common handler  */
     const allHandlers = this._signalHandlers["__all"];
     if (allHandlers) handlerss.push(allHandlers);
     /** Send to all handlers */
     for (const handlers of handlerss) {
-      for (const handler of handlers) {
+      for (const handler of handlers!) {
         handler(signal);
       }
     }
@@ -347,7 +355,7 @@ export class AppProxy implements AppClient {
     if (!this._signalHandlers[hcl]) {
       this._signalHandlers[hcl] = [handler];
     } else {
-      this._signalHandlers[hcl].push(handler);
+      this._signalHandlers[hcl]!.push(handler);
     }
     /* return tailored unsubscribe function to the caller */
     return {
@@ -366,6 +374,9 @@ export class AppProxy implements AppClient {
   /** Log all signals received */
   protected logSignal(signal: AppSignal): void {
     const zomeSignal = this.intoZomeSignal(signal);
+    if (!zomeSignal) {
+      return;
+    }
     const log: SignalLog = {ts: Date.now(), cellAddr: CellAddress.from(signal.cell_id), zomeName: signal.zome_name, zomeSignal, type: SignalType.Unknown, pulseCount: 1};
     if (zomeSignal) {
       log.pulseCount = zomeSignal.pulses.length;
@@ -400,7 +411,7 @@ export class AppProxy implements AppClient {
     let cellNames;
     if (cellAddr) {
       const hcls = this._hclMap[cellAddr.str];
-      cellNames = hcls.map((hcl) => this.getCellName(hcl));
+      cellNames = hcls!.map((hcl) => this.getCellName(hcl));
       logs = this._signalLogs
         .filter((log) => log.cellAddr.equals(cellAddr));
       if (zomeName) {
@@ -412,11 +423,11 @@ export class AppProxy implements AppClient {
     const unknownSignals = logs.filter((log) => log.type == SignalType.Unknown);
     const zomeSignals = logs.filter((log) => log.type == SignalType.Zome);
     const appSignals = zomeSignals.filter((log) => {
-      const type = Object.keys(log.zomeSignal.pulses[0])[0];
+      const type = Object.keys(log.zomeSignal.pulses[0]!)[0];
       type != "System"
     });
     const sysSignals = zomeSignals.filter((log) => {
-      const type = Object.keys(log.zomeSignal.pulses[0])[0];
+      const type = Object.keys(log.zomeSignal.pulses[0]!)[0];
       type == "System"
     });
 
@@ -440,7 +451,7 @@ export class AppProxy implements AppClient {
     }
 
     /** Dump System signals */
-    let syslogs = [];
+    let syslogs: any[] = [];
     if (cellNames) {
       if (zomeName) {
         console.warn(`Unknown signals from zome "${zomeName}" in cell "${cellNames}"`);
@@ -462,8 +473,8 @@ export class AppProxy implements AppClient {
     } else {
       console.warn(`System signals: ${sysSignals.length}`)
       sysSignals.map((log) => {
-          const app = this._hclMap[log.cellAddr.str][0].appId;
-          const cell: string = this._hclMap[log.cellAddr.str][0].roleName;
+          const app = this._hclMap[log.cellAddr.str]![0]!.appId;
+          const cell: string = this._hclMap[log.cellAddr.str]![0]!.roleName;
         for (const pulse of log.zomeSignal.pulses) {
           const payload = (pulse as SystemPulse).System;
           syslogs.push({timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, payload});
@@ -496,8 +507,8 @@ export class AppProxy implements AppClient {
     } else {
       console.warn(`App signals: ${appSignals.length}`)
       appLogs = appSignals.map((log) => {
-          const app = this._hclMap[log.cellAddr.str][0].appId;
-          const cell: string = this._hclMap[log.cellAddr.str][0].roleName;
+          const app = this._hclMap[log.cellAddr.str]![0]!.appId;
+          const cell: string = this._hclMap[log.cellAddr.str]![0]!.roleName;
           const pulses = log.zomeSignal.pulses;
           const from = enc64(log.zomeSignal.from) == me? "self" : enc64(log.zomeSignal.from);
           return { timestamp: prettyDate(new Date(log.ts)), app, cell, zome: log.zomeName, from, count: pulses.length, payload: pulses};

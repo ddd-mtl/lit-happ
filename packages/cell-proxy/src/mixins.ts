@@ -10,7 +10,7 @@ export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
 
 
 export class Empty {
-  constructor(...args: any[]) {}
+  constructor(..._args: any[]) {}
 }
 
 

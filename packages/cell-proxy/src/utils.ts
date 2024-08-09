@@ -33,10 +33,17 @@ export function areArraysEqual(first: Uint8Array, second: Uint8Array) {
 export const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 /** convert Pascal case to snake case */
-export const snake = str => str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+export const snake = (str: string) => {
+  if (!str) return "";
+  return str[0]!.toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+}
+
 
 /** convert snake case to pascal case */
-export const pascal = str => str[0].toUpperCase() + str.slice(1, str.length).replace(/_([a-z])/g, letter => `${letter[1].toUpperCase()}`);
+export const pascal = (str: string) => {
+  if (!str) return "";
+  return str[0]!.toUpperCase() + str.slice(1, str.length).replace(/_([a-z])/g, letter => `${letter[1]!.toUpperCase()}`);
+}
 
 
 /** enumType = enum or Object.values(enum) */
@@ -47,6 +54,7 @@ export function getVariantByIndex(enumType: Object | string[], index: number): s
   }
   if (index >= 0 && index < keys.length) {
     const key = keys[index];
+    // @ts-ignore
     return enumType[key];
   }
   throw Error("Out of bounds index");

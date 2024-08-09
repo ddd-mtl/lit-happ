@@ -24,8 +24,8 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
-    "tslib": "^2.4.0",
-    "typescript": "~5.2.0"
+    "tslib": "^2.6.3",
+    "typescript": "~5.5.4"
   },
   "dependencies": {
     "@holochain/client": "=0.18.0-dev.4",

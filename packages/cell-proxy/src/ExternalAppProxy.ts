@@ -33,35 +33,35 @@ export class ExternalAppProxy extends AppProxy implements AppClient {
   //get myPubKey(): AgentPubKey { return this._appClient.myPubKey}
   //get installedAppId(): InstalledAppId { return this._appClient.installedAppId}
 
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+  override async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
     timeout = timeout ? timeout : this.defaultTimeout
     return this._appClient.callZome(req, timeout)
   }
 
-  on<Name extends keyof AppEvents>(
+  override on<Name extends keyof AppEvents>(
     eventName: Name | readonly Name[],
     listener: AppSignalCb
   ): UnsubscribeFunction {
     return this._appClient.on(eventName, listener);
   }
 
-  async appInfo(): Promise<AppInfoResponse> {
+  override async appInfo(): Promise<AppInfoResponse> {
     return this._appClient.appInfo();
   }
 
-  async createCloneCell(request: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> {
+  override async createCloneCell(request: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> {
     return this._appClient.createCloneCell(request);
   }
 
-  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
+  override async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
     return this._appClient.enableCloneCell(request);
   }
 
-  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
+  override async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
     return this._appClient.disableCloneCell(request);
   }
 
-  networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+  override networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
     return this._appClient.networkInfo(args);
   }
 

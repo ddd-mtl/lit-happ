@@ -73,7 +73,7 @@ export type RoleCellsMap = Dictionary<CellsForRole>;
 
 /** */
 export function flattenCells(cells: CellsForRole): CellAddress[] {
-  let res: CellAddress[] = Object.entries(cells.clones).map(([cloneId, clone]) => CellAddress.from(clone.cell_id));
+  let res: CellAddress[] = Object.entries(cells.clones).map(([_cloneId, clone]) => CellAddress.from(clone.cell_id));
   res.push(CellAddress.from(cells.provisioned.cell_id));
   return res;
 }
@@ -115,7 +115,7 @@ export class CellAddress {
       if (subs.length != 2) {
         throw Error("CellAddress.from() failed. Bad input string format");
       }
-      return new CellAddress(new DnaId(subs[0]), new AgentId(subs[1]));
+      return new CellAddress(new DnaId(subs[0]!), new AgentId(subs[1]!));
     }
     return new CellAddress(new DnaId(id_or_str[0]), new AgentId(id_or_str[1]));
   }

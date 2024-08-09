@@ -21,16 +21,16 @@ export class HolochainIdMap<K extends HolochainId, V> implements Map<K, V> {
     return this._map.has(key.b64);
   }
 
-  get(key: K): V {
+  get(key: K): V | undefined {
     return this._map.get(key.b64);
   }
 
-  set(key: K, value: V) {
+  set(key: K, value: V): this {
     this._map.set(key.b64, value);
     return this;
   }
 
-  delete(key: K) {
+  delete(key: K): boolean {
     return this._map.delete(key.b64);
   }
 
@@ -63,7 +63,7 @@ export class HolochainIdMap<K extends HolochainId, V> implements Map<K, V> {
     }, thisArg);
   }
 
-  get size() {
+  get size(): number {
     return this._map.size;
   }
 

@@ -22,6 +22,8 @@ import {AppProxy} from "./AppProxy";
 import {CellAddress, CellIdStr} from "./types";
 import {AgentId, DnaId} from "./hash";
 import {AgentIdMap} from "./holochain-id-map";
+import {AppWebsocketConnectionOptions} from "@holochain/client/lib/api/app/types";
+import {AppAuthenticationToken} from "@holochain/client/lib/api/admin/types";
 
 
 /**
@@ -33,6 +35,12 @@ import {AgentIdMap} from "./holochain-id-map";
  * TODO Implement Singleton per App port?
  */
 export class ConductorAppProxy extends AppProxy implements AppClient {
+
+  /** Ctor */
+  /*protected*/ constructor(defaultTimeout: number, appId: InstalledAppId, agentId: AgentId, adminWs?: AdminWebsocket) {
+    super(defaultTimeout, appId, agentId, adminWs);
+  }
+
 
   /** -- Fields -- */
 
@@ -47,33 +55,33 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
   /** -- AppClient (Passthrough to appWebsocket) -- */
 
-  async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
+  override async callZome(req: CallZomeRequest, timeout?: number): Promise<unknown> {
     timeout = timeout ? timeout : this.defaultTimeout
     return this._appWs.callZome(req, timeout)
   }
 
-  async appInfo(): Promise<AppInfoResponse> {
+  override async appInfo(): Promise<AppInfoResponse> {
     return this._appWs!.appInfo();
   }
 
-  on<Name extends keyof AppEvents>(
+  override on<Name extends keyof AppEvents>(
     eventName: Name | readonly Name[],
     listener: AppSignalCb
   ): UnsubscribeFunction {
     return this._appWs!.on(eventName, listener);
   }
 
-  async createCloneCell(request: CreateCloneCellRequest): Promise<ClonedCell> {
+  override async createCloneCell(request: CreateCloneCellRequest): Promise<ClonedCell> {
     //console.log("createCloneCell() called:", request)
     return this._appWs!.createCloneCell(request);
   }
 
-  async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
+  override async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
     //console.log("enableCloneCell() called:", request)
     return this._appWs!.enableCloneCell(request);
   }
 
-  async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
+  override async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
     //console.log("disableCloneCell() called:", request)
     return this._appWs!.disableCloneCell(request);
   }
@@ -84,7 +92,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
 
   /** */
-  async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+  override async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
     const agentId = new AgentId(this._appWs.myPubKey);
     /* Call networkInfo */
     const response = await this._appWs.networkInfo({
@@ -97,14 +105,14 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
     let i = 0;
     //let result = {}
     for (const netInfo of response) {
-      const dnaId = new DnaId(args.dnas[i]);
+      const dnaId = new DnaId(args.dnas[i]!);
       //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
       /* Store */
       const cellAddr = new CellAddress(dnaId, agentId);
       if (!this._networkInfoLogs[cellAddr.str]) {
         this._networkInfoLogs[cellAddr.str] = [];
       }
-      this._networkInfoLogs[cellAddr.str].push([this._lastTimeQueriedMap.get(agentId), netInfo])
+      this._networkInfoLogs[cellAddr.str]!.push([this._lastTimeQueriedMap.get(agentId)!, netInfo])
       /* */
       i += 1;
     }
@@ -119,7 +127,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
   private _networkInfoLogs: Record<CellIdStr, [Timestamp, NetworkInfo][]> = {};
 
-  get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return this._networkInfoLogs;}
+  override get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return this._networkInfoLogs;}
 
 
 
@@ -133,15 +141,22 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
     } else {
       let wsUrl = new URL(`ws://localhost:${port_or_socket}`);
       try {
-        let token;
-        let adminWs: AdminWebsocket;
+        let token: AppAuthenticationToken | undefined = undefined;
+        let adminWs: AdminWebsocket | undefined = undefined;
         if (adminUrl) {
           adminWs = await AdminWebsocket.connect({url: adminUrl});
           console.log({adminWs});
           const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: appId});
           token = issued.token;
         }
-        const appWs = await AppWebsocket.connect({url: wsUrl, defaultTimeout: timeout, token});
+        const options: AppWebsocketConnectionOptions = {
+          url: wsUrl,
+          defaultTimeout: timeout,
+        };
+        if (token) {
+          options.token = token;
+        }
+        const appWs = await AppWebsocket.connect(options);
         const agentId = new AgentId(appWs.myPubKey);
         //console.log("appWs.myPubKey", appWs.myPubKey, agentId);
         let conductor = new ConductorAppProxy(timeout, appId, agentId, adminWs);
@@ -168,12 +183,5 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
       return Promise.reject("ConductorAppProxy initialization failed");
     }
   }
-
-
-  /** Ctor */
-  /*protected*/ constructor(public defaultTimeout: number, appId: InstalledAppId, agentId: AgentId, adminWs?: AdminWebsocket) {
-    super(defaultTimeout, appId, agentId, adminWs);
-  }
-
 }
 

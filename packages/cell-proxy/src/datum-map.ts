@@ -42,12 +42,12 @@ export class DatumMap<K extends HoloHashB64, V> {
     return this._map.has(key);
   }
 
-  getDetails(key: K): [V, DatumValidity, DatumStorageLocations] {
+  getDetails(key: K): [V, DatumValidity, DatumStorageLocations] | undefined {
     return this._map.get(key);
   }
 
   get(key: K): V {
-    return this._map.get(key)[0];
+    return this._map.get(key)![0];
   }
 
   set(key: K, value: V, validity: DatumValidity, storage: DatumStorageLocations) {

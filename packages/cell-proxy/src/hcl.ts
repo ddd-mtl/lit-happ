@@ -17,7 +17,7 @@ export class HCL {
   public readonly appId: InstalledAppId;
   public readonly baseRoleName: BaseRoleName;
   /** A Cell can have a cloneId if it's a cloneCell */
-  public readonly cloneId?: CloneId;
+  public readonly cloneId: CloneId | undefined = undefined;
 
   /** Ctor */
   constructor(appId: InstalledAppId, role: BaseRoleName, cloneId?: CloneId) {
@@ -27,7 +27,7 @@ export class HCL {
   }
 
   /** */
-  get roleName(): string { return this.isClone()? this.cloneId : this.baseRoleName };
+  get roleName(): string { return this.isClone()? this.cloneId! : this.baseRoleName };
 
 
   /** */
@@ -38,9 +38,9 @@ export class HCL {
     if (subs.length < 2) throw Error("HCL.parse() Bad string format. Too few components: " + sHcl);
     if (subs.length > 4) throw Error("HCL.parse() Bad string format. Too many components: " + sHcl);
     if (subs.length == 4) {
-      return new HCL(subs[1], subs[2], subs[3]);
+      return new HCL(subs[1]!, subs[2]!, subs[3]);
     }
-    return new HCL(subs[1], subs[2]);
+    return new HCL(subs[1]!, subs[2]!);
   }
 
 

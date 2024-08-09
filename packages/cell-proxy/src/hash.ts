@@ -1,4 +1,5 @@
 import {decode, encode, ExtensionCodec} from "@msgpack/msgpack";
+// @ts-ignore
 import blake2b from "@bitgo/blake2b";
 import { Base64 } from "js-base64";
 import {
@@ -26,7 +27,7 @@ export function anyToB64(obj: unknown): unknown {
           return value instanceof Uint8Array;
         });
       if (isUint8Array) {
-        let result = [];
+        let result: any[] = [];
         for (const cur of obj) {
           result.push(enc64(cur));
         }
@@ -51,15 +52,18 @@ function encodeHashToBase64(hash: Uint8Array): HoloHashB64 {
 
 
 export function dhtLocationFrom32(hashCore: Uint8Array): Uint8Array {
+  if (hashCore.length != 32) {
+    throw Error("Uint8Array length must be exactly 32");
+  }
   const hash = new Uint8Array(16);
   blake2b(hash.length).update(hashCore).digest(hash);
 
-  const out = hash.slice(0, 4);
+  const out = hash.slice(0, 4)!;
   [4, 8, 12].forEach((i) => {
-    out[0] ^= hash[i];
-    out[1] ^= hash[i + 1];
-    out[2] ^= hash[i + 2];
-    out[3] ^= hash[i + 3];
+    out[0]! ^= hash[i]!;
+    out[1]! ^= hash[i + 1]!;
+    out[2]! ^= hash[i + 2]!;
+    out[3]! ^= hash[i + 3]!;
   });
 
   return out;
@@ -194,13 +198,11 @@ export abstract class HolochainId {
     const empty = new Uint8Array(32);
     byte = byte? byte : 0;
     empty.fill(byte);
-    const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[(this as unknown as typeof HolochainId).HASH_TYPE],
-      ...empty,
-      ...dhtLocationFrom32(empty),
-    ]);
+    const hashType = (this as unknown as typeof HolochainId).HASH_TYPE;
+    const newHash = retypeHoloHashArray(empty, hashType);
     return new this(newHash);
   }
+
 
   /** */
   static from<T extends HolochainId, Z extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => Z, start: T | string): Z {
@@ -212,11 +214,7 @@ export abstract class HolochainId {
     }
     const core = Uint8Array.from(hash.slice(3, 35));
     const hashType = (this as unknown as typeof HolochainId).HASH_TYPE;
-    const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[hashType],
-      ...core,
-      ...dhtLocationFrom32(core),
-    ]);
+    const newHash = retypeHoloHashArray(core, hashType);
     return new this(newHash);
   }
 
@@ -224,11 +222,8 @@ export abstract class HolochainId {
   /** */
   static async random<T extends HolochainId>(this: new (input: HoloHashB64 | Uint8Array) => T): Promise<T> {
     const core = await randomByteArray(32);
-    const newHash = Uint8Array.from([
-      ...HASH_TYPE_PREFIX[(this as unknown as typeof HolochainId).HASH_TYPE],
-      ...core,
-      ...dhtLocationFrom32(core),
-    ]);
+    const hashType = (this as unknown as typeof HolochainId).HASH_TYPE;
+    const newHash = retypeHoloHashArray(core, hashType);
     return new this(newHash);
   }
 
@@ -246,11 +241,25 @@ export abstract class HolochainId {
 }
 
 
-export class ActionId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Action; action() {} }
-export class AgentId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Agent; agent() {} }
-export class EntryId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Entry; entry() {} }
-export class DnaId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Dna; dna() {} }
-export class ExternalId extends HolochainId { static readonly HASH_TYPE = HoloHashType.External; external() {} }
+/** */
+function retypeHoloHashArray(core: Uint8Array, hashType: HoloHashType): Uint8Array {
+  if (hashType == HoloHashType.Network || hashType == HoloHashType.Wasm) {
+    throw Error("HoloHashType not handled");
+  }
+  return Uint8Array.from([
+    ...HASH_TYPE_PREFIX[hashType],
+    ...core,
+    ...dhtLocationFrom32(core),
+  ]);
+}
+
+
+
+export class ActionId extends HolochainId { static override readonly HASH_TYPE = HoloHashType.Action; action() {} }
+export class AgentId extends HolochainId { static override readonly HASH_TYPE = HoloHashType.Agent; agent() {} }
+export class EntryId extends HolochainId { static override readonly HASH_TYPE = HoloHashType.Entry; entry() {} }
+export class DnaId extends HolochainId { static override readonly HASH_TYPE = HoloHashType.Dna; dna() {} }
+export class ExternalId extends HolochainId { static override readonly HASH_TYPE = HoloHashType.External; external() {} }
 
 //export class AnyId extends HolochainId { static readonly HASH_TYPE = HoloHashType.Any; any() {} }
 
@@ -304,7 +313,7 @@ export function intoAnyId(input: HoloHashB64 | Uint8Array): AnyId {
 
 /** -- JSON -- */
 
-export function holoIdReviver(key:any, value:any) {
+export function holoIdReviver(_key: any, value: any) {
   if(typeof value === 'object' && value !== null) {
     // if (value.dataType === 'HolochainId') {
     //   return intoAnyId(value.value);
