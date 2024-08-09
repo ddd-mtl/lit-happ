@@ -33,25 +33,6 @@ import {
 import {Dictionary} from "./utils";
 
 
-// /** */
-// export interface EntryDefMat {
-//   // index: number
-//   id: string,
-//   visibility: "Public" | "Private",
-//   requiredValidations: number,
-//   cacheAtAgentActivity: boolean,
-// }
-//
-// function materializeEntryDef(def: EntryDef): EntryDefMat {
-//   return {
-//     id: def.id.App,
-//     visibility: def.visibility,
-//     requiredValidations: 0, // FIXME
-//     cacheAtAgentActivity: false, // FIXME
-//   }
-// }
-
-
 export interface RequestLog {
   request: CallZomeRequest,
   timeout: number,
