@@ -8,6 +8,7 @@ import {RoleName} from "@holochain/client/lib/types";
 import {HCL} from "./hcl";
 import {AnyCell, BaseRoleName, CellAddress} from "./types";
 import {enc64} from "./hash";
+import {encodeDnaJoiningInfo} from "./dnaJoiningInfo";
 
 
 
@@ -50,6 +51,7 @@ export class Cell {
   /** ex: rNamedInteger.0 */
   get cloneId(): RoleName | undefined { return (this._cell as any).clone_id }
 
+  get shareCode(): string { return encodeDnaJoiningInfo(this.address.dnaId.hash, this.name, this.dnaModifiers.network_seed) }
 
   /** -- Methods -- */
 
