@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "workspaces": [
     "example",
     "packages/cell-proxy",
@@ -16,7 +16,7 @@
 
     "postinstall"           : "mkdir -p artifacts",
 
-    "install:submodules"    : "bash scripts/install-submodules.sh 0.3.1",
+    "install:submodules"    : "bash scripts/install-submodules.sh 0.4.0-dev.20",
     "install:zits"          : "cargo install zits --version 1.15.0",
 
     "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",

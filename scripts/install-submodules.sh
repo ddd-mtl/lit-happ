@@ -18,7 +18,7 @@ if [ "$hcversion" == "hc" ] || [ "$hcversion" == "" ] ; then
 fi
 branchname=hdk-${hcversion:2}
 echo Getting branch: $branchname
-hdkv=for-hdk-v${hcversion}
+profileHdkVersion=for-hdk-0.4.0-dev.14
 
 echo \* Create 'submodules' folder
 rm -rf submodules
@@ -30,7 +30,7 @@ echo \* Download latest notifications zome
 git clone --depth 1 https://github.com/ddd-mtl/notifications
 
 echo \* Download latest profiles zome
-git clone -b $hdkv --depth 1 https://github.com/holochain-open-dev/profiles
+git clone -b $profileHdkVersion --depth 1 https://github.com/holochain-open-dev/profiles
 
 echo \* Download zome-signals repo
 git clone -b $branchname --depth 1 https://github.com/ddd-mtl/zome-signals.git

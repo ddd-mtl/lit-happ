@@ -141,4 +141,5 @@ export class WeServicesEx implements WeaveServices {
   async requestBind(srcWal: WAL, dstWal: WAL) {return this._inner.requestBind(srcWal, dstWal)}
   async requestClose() {return this._inner.requestClose()}
   async myGroupPermissionType(): Promise<GroupPermissionType> {return this._inner.myGroupPermissionType()}
+  async appletParticipants() {return this._inner.appletParticipants()}
 }

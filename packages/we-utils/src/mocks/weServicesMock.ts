@@ -51,7 +51,7 @@ export const emptyWeServicesMock: WeaveServices = {
   requestBind: (_srcWal: WAL, _dstWal: WAL) => {throw new Error("requestBind() is not implemented on WeServicesMock.");},
   requestClose: (): Promise<void> => {throw new Error("requestClose() is not implemented on WeServicesMock.");},
   myGroupPermissionType: () => {throw new Error("myGroupPermissionType() is not implemented on WeServicesMock.");},
-
+  async appletParticipants() {throw new Error("appletParticipants() is not implemented on WeServicesMock.");},
 };
 
 
