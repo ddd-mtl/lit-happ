@@ -26,10 +26,10 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
     //console.log("WeClient.connect()...", WeClient);
     const weClient = await WeaveClient.connect(appletServices);
     //console.log("weClient", weClient);
-    if (weClient.renderInfo.type != "applet-view") {
-        console.error("Setup called for non 'applet-view' type");
-        throw Promise.reject("Setup called for non 'applet-view' type")
-    }
+    // if (weClient.renderInfo.type != "applet-view") {
+    //     console.error("Setup called for non 'applet-view' type");
+    //     throw Promise.reject("Setup called for non 'applet-view' type")
+    // }
 
     /** Delay because of We 'CellDisabled' bug at startup race condition */
     await delay(1000);

@@ -1,4 +1,11 @@
-import {CreatableName, RecordInfo, RenderInfo, WeaveServices} from "@lightningrodlabs/we-applet";
+import {
+    AppletClients,
+    CreatableName,
+    CrossAppletView,
+    RecordInfo,
+    RenderInfo,
+    WeaveServices
+} from "@lightningrodlabs/we-applet";
 import {HappElement} from "@ddd-qc/lit-happ";
 
 
@@ -19,7 +26,7 @@ export interface DevTestNames {
 import {AppletHash, AppletView} from "@lightningrodlabs/we-applet";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 import {GroupProfile, ReadonlyPeerStatusStore, WAL} from "@lightningrodlabs/we-applet/dist/types";
-import {AppClient} from "@holochain/client";
+import {AppClient, EntryHash} from "@holochain/client";
 import {EntryId} from "@ddd-qc/cell-proxy";
 
 export type AppletViewInfo = {
@@ -30,6 +37,11 @@ export type AppletViewInfo = {
     peerStatusStore: ReadonlyPeerStatusStore,
     appletHash: AppletHash,
     groupProfiles: GroupProfile[];
+};
+export type CrossViewInfo = {
+    type: 'cross-applet-view';
+    view: CrossAppletView;
+    applets: ReadonlyMap<EntryHash, AppletClients>;
 };
 
 

@@ -26,12 +26,21 @@ export interface WeServicesCache {
 /** WeServices wrapper that caches requested infos */
 export class WeServicesEx implements WeaveServices {
 
-  constructor(private _inner: WeaveServices, private _thisAppletId: EntryId) {
-    this.cacheFullAppletInfo(_thisAppletId).then((maybePair) => {
+  constructor(private _inner: WeaveServices, private _thisAppletIds: EntryId[]) {
+    /*await*/ this.initAppletInfo(this._thisAppletIds);
+  }
+
+  private async initAppletInfo(thisAppletIds: EntryId[]) {
+    for (const thisAppletId of thisAppletIds) {
+      const maybePair = await this.cacheFullAppletInfo(thisAppletId);
       if (maybePair) {
-        this._groupProfiles = maybePair[1];
+        if (!this._groupProfiles) {
+          this._groupProfiles = maybePair[1];
+        } else {
+          this._groupProfiles = new DnaIdMap([...this._groupProfiles, ...maybePair[1]]);
+        }
       }
-    })
+    }
   }
 
   /** groupId -> groupProfile */
@@ -53,7 +62,7 @@ export class WeServicesEx implements WeaveServices {
     };
   }
 
-  get appletId(): AppletId {return this._thisAppletId.b64}
+  get appletIds(): AppletId[] {return this._thisAppletIds.map((b) => b.b64)}
 
   get groupProfiles(): DnaIdMap<GroupProfile> {return this._groupProfiles}
 
