@@ -10,7 +10,7 @@ import {cellMultiContext} from "./elements/cell-multi-context";
 /**
  * LitElement that is bound to a specific ZomeViewModel, e.g. a View for the ViewModel
  */
-export class ZomeMultiElement<ZVM extends ZomeViewModel> extends CellsMixin(LitElement) {
+export class ZomeMultiElement</*P,*/ ZVM extends ZomeViewModel> extends CellsMixin(LitElement) {
 
   constructor(public readonly defaultZomeName: ZomeName) {
     super();
@@ -19,6 +19,9 @@ export class ZomeMultiElement<ZVM extends ZomeViewModel> extends CellsMixin(LitE
   @consume({ context: cellMultiContext, subscribe: true})
   @property({attribute: false})
   _cells_via_context!: Cell[];
+
+  // @property({type: Object, attribute: false, hasChanged: (_v, _old) => true})
+  // perspective!: P;
 
   protected _zomeName!: ZomeName;
   get zomeName(): ZomeName {return this._zomeName};
@@ -34,14 +37,16 @@ export class ZomeMultiElement<ZVM extends ZomeViewModel> extends CellsMixin(LitE
 
   /** Request zvm from Context based on current cells */
   private requestZvm(canRerequest: boolean = false) {
-    if (!this._cells_via_context || this._cells_via_context.length == 0) {
+    if (!this._cells_via_context) {
       throw Error(`Context "${cellMultiContext}" not found from ZomeElement "${this.constructor.name}"`)
     }
+    //console.log("ZomeMultiElement.requestZvm()", this._cells_via_context);
     /* DVM already requested */
     if (!canRerequest && this._consumers.size > 0) {
       return;
     }
     for (const cell of this._cells!.values()) {
+      //console.log("ZomeMultiElement.requestZvm() cell", cell);
       const contextType = createContext<ZVM>('zvm/' + this.defaultZomeName + '/' + cell.address.dnaId.b64)
       console.log(`\t\t Requesting context "${contextType}"`)
       const consumer = new ContextConsumer(
@@ -56,7 +61,7 @@ export class ZomeMultiElement<ZVM extends ZomeViewModel> extends CellsMixin(LitE
           }
           this._zvms.set(cell.address.dnaId, newZvm);
           this._zomeName = newZvm.zomeName;
-          newZvm.subscribe(this, 'perspective');
+          newZvm.subscribe(this, '');
         },
         false, // true will call twice at init
       );
@@ -81,10 +86,10 @@ export class ZomeMultiElement<ZVM extends ZomeViewModel> extends CellsMixin(LitE
       return false;
     }
     /** RequestZvm on first "shouldUpdate" */
-    if (!this._zvms || this._zvms.size == 0) {
+    if (this._zvms.size == 0) {
       this.requestZvm();
     }
-    return (!!this._zvms && this._zvms.size > 0);
+    return this._zvms.size > 0;
   }
 
 

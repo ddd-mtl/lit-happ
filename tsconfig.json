@@ -11,6 +11,7 @@
     "checkJs": false,
     "allowJs": true,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "allowSyntheticDefaultImports": true,
     "noEmitOnError": true,
 

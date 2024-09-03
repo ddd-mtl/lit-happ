@@ -14,13 +14,13 @@ export class ViewCellMultiContext extends LitElement {
 
   @consume({ context: cellMultiContext, subscribe: true})
   @property()
-  cells!: Cell[];
+  cells: Cell[] = []
 
   override render() {
-    const cellNames = this.cells === undefined || this.cells.length == 0? "undefined" : this.cells.map((cell) => cell.name);
+    const cellNames: string[] =this.cells.map((cell) => "" + cell.name + ", ");
     return html`
     <div>
-        <span><b>(Cell set to: "${cellNames}")</b></span>
+        <span><b>(Context has ${this.cells.length} cells: "${cellNames}")</b></span>
     </div>
     `;
   }

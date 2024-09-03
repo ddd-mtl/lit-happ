@@ -59,7 +59,7 @@ export class DnaMultiElement</*P,*/ DVM extends DnaViewModel> extends CellsMixin
             oldDvm.unsubscribe(this);
           }
           this._dvms.set(cell.address.dnaId, newDvm);
-          newDvm.subscribe(this, 'perspective');
+          newDvm.subscribe(this, '');
         },
         false, // true will call twice at init
       );

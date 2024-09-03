@@ -33,10 +33,10 @@ export class CellMultiContext extends LitElement {
 
   /** */
   override firstUpdated() {
-    /** Cell */
-    if (!this.cells || this.cells.length == 0) {
-      throw Error('No cells set by <cell-context>')
-    }
+    // /** Cell */
+    // if (this.cells.length == 0) {
+    //   throw Error('No cells set by <cell-context>')
+    // }
     //this._provider = new ContextProvider(this, cellContext, this.cell);
     this._cellProvider.setValue(this.cells);
     this._initialized = true;

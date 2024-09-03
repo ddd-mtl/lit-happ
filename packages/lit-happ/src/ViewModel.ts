@@ -113,11 +113,17 @@ import { Mutex } from 'async-mutex';
 
   /** */
   protected notifySubscribers(): boolean {
-    if (!this.hasChanged()) return false;
-      //this._previousPerspective = structuredClone(this.perspective);
-      this._previousPerspective = this.perspective;
-      for (const [host, propName] of this._providedHosts) {
-      (host as any)[propName] = this._previousPerspective;
+    if (!this.hasChanged()) {
+      return false;
+    }
+    //this._previousPerspective = structuredClone(this.perspective);
+    this._previousPerspective = this.perspective;
+    for (const [host, propName] of this._providedHosts) {
+      if (propName == "") {
+        (host as any).requestUpdate();
+      } else {
+        (host as any)[propName] = this._previousPerspective;
+      }
     }
     return true;
   }

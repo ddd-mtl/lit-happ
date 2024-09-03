@@ -17,6 +17,8 @@ import "./elements/integer-list";
 import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
+import "./elements/real-multi-list";
+import "./elements/label-multi-list";
 
 /**
  *
@@ -161,11 +163,23 @@ export class PlaygroundCloneApp extends HappElement {
     const selectedDvm = this.hvm.getDvm(this._selectedClone)!;
     console.log("selectedDvm", selectedDvm, selectedDvm.cell.address.str);
 
+    const cloneCells = this.realDvmClones.map((dvm) => dvm.cell);
+    /** render merged clones */
+    const mergedClones = html`
+          <hr style="border-style:dotted;">
+          <cell-multi-context .cells=${cloneCells}>
+              <view-cell-multi-context></view-cell-multi-context>
+              <h3>Merged clones</h3>
+              <real-multi-list></real-multi-list>
+              <label-multi-list></label-multi-list>
+          </cell-multi-context>
+      `;
+
     /** render all clones */
     const clones = Object.values(this.realDvmClones).map((realDvm) => {
       return html`
           <hr style="border-style:dotted;">
-          <cell-context .cell="${realDvm.cell}">
+          <cell-context .cell=${realDvm.cell}>
               <h3>
                 ${realDvm.hcl.toString()}
                 <input type="button" value="dump calls" @click=${(_e: any) => realDvm.dumpCallLogs()}>
@@ -229,6 +243,7 @@ export class PlaygroundCloneApp extends HappElement {
         <!-- All Clones -->
         <hr style="border-style:solid;">
         ${clones}
+        ${mergedClones}
       </div>
     `
   }
