@@ -7,13 +7,15 @@ import {
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
 import { setBasePath, getBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
-import {DnaId, EntryId, HappElement} from "@ddd-qc/lit-happ";
+import {DnaId, EntryId} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 import {emptyRenderInfo} from "./mocks/renderInfoMock";
 import {AppletViewInfo} from "./index";
 import {AppletView, RenderInfo} from "@lightningrodlabs/we-applet";
 import {AgentPubKeyMap} from "@holochain-open-dev/utils";
+import {LitElement} from "lit";
 
+/** */
 export class ProfilesZomeMockFix extends ProfilesZomeMock {
     override get cellId() {
         return [
@@ -26,8 +28,12 @@ export class ProfilesZomeMockFix extends ProfilesZomeMock {
 
 
 /** */
-export async function setupDevtest(createApplet: CreateAppletFn, names: DevTestNames, createWeServicesMock: CreateWeServicesMockFn, appletView?: AppletView)
-    : Promise<HappElement> {
+export async function setupDevtest(
+  createApplet: CreateAppletFn,
+  names: DevTestNames,
+  createWeServicesMock: CreateWeServicesMockFn,
+  appletView?: AppletView,
+  ): Promise<LitElement> {
     console.log("setupDevtest()", process.env.HAPP_BUILD_MODE, process.env.HC_APP_PORT, process.env.HC_ADMIN_PORT);
 
     setBasePath('../../node_modules/@shoelace-style/shoelace/dist');

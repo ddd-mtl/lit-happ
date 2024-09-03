@@ -1,14 +1,15 @@
 import {AppletServices, WeaveClient} from "@lightningrodlabs/we-applet";
 import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js';
-import {delay, HappElement, HAPP_ENV, HappEnvType} from "@ddd-qc/lit-happ";
+import {delay, HAPP_ENV, HappEnvType} from "@ddd-qc/lit-happ";
 import {setupDevtest} from "./setupDevtest";
 import {createDefaultWeServicesMock} from "./mocks/weServicesMock";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
+import {LitElement} from "lit";
 
 
 
 /** */
-export async function setup(appletServices: AppletServices, createApplet: CreateAppletFn, devtestNames: DevTestNames, createWeServicesMock?: CreateWeServicesMockFn): Promise<HappElement> {
+export async function setup(appletServices: AppletServices, createApplet: CreateAppletFn, devtestNames: DevTestNames, createWeServicesMock?: CreateWeServicesMockFn): Promise<LitElement> {
     //console.log("HAPP_ENV", HAPP_ENV);
     if (HAPP_ENV == HappEnvType.DevtestWe) {
         return setupDevtest(createApplet, devtestNames, createWeServicesMock? createWeServicesMock : createDefaultWeServicesMock);
@@ -19,7 +20,7 @@ export async function setup(appletServices: AppletServices, createApplet: Create
 
 
 /** */
-export async function setupProd(appletServices: AppletServices, createApplet: CreateAppletFn): Promise<HappElement> {
+export async function setupProd(appletServices: AppletServices, createApplet: CreateAppletFn): Promise<LitElement> {
     //console.log("setup()");
     setBasePath('./');
     //console.log("shoelace basePath", getBasePath());
