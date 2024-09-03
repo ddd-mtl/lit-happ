@@ -6,10 +6,9 @@ import {
     RenderInfo,
     WeaveServices
 } from "@lightningrodlabs/we-applet";
-import {HappElement} from "@ddd-qc/lit-happ";
 
 
-export type CreateAppletFn = (renderInfo: RenderInfo, weServices: WeaveServices) => Promise<HappElement>;
+export type CreateAppletFn = (renderInfo: RenderInfo, weServices: WeaveServices) => Promise<LitElement>;
 
 export type CreateWeServicesMockFn = (devtestAppletId: EntryId) => Promise<WeaveServices>;
 
@@ -28,6 +27,7 @@ import {ProfilesClient} from "@holochain-open-dev/profiles";
 import {GroupProfile, ReadonlyPeerStatusStore, WAL} from "@lightningrodlabs/we-applet/dist/types";
 import {AppClient, EntryHash} from "@holochain/client";
 import {EntryId} from "@ddd-qc/cell-proxy";
+import {LitElement} from "lit";
 
 export type AppletViewInfo = {
     type: "applet-view",
