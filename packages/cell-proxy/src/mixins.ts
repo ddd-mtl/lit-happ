@@ -37,6 +37,33 @@ export function CellMixin<TBase extends AbstractConstructor>(Base: TBase) {
 //export const CellSpecific = CellMixin(Empty);
 
 
+/**
+ * Mixin for Cell bound classes.
+ * A Cell bound class must have a "Provisioned" or "Cloned" cell from @holochain/client
+ */
+export function CellsMixin<TBase extends AbstractConstructor>(Base: TBase) {
+  abstract class ACells extends Base {
+    // constructor(...args: any[]){
+    //   super(args);
+    // }
+    _cells?: Cell[];
+
+    get cells(): Cell[] {
+      if (!this._cells) throw Error("Cells field not set for object");
+      return this._cells!
+    }
+
+    get cell(): Cell {
+      if (this.cells.length == 0) throw Error("No Cells set for object");
+      return this.cells[0]!;
+    }
+
+
+  }
+
+  return ACells;
+}
+
 
 /** ------------------------------------------------------------------------------------------- **/
 

@@ -30,8 +30,9 @@ export class HappMultiElement extends LitElement {
   static HVM_DEF: HvmDef;
 
   /** Set during init triggered at ctor */
-  @state() hvms!: [AppProxy, HappViewModel][];
+  @state() hvms: [AppProxy, HappViewModel][] = []
 
+  get count(): number {return this.hvms.length}
 
   /** Ctor */
   protected constructor(wtf: [number | AppWebsocket, InstalledAppId | undefined][], adminUrl?: URL, defaultTimeout?: number) {
@@ -48,7 +49,7 @@ export class HappMultiElement extends LitElement {
 
   /** */
   override shouldUpdate() {
-    return !!this.hvms;
+    return this.hvms.length > 0;
   }
 
   /** */
