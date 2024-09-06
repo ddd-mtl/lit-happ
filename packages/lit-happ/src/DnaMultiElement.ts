@@ -46,7 +46,7 @@ export class DnaMultiElement</*P,*/ DVM extends DnaViewModel> extends CellsMixin
       return;
     }
     for (const cell of this._cells!.values()) {
-      const contextType = createContext<DVM>('dvm/' + cell.name);
+      const contextType = createContext<DVM>('dvm/' + cell.name + "/" + cell.address.dnaId.b64);
       console.log(`\t\t Requesting DVM context "${contextType}"`, cell.name);
       const consumer = new ContextConsumer(
         this,

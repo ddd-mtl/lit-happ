@@ -46,7 +46,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
     if (!canRerequest && this._consumer) {
       return;
     }
-    const contextType = createContext<DVM>('dvm/'+ this.cell.name);
+    const contextType = createContext<DVM>('dvm/' + this.cell.name + "/" + this.cell.address.dnaId.b64);
     console.log(`\t\t Requesting context "${contextType}"`)
     this._consumer = new ContextConsumer(
       this,

@@ -116,7 +116,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
-  getContext(): Context<unknown, unknown> {return createContext<typeof this>('dvm/' + this.cell.name)};
+  getContext(): Context<unknown, unknown> {return createContext<typeof this>('dvm/' + this.cell.name + "/" + this.cell.address.dnaId.b64)};
 
 
   /** */
