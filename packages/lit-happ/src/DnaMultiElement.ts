@@ -47,12 +47,12 @@ export class DnaMultiElement</*P,*/ DVM extends DnaViewModel> extends CellsMixin
     }
     for (const cell of this._cells!.values()) {
       const contextType = createContext<DVM>('dvm/' + cell.name + "/" + cell.address.dnaId.b64);
-      console.log(`\t\t Requesting DVM context "${contextType}"`, cell.name);
+      console.log(`\t\t Requesting DVM context "${contextType}"`);
       const consumer = new ContextConsumer(
         this,
         contextType,
         async (newDvm: DVM, _dispose?: () => void): Promise<void> => {
-          console.log(`\t\t Received value for DVM context "${contextType}"`, newDvm.cell.address.dnaId.b64)
+          console.log(`\t\t Received value for DVM context "${contextType}"`)
           const oldDvm = this._dvms.get(cell.address.dnaId);
           await this.dvmUpdated(cell.address.dnaId, newDvm, oldDvm);
           if (oldDvm) {

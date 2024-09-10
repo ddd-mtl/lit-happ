@@ -64,6 +64,11 @@ export class HappMultiElement extends LitElement {
         hvmDef.id = appId;
       }
       const appProxy = await ConductorAppProxy.new(port_or_socket, hvmDef.id, adminUrl, defaultTimeout);
+      // @ts-ignore
+      if(!this.appProxy) {
+        // @ts-ignore
+        this.appProxy = appProxy;
+      }
       const hvm = await HappViewModel.new(this, appProxy, hvmDef);
       await hvm.authorizeAllZomeCalls(appProxy.adminWs);
 

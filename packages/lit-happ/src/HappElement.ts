@@ -30,7 +30,7 @@ export class HappElement extends LitElement {
   static HVM_DEF: HvmDef;
 
   /** Set during init triggered at ctor */
-  appProxy!: AppProxy;
+  protected appProxy!: AppProxy;
   @state() hvm!: HappViewModel;
 
 
