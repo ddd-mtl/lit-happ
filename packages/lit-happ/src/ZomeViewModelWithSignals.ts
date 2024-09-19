@@ -5,7 +5,7 @@ import {
   EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, prettyState, SignalLog, SignalType, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
-  ZomeSignalProtocolType, ZomeSignalProtocolVariantEntry, ZomeSignalProtocolVariantLink
+  ZomeSignalProtocolType, ZomeSignalProtocolVariantEntry, ZomeSignalProtocolVariantLink, TipProtocolType, intoAnyId
 } from "@ddd-qc/cell-proxy";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
@@ -142,6 +142,29 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
   }
 
 
+  private tip2Log(tip: TipProtocol, type: TipProtocolType): [string, string] {
+    switch (type) {
+      case TipProtocolType.Ping:
+      case TipProtocolType.Pong: return ["", ""]; break;
+      case TipProtocolType.App: {
+        const app = (tip as TipProtocolVariantApp).App;
+        return ["" + app.length, ""];
+      }
+      break;
+      case TipProtocolType.Entry: {
+        const entryPulse = (tip as TipProtocolVariantEntry).Entry;
+        return [intoAnyId(entryPulse.ah).short, intoAnyId(entryPulse.ah).short];
+      }
+      break;
+      case TipProtocolType.Link: {
+        const linkPulse = (tip as TipProtocolVariantLink).Link;
+        return [intoAnyId(linkPulse.link.base).short, intoAnyId(linkPulse.link.target).short];
+      }
+      break;
+    }
+  }
+
+
   /** */
   override dumpSignalLogs(signalLogs: SignalLog[]) {
     this.dumpCastLogs();
@@ -153,12 +176,13 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const signal = log.zomeSignal as ZomeSignal;
         const pulses = signal.pulses as ZomeSignalProtocol[];
         const timestamp = prettyDate(new Date(log.ts));
-        const from = enc64(signal.from) == this.cell.address.agentId.b64? "self" : new AgentId(signal.from);
+        const from: string = enc64(signal.from) == this.cell.address.agentId.b64? "self" : new AgentId(signal.from).short;
         for (const pulse of pulses) {
           if (ZomeSignalProtocolType.Tip in pulse) {
             const tip: TipProtocol = pulse.Tip;
             const type = Object.keys(tip)[0];
-            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Tip, type, payload: anyToB64(tip)});
+            const [ah_base, eh_target] = this.tip2Log(tip, type as TipProtocolType);
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Tip, type, payload: anyToB64(tip), ah_base, eh_target});
           }
           if (ZomeSignalProtocolType.Entry in pulse) {
             const entryPulse = materializeEntryPulse(pulse.Entry, Object.values(this.zomeProxy.entryTypes));

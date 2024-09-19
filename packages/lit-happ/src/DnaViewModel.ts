@@ -63,7 +63,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     console.log(`DVM.ctor of ${this.baseRoleName}`, this._cellProxy.cell);
     /** Create all ZVMs for this DNA */
     for (const zvmDef of zvmDefs) {
-      let zvm;
+      let zvm: ZomeViewModel;
       if (Array.isArray(zvmDef)) {
         zvm = new zvmDef[0](this._cellProxy, this, zvmDef[1]);
       } else {
@@ -71,7 +71,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
       }
       // TODO check zvm.zomeName exists in _cellProxy
       this._zomeViewModels[zvm.zomeName] = zvm;
-      this._zomeNames[zvmDef.constructor.name] = zvm.zomeName;
+      this._zomeNames.push(zvm.zomeName);
     }
     this.provideContext(host); // TODO move this to host.connectedCallback? e.g. change ViewModel to a ReactiveController
   }
@@ -83,7 +83,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /* ZomeName -> Zvm */
   protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
   /* ZvmCtorName -> ZomeName */
-  protected _zomeNames: Dictionary<ZomeName> = {};
+  protected _zomeNames: ZomeName[] = [];
   /* ZomeName -> (EntryName -> EntryDef) */
   private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
 
@@ -100,9 +100,30 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   get zomeNames(): ZomeName[] {return Object.values(this._zomeNames);}
 
-  getZomeEntryDefs(zomeName: ZomeName): Dictionary<EntryDef> | undefined {return this._allEntryDefs[zomeName]}
-  getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined {return this._zomeViewModels[zomeName]}
-  getZomeName(zvm: typeof ZomeViewModel): ZomeName | undefined { return this._zomeNames[zvm.constructor.name]}
+  getZomeEntryDefs(zomeName: ZomeName): Dictionary<EntryDef> {
+    const maybe = this._allEntryDefs[zomeName];
+    if (!maybe) {
+      throw Error("Unknown zome in DVM: " + zomeName + ". Available zomes: " + this.zomeNames.join(', '));
+    }
+    return maybe;
+  }
+
+  getZomeViewModel(zomeName: ZomeName): ZomeViewModel {
+    const maybe = this._zomeViewModels[zomeName];
+    if (!maybe) {
+      throw Error("Unknown zome in DVM: " + zomeName + ". Available zomes: " + this.zomeNames.join(', '));
+    }
+    return maybe;
+  }
+
+  // getZomeName(zvm: typeof ZomeViewModel): ZomeName {
+  //   console.log("getZomeName()", zvm.constructor.name);
+  //   const maybe = this._zomeViewModels[zvm.constructor.name];
+  //   if (!maybe) {
+  //     throw Error("Unknown zome in DVM: " + zvm.DEFAULT_ZOME_NAME + ". Available zomes: " + this.zomeNames.join(', '));
+  //   }
+  //   return maybe;
+  // }
 
   /** -- Methods -- */
 
