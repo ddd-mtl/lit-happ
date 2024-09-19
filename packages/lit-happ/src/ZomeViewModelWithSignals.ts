@@ -153,7 +153,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
       break;
       case TipProtocolType.Entry: {
         const entryPulse = (tip as TipProtocolVariantEntry).Entry;
-        return [intoAnyId(entryPulse.ah).short, intoAnyId(entryPulse.ah).short];
+        return [intoAnyId(entryPulse.ah).short, intoAnyId(entryPulse.eh).short];
       }
       break;
       case TipProtocolType.Link: {
