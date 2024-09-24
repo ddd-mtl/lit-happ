@@ -39,17 +39,21 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
 
   /** */
   override async initializePerspectiveOffline(): Promise<void> {
+    try {
     const pairs = await this.zomeProxy.getMyValuesLocal();
     this._values = pairs.map(([_a, b]) => b);
     this._knowns = pairs.map(([a, _b]) => new ActionId(a));
+    } catch(e) {}
     this.notifySubscribers();
   }
 
   /** */
   override async initializePerspectiveOnline(): Promise<void> {
-    const pairs = await this.zomeProxy.getMyValues();
-    this._values = pairs.map(([_a, b]) => b);
-    this._knowns = pairs.map(([a, _b]) => new ActionId(a));
+    try {
+      const pairs = await this.zomeProxy.getMyValues();
+      this._values = pairs.map(([_a, b]) => b);
+      this._knowns = pairs.map(([a, _b]) => new ActionId(a));
+    } catch(e) {}
     this.notifySubscribers();
   }
 

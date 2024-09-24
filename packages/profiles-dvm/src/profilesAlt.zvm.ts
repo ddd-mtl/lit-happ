@@ -77,7 +77,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
         const agentEh = new EntryId(pulse.target.b64);
         const agentId = AgentId.from(agentEh);
         if (pulse.state != StateChangeType.Delete) {
-          await this.findProfile(agentId);
+            await this.findProfile(agentId);
         }
       }
       break;
@@ -113,18 +113,25 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   async probeAllProfiles()/*: Promise<Record<AgentPubKeyB64, ProfileMat>>*/ {
-    await this.zomeProxy.probeProfiles();
+    try {
+      await this.zomeProxy.probeProfiles();
+    } catch(e) {}
   }
 
 
   /** */
   async findProfile(agentId: AgentId): Promise<Profile | undefined> {
-    const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
-    console.log("findProfile()", agentId, maybeProfilePair);
-    if (!maybeProfilePair) {
-      return;
+    try {
+      const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
+      console.log("findProfile()", agentId, maybeProfilePair);
+      if (!maybeProfilePair) {
+        return;
+      }
+      return maybeProfilePair[1];
+    } catch(e) {
+      return undefined;
     }
-    return maybeProfilePair[1];
+    return undefined;
   }
 
 

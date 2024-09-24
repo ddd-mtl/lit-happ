@@ -45,6 +45,10 @@ export class LabelZvm extends ZomeViewModel {
   /**  */
   async createLabel(value: string): Promise<EntryId> {
     const res = await this.zomeProxy.createLabel(value);
+    try {
+      //await delay(100);
+      /*const _ =*/ await this.zomeProxy.createLabel(value); // Throttle test
+    } catch(e) {}
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();
