@@ -31,6 +31,8 @@ import { Mutex } from 'async-mutex';
   protected _providedHosts: [ReactiveControllerHost, PropertyKey][] = [];
   protected _provider?: unknown; // FIXME type: ContextProvider<this.getContext()>;
 
+  protected _canNotify = true; // Master switch for notifying subscribers
+
   //protected _initializationState: InitializationState = InitializationState.Uninitialized;
 
 
@@ -113,7 +115,7 @@ import { Mutex } from 'async-mutex';
 
   /** */
   protected notifySubscribers(): boolean {
-    if (!this.hasChanged()) {
+    if (!this._canNotify || !this.hasChanged()) {
       return false;
     }
     //this._previousPerspective = structuredClone(this.perspective);

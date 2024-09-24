@@ -70,7 +70,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const entryPulseMat = materializeEntryPulse(pulse.Entry as EntryPulse, (this.constructor as typeof ZomeViewModel).ENTRY_TYPES);
         all.push(this.handleEntryPulse(entryPulseMat, from));
         /** If new entry from this agent, broadcast to peers as tip */
-        if (entryPulseMat.isNew && from.b64 == this.cell.address.agentId.b64 && entryPulseMat.visibility == "Public") {
+        if (entryPulseMat.isNew && this.cell.address.agentId.equals(from) && entryPulseMat.visibility == "Public") {
           all.push(this.broadcastTip({Entry: pulse.Entry as EntryPulse}));
         }
         continue;
@@ -79,7 +79,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         const linkPulseMat = materializeLinkPulse(pulse.Link as LinkPulse, (this.constructor as typeof ZomeViewModel).LINK_TYPES);
         all.push(this.handleLinkPulse(linkPulseMat, from));
         /** If new Link from this agent, broadcast to peers as tip */
-        if (linkPulseMat.isNew && from.b64 == this.cell.address.agentId.b64) {
+        if (linkPulseMat.isNew && this.cell.address.agentId.equals(from)) {
           all.push(this.broadcastTip({Link: pulse.Link as LinkPulse}));
         }
         continue;
@@ -136,7 +136,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     this._castLogs.map((log) => {
       const type = Object.keys(log.tip)[0]!;
       const payload = (log.tip as any)[type];
-      appSignals.push({timestamp: prettyDate(new Date(log.ts)), type, payload, count: log.peers.length, first: log.peers[0]});
+      appSignals.push({timestamp: prettyDate(new Date(log.ts)), type, payload, count: log.peers.length, first: log.peers[0]? log.peers[0].short : undefined });
     });
     console.table(appSignals);
   }
