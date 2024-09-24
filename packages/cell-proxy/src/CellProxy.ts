@@ -186,7 +186,7 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
   private addTimed(value: HashB64) {
-    console.log("throttle.addTimed()", value, this._reqThrottle);
+    //console.log("throttle.addTimed()", value, this._reqThrottle);
     const bucket = this.getBucketTime();
     const maybe = this._reqThrottle.get(bucket);
     let sett = new Set<HashB64>();
@@ -204,7 +204,7 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
   private hasAlready(value: HashB64): boolean {
-    console.log("throttle.hasAlready()", value, this._reqThrottle);
+    //console.log("throttle.hasAlready()", value, this._reqThrottle);
     const bucket = this.getBucketTime();
     const maybe = this._reqThrottle.get(bucket);
     if (maybe && maybe.has(value)) {
@@ -227,7 +227,7 @@ export class CellProxy extends CellMixin(Empty) {
     const requestIndex = this._requestLog.length;
     /** Throttle */
     if (this.hasAlready(reqHash)) {
-      console.warn("throttle: THROTTLING", reqHash, reqLog.executionTimestamp);
+      console.debug(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
       return {requestIndex, timestamp: reqLog.executionTimestamp, failure: "Throttled: " + reqLog.request.fn_name + "()", throttled: true};
     }
     this.addTimed(reqHash);
