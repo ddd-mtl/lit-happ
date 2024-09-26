@@ -41,7 +41,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
   /** */
   private mySignalHandler(appSignal: AppSignal): void {
     const defaultZomeName = (this.constructor as typeof ZomeViewModelWithSignals).ZOME_PROXY.DEFAULT_ZOME_NAME;
-    console.log("mySignalHandler()", appSignal, defaultZomeName);
+    //console.log("mySignalHandler()", appSignal, defaultZomeName);
     if (appSignal.zome_name !== defaultZomeName) {
       return;
     }

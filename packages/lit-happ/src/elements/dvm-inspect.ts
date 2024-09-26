@@ -11,18 +11,12 @@ export class DvmInspect extends LitElement {
 
   /** -- Fields -- */
   @state() private _selectedZomeName = ""
-  //@state() private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
 
   @property({ type: Object, attribute: false })
   dnaViewModel!: DnaViewModel;
 
 
   /** -- Methods -- */
-
-  /** */
-  override async firstUpdated() {
-    /*this._allEntryDefs =*/ await this.dnaViewModel.fetchAllEntryDefs()
-  }
 
 
   /** */

@@ -9,6 +9,7 @@ export * from "./hcl";
 export * from "./mixins";
 export * from "./cell";
 export * from "./pretty";
+export * from "./time-map";
 export * from "./hash";
 export * from "./holochain-id-map";
 export * from "./zomeSignals.types";

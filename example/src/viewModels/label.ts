@@ -1,4 +1,4 @@
-import {EntryId, ZomeViewModel} from "@ddd-qc/lit-happ";
+import {EntryId, ResponseLog, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {AppSignal, AppSignalCb} from "@holochain/client";
 import {delay} from "@ddd-qc/cell-proxy";
 import {LabelProxy} from "../bindings/label.proxy";
@@ -48,7 +48,12 @@ export class LabelZvm extends ZomeViewModel {
     try {
       //await delay(100);
       /*const _ =*/ await this.zomeProxy.createLabel(value); // Throttle test
-    } catch(e) {}
+    } catch(e) {
+      const resp = e as ResponseLog;
+      if (!resp.throttled) {
+        Promise.reject(resp.failure);
+      }
+    }
     /** Add directly to perspective */
     this._values.push(value);
     this.notifySubscribers();

@@ -1,7 +1,6 @@
 import { LitElement, html } from "lit";
 import { state, property, customElement } from "lit/decorators.js";
 import { DnaViewModel } from "../DnaViewModel";
-import {Dictionary, EntryDef} from "@ddd-qc/cell-proxy";
 
 
 /**
@@ -12,7 +11,6 @@ export class EntryDefSelect extends LitElement {
 
   /** -- Fields -- */
   @state() private _selectedZomeName = ""
-  @state() private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
 
   @property({ type: Object, attribute: false })
   dnaViewModel!: DnaViewModel;
@@ -20,9 +18,6 @@ export class EntryDefSelect extends LitElement {
 
   /** -- Methods -- */
 
-  override async firstUpdated() {
-    this._allEntryDefs = await this.dnaViewModel.fetchAllEntryDefs()
-  }
 
   /** */
   async onZomeSelect(_e: any) {
@@ -51,12 +46,12 @@ export class EntryDefSelect extends LitElement {
     //   return html`<span>Loading...</span>`;
     // }
 
-    const zomeOptions = Object.entries(this._allEntryDefs).map(
+    const zomeOptions = Object.entries(this.dnaViewModel.allEntryDefs).map(
       ([zomeName, _entryDef]) => {
         return html`<option>${zomeName}</option>`
       }
     )
-    let zomeTypes = Object.entries(this._allEntryDefs)
+    let zomeTypes = Object.entries(this.dnaViewModel.allEntryDefs)
       .filter((item) => { return item[0] == this._selectedZomeName; })
       .map((item) => { return item[1] });
     //console.log({zomeTypes})

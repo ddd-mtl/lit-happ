@@ -30,7 +30,8 @@ import {
   SystemSignalProtocolVariantSelfCallEnd,
   SystemSignalProtocolVariantSelfCallStart
 } from "./zomeSignals.types";
-import {Dictionary, HashB64, sha256} from "./utils";
+import {Dictionary, sha256} from "./utils";
+import {TimeMap} from "./time-map";
 
 
 export interface RequestLog {
@@ -75,6 +76,22 @@ export class CellProxy extends CellMixin(Empty) {
     /*const _unsub =*/ this.addSignalHandler((sig) => this.blockUntilPostCommit(sig));
   }
 
+  /** -- Fields -- */
+
+  defaultTimeout: number;
+  protected _callMutex: MutexInterface;
+
+  /** append only logs */
+  private _requestLog: RequestLog[] = []
+  private _responseLog: ResponseLog[] = []
+
+  /** Throttle: Don't allow exact same call within 100ms */
+  private _reqThrottle = new TimeMap(100, 10);
+
+  /** Cache */
+  private _entryDefCache?: Dictionary<EntryDef>;
+  private _zomeInfoCache?: ZomeInfo;
+  private _dnaInfoCache?: DnaInfo;
 
   /** Have a PostCommitEnd release the Mutex */
   private _postCommitRelease?: MutexInterface.Releaser;
@@ -145,15 +162,6 @@ export class CellProxy extends CellMixin(Empty) {
     }
   }
 
-  /** -- Fields -- */
-
-  defaultTimeout: number;
-  protected _callMutex: MutexInterface;
-
-  /** append only logs */
-  private _requestLog: RequestLog[] = []
-  private _responseLog: ResponseLog[] = []
-
 
   /** -- Methods -- */
 
@@ -175,62 +183,18 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
 
-  /** -- Throttle: Don't allow same call within 100ms -- */
-
-  private _reqThrottle: Map<number, Set<HashB64>> = new Map();
-
-  private getBucketTime(): number {
-    const now = Date.now();
-    const bucket = Math.floor(now / 100);
-    return bucket;
-  }
-
-  private addTimed(value: HashB64) {
-    //console.log("throttle.addTimed()", value, this._reqThrottle);
-    const bucket = this.getBucketTime();
-    const maybe = this._reqThrottle.get(bucket);
-    let sett = new Set<HashB64>();
-    if (maybe) {
-      sett = maybe;
-    }
-    sett.add(value);
-    /* Remove the oldest entry (first inserted entry) */
-    if (this._reqThrottle.size >= 10) {
-      const oldestKey = this._reqThrottle.keys().next().value;
-      this._reqThrottle.delete(oldestKey);
-    }
-    /* */
-    this._reqThrottle.set(bucket, sett);
-  }
-
-  private hasAlready(value: HashB64): boolean {
-    //console.log("throttle.hasAlready()", value, this._reqThrottle);
-    const bucket = this.getBucketTime();
-    const maybe = this._reqThrottle.get(bucket);
-    if (maybe && maybe.has(value)) {
-      return true;
-    }
-    const bucketMinus = bucket - 1;
-    const maybeMinus = this._reqThrottle.get(bucketMinus);
-    if (maybeMinus &&  maybeMinus.has(value)) {
-      return true;
-    }
-    /* */
-    return false;
-  }
-
-
   /** Pass call request to conductor proxy and log it */
   private async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
+    //console.log("executeZomeCall()", reqLog.request.zome_name, reqLog.request.fn_name);
     const reqHash = await sha256(JSON.stringify(reqLog.request));
     reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
     /** Throttle */
-    if (this.hasAlready(reqHash)) {
-      console.debug(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
+    if (this._reqThrottle.has(reqHash)) {
+      console.warn(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
       return {requestIndex, timestamp: reqLog.executionTimestamp, failure: "Throttled: " + reqLog.request.fn_name + "()", throttled: true};
     }
-    this.addTimed(reqHash);
+    this._reqThrottle.add(reqHash);
     /** */
     this._requestLog.push(reqLog);
     try {
@@ -262,6 +226,7 @@ export class CellProxy extends CellMixin(Empty) {
    * TODO: Implement call queue instead of mutex?
    */
   async callZomeBlockPostCommit(entryType: string, zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
+    /** Create RequestLog */
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -269,7 +234,6 @@ export class CellProxy extends CellMixin(Empty) {
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
-
     /** Acquire lock */
     try {
       this._postCommitRelease = await this._callMutex.acquire();
@@ -290,6 +254,7 @@ export class CellProxy extends CellMixin(Empty) {
    * TODO: Implement call queue instead of mutex?
    */
   async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
+    /** Create RequestLog */
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -316,14 +281,15 @@ export class CellProxy extends CellMixin(Empty) {
         this.dumpCallLogs(zome_name);
         this.dumpSignalLogs(zome_name);
       }
-      return Promise.reject(respLog.failure)
+      return Promise.reject(respLog);
     }
     return respLog.success;
   }
 
 
-  /** */
+  /** On success returns the data returned by the zome function */
   async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
+    /** Create RequestLog */
     timeout = timeout? timeout : this.defaultTimeout;
     const req = {
       cap_secret, zome_name, fn_name, payload,
@@ -331,6 +297,7 @@ export class CellProxy extends CellMixin(Empty) {
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
+    /** Wait for lock */
     try {
       await this._callMutex.waitForUnlock();
     } catch(e) {
@@ -338,71 +305,71 @@ export class CellProxy extends CellMixin(Empty) {
       this.logCallTimedout(log);
       return Promise.reject("Waiting for callZome mutex timed-out");
     }
+    /** Execute & return response */
     const respLog = await this.executeZomeCall(log);
     if (respLog.failure) {
       if (!respLog.throttled) {
         this.dumpCallLogs(zome_name);
         this.dumpSignalLogs(zome_name);
       }
-      return Promise.reject(respLog.failure)
+      return Promise.reject(respLog);
     }
     return respLog.success;
   }
 
-
-  private _entryDefCache?: Dictionary<EntryDef>;
-  private _zomeInfoCache?: ZomeInfo;
-  private _dnaInfoCache?: DnaInfo;
 
   /**
    * Calls the `entry_defs()` zome function and
    * Returns an array of all the zome's AppEntryNames and Visibility, i.e. (AppEntryName, isPublic)[]
    */
   async callEntryDefs(zomeName: ZomeName): Promise<Dictionary<EntryDef>> {
-    //console.log("callEntryDefs()", zomeName)
+    console.log("callEntryDefs()", zomeName)
+    /** Return cache if any */
     if (this._entryDefCache) {
       return this._entryDefCache;
     }
+    /** Call zome */
+    let entryDefs;
     try {
-      const entryDefs = await this.callZome(zomeName, "entry_defs", null, null) as EntryDefsCallbackResult; // Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs
-      console.debug("getEntryDefs() for " + zomeName + " result:")
-      console.log({entryDefs})
-      let result: Dictionary<EntryDef> =  {}
-      for (const def of entryDefs.Defs) {
-        let name = Object.keys(def.id)[0];
-        if ("App" in def.id) {
-          name = def.id.App;
-        }
-        result[name!] = def;
-      }
-      //console.log({result})
-      this._entryDefCache = result;
-      return result;
+      /* Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs */
+      entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 60 * 1000) as EntryDefsCallbackResult;
     } catch (e) {
-      console.error("Calling getEntryDefs() on " + zomeName + " failed: ")
-      console.error({ e })
-      return Promise.reject(e)
+    console.error(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`);
+    return Promise.reject(e);
     }
+    console.debug("getEntryDefs() for " + zomeName + " result:")
+    console.debug({entryDefs});
+    /** Map result */
+    let result: Dictionary<EntryDef> = {}
+    for (const def of entryDefs.Defs) {
+      let name = Object.keys(def.id)[0];
+      if ("App" in def.id) {
+        name = def.id.App;
+      }
+      result[name!] = def;
+    }
+    //console.log({result})
+    this._entryDefCache = result;
+    return result;
   }
 
   /**
    * Calls the `zome_info()` zome function
    */
   async callZomeInfo(zomeName: ZomeName): Promise<ZomeInfo> {
-    console.log("callZomeInfo()", zomeName, !!this._zomeInfoCache);
+    //console.log("callZomeInfo()", zomeName, !!this._zomeInfoCache);
     if (this._zomeInfoCache) {
       return this._zomeInfoCache;
     }
     try {
-      const zome_info = await this.callZome(zomeName, "get_zome_info", null, null, 10 * 100) as ZomeInfo;
+      const zome_info = await this.callZome(zomeName, "get_zome_info", null, null, 10 * 1000) as ZomeInfo;
       //console.debug("callZomeInfo() for " + zomeName + " result:")
       //console.log({zome_info})
       this._zomeInfoCache = zome_info;
       return zome_info;
     } catch (e) {
-      console.error("Calling callZomeInfo() on " + zomeName + " failed. Make sure `get_zome_info()` is implemented in your zome code. Error: ")
-      console.error({ e })
-      return Promise.reject(e)
+      console.error("Calling callZomeInfo() on " + zomeName + " failed. Make sure `get_zome_info()` is implemented in your zome code.")
+      return Promise.reject(e);
     }
   }
 
@@ -411,20 +378,19 @@ export class CellProxy extends CellMixin(Empty) {
    * Calls the `dna_info()` zome function
    */
   async callDnaInfo(zomeName: ZomeName): Promise<DnaInfo> {
-    console.log("callDnaInfo()", zomeName);
+    //console.log("callDnaInfo()", zomeName);
     if (this._dnaInfoCache) {
       return this._dnaInfoCache;
     }
     try {
-      const dna_info = await this.callZome(zomeName, "get_dna_info", null, null, 10 * 100) as DnaInfo;
+      const dna_info = await this.callZome(zomeName, "get_dna_info", null, null, 10 * 1000) as DnaInfo;
       //console.debug("callDnaInfo() for " + zomeName + " result:")
       //console.log({dna_info})
       this._dnaInfoCache = dna_info;
       return dna_info;
     } catch (e) {
-      console.error("Calling callDnaInfo() on " + zomeName + " failed. Make sure `get_dna_info()` is implemented in your zome code. Error: ")
-      console.error({ e })
-      return Promise.reject(e)
+      console.error("Calling callDnaInfo() on " + zomeName + " failed. Make sure `get_dna_info()` is implemented in your zome code.")
+      return Promise.reject(e);
     }
   }
 

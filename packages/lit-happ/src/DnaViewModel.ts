@@ -12,7 +12,7 @@ import {
   CellProxy,
   AppProxy,
   HCL,
-  Dictionary, CellMixin, AgentId, EntryDef
+  Dictionary, CellMixin, AgentId, EntryDef, ZomeInfo, DnaInfo
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
 
@@ -24,7 +24,7 @@ interface IDnaViewModel {
   dumpCallLogs(zomeName?: ZomeName): void;
   dumpSignalLogs(zomeName?: ZomeName): void;
   /** zomeName -> (AppEntryName, isPublic)[] */
-  fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDef>>>;
+  //fetchAllEntryDefs(): Promise<void>;
   //get entryTypes(): Dictionary<[string, boolean][]>;
   //getZomeEntryDefs(zomeName: ZomeName): [string, boolean][] | undefined;
   //getZomeViewModel(zomeName: ZomeName): ZomeViewModel | undefined
@@ -42,9 +42,26 @@ export type DvmConstructor = typeof RoleSpecific & {DNA_MODIFIERS: DnaModifiersO
  * TODO: Split into RoleViewModel and CellViewModel (e.g. have call logs separated by role)
  */
 export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) implements IDnaViewModel {
-
+  /** -- Static -- */
   /* private */ static ZVM_DEFS: ZvmDef[];
   static DNA_MODIFIERS: DnaModifiersOptions;
+
+  /** -- Fields -- */
+  protected _cellProxy: CellProxy;
+  /* ZomeName -> Zvm */
+  protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
+  /* ZvmCtorName -> ZomeName */
+  protected _zomeNames: ZomeName[] = [];
+  /* ZomeName -> (EntryName -> EntryDef) */
+  private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
+  /* ZomeName -> ZomeInfo */
+  private _allZomeInfo: Dictionary<ZomeInfo> = {};
+  private _dnaInfo: DnaInfo | undefined = undefined;
+
+  /** list of "known" peers in this DNA */
+  protected _livePeers: AgentId[] = [];
+
+  public readonly hcl: HCL;
 
 
   /** Ctor */
@@ -58,6 +75,9 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
     }
     const dvmCtor = (this.constructor as typeof DnaViewModel)
     const zvmDefs = dvmCtor.ZVM_DEFS;
+    if (zvmDefs.length == 0) {
+      throw Error(`DNA ${this.baseRoleName} does not have any zomes`);
+    }
     this._cellProxy = appProxy.getCellProxy(this.hcl); // WARN can throw error
     this._cell = this._cellProxy.cell;
     console.log(`DVM.ctor of ${this.baseRoleName}`, this._cellProxy.cell);
@@ -77,24 +97,11 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
-  /** -- Fields -- */
-
-  protected _cellProxy: CellProxy;
-  /* ZomeName -> Zvm */
-  protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
-  /* ZvmCtorName -> ZomeName */
-  protected _zomeNames: ZomeName[] = [];
-  /* ZomeName -> (EntryName -> EntryDef) */
-  private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
-
-  /** list of "known" peers in this DNA */
-  protected _livePeers: AgentId[] = [];
-
-  public readonly hcl: HCL;
-
-
-
   /** -- Getters -- */
+
+  get allEntryDefs(): Dictionary<Dictionary<EntryDef>> { return this._allEntryDefs }
+
+  get dnaInfo(): DnaInfo { return this._dnaInfo! }
 
   get livePeers(): AgentId[] { return this._livePeers };
 
@@ -179,6 +186,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   /** */
   override async initializePerspectiveOffline(): Promise<void> {
+    await this.queryAllDnaData();
     const all = [];
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       const p = zvm.initializePerspectiveOffline();
@@ -199,19 +207,28 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
-  /** Maybe useless since the entry defs are in the integrity zome which is not represented here */
-  async fetchAllEntryDefs(): Promise<Dictionary<Dictionary<EntryDef>>> {
-    for (const zvm of Object.values(this._zomeViewModels)) {
-      const zomeName = zvm.zomeName;
-      try {
-        const defs = await this._cellProxy.callEntryDefs(zomeName); // TODO optimize
-        this._allEntryDefs[zomeName] = defs;
-      } catch (e) {
-        console.warn(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`)
-        this._allEntryDefs[zomeName] = {};
-      }
+  /** */
+  private async queryAllDnaData(): Promise<void> {
+    /** EntryDefs */
+    for (const zomeName of this.zomeNames) {
+        try {
+          const defs = await this._cellProxy.callEntryDefs(zomeName);
+          this._allEntryDefs[zomeName] = defs;
+        } catch(e: any) {
+          if (e.throttled) {
+            continue;
+          }
+          return Promise.reject(e);
+        }
     }
-    return this._allEntryDefs;
+    /** ZomeInfo */
+    for (const zomeName of this.zomeNames) {
+        const info = await this._cellProxy.callZomeInfo(zomeName);
+        this._allZomeInfo[zomeName] = info;
+    }
+    /** DnaInfo */
+    const info = await this._cellProxy.callDnaInfo(this.zomeNames[0]!);
+    this._dnaInfo = info;
   }
 
 
