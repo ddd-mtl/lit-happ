@@ -28,9 +28,6 @@ export class ProfilesDvm extends DnaViewModel {
 
   /** -- Perspective -- */
 
-  protected hasChanged(): boolean {
-    return true
-  }
 
   get perspective(): Object {
     return {}

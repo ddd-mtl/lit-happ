@@ -24,8 +24,6 @@ export class RealZvm extends ZomeViewModel {
 
   get zomeProxy(): RealProxy { return this._zomeProxy as RealProxy; }
 
-  protected hasChanged(): boolean { return true }
-
   get perspective(): RealZomePerspective { return { floats: this._values } }
 
   private _values: number[] = [];
@@ -69,8 +67,6 @@ export class NamedRealDvm extends DnaViewModel {
 
   /** -- ViewModel Interface -- */
 
-  protected hasChanged(): boolean { return true }
-
   get perspective(): number { return 3.1418 }
 
   /** methods */
@@ -104,8 +100,6 @@ export class NamedRealCloneDvm extends DnaViewModel {
 
 
   /** -- ViewModel Interface -- */
-
-  protected hasChanged(): boolean { return true }
 
   get perspective(): number { return 3.1418 }
 

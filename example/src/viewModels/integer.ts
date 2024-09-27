@@ -29,8 +29,6 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
 
   get zomeProxy(): IntegerProxy {return this._zomeProxy as IntegerProxy;}
 
-  protected hasChanged(): boolean {return true}
-
   get perspective(): IntegerZomePerspective {return {values: this._values}}
 
   private _values: number[] = [];
@@ -114,8 +112,6 @@ export class NamedIntegerDvm extends DnaViewModel {
 
 
   /** -- ViewModel Interface -- */
-
-  protected hasChanged(): boolean {return true}
 
   get perspective(): number {return 4242}
 

@@ -26,13 +26,6 @@ export class ProfilesZvm extends ZomeViewModel {
   get zomeProxy(): ProfilesProxy {return this._zomeProxy as ProfilesProxy;}
 
 
-  /* */
-  protected hasChanged(): boolean {
-    // TODO
-    return true;
-  }
-
-
   /** */
   override async initializePerspectiveOnline(): Promise<void> {
     await this.probeAllProfiles();

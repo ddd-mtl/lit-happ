@@ -3,7 +3,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {AppSignalCb} from "@holochain/client";
 
 import { Mutex } from 'async-mutex';
-//import {deepCopy} from "./deepcopy/deepCopy";
+
 
 // enum InitializationState {
 //   Uninitialized = "Uninitialized",
@@ -50,8 +50,8 @@ import { Mutex } from 'async-mutex';
   abstract get perspective(): Object;
 
 
-  /* Children are expected to override and provide a lightweight easy-to-compare perspective */
-  comparable(): Object { return this.perspective }
+  /* Children are expected to override and provide a lightweight and easy-to-compare version of the perspective */
+  comparable(): Object { return {} }
 
 
   /* (optional) Set perspective with data from the source-chain only */
@@ -83,11 +83,16 @@ import { Mutex } from 'async-mutex';
   }
 
   /**
-   * Return true if the perspective has changed. This will trigger an update on the observers
-   * Child classes are expected to compare their latest constructed perspective (the one returned by this.perspective())
-   * with this._previousPerspective.
+   * Return true if the perspective has changed (compared to _previousPerspective).
+   * This will trigger an update on the observers.
    */
-  protected abstract hasChanged(): boolean;
+  protected hasChanged(): boolean {
+    /** return true if previous is empty, meaning comparable() has not been implemented */
+    if (!this._previousPerspective || Object.keys(this._previousPerspective).length == 0) {
+      return true;
+    }
+    return Object.entries(this._previousPerspective).toString() != Object.entries(this.comparable()).toString();
+  }
 
 
   /** -- Final methods -- */
@@ -123,14 +128,13 @@ import { Mutex } from 'async-mutex';
     if (!this._canNotify || !this.hasChanged()) {
       return false;
     }
-    //this._previousPerspective = deepCopy(this.perspective);
     //this._previousPerspective = structuredClone(this.perspective);
     this._previousPerspective = this.comparable();
     for (const [host, propName] of this._providedHosts) {
       if (propName == "") {
         (host as any).requestUpdate();
       } else {
-        (host as any)[propName] = this._previousPerspective;
+        (host as any)[propName] = this.perspective;
       }
     }
     return true;

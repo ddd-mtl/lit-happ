@@ -41,13 +41,13 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   }
 
   /* */
-  protected hasChanged(): boolean {
+  override hasChanged(): boolean {
     const current = this.comparable() as ProfilesAltComparable;
     const prev = this._previousPerspective as ProfilesAltComparable;
     if (!prev) { return true }
     if (current.profileCount != prev.profileCount) return true;
     for (let i = 0; i < current.profileCount; i+= 1) {
-      if (current.profiles[i] != prev.profiles[i]) { return true }
+      if (JSON.stringify(current.profiles[i]) != JSON.stringify(prev.profiles[i])) { return true }
     }
     return false;
   }

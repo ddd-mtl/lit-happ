@@ -5,11 +5,6 @@ import {
 import {ProfilesZvm} from "./profiles.zvm";
 import {ProfilesAltZvm} from "./profilesAlt.zvm";
 
-/** */
-// export interface ProfilesDnaPerspective {
-//   agentPresences: Record<string, number>,
-// }
-
 
 /**
  * ViewModel fo a DNA holding a Profiles zome
@@ -27,10 +22,6 @@ export class ProfilesAltDvm extends DnaViewModel {
   }
 
   /** -- Perspective -- */
-
-  protected hasChanged(): boolean {
-    return true
-  }
 
   get perspective(): Object {
     return {}

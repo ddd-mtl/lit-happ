@@ -23,8 +23,6 @@ export class LabelZvm extends ZomeViewModel {
 
   get perspective(): LabelZomePerspective {return {names: this._values}}
 
-  protected hasChanged(): boolean {return true}
-
   private _values: string[] = [];
 
   override readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
