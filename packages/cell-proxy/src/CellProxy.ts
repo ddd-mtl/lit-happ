@@ -93,6 +93,9 @@ export class CellProxy extends CellMixin(Empty) {
   private _zomeInfoCache?: ZomeInfo;
   private _dnaInfoCache?: DnaInfo;
 
+
+  /** -- Methods -- */
+
   /** Have a PostCommitEnd release the Mutex */
   private _postCommitRelease?: MutexInterface.Releaser;
   private _postCommitReleaseEntryType?: string;
@@ -163,7 +166,12 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
 
-  /** -- Methods -- */
+  /** */
+  purgeLogs() {
+    this._responseLog = [];
+    this._requestLog = [];
+    this._appProxy.purgeLogs();
+  }
 
   /** */
   addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {

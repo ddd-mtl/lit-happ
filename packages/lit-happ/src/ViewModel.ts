@@ -3,7 +3,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {AppSignalCb} from "@holochain/client";
 
 import { Mutex } from 'async-mutex';
-
+import {deepCopy} from "./deepcopy/deepCopy";
 
 // enum InitializationState {
 //   Uninitialized = "Uninitialized",
@@ -118,8 +118,9 @@ import { Mutex } from 'async-mutex';
     if (!this._canNotify || !this.hasChanged()) {
       return false;
     }
+    this._previousPerspective = deepCopy(this.perspective);
     //this._previousPerspective = structuredClone(this.perspective);
-    this._previousPerspective = this.perspective;
+    //this._previousPerspective = this.perspective;
     for (const [host, propName] of this._providedHosts) {
       if (propName == "") {
         (host as any).requestUpdate();

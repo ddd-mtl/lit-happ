@@ -89,7 +89,7 @@ export class HappMultiElement extends LitElement {
 
   /** */
   async networkInfoAll(baseRoleName?: string): Promise<Record<CellIdStr, [Timestamp, NetworkInfo]>> {
-    console.log(`networkInfoAll() "${baseRoleName}"`);
+    console.debug(`networkInfoAll() "${baseRoleName}"`);
     /** Grab cellMap */
     const hvmDef = (this.constructor as typeof HappMultiElement).HVM_DEF;
     const appProxy = this.hvms[0]![0];
@@ -110,7 +110,7 @@ export class HappMultiElement extends LitElement {
         cellAddrs = cellAddrs.concat(flattenCells(cells))
       }
     }
-    console.log(`networkInfoAll() cellIds`, cellAddrs.map(cellId => cellId.str));
+    console.debug(`networkInfoAll() cellIds`, cellAddrs.map(cellId => cellId.str));
     /* Sort by agent key */
     let dnaPerAgentMap: AgentIdMap<DnaId[]> = new AgentIdMap();
     for (const cellAddr of cellAddrs) {
@@ -119,7 +119,7 @@ export class HappMultiElement extends LitElement {
       }
       dnaPerAgentMap.get(cellAddr.agentId)!.push(cellAddr.dnaId);
     }
-    console.log(`networkInfoAll() dnaMap`, dnaPerAgentMap);
+    console.debug(`networkInfoAll() dnaMap`, dnaPerAgentMap);
     /** Call NetworkInfo per AgentId */
     const allNetInfos: Record<CellIdStr, [Timestamp, NetworkInfo]> = {};
     for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {

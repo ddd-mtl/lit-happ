@@ -94,6 +94,8 @@ export class AppProxy implements AppClient {
 
   get signalLogs(): SignalLog[]  { return this._signalLogs }
 
+  purgeLogs() {this._signalLogs = [] }
+
   /** */
   getLocations(adr: CellAddress): HCL[] | undefined {
     return this._hclMap[adr.str];
