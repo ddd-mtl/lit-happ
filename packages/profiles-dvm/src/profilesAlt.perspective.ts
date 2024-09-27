@@ -4,10 +4,15 @@ import {Timestamp} from "@holochain/client";
 
 
 /** */
-export interface ProfilesAltSnapshot {
+export type ProfilesAltSnapshot = {
   all: [AgentId, ActionId, Profile, Timestamp][];
 }
 
+
+export type ProfilesAltComparable = {
+  profileCount: number,
+  profiles: Profile[],
+}
 
 /** */
 export class ProfilesAltPerspective {
@@ -20,13 +25,6 @@ export class ProfilesAltPerspective {
   /* Name -> AgentId */
   agentByName: Record<string, AgentId> = {};
 
-
-  /** -- Methods -- */
-
-  equals(_other: ProfilesAltPerspective) {
-    // TODO
-    return false;
-  }
 
   /** -- Getters -- */
 

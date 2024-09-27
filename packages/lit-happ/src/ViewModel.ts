@@ -3,7 +3,7 @@ import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {AppSignalCb} from "@holochain/client";
 
 import { Mutex } from 'async-mutex';
-import {deepCopy} from "./deepcopy/deepCopy";
+//import {deepCopy} from "./deepcopy/deepCopy";
 
 // enum InitializationState {
 //   Uninitialized = "Uninitialized",
@@ -47,7 +47,12 @@ import {deepCopy} from "./deepcopy/deepCopy";
 
   abstract getContext(): Context<unknown, unknown>;
   /* Child class should implement with specific type */
-  abstract get perspective(): unknown;
+  abstract get perspective(): Object;
+
+
+  /* Children are expected to override and provide a lightweight easy-to-compare perspective */
+  comparable(): Object { return this.perspective }
+
 
   /* (optional) Set perspective with data from the source-chain only */
   async initializePerspectiveOffline(): Promise<void> {}
@@ -118,9 +123,9 @@ import {deepCopy} from "./deepcopy/deepCopy";
     if (!this._canNotify || !this.hasChanged()) {
       return false;
     }
-    this._previousPerspective = deepCopy(this.perspective);
+    //this._previousPerspective = deepCopy(this.perspective);
     //this._previousPerspective = structuredClone(this.perspective);
-    //this._previousPerspective = this.perspective;
+    this._previousPerspective = this.comparable();
     for (const [host, propName] of this._providedHosts) {
       if (propName == "") {
         (host as any).requestUpdate();

@@ -6,7 +6,7 @@ import {decode} from "@msgpack/msgpack";
 
 
 /** */
-export interface ProfilesPerspective {
+export type ProfilesPerspective = {
   /* AgentPubKeyB64 -> Profile */
   profiles: Record<AgentPubKeyB64, Profile>,
   ///* AgentPubKeyB64 -> Profile hash */
@@ -47,11 +47,12 @@ export class ProfilesZvm extends ZomeViewModel {
 
   /* */
   get perspective(): ProfilesPerspective {
-    return {
+    const pers: ProfilesPerspective = {
       profiles: this._profiles,
       reversed: this._reversed,
       //profile_ahs: this._profile_ahs,
     };
+    return pers;
   }
 
   private _profiles: Record<AgentPubKeyB64, Profile> = {};

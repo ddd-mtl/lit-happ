@@ -13,6 +13,7 @@ import {EntryPulseMat} from "@ddd-qc/lit-happ/dist/ZomeViewModelWithSignals";
 import {ProfilesLinkType} from "./bindings/profiles.integrity";
 import {ProfilesAltUnitEnum} from "./bindings/profilesAlt.integrity";
 import {
+  ProfilesAltComparable,
   ProfilesAltPerspective,
   ProfilesAltPerspectiveMutable,
   ProfilesAltSnapshot
@@ -30,9 +31,25 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   get zomeProxy(): ProfilesAltProxy {return this._zomeProxy as ProfilesAltProxy;}
 
 
+  /** */
+  override comparable(): Object {
+    const res: ProfilesAltComparable = {
+      profileCount: this._perspective.profileByAgent.size,
+      profiles: Array.from(this.perspective.profiles.values()).map((pair) => pair[0]),
+    };
+    return res;
+  }
+
   /* */
   protected hasChanged(): boolean {
-    return !this.perspective.equals(this._previousPerspective as ProfilesAltPerspective);
+    const current = this.comparable() as ProfilesAltComparable;
+    const prev = this._previousPerspective as ProfilesAltComparable;
+    if (!prev) { return true }
+    if (current.profileCount != prev.profileCount) return true;
+    for (let i = 0; i < current.profileCount; i+= 1) {
+      if (current.profiles[i] != prev.profiles[i]) { return true }
+    }
+    return false;
   }
 
 

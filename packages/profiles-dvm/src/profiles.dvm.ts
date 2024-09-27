@@ -32,7 +32,7 @@ export class ProfilesDvm extends DnaViewModel {
     return true
   }
 
-  get perspective(): unknown {
+  get perspective(): Object {
     return {}
   }
 
