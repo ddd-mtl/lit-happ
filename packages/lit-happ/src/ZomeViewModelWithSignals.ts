@@ -115,10 +115,10 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     /** Skip if no recipients or sending to self only */
     const filtered = agents.filter((key) => key.b64 != this.cell.address.agentId.b64);
     const tipType = Object.keys(tip)[0];
-    console.log(`broadcastTip() Sending Tip "${tipType}" to`, filtered, this.cell.address.agentId.short);
+    console.debug(`broadcastTip() Sending Tip "${tipType}" to`, filtered, this.cell.address.agentId.short);
     //if (!agents || agents.length == 1 && agents[0] === this._cellProxy.cell.agentPubKey) {
     if (!filtered || filtered.length == 0) {
-      console.log("broadcastTip() aborted: No recipients")
+      console.debug("broadcastTip() aborted: No recipients")
       return;
     }
     /** Broadcast */

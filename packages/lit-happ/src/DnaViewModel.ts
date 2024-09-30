@@ -255,4 +255,9 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
       console.error(`Unknown zome ${zomeName} in DVM ${this.baseRoleName}`)
     }
   }
+
+  /** */
+  purgeLogs() {
+    this._cellProxy.purgeLogs();
+  }
 }
