@@ -95,11 +95,12 @@ export interface LinkPulse {
 }
 
 export interface EntryPulse {
-  ah: ActionArray
   state: StateChange
+  prev_ah?: ActionArray
+  ah: ActionArray
+  eh: EntryArray
   ts: Timestamp
   author: AgentArray
-  eh: EntryArray
   def: AppEntryDef
   bytes: Uint8Array
 }

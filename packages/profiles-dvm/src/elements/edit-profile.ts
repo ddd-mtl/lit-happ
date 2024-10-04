@@ -6,8 +6,6 @@ import { onSubmit, sharedStyles } from '@holochain-open-dev/elements';
 import '@holochain-open-dev/elements/dist/elements/select-avatar.js';
 import {Profile} from "../bindings/profilesAlt.types";
 
-
-
 //import "@shoelace-style/shoelace/dist/components/avatar/avatar.js";
 //import "@shoelace-style/shoelace/dist/components/button/button.js";
 //import "@shoelace-style/shoelace/dist/components/icon/icon.js";
@@ -15,7 +13,6 @@ import {Profile} from "../bindings/profilesAlt.types";
 //import "@shoelace-style/shoelace/dist/components/radio/radio.js";
 //import "@shoelace-style/shoelace/dist/components/radio-group/radio-group.js";
 //import "@shoelace-style/shoelace/dist/components/tooltip/tooltip.js";
-
 
 
 const MIN_NICKNAME_LENGTH = 2
