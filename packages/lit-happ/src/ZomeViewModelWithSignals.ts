@@ -203,6 +203,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 /** -- Materialze -- */
 
 export interface EntryPulseMat {
+  prevAh: ActionId | null,
   ah: ActionId,
   state: string,
   isNew: boolean,
@@ -220,6 +221,7 @@ export function materializeEntryPulse(entryPulse: EntryPulse, entryTypes: string
   //console.log("materializeEntryPulse()", entryTypes);
   const stateStr = Object.keys(entryPulse.state)[0]!;
   return {
+    prevAh: entryPulse.prev_ah? new ActionId(entryPulse.prev_ah) : null,
     ah: new ActionId(entryPulse.ah),
     state: stateStr,
     isNew: (entryPulse.state as any)[stateStr],
@@ -240,7 +242,7 @@ export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string
   state[pulse.state] = pulse.isNew;
   //console.log("dematerializeEntryPulse()", state, entryTypes);
   /** */
-  return {
+  let res: EntryPulse = {
     ah: pulse.ah.hash,
     state: state as StateChange,
     ts: pulse.ts,
@@ -253,6 +255,10 @@ export function dematerializeEntryPulse(pulse: EntryPulseMat, entryTypes: string
     },
     bytes: pulse.bytes,
   }
+  if (pulse.prevAh) {
+    res.prev_ah = pulse.prevAh.hash
+  }
+  return res;
 }
 
 
