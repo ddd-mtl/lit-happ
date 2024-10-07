@@ -96,7 +96,7 @@ export interface LinkPulse {
 
 export interface EntryPulse {
   state: StateChange
-  prev_ah?: ActionArray
+  orig_ah?: ActionArray
   ah: ActionArray
   eh: EntryArray
   ts: Timestamp
