@@ -1,4 +1,4 @@
-import {AdminWebsocket, ClonedCell, CreateCloneCellRequest, InstalledAppId} from "@holochain/client";
+import {AdminWebsocket, ClonedCell, CreateCloneCellRequest, InstalledAppId, Signal} from "@holochain/client";
 import { ReactiveElement } from "lit";
 import {
   AppProxy,
@@ -10,7 +10,6 @@ import {
 } from "@ddd-qc/cell-proxy";
 import { CellDef, DvmDef, HvmDef } from "./definitions";
 import { DnaViewModel } from "./DnaViewModel";
-import { AppSignal } from "@holochain/client/lib/api/app/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -152,7 +151,7 @@ export class HappViewModel {
     if (dvm.signalHandler) {
       //console.log(`"${dvm.baseRoleName}" signalHandler added`, dvm.signalHandler);
       try {
-        this._appProxy.addSignalHandler((sig: AppSignal) => {
+        this._appProxy.addSignalHandler((sig: Signal) => {
           dvm.signalHandler!(sig)
         }, hcl.toString());
       } catch (e) {

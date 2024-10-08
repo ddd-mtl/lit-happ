@@ -1,15 +1,13 @@
-import {AppSignalCb, EntryVisibility, Timestamp} from "@holochain/client";
+import {SignalCb, EntryVisibility, Timestamp, ZomeIndex, Signal, SignalType, AppSignal} from "@holochain/client";
 import {
   ActionId,
   AgentId, LinkableId, anyToB64, enc64, EntryId,
-  EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, prettyState, SignalLog, SignalType, StateChange,
+  EntryPulse, getIndexByVariant, intoLinkableId, LinkPulse, prettyDate, prettyState, SignalLog, AppSignalType, StateChange,
   TipProtocol, TipProtocolVariantApp, TipProtocolVariantEntry, TipProtocolVariantLink,
   ZomeSignal, ZomeSignalProtocol,
   ZomeSignalProtocolType, ZomeSignalProtocolVariantEntry, ZomeSignalProtocolVariantLink, TipProtocolType, intoAnyId
 } from "@ddd-qc/cell-proxy";
-import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {ZomeViewModel} from "./ZomeViewModel";
-import {ZomeIndex} from "@holochain/client/lib/hdk/link";
 import {decode} from "@msgpack/msgpack";
 
 
@@ -35,13 +33,17 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
-  override signalHandler?: AppSignalCb = this.mySignalHandler;
+  override signalHandler?: SignalCb = this.mySignalHandler;
 
 
   /** */
-  private mySignalHandler(appSignal: AppSignal): void {
+  private mySignalHandler(signal: Signal): void {
     const defaultZomeName = (this.constructor as typeof ZomeViewModelWithSignals).ZOME_PROXY.DEFAULT_ZOME_NAME;
     //console.log("mySignalHandler()", appSignal, defaultZomeName);
+    if (!(SignalType.App in signal)) {
+      return;
+    }
+    const appSignal: AppSignal = signal.App;
     if (appSignal.zome_name !== defaultZomeName) {
       return;
     }
@@ -171,7 +173,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     console.warn(`Signals received from zome "${this.zomeName}"`);
     let appSignals: any[] = [];
     signalLogs
-      .filter((log) => log.type == SignalType.Zome)
+      .filter((log) => log.type == AppSignalType.Zome)
       .map((log) => {
         const signal = log.zomeSignal as ZomeSignal;
         const pulses = signal.pulses as ZomeSignalProtocol[];

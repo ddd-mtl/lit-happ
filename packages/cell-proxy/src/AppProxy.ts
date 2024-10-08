@@ -5,7 +5,7 @@ import {
   AppInfoResponse,
   AppNetworkInfoRequest,
   AppSignal,
-  AppSignalCb,
+  SignalCb,
   CallZomeRequest,
   CellType,
   ClonedCell,
@@ -16,7 +16,7 @@ import {
   NetworkInfo,
   NetworkInfoResponse,
   ProvisionedCell,
-  Timestamp, ZomeName,
+  Timestamp, ZomeName, SignalType,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -24,7 +24,7 @@ import {
   BaseRoleName, CellAddress,
   CellIdStr,
   CellsForRole,
-  RoleCellsMap, SignalType, SystemPulse,
+  RoleCellsMap, AppSignalType, SystemPulse,
 } from "./types";
 import {Dictionary} from "./utils";
 import {HCL, HCLString} from "./hcl";
@@ -32,6 +32,7 @@ import {Cell} from "./cell";
 import {prettyDate, printAppInfo} from "./pretty";
 import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
+import {Signal} from "@holochain/client/lib/api/app/types";
 
 
 /** */
@@ -69,8 +70,8 @@ export class AppProxy implements AppClient {
   private _cellsByApp: Dictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */
   private _hclMap: Dictionary<HCL[]> = {};
-  /** Store handlers per cell location: HCLString -> AppSignalCb[] */
-  private _signalHandlers: Dictionary<AppSignalCb[]> = {};
+  /** Store handlers per cell location: HCLString -> SignalCb[] */
+  private _signalHandlers: Dictionary<SignalCb[]> = {};
   /** Store cell proxies per cell: CellIdStr -> CellProxy */
   private _cellProxies: Dictionary<CellProxy> = {};
 
@@ -166,7 +167,7 @@ export class AppProxy implements AppClient {
 
   on<Name extends keyof AppEvents>(
     _eventName: Name | readonly Name[],
-    _listener: AppSignalCb
+    _listener: SignalCb
   ): UnsubscribeFunction {
     throw new Error("Method not implemented.");
   }
@@ -326,13 +327,17 @@ export class AppProxy implements AppClient {
 
 
   /** */
-  onSignal(signal: AppSignal): void {
+  onSignal(signal: Signal): void {
+    if (!(SignalType.App in signal)) {
+      return;
+    }
+    const appSignal: AppSignal = signal.App;
     /** Grab cell specific handlers */
-    const hcls = this.getLocations(CellAddress.from(signal.cell_id));
+    const hcls = this.getLocations(CellAddress.from(appSignal.cell_id));
     if (!hcls) {
       return;
     }
-    const handlerss: (AppSignalCb[] | undefined)[]  = hcls
+    const handlerss: (SignalCb[] | undefined)[]  = hcls
       .map((hcl) => this._signalHandlers[hcl.toString()])
       .filter((arr) => arr != undefined);
     //console.log("onSignal()", hcls? hcls.toString() : "unknown cell: " + encodeHashToBase64(signal.cell_id[0]), handlerss);
@@ -349,7 +354,7 @@ export class AppProxy implements AppClient {
 
 
   /** Store signalHandler to internal handler array */
-  addSignalHandler(handler: AppSignalCb, hcl?: HCLString): SignalUnsubscriber {
+  addSignalHandler(handler: SignalCb, hcl?: HCLString): SignalUnsubscriber {
     //console.log("addSignalHandler()", hcl);
 
     hcl = hcl? hcl: "__all";
@@ -374,18 +379,22 @@ export class AppProxy implements AppClient {
   }
 
   /** Log all signals received */
-  protected logSignal(signal: AppSignal): void {
-    const zomeSignal = this.intoZomeSignal(signal);
+  protected logSignal(signal: Signal): void {
+    if (!(SignalType.App in signal)) {
+      return;
+    }
+    const appSignal: AppSignal = signal.App;
+    const zomeSignal = this.intoZomeSignal(appSignal);
     if (!zomeSignal) {
       return;
     }
-    const log: SignalLog = {ts: Date.now(), cellAddr: CellAddress.from(signal.cell_id), zomeName: signal.zome_name, zomeSignal, type: SignalType.Unknown, pulseCount: 1};
+    const log: SignalLog = {ts: Date.now(), cellAddr: CellAddress.from(appSignal.cell_id), zomeName: appSignal.zome_name, zomeSignal, type: AppSignalType.Unknown, pulseCount: 1};
     if (zomeSignal) {
       log.pulseCount = zomeSignal.pulses.length;
       if (zomeSignal.pulses.length == 0) {
-        log.type = SignalType.Empty;
+        log.type = AppSignalType.Empty;
       } else {
-        log.type = SignalType.Zome;
+        log.type = AppSignalType.Zome;
       }
     }
     this._signalLogs.push(log);
@@ -422,8 +431,8 @@ export class AppProxy implements AppClient {
       }
     }
     /** Seperate by type */
-    const unknownSignals = logs.filter((log) => log.type == SignalType.Unknown);
-    const zomeSignals = logs.filter((log) => log.type == SignalType.Zome);
+    const unknownSignals = logs.filter((log) => log.type == AppSignalType.Unknown);
+    const zomeSignals = logs.filter((log) => log.type == AppSignalType.Zome);
     const appSignals = zomeSignals.filter((log) => {
       const type = Object.keys(log.zomeSignal.pulses[0]!)[0];
       type != "System"

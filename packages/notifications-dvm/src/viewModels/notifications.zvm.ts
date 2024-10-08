@@ -2,7 +2,7 @@ import {AgentId, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {
   AgentPubKeyB64,
   AppSignal,
-  AppSignalCb,
+  SignalCb, SignalType, Signal,
 } from "@holochain/client";
 import {NotificationsProxy} from "../bindings/notifications.proxy";
 import {AgentPubKeyWithTag, Contact, NotificationTip, TwilioCredentials} from "../bindings/notifications.types";
@@ -39,11 +39,15 @@ export class NotificationsZvm extends ZomeViewModel {
 
   /** -- Signals -- */
 
-  readonly signalHandler?: AppSignalCb = this.handleSignal;
+  readonly signalHandler?: SignalCb = this.handleSignal;
 
   /** */
-  handleSignal(appSignal: AppSignal) {
+  handleSignal(signal: Signal) {
     //console.log("NotificationsZvm - Received Signal", signal);
+    if (!(SignalType.App in signal)) {
+      return;
+    }
+    const appSignal: AppSignal = signal.App;
     if (appSignal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }

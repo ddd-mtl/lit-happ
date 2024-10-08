@@ -1,4 +1,4 @@
-import {RenderInfo,  AppletView} from "@lightningrodlabs/we-applet";
+import {RenderInfo,  AppletView} from "@theweave/api";
 import {AssetViewInfo, intoHrl} from "../index";
 import {DnaId, EntryId} from "@ddd-qc/cell-proxy";
 

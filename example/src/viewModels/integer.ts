@@ -4,7 +4,7 @@ import {
   ZomeViewModel, ZomeViewModelWithSignals,
   ZvmDef
 } from "@ddd-qc/lit-happ";
-import {AppSignal, AppSignalCb} from "@holochain/client";
+import {Signal, SignalCb} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {IntegerProxy} from "../bindings/integer.proxy";
 
@@ -104,7 +104,7 @@ export class NamedIntegerDvm extends DnaViewModel {
   static override readonly DEFAULT_BASE_ROLE_NAME = "rNamedInteger";
   static override readonly ZVM_DEFS: ZvmDef[] = [IntegerZvm, [LabelZvm, "zIntegerLabel"]];
 
-  readonly signalHandler: AppSignalCb = this.handleSignal;
+  readonly signalHandler: SignalCb = this.handleSignal;
 
   /** QoL Helpers */
   get integerZvm(): IntegerZvm {return this.getZomeViewModel(IntegerZvm.DEFAULT_ZOME_NAME) as IntegerZvm}
@@ -126,7 +126,7 @@ export class NamedIntegerDvm extends DnaViewModel {
     }
   }
 
-  handleSignal(appSignal: AppSignal): void {
+  handleSignal(appSignal: Signal): void {
     console.warn("Signal for NamedInteger received:", appSignal);
   }
 

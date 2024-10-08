@@ -5,7 +5,7 @@ import {
     RecordInfo,
     RenderInfo,
     WeaveServices
-} from "@lightningrodlabs/we-applet";
+} from "@theweave/api";
 
 
 export type CreateAppletFn = (renderInfo: RenderInfo, weServices: WeaveServices) => Promise<LitElement>;
@@ -19,12 +19,12 @@ export interface DevTestNames {
 
 //----------------------------------------------------------------------------------------------------------------------
 // RenderInfo types
-// WARN keep in sync with "@lightningrodlabs/we-applet" types
+// WARN keep in sync with "@theweave/api" types
 //----------------------------------------------------------------------------------------------------------------------
 
-import {AppletHash, AppletView} from "@lightningrodlabs/we-applet";
+import {AppletHash, AppletView} from "@theweave/api";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
-import {GroupProfile, ReadonlyPeerStatusStore, WAL} from "@lightningrodlabs/we-applet/dist/types";
+import {GroupProfile, ReadonlyPeerStatusStore, WAL} from "@theweave/api/dist/types";
 import {AppClient, EntryHash} from "@holochain/client";
 import {EntryId} from "@ddd-qc/cell-proxy";
 import {LitElement} from "lit";

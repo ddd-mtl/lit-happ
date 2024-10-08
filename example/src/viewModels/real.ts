@@ -1,5 +1,5 @@
 import {DnaModifiersOptions, DnaViewModel, EntryId, ZomeViewModel, ZvmDef} from "@ddd-qc/lit-happ";
-import {AppSignal} from "@holochain/client";
+import {Signal} from "@holochain/client";
 import { LabelZvm } from "./label";
 import {RealProxy} from "../bindings/real.proxy";
 
@@ -70,7 +70,7 @@ export class NamedRealDvm extends DnaViewModel {
   get perspective(): number { return 3.1418 }
 
   /** methods */
-  handleRealSignal(appSignal: AppSignal): void {
+  handleRealSignal(appSignal: Signal): void {
     console.warn("RealSignal received:", appSignal);
   }
 
@@ -104,8 +104,8 @@ export class NamedRealCloneDvm extends DnaViewModel {
   get perspective(): number { return 3.1418 }
 
   /** methods */
-  handleRealSignal(_appSignal: AppSignal): void {
-    //console.warn("RealSignal received:", appSignal);
+  handleRealSignal(appSignal: Signal): void {
+    console.warn("NamedRealCloneDvm signal received:", appSignal);
   }
 
 }

@@ -1,6 +1,6 @@
 import {delay, DnaViewModel} from "@ddd-qc/lit-happ";
 import {
-  AppSignal, AppSignalCb,
+  Signal, SignalCb, SignalType, AppSignal,
 } from "@holochain/client";
 import {NotificationsZvm} from "./notifications.zvm";
 
@@ -12,7 +12,7 @@ export class NotificationsDvm extends DnaViewModel {
 
   static readonly DEFAULT_BASE_ROLE_NAME = "notifications_test";
   static readonly ZVM_DEFS = [NotificationsZvm]
-  readonly signalHandler?: AppSignalCb = this.handleSignal;
+  readonly signalHandler?: SignalCb = this.handleSignal;
 
 
   /** QoL Helpers */
@@ -34,9 +34,13 @@ export class NotificationsDvm extends DnaViewModel {
   /** -- Signaling -- */
 
   /** */
-  handleSignal(signal: AppSignal) {
-    console.log("Received Signal", signal);
-    if (signal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
+  handleSignal(signal: Signal) {
+    // console.log("Received Signal", signal);
+    if (!(SignalType.App in signal)) {
+      return;
+    }
+    const appSignal: AppSignal = signal.App;
+    if (appSignal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }
   }

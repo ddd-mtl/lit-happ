@@ -14,7 +14,7 @@ import {
   CellInfo,
   InstalledAppId
 } from "@holochain/client";
-import {Hrl} from "@lightningrodlabs/we-applet";
+import {Hrl} from "@theweave/api";
 
 
 export function intoHrl(dna: DnaId, dht: DhtId): Hrl {

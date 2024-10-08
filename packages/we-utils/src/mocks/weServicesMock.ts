@@ -5,13 +5,13 @@ import {
 import {
   AppletInfo, PeerStatusUpdate, WeaveServices,
   weaveUrlFromWal,
-} from "@lightningrodlabs/we-applet";
+} from "@theweave/api";
 import {
   AssetLocationAndInfo,
   FrameNotification,
   OpenWalMode,
   WAL
-} from "@lightningrodlabs/we-applet/dist/types";
+} from "@theweave/api/dist/types";
 import {mdiFileExcelOutline} from "@mdi/js";
 import {intoHrl, wrapPathInSvg} from "../utils";
 import {ActionId, DnaId, EntryId, intoDhtId} from "@ddd-qc/cell-proxy";
@@ -40,6 +40,7 @@ export const emptyWeServicesMock: WeaveServices = {
   openCrossAppletMain: (_appletBundleId: ActionHash): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
   openCrossAppletBlock: (_appletBundleId: ActionHash, _block: string, _context: any): Promise<void> => {throw new Error("openCrossAppletBlock() is not implemented on WeServicesMock.");},
   openWal: (_wal: WAL, _mode?: OpenWalMode) : Promise<void> => {throw new Error("openWal() is not implemented on WeServicesMock.");},
+  dragWal: (_wal: WAL): Promise<void> => {throw new Error("dragWal() is not implemented on WeServicesMock.");},
   groupProfile: (_groupId): Promise<any> => {throw new Error("groupProfile() is not implemented on WeServicesMock.");},
   appletInfo: (_appletHash): Promise<AppletInfo | undefined> => {throw new Error("appletInfo() is not implemented on WeServicesMock.");},
   assetInfo: (_wal: WAL): Promise<AssetLocationAndInfo | undefined> => {throw new Error("assetInfo() is not implemented on WeServicesMock.");},

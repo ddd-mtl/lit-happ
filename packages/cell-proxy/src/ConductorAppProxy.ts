@@ -12,7 +12,7 @@ import {
   Timestamp,
   AppClient,
   AppEvents,
-  AppSignalCb,
+  SignalCb,
   AppNetworkInfoRequest,
   NetworkInfoResponse,
   AdminWebsocket,
@@ -66,7 +66,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
   override on<Name extends keyof AppEvents>(
     eventName: Name | readonly Name[],
-    listener: AppSignalCb
+    listener: SignalCb
   ): UnsubscribeFunction {
     return this._appWs!.on(eventName, listener);
   }

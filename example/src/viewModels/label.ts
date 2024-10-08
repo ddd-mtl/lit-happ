@@ -1,5 +1,5 @@
 import {EntryId, ResponseLog, ZomeViewModel} from "@ddd-qc/lit-happ";
-import {AppSignal, AppSignalCb} from "@holochain/client";
+import {Signal, SignalCb} from "@holochain/client";
 import {delay} from "@ddd-qc/cell-proxy";
 import {LabelProxy} from "../bindings/label.proxy";
 
@@ -25,8 +25,8 @@ export class LabelZvm extends ZomeViewModel {
 
   private _values: string[] = [];
 
-  override readonly signalHandler: AppSignalCb = (appSignal: AppSignal) => {
-    console.warn("Signal for zLabel zome received:", appSignal);
+  override readonly signalHandler: SignalCb = (signal: Signal) => {
+    console.warn("Signal for zLabel zome received:", signal);
   }
 
   /** */

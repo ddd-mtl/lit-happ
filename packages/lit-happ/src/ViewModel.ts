@@ -1,6 +1,6 @@
 import {Context, ContextProvider} from "@lit/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
-import {AppSignalCb} from "@holochain/client";
+import {SignalCb} from "@holochain/client";
 
 import { Mutex } from 'async-mutex';
 
@@ -40,7 +40,7 @@ import { Mutex } from 'async-mutex';
 
   /** -- Abstract fields -- */
 
-  abstract signalHandler?: AppSignalCb;
+  abstract signalHandler?: SignalCb;
 
 
   /** -- Abstract methods -- */

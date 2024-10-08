@@ -3,10 +3,10 @@ import {
   AppletInfo,
   weaveUrlFromWal,
   WeaveServices, PeerStatusUpdate, GroupPermissionType,
-} from "@lightningrodlabs/we-applet";
+} from "@theweave/api";
 import {
   AssetLocationAndInfo, FrameNotification, GroupProfile, OpenWalMode, WAL,
-} from "@lightningrodlabs/we-applet/dist/types";
+} from "@theweave/api/dist/types";
 import {
   ActionHash,
   EntryHash, HoloHashB64,
@@ -142,6 +142,7 @@ export class WeServicesEx implements WeaveServices {
   async openCrossAppletMain(appletBundleId: ActionHash): Promise<void>  {return this._inner.openCrossAppletMain(appletBundleId)}
   async openCrossAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void>  {return this._inner.openCrossAppletBlock(appletHash, block, context)}
   async openWal(wal: WAL, mode?: OpenWalMode): Promise<void>  {return this._inner.openWal(wal, mode)}
+  async dragWal(wal: WAL): Promise<void> {return this._inner.dragWal(wal)}
   async walToPocket(wal: WAL): Promise<void>  {return this._inner.walToPocket(wal)}
   //async search(searchFilter: string): Promise<any>  {return this._inner.search(searchFilter)}
   async userSelectWal(): Promise<WAL | undefined>  {return this._inner.userSelectWal()}

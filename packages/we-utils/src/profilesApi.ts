@@ -1,7 +1,7 @@
 import {
   AgentPubKey,
   AppClient, AppCreateCloneCellRequest, AppEvents,
-  AppInfoResponse, AppNetworkInfoRequest, AppSignalCb, CallZomeRequest, ClonedCell, CreateCloneCellResponse,
+  AppInfoResponse, AppNetworkInfoRequest, SignalCb, CallZomeRequest, ClonedCell, CreateCloneCellResponse,
   DisableCloneCellRequest,
   EnableCloneCellRequest, InstalledAppId, NetworkInfoResponse,
 } from "@holochain/client";
@@ -64,7 +64,7 @@ export class ProfilesApi implements AppClient {
 
   on<Name extends keyof AppEvents>(
     eventName: Name | readonly Name[],
-    listener: AppSignalCb,
+    listener: SignalCb,
   ): UnsubscribeFunction {
     return this._profilesClient.client.on(eventName, listener);
   }

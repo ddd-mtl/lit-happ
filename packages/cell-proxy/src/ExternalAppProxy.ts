@@ -6,7 +6,7 @@ import {
   ClonedCell,
   AppClient,
   AppEvents,
-  AppSignalCb,
+  SignalCb,
   AppCreateCloneCellRequest,
   CreateCloneCellResponse,
   AppNetworkInfoRequest, NetworkInfoResponse,
@@ -40,7 +40,7 @@ export class ExternalAppProxy extends AppProxy implements AppClient {
 
   override on<Name extends keyof AppEvents>(
     eventName: Name | readonly Name[],
-    listener: AppSignalCb
+    listener: SignalCb
   ): UnsubscribeFunction {
     return this._appClient.on(eventName, listener);
   }

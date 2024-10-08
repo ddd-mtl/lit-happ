@@ -11,7 +11,7 @@ export type AnyCell = ProvisionedCell | ClonedCell;
 
 /** Signal types */
 
-export enum SignalType  {
+export enum AppSignalType  {
   Unknown = "Unknown",
   Empty = "Empty",
   Zome = "Zome",

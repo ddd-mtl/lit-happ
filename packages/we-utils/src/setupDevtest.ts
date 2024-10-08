@@ -11,7 +11,7 @@ import {DnaId, EntryId} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 import {emptyRenderInfo} from "./mocks/renderInfoMock";
 import {AppletViewInfo} from "./index";
-import {AppletView, RenderInfo} from "@lightningrodlabs/we-applet";
+import {AppletView, RenderInfo} from "@theweave/api";
 import {AgentPubKeyMap} from "@holochain-open-dev/utils";
 import {LitElement} from "lit";
 

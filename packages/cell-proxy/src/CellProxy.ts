@@ -1,10 +1,11 @@
 import {
   AppSignal,
-  AppSignalCb,
+  SignalCb,
   CallZomeRequest,
   CapSecret,
   Timestamp,
-  ZomeName
+  ZomeName,
+  Signal, SignalType,
 } from "@holochain/client";
 import {CellMixin, Empty} from "./mixins";
 import {Cell} from "./cell";
@@ -12,7 +13,7 @@ import {
   CellIdStr,
   DnaInfo, EntryDef,
   EntryDefsCallbackResult,
-  SignalType,
+  AppSignalType,
   SystemPulse,
 
   ZomeInfo
@@ -99,8 +100,12 @@ export class CellProxy extends CellMixin(Empty) {
   /** Have a PostCommitEnd release the Mutex */
   private _postCommitRelease?: MutexInterface.Releaser;
   private _postCommitReleaseEntryType?: string;
-  protected async blockUntilPostCommit(signal: AppSignal) {
-    const zomeSignal = this._appProxy.intoZomeSignal(signal);
+  protected async blockUntilPostCommit(signal: Signal) {
+    if (!(SignalType.App in signal)) {
+      return;
+    }
+    const appSignal: AppSignal = signal.App;
+    const zomeSignal = this._appProxy.intoZomeSignal(appSignal);
     if (!zomeSignal || zomeSignal.pulses.length == 0) {
       return;
     }
@@ -117,8 +122,8 @@ export class CellProxy extends CellMixin(Empty) {
       const end = sys as SystemSignalProtocolVariantPostCommitNewEnd;
       if (!end.succeeded) {
         console.error("System call failed");
-        this.dumpCallLogs(signal.zome_name);
-        this.dumpSignalLogs(signal.zome_name);
+        this.dumpCallLogs(appSignal.zome_name);
+        this.dumpSignalLogs(appSignal.zome_name);
       }
       if (end.app_entry_type !== this._postCommitReleaseEntryType) {
         continue;
@@ -174,7 +179,7 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
   /** */
-  addSignalHandler(handler: AppSignalCb): SignalUnsubscriber {
+  addSignalHandler(handler: SignalCb): SignalUnsubscriber {
     return this._appProxy.addSignalHandler(handler, this.cell.hcl().toString());
   }
 
@@ -448,7 +453,7 @@ export class CellProxy extends CellMixin(Empty) {
     /** Parse signal self-call logs */
     //console.log(this._appProxy.signalLogs)
 
-    const zomeSignals = this._appProxy.signalLogs.filter((log) => log.type == SignalType.Zome);
+    const zomeSignals = this._appProxy.signalLogs.filter((log) => log.type == AppSignalType.Zome);
     const sysSignals = zomeSignals.filter((log) => {
       const type = Object.keys(log.zomeSignal.pulses[0]!)[0];
       type == "System"

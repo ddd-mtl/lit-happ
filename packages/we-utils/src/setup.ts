@@ -1,4 +1,4 @@
-import {AppletServices, WeaveClient} from "@lightningrodlabs/we-applet";
+import {AppletServices, WeaveClient} from "@theweave/api";
 import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import {delay, HAPP_ENV, HappEnvType} from "@ddd-qc/lit-happ";
 import {setupDevtest} from "./setupDevtest";

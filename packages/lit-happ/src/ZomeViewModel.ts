@@ -8,7 +8,7 @@ import {
     prettySignalLogs,
 } from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
-import {AppSignalCb, ZomeName} from "@holochain/client";
+import {SignalCb, ZomeName, Signal, SignalType} from "@holochain/client";
 import {AppSignal} from "@holochain/client/lib/api/app/types";
 import {DnaViewModel} from "./DnaViewModel";
 
@@ -45,7 +45,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     }
 
 
-    signalHandler?: AppSignalCb;
+    signalHandler?: SignalCb;
 
     /** Zome name */
     static get DEFAULT_ZOME_NAME(): string {
@@ -79,7 +79,7 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
             this.zomeName = this._zomeProxy.defaultZomeName;
         }
         this._cell = cellProxy.cell;
-        cellProxy.addSignalHandler( (signal: AppSignal) => this.handleZomeSignal(signal));
+        cellProxy.addSignalHandler( (signal: Signal) => this.handleZomeSignal(signal));
     }
 
 
@@ -93,9 +93,13 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     }
 
     /** Filter signal by zome name */
-    private handleZomeSignal(signal: AppSignal) {
+    private handleZomeSignal(signal: Signal) {
+        if (!(SignalType.App in signal)) {
+            return;
+        }
+        const appSignal: AppSignal = signal.App;
         //console.log("handleZomeSignal()", this.signalHandler, this.zomeName, signal.zome_name)
-        if (this.signalHandler && signal.zome_name == this.zomeName) {
+        if (this.signalHandler && appSignal.zome_name == this.zomeName) {
             this.signalHandler(signal);
         }
     }
