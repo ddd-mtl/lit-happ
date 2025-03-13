@@ -15,6 +15,7 @@ import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
+import {NetworkInfo} from "@holochain/client";
 
 
 /**
@@ -142,7 +143,17 @@ export class PlaygroundApp extends HappElement {
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(_e:any) => {this.appProxy.dumpSignalLogs(true)}}>
-        <input type="button" value="networkInfos" @click=${async (_e:any) => {await this.networkInfoAll(); this.dumpLastestNetworkInfo(); this.dumpNetworkInfoLogs()}}>
+        <input type="button" value="Loop networkInfos" @click=${async (_e:any) => {
+          console.log("networkInfos:", this.networkCaller?.isLooping(), this.networkCaller, this.integerDvm.cell.address)
+            this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
+            if (!this.networkCaller?.isLooping()) {
+                console.log("Start loop")
+                await this.networkCaller?.startCallLoop(2000, (info:NetworkInfo) => {console.log(info)})
+            } else {
+                this.networkCaller?.stopCallLoop();
+            }
+        }}>
+        <input type="button" value="Dump networkInfos" @click=${(_e:any) => {this.networkCaller?.dumpNetworkInfoLogs();}}>
         <br/>
         <!-- SELECT ENTRY TYPE -->
         <div style="margin-top: 5px;">

@@ -4,6 +4,7 @@ export * from "./ExternalAppProxy";
 export * from "./CellProxy";
 export * from "./ZomeProxy";
 export * from "./utils";
+export * from "./ringBuffer";
 export * from "./types";
 export * from "./hcl";
 export * from "./mixins";

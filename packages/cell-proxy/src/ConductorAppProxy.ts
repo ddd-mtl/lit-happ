@@ -7,9 +7,6 @@ import {
   DisableCloneCellRequest,
   EnableCloneCellRequest,
   ClonedCell,
-  NetworkInfo,
-  NetworkInfoRequest,
-  Timestamp,
   AppClient,
   AppEvents,
   SignalCb,
@@ -19,9 +16,7 @@ import {
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
-import {CellAddress, CellIdStr} from "./types";
-import {AgentId, DnaId} from "./hash";
-import {AgentIdMap} from "./holochain-id-map";
+import {AgentId} from "./hash";
 import {AppWebsocketConnectionOptions} from "@holochain/client/lib/api/app/types";
 import {AppAuthenticationToken} from "@holochain/client/lib/api/admin/types";
 
@@ -86,52 +81,14 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
     return this._appWs!.disableCloneCell(request);
   }
 
-  // async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-  //   return this._appWs!.networkInfo(args);
-  // }
 
-
-  /** */
   override async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-    const agentId = new AgentId(this._appWs.myPubKey);
-    /* Call networkInfo */
-    const response = await this._appWs.networkInfo({
-      dnas: args.dnas,
-      last_time_queried: this._lastTimeQueriedMap.get(agentId)
-    } as NetworkInfoRequest);
-    this._lastTimeQueriedMap.set(agentId, Date.now());
-
-    /* Convert result */
-    let i = 0;
-    //let result = {}
-    for (const netInfo of response) {
-      const dnaId = new DnaId(args.dnas[i]!);
-      //result[dnaHash] = [this._lastTimeQueriedMap[agent], netInfo];
-      /* Store */
-      const cellAddr = new CellAddress(dnaId, agentId);
-      if (!this._networkInfoLogs[cellAddr.str]) {
-        this._networkInfoLogs[cellAddr.str] = [];
-      }
-      this._networkInfoLogs[cellAddr.str]!.push([this._lastTimeQueriedMap.get(agentId)!, netInfo])
-      /* */
-      i += 1;
-    }
-    return response;
+    return await this._appWs!.networkInfo(args);
   }
 
 
 
-  /** Store networkInfo calls */
-  //private _lastTimeQueriedMap: Record<AgentPubKeyB64, Timestamp> = {};
-  private _lastTimeQueriedMap: AgentIdMap<Timestamp> = new AgentIdMap();
-
-  private _networkInfoLogs: Record<CellIdStr, [Timestamp, NetworkInfo][]> = {};
-
-  override get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return this._networkInfoLogs;}
-
-
-
-/** -- Creation -- */
+  /** -- Creation -- */
 
   /** async Factory */
   static async new(port_or_socket: number | AppWebsocket, appId: InstalledAppId, adminUrl?: URL, defaultTimeout?: number): Promise<ConductorAppProxy> {

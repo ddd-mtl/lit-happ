@@ -13,7 +13,6 @@ import {
   DisableCloneCellRequest,
   EnableCloneCellRequest,
   InstalledAppId,
-  NetworkInfo,
   NetworkInfoResponse,
   ProvisionedCell,
   Timestamp, ZomeName, SignalType,
@@ -22,7 +21,6 @@ import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
 import {
   BaseRoleName, CellAddress,
-  CellIdStr,
   CellsForRole,
   RoleCellsMap, AppSignalType, SystemPulse,
 } from "./types";
@@ -193,6 +191,7 @@ export class AppProxy implements AppClient {
   }
 
 
+
   /** -- Creation -- */
 
   /** Ctor */
@@ -206,8 +205,6 @@ export class AppProxy implements AppClient {
 
 
   /** -- Methods -- */
-
-  get networkInfoLogs(): Record<CellIdStr, [Timestamp, NetworkInfo][]> {return {}}
 
   /** */
   async fetchCell(appId: InstalledAppId, cellAddr: CellAddress): Promise<Cell> {
