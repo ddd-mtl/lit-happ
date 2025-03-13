@@ -148,7 +148,7 @@ export class PlaygroundApp extends HappElement {
             this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
             if (!this.networkCaller?.isLooping()) {
                 console.log("Start loop")
-                await this.networkCaller?.startCallLoop(2000, (info:NetworkInfo) => {console.log(info)})
+                await this.networkCaller?.startCallLoop(100, (info:NetworkInfo) => {console.log(info)})
             } else {
                 this.networkCaller?.stopCallLoop();
             }
