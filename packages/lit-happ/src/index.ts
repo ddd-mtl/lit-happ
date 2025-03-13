@@ -12,7 +12,7 @@ export * from "./HappElement";
 export * from "./HappMultiElement";
 export * from "./ZomeMultiElement";
 export * from "./DnaMultiElement";
-
+export * from "./NetworkCaller";
 
 export * from "./elements/entry-def-select";
 export * from "./elements/dvm-inspect";

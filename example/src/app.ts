@@ -147,10 +147,12 @@ export class PlaygroundApp extends HappElement {
           console.log("networkInfos:", this.networkCaller?.isLooping(), this.networkCaller, this.integerDvm.cell.address)
             this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
             if (!this.networkCaller?.isLooping()) {
-                console.log("Start loop")
-                await this.networkCaller?.startCallLoop(100, (info:NetworkInfo) => {console.log(info)})
+                console.log("Start loop");
+                this.networkCaller?.addCallback((info:NetworkInfo) => {console.log(info)})
+                await this.networkCaller?.startCallLoop(100);
             } else {
                 this.networkCaller?.stopCallLoop();
+                this.networkCaller?.clearAllCallbacks();
             }
         }}>
         <input type="button" value="Dump networkInfos" @click=${(_e:any) => {this.networkCaller?.dumpNetworkInfoLogs();}}>

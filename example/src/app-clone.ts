@@ -19,7 +19,6 @@ import "./elements/real-list";
 import "./elements/named-inspect";
 import "./elements/real-multi-list";
 import "./elements/label-multi-list";
-import {NetworkInfo} from "@holochain/client";
 
 /**
  *
@@ -198,13 +197,6 @@ export class PlaygroundCloneApp extends HappElement {
         <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(_e: any) => { this.appProxy.dumpSignalLogs(true) }}>
-        <input type="button" value="networkInfos" @click=${async (_e:any) => {
-          if (!this.networkCaller?.isLooping()) {
-            await this.networkCaller?.startCallLoop(2000, (info:NetworkInfo) => {console.log(info)})
-          } else {
-            this.networkCaller?.stopCallLoop();
-          }
-        }}>
         <div style="margin-top:5px;">
             <span>Select AppEntryType:</span>
             <entry-def-select .dnaViewModel="${this.integerDvm}" @entrySelected=${this.onEntrySelect}></entry-def-select>

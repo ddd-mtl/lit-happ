@@ -1,6 +1,9 @@
 import {AppProxy, CellAddress, prettyDate, RingBuffer} from "@ddd-qc/cell-proxy";
 import {NetworkInfo, NetworkInfoRequest, Timestamp} from "@holochain/client";
 
+type NetworkInfoCb = (info:NetworkInfo) => void;
+
+
 /**
  * Class handling network info calling and result storing
  */
@@ -17,6 +20,8 @@ export class NetworkCaller {
 
   private _intervalId: any | undefined = undefined;
 
+  private _callbacks: NetworkInfoCb[] = [];
+
   /** -- Getters & Setters -- */
 
   setCellAddr(cellAddr: CellAddress) { this.cellAddr = cellAddr};
@@ -30,27 +35,36 @@ export class NetworkCaller {
 
   /** -- Methods -- */
 
+  /** */
   isLooping(): boolean {
-    console.log("bruh", this._intervalId, this._intervalId === undefined);
-    const isUnd = this._intervalId === undefined
+    const isUnd = this._intervalId === undefined;
     return !isUnd;
   }
 
   /** */
-  startCallLoop(interval: number, callback?: (n:NetworkInfo) => void) {
-    // FIXME
+  startCallLoop(interval: number) {
     if (this.isLooping()) {
       this.stopCallLoop();
     }
     this._intervalId = setInterval(async () => {
       //console.log("Requesting network info...");
       const res = await this.callNetworkInfo();
-      if (callback) {
+      for (const callback of this._callbacks) {
         callback(res);
       }
     }, interval);
   }
 
+
+  /** */
+  addCallback(callback: (n:NetworkInfo) => void) {
+    this._callbacks.push(callback);
+  }
+
+  /** */
+  clearAllCallbacks() {
+    this._callbacks = [];
+  }
 
   /** */
   stopCallLoop() {
