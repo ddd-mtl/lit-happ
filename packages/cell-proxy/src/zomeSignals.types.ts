@@ -72,6 +72,12 @@ EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
 ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
 
+export interface CallAppTipInput {
+  appTip: Uint8Array
+  recipient: AgentArray
+  zomeName: string
+}
+
 export interface CastTipInput {
   tip: TipProtocol
   peers: AgentArray[]
