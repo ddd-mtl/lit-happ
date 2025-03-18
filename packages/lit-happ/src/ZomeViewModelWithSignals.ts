@@ -26,7 +26,7 @@ import {
   ZomeSignalProtocolVariantLink,
   TipProtocolType,
   intoAnyId,
-  ValidatedBy
+  ValidatedBy, CallAppTipInput
 } from "@ddd-qc/cell-proxy";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {decode} from "@msgpack/msgpack";
@@ -129,6 +129,20 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         break;
     }
     return undefined;
+  }
+
+
+  /** */
+  async sendAppTip(appTip: Uint8Array, recipient: AgentId, zomeName: string): Promise<void> {
+    /** Only MainView can cast tips */
+    if (!this.isMainView) {
+      return;
+    }
+    console.debug(`sendAppTip() Sending AppTip to`, recipient, zomeName);
+    /** call */
+    await this.zomeProxy.call('call_app_tip', {appTip, recipient: recipient.hash, zomeName} as CallAppTipInput);
+    /** Log */
+    this._castLogs.push({ts: Date.now(), tip: {App: appTip}, peers: [recipient]});
   }
 
 

@@ -20,6 +20,7 @@ export const sharedOwnershipFunctionNames: FunctionName[] = [
 	"offer_ownership",
 	"request_ownership",
 	"cast_tip",
+	"call_app_tip",
 ];
 
 

@@ -14,6 +14,7 @@ export const profilesAltFunctionNames: FunctionName[] = [
 	"find_profile",
 	"probe_profiles",
 	"cast_tip",
+	"call_app_tip",
 ];
 
 
