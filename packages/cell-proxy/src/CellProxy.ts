@@ -66,7 +66,8 @@ export class CellProxy extends CellMixin(Empty) {
     private _appProxy: AppProxy,
     cell: Cell,
     //public readonly dnaDef: MyDnaDef,
-    defaultTimeout?: number) {
+    defaultTimeout?: number,
+    ) {
     super();
     this._cell = cell;
     console.log(`CellProxy.ctor`, cell);
@@ -88,6 +89,8 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** Throttle: Don't allow exact same call within 100ms */
   private _reqThrottle = new TimeMap(100, 10);
+  private _canThrottle: boolean = true;
+  setCanThrottle(can: boolean) {this._canThrottle = can};
 
   /** Cache */
   private _entryDefCache?: Dictionary<EntryDef>;
@@ -199,15 +202,22 @@ export class CellProxy extends CellMixin(Empty) {
   /** Pass call request to conductor proxy and log it */
   private async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
     //console.log("executeZomeCall()", reqLog.request.zome_name, reqLog.request.fn_name);
-    const reqHash = await sha256(JSON.stringify(reqLog.request));
     reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
     /** Throttle */
-    if (this._reqThrottle.has(reqHash)) {
-      console.warn(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
-      return {requestIndex, timestamp: reqLog.executionTimestamp, failure: "Throttled: " + reqLog.request.fn_name + "()", throttled: true};
+    if (this._canThrottle) {
+      const reqHash = await sha256(JSON.stringify(reqLog.request));
+      if (this._reqThrottle.has(reqHash)) {
+        console.warn(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
+        return {
+          requestIndex,
+          timestamp: reqLog.executionTimestamp,
+          failure: "Throttled: " + reqLog.request.fn_name + "()",
+          throttled: true
+        };
+      }
+      this._reqThrottle.add(reqHash);
     }
-    this._reqThrottle.add(reqHash);
     /** */
     this._requestLog.push(reqLog);
     try {

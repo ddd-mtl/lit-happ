@@ -29,8 +29,6 @@ export class HappViewModel {
   protected _defMap: Dictionary<DvmDef> = {};
 
 
-  protected _adminWs?: AdminWebsocket;
-
   /** -- Getters -- */
 
   /** */
@@ -187,7 +185,7 @@ export class HappViewModel {
 
   /** */
   async cloneDvm(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[ClonedCell, DnaViewModel]> {
-    //console.log("createCloneDvm()", baseRoleName);
+    console.log("cloneDvm()", baseRoleName);
     /** Check preconditions */
     const def = this._defMap[baseRoleName];
     if (!def) {
@@ -230,8 +228,8 @@ export class HappViewModel {
     this._appProxy.createCellProxy(hcl, clone.name);
     /** Create DVM and authorize */
     const dvm = this.createDvm(def, hcl);
-    if (this._adminWs) {
-      await dvm.authorizeZomeCalls(this._adminWs);
+    if (this._appProxy.adminWs) {
+      await dvm.authorizeZomeCalls(this._appProxy.adminWs);
     }
     /** Done */
     return [clonedCell, dvm];

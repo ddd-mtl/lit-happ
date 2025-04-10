@@ -2,13 +2,13 @@ import {
   AppletId,
   AppletInfo,
   weaveUrlFromWal, AssetLocationAndInfo, WAL, AssetStore, AssetServices,
-  WeaveServices, PeerStatusUpdate, GroupProfile, GroupPermissionType, 
+  WeaveServices, PeerStatusUpdate, GroupProfile, GroupPermissionType,
   OpenAssetMode, FrameNotification,
 } from "@theweave/api";
 import {
   EntryHash, HoloHashB64,
   CreateCloneCellRequest, CreateCloneCellResponse, EnableCloneCellRequest, EnableCloneCellResponse,
-  DisableCloneCellRequest, 
+  DisableCloneCellRequest,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
@@ -28,6 +28,7 @@ export class AssetServicesEx implements AssetServices {
   assetInfoCache: Record<string, AssetLocationAndInfo | undefined> = {};
 
 
+  /** */
   constructor(private _inner: AssetServices) {
     // n/a
   }
@@ -42,7 +43,7 @@ export class AssetServicesEx implements AssetServices {
     this.assetInfoCache[wurl] = await this._inner.assetInfo(wal);
     return this.assetInfoCache[wurl];
   }
-  
+
   async dragAsset(wal: WAL): Promise<void> {return this._inner.dragAsset(wal)}
   async assetToPocket(wal: WAL): Promise<void> {return this._inner.assetToPocket(wal)}
   async userSelectAsset(): Promise<WAL | undefined> {return this._inner.userSelectAsset()}
@@ -53,7 +54,7 @@ export class AssetServicesEx implements AssetServices {
   async removeAssetRelation(relationHash: EntryHash): Promise<void> {return this._inner.removeAssetRelation(relationHash)}
   async addTagsToAssetRelation(relationHash: EntryHash, tags: string[]): Promise<void> {return this._inner.addTagsToAssetRelation(relationHash, tags)}
   async removeTagsFromAssetRelation(relationHash: EntryHash, tags: string[]): Promise<void> {return this._inner.removeTagsFromAssetRelation(relationHash, tags)}
-  
+
   assetStore(wal: WAL): AssetStore {return this._inner.assetStore(wal)}
 }
 
@@ -178,7 +179,7 @@ export class WeServicesEx implements WeaveServices {
 
   async sendRemoteSignal(payload: Uint8Array): Promise<void> {return this._inner.sendRemoteSignal(payload)}
   onRemoteSignal(callback: (payload: Uint8Array) => any): UnsubscribeFunction  {return this._inner.onRemoteSignal(callback)}
-  
+
   async createCloneCell(req: CreateCloneCellRequest, publicToGroupMembers: boolean): Promise<CreateCloneCellResponse>  {return this._inner.createCloneCell(req, publicToGroupMembers)}
   async enableCloneCell(req: EnableCloneCellRequest): Promise<EnableCloneCellResponse>  {return this._inner.enableCloneCell(req)}
   async disableCloneCell(req: DisableCloneCellRequest): Promise<void>  {return this._inner.disableCloneCell(req)}
