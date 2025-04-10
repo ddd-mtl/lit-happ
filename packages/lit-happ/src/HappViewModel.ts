@@ -2,7 +2,7 @@ import {AdminWebsocket, ClonedCell, CreateCloneCellRequest, InstalledAppId, Sign
 import { ReactiveElement } from "lit";
 import {
   AppProxy,
-  BaseRoleName, CellAddress,
+  BaseRoleName, CellAddress, CellCloner,
   CloneIndex,
   createCloneName,
   Dictionary,
@@ -184,7 +184,7 @@ export class HappViewModel {
 
 
   /** */
-  async cloneDvm(baseRoleName: BaseRoleName, cellDef?: CellDef): Promise<[ClonedCell, DnaViewModel]> {
+  async cloneDvm(baseRoleName: BaseRoleName, cellDef?: CellDef, cellCloner?: CellCloner): Promise<[ClonedCell, DnaViewModel]> {
     console.log("cloneDvm()", baseRoleName);
     /** Check preconditions */
     const def = this._defMap[baseRoleName];
@@ -216,7 +216,7 @@ export class HappViewModel {
       if (cellDef.cloneName) request.name = cellDef.cloneName;
     }
     /** Create Cell */
-    const clonedCell = await this._appProxy.createCloneCell(request);
+    const clonedCell = cellCloner? await cellCloner.createCloneCell(request, false) : await this._appProxy.createCloneCell(request);
     //console.log("clone created:", CellIdStr(cloneInstalledCell.cell_id));
     const cell = await this._appProxy.fetchCell(this.appId, CellAddress.from(clonedCell.cell_id));
     console.log("clone created:", cell);

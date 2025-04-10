@@ -12,13 +12,20 @@ import {
   SignalCb,
   AppNetworkInfoRequest,
   NetworkInfoResponse,
-  AdminWebsocket,
+  AdminWebsocket, CreateCloneCellResponse, EnableCloneCellResponse,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {AgentId} from "./hash";
 import {AppWebsocketConnectionOptions} from "@holochain/client/lib/api/app/types";
 import {AppAuthenticationToken} from "@holochain/client/lib/api/admin/types";
+
+
+export interface CellCloner {
+  /*async*/ createCloneCell(req: CreateCloneCellRequest, publicToGroupMembers: boolean): Promise<CreateCloneCellResponse>,
+  /*async*/ enableCloneCell(req: EnableCloneCellRequest): Promise<EnableCloneCellResponse>,
+  /*async*/ disableCloneCell(req: DisableCloneCellRequest): Promise<void>,
+}
 
 
 /**
