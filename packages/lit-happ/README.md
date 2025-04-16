@@ -1,8 +1,8 @@
 # lit-happ
 
 **Compatible with:**
-- **HDK v0.1.0** & **HDI v0.2.0**
-- **@holochain/client v0.12.0**
+- **HDK v0.4.1** & **HDI v0.5.1**
+- **@holochain/client v0.18.0**
 - 
 Builds on the [cell-proxy](https://www.npmjs.com/package/@ddd-qc/cell-proxy) package to provide a MVVM framework for building web-UI in [Lit](https://www.npmjs.com/package/lit) for [holochain](https://www.npmjs.com/package/@holochain/client) apps.
 
@@ -228,6 +228,27 @@ Once the hvm is built, it will call `this.happInitialized()`, meaning a subclass
 Subclasses are encourage to define getters for directly accessing the happ's dvms.
 Example:
 `get profilesDvm(): ProfilesDvm { return this.hvm.getDvm(ProfilesDvm.DEFAULT_BASE_ROLE_NAME)! as ProfilesDvm }`
+
+
+### ZomeViewModelWithSignals
+
+`ZomeViewModelWithSignals` is an extension of `ZomeViewModel` with added affordance for a signal-based update model, and signal-based "tipping" of live data between peers.
+
+
+### Zome Requirements
+
+To use `lit-happ` all zomes are required to implement the following zome functions:
+```rust
+#[hdk_extern]
+fn get_zome_info(_:()) -> ExternResult<ZomeInfo> {
+  return zome_info();
+}
+
+#[hdk_extern]
+fn get_dna_info(_:()) -> ExternResult<DnaInfo> {
+  return dna_info();
+}
+```
 
 
 ## Example

@@ -2,6 +2,19 @@
 
 DnaViewModel implementation for the SharedOwnership zome.
 
+
+### Zome Requirements
+
+To use this zome all implementing zomes are required to implement the following zome functions:
+
+```rust
+#[hdk_extern]
+fn get_record_author(dh: AnyDhtHash) -> ExternResult<AgentPubKey> {
+  return zome_utils::get_author(dh);
+}
+
+```
+
 ## License
 [![License: CAL 1.0](https://img.shields.io/badge/License-CAL%201.0-blue.svg)](https://github.com/holochain/cryptographic-autonomy-license)
 
