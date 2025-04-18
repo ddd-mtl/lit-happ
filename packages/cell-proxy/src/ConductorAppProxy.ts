@@ -10,9 +10,12 @@ import {
   AppClient,
   AppEvents,
   SignalCb,
-  AppNetworkInfoRequest,
-  NetworkInfoResponse,
-  AdminWebsocket, CreateCloneCellResponse, EnableCloneCellResponse,
+  AdminWebsocket,
+  CreateCloneCellResponse,
+  EnableCloneCellResponse,
+  DumpNetworkStatsResponse,
+  DumpNetworkMetricsRequest,
+  DumpNetworkMetricsResponse,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
@@ -89,8 +92,15 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
   }
 
 
-  override async networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-    return await this._appWs!.networkInfo(args);
+  override async dumpNetworkStats(timeout?: number): Promise<DumpNetworkStatsResponse> {
+    return await this._appWs!.dumpNetworkStats(timeout);
+  }
+
+  override async dumpNetworkMetrics(
+    req: DumpNetworkMetricsRequest,
+    timeout?: number
+  ): Promise<DumpNetworkMetricsResponse> {
+    return await this._appWs!.dumpNetworkMetrics(req, timeout);
   }
 
 

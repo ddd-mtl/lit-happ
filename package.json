@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.31.10",
+  "version": "0.32.0",
   "workspaces": [
     "example",
     "packages/cell-proxy",
@@ -17,7 +17,7 @@
 
     "postinstall"           : "mkdir -p artifacts",
 
-    "install:submodules"    : "bash scripts/install-submodules.sh 0.4.1",
+    "install:submodules"    : "bash scripts/install-submodules.sh 0.5.0",
     "install:zits"          : "cargo install zits --version 1.16.4",
 
     "build:shared"          : "bash scripts/ts-bindings.sh && npm run build -w packages/shared-ownership-dvm",

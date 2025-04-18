@@ -94,10 +94,10 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
 
     /** Filter signal by zome name */
     private handleZomeSignal(signal: Signal) {
-        if (!(SignalType.App in signal)) {
+        if (SignalType.App != signal.type) {
             return;
         }
-        const appSignal: AppSignal = signal.App;
+        const appSignal: AppSignal = signal.value;
         //console.log("handleZomeSignal()", this.signalHandler, this.zomeName, signal.zome_name)
         if (this.signalHandler && appSignal.zome_name == this.zomeName) {
             this.signalHandler(signal);

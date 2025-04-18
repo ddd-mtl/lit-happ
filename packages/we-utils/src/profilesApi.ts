@@ -1,9 +1,19 @@
 import {
   AgentPubKey,
-  AppClient, AppCreateCloneCellRequest, AppEvents,
-  AppInfoResponse, AppNetworkInfoRequest, SignalCb, CallZomeRequest, ClonedCell, CreateCloneCellResponse,
+  AppClient,
+  AppEvents,
+  AppInfoResponse,
+  SignalCb,
+  CallZomeRequest,
+  ClonedCell,
+  CreateCloneCellResponse,
   DisableCloneCellRequest,
-  EnableCloneCellRequest, InstalledAppId, NetworkInfoResponse,
+  EnableCloneCellRequest,
+  InstalledAppId,
+  CreateCloneCellRequest,
+  DumpNetworkStatsResponse,
+  DumpNetworkMetricsRequest,
+  DumpNetworkMetricsResponse,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
@@ -78,7 +88,7 @@ export class ProfilesApi implements AppClient {
     return res;
   }
 
-  async createCloneCell(request: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> {
+  async createCloneCell(request: CreateCloneCellRequest): Promise<CreateCloneCellResponse> {
     //console.log("enableCloneCell() called:", request)
     return this._profilesClient.client.createCloneCell(request);
   }
@@ -93,8 +103,16 @@ export class ProfilesApi implements AppClient {
     return this._profilesClient.client.disableCloneCell(request);
   }
 
-  networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-    return this._profilesClient.client.networkInfo(args);
+
+  async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
+    return this._profilesClient.client.dumpNetworkStats();
+  }
+
+  async dumpNetworkMetrics(
+    req: DumpNetworkMetricsRequest,
+    _timeout?: number
+  ): Promise<DumpNetworkMetricsResponse> {
+    return this._profilesClient.client.dumpNetworkMetrics(req);
   }
 
 }

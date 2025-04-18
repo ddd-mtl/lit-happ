@@ -47,6 +47,7 @@ export class AssetServicesEx implements AssetServices {
   async dragAsset(wal: WAL): Promise<void> {return this._inner.dragAsset(wal)}
   async assetToPocket(wal: WAL): Promise<void> {return this._inner.assetToPocket(wal)}
   async userSelectAsset(): Promise<WAL | undefined> {return this._inner.userSelectAsset()}
+  async userSelectAssetRelationTag(): Promise<string | undefined> {return this._inner.userSelectAssetRelationTag()}
 
   async addTagsToAsset(wal: WAL, tags: string[]): Promise<void> {return this._inner.addTagsToAsset(wal, tags)}
   async removeTagsFromAsset(wal: WAL, tags: string[]): Promise<void> {return this._inner.removeTagsFromAsset(wal, tags)}
@@ -55,6 +56,7 @@ export class AssetServicesEx implements AssetServices {
   async addTagsToAssetRelation(relationHash: EntryHash, tags: string[]): Promise<void> {return this._inner.addTagsToAssetRelation(relationHash, tags)}
   async removeTagsFromAssetRelation(relationHash: EntryHash, tags: string[]): Promise<void> {return this._inner.removeTagsFromAssetRelation(relationHash, tags)}
 
+  async getAllAssetRelationTags(crossGroup?: boolean): Promise<string[]> {return this._inner.getAllAssetRelationTags(crossGroup)}
   assetStore(wal: WAL): AssetStore {return this._inner.assetStore(wal)}
 }
 

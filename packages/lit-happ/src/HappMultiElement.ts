@@ -10,8 +10,8 @@ import {HappViewModel} from "./HappViewModel";
 import {/*CellDef,*/ HvmDef} from "./definitions";
 import {
   AppWebsocket,
-  InstalledAppId,
-  NetworkInfo, Timestamp
+  InstalledAppId, NetworkMetrics,
+  Timestamp
 } from "@holochain/client";
 // @ts-ignore
 import * as net from "net";
@@ -95,7 +95,7 @@ export class HappMultiElement extends LitElement {
 
 
   /** */
-  async networkInfoAll(baseRoleName?: string): Promise<Record<CellIdStr, [Timestamp, NetworkInfo]>> {
+  async networkInfoAll(baseRoleName?: string): Promise<Record<CellIdStr, [Timestamp, NetworkMetrics]>> {
     //console.debug(`networkInfoAll() "${baseRoleName}"`);
     /** Grab cellMap */
     const hvmDef = (this.constructor as typeof HappMultiElement).HVM_DEF;
@@ -128,14 +128,15 @@ export class HappMultiElement extends LitElement {
     }
     //console.debug(`networkInfoAll() dnaMap`, dnaPerAgentMap);
     /** Call NetworkInfo per AgentId */
-    const allNetInfos: Record<CellIdStr, [Timestamp, NetworkInfo]> = {};
+    const allNetInfos: Record<CellIdStr, [Timestamp, NetworkMetrics]> = {};
     for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
-      const netInfos = await appProxy.networkInfo({dnas: dnaIds.map((dna) => dna.hash)});
-      let i  = 0;
-      for (const netInfo of netInfos) {
-        const idStr = new CellAddress(dnaIds[i]!, agent).str;
-        allNetInfos[idStr] = [Date.now(), netInfo];
-        i += 1;
+      for (const dna of dnaIds) {
+        const response = await appProxy.dumpNetworkMetrics({dna: dna.hash, include_dht_summary: true});
+        if (!response || !response[dna.b64]) {
+          throw Promise.reject("No network metrics response for dna");
+        }
+        const idStr = new CellAddress(dna, agent).str;
+        allNetInfos[idStr] = [Date.now(), response[dna.b64]!];
       }
     }
     /* Done */

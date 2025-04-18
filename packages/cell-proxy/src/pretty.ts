@@ -1,5 +1,5 @@
 import {SignalLog} from "./AppProxy";
-import {AppInfo, CellType} from "@holochain/client";
+import {AppInfo, CellType, ClonedCell, ProvisionedCell} from "@holochain/client";
 import {BaseRoleName, CellsForRole} from "./types";
 import {intoStem} from "./cell";
 import {enc64} from "./hash";
@@ -34,18 +34,18 @@ export function printAppInfo(appInfo: AppInfo): string {
   let print = `Happ "${appInfo.installed_app_id}" info: (status: ${JSON.stringify(appInfo.status)})`;
   for (const [roleName, cellInfos] of Object.entries(appInfo.cell_info)) {
     for (const cellInfo of  Object.values(cellInfos)) {
-      if (CellType.Stem in cellInfo) {
+      if (CellType.Stem == cellInfo.type) {
         const stem = intoStem(cellInfo)!;
         print += `\n - ${roleName}.${stem.name? stem.name : "unnamed"}: ${enc64(stem.dna)} (stem)`;
         continue;
       }
-      if (CellType.Provisioned in cellInfo) {
-        const cell = cellInfo.provisioned;
+      if (CellType.Provisioned == cellInfo.type) {
+        const cell = cellInfo.value as ProvisionedCell;
         print += `\n - ${roleName}: ${cell.name} | ${enc64(cell.cell_id[0])}`;
         continue;
       }
-      if (CellType.Cloned in cellInfo) {
-        const cell = cellInfo.cloned;
+      if (CellType.Cloned == cellInfo.type) {
+        const cell = cellInfo.value as ClonedCell;
         print += `\n - ${roleName}.${cell.clone_id}: ${cell.name} | ${enc64(cell.cell_id[0])}`;
         continue;
       }

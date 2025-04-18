@@ -1,8 +1,8 @@
 import {
-    AdminWebsocket,
-    Record,
-    AppWebsocket,
-    ListAppsResponse, CellId,
+  AdminWebsocket,
+  Record,
+  AppWebsocket,
+  ListAppsResponse, CellId, ProvisionedCell,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
@@ -14,6 +14,7 @@ import {AppletViewInfo} from "./index";
 import {AppletView, RenderInfo} from "@theweave/api";
 import {AgentPubKeyMap} from "@holochain-open-dev/utils";
 import {LitElement} from "lit";
+import {CellType} from "@holochain/client/lib/api/admin/types";
 
 /** */
 export class ProfilesZomeMockFix extends ProfilesZomeMock {
@@ -77,8 +78,8 @@ export async function setupDevtest(
     for (const [roleName, cells] of Object.entries(appInfo.cell_info)) {
         for (const cell of cells) {
             let cellId: CellId;
-            if ("provisioned" in cell) {
-                cellId = cell.provisioned.cell_id;
+            if (CellType.Provisioned == cell.type) {
+                cellId = (cell.value as ProvisionedCell).cell_id;
                 if (roleName == names.provisionedRoleName) {
                     mainCellId = cellId;
                 }

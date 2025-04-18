@@ -19,14 +19,12 @@ export class Cell {
 
   /** */
   static from(cellInfo: CellInfo, appId: InstalledAppId, baseRoleName: BaseRoleName): Cell {
-    if (CellType.Stem in cellInfo) {
-      const id = cellInfo.stem.name? cellInfo.stem.name : enc64(cellInfo.stem.dna);
+    if (CellType.Stem == cellInfo.type) {
+      const stem = cellInfo.value as StemCell;
+      const id = stem.name? stem.name : enc64(stem.dna);
       throw Error("StemCell cannot be converted to Cell: " + id);
     }
-    if (CellType.Cloned in cellInfo) {
-      return new Cell(cellInfo.cloned, appId, baseRoleName);
-    }
-    return new Cell(cellInfo.provisioned, appId, baseRoleName);
+      return new Cell(cellInfo.value, appId, baseRoleName);
   }
 
   private readonly _address: CellAddress;
@@ -77,22 +75,18 @@ export class Cell {
 
 /** ... */
 export function intoStem(cellInfo: CellInfo): StemCell | undefined {
-  if (CellType.Stem in cellInfo) {
-    return cellInfo.stem;
+  if (CellType.Stem == cellInfo.type) {
+    return cellInfo.value as StemCell;
   }
   return undefined
 }
 
 /** ... */
 export function asCell(cellInfo: CellInfo): AnyCell | undefined {
-  if (CellType.Stem in cellInfo) {
-    return undefined;
-  }
-  if (CellType.Cloned in cellInfo) {
-    return cellInfo.cloned;
-  }
-  if (CellType.Provisioned in cellInfo) {
-    return cellInfo.provisioned;
+  switch (cellInfo.type) {
+    case CellType.Stem: return undefined; break;
+    case CellType.Cloned: return cellInfo.value as ClonedCell; break;
+    case CellType.Provisioned:return cellInfo.value as ProvisionedCell; break;
   }
   return undefined;
 }

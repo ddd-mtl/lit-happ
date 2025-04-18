@@ -3,7 +3,6 @@ import {
   AppClient,
   AppEvents,
   AppInfoResponse,
-  AppNetworkInfoRequest,
   AppSignal,
   SignalCb,
   CallZomeRequest,
@@ -13,9 +12,8 @@ import {
   DisableCloneCellRequest,
   EnableCloneCellRequest,
   InstalledAppId,
-  NetworkInfoResponse,
   ProvisionedCell,
-  Timestamp, ZomeName, SignalType,
+  Timestamp, ZomeName, SignalType, DumpNetworkStatsResponse, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -186,7 +184,14 @@ export class AppProxy implements AppClient {
     throw new Error("Method not implemented.");
   }
 
-  networkInfo(_args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
+  async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
+    throw new Error("Method not implemented.");
+  }
+
+  async dumpNetworkMetrics(
+    _req: DumpNetworkMetricsRequest,
+    _timeout?: number
+  ): Promise<DumpNetworkMetricsResponse> {
     throw new Error("Method not implemented.");
   }
 
@@ -249,16 +254,17 @@ export class AppProxy implements AppClient {
     let clones: Dictionary<ClonedCell> = {};
     for (const [curBaseRoleName, cellInfos] of Object.entries(appInfo.cell_info)) {
       for (const cellInfo of Object.values(cellInfos)) {
-        if (baseRoleName !== curBaseRoleName || CellType.Stem in cellInfo) {
+        if (baseRoleName !== curBaseRoleName || CellType.Stem == cellInfo.type) {
           continue;
         }
-        if (CellType.Cloned in cellInfo) {
-          if (clones[cellInfo.cloned.clone_id]) {
-            console.error(`fetchCells() Entry already exist for clone: "${cellInfo.cloned.clone_id}"`)
+        if (CellType.Cloned == cellInfo.type) {
+          const cloned = cellInfo.value as ClonedCell;
+          if (clones[cloned.clone_id]) {
+            console.error(`fetchCells() Entry already exist for clone: "${cloned.clone_id}"`)
           }
-          clones[cellInfo.cloned.clone_id] = cellInfo.cloned;
+          clones[cloned.clone_id] = cloned;
         } else {
-          provisioned = cellInfo.provisioned;
+          provisioned = cellInfo.value as ProvisionedCell;
         }
       }
     }
@@ -325,10 +331,10 @@ export class AppProxy implements AppClient {
 
   /** */
   onSignal(signal: Signal): void {
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     /** Grab cell specific handlers */
     const hcls = this.getLocations(CellAddress.from(appSignal.cell_id));
     if (!hcls) {
@@ -377,10 +383,10 @@ export class AppProxy implements AppClient {
 
   /** Log all signals received */
   protected logSignal(signal: Signal): void {
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     const zomeSignal = this.intoZomeSignal(appSignal);
     if (!zomeSignal) {
       return;

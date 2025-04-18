@@ -37,7 +37,7 @@ pub struct LitHappSignal {
 ///
 pub fn emit_self_signal(signal: ExampleSignalProtocol) -> ExternResult<()> {
     let signal = LitHappSignal {
-        from: agent_info()?.agent_latest_pubkey,
+        from: agent_info()?.agent_initial_pubkey,
         pulses: vec![signal],
     };
     return emit_signal(&signal);
@@ -47,7 +47,7 @@ pub fn emit_self_signal(signal: ExampleSignalProtocol) -> ExternResult<()> {
 ///
 pub fn emit_system_signal(sys: SystemSignalProtocol) -> ExternResult<()> {
     let signal = LitHappSignal {
-        from: agent_info()?.agent_latest_pubkey,
+        from: agent_info()?.agent_initial_pubkey,
         pulses: vec![ExampleSignalProtocol::System(sys)],
     };
     return emit_signal(&signal);

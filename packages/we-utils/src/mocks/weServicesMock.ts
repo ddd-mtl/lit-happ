@@ -2,7 +2,7 @@ import {
   EntryHash, CreateCloneCellRequest, EnableCloneCellRequest, DisableCloneCellRequest,
 } from "@holochain/client";
 import {
-  AssetServices, 
+  AssetServices,
   AppletInfo, PeerStatusUpdate, WeaveServices,
   weaveUrlFromWal, AssetLocationAndInfo,
   FrameNotification,
@@ -31,12 +31,14 @@ export const emptyAssetServicesMock: AssetServices = {
   dragAsset: (_wal: WAL) => {throw new Error("dragAsset() is not implemented in emptyAssetServicesMock.");},
   assetToPocket: (_wal: WAL) => {throw new Error("assetToPocket() is not implemented in emptyAssetServicesMock.");},
   userSelectAsset: () => {throw new Error("userSelectAsset() is not implemented in emptyAssetServicesMock.");},
+  userSelectAssetRelationTag: (): Promise<string | undefined> => {throw new Error("userSelectAssetRelationTag() is not implemented in emptyAssetServicesMock.");},
   addTagsToAsset: (_wal: WAL, _tags: string[]) => {throw new Error("addTagsToAsset() is not implemented in emptyAssetServicesMock.");},
   removeTagsFromAsset: (_wal: WAL, _tags: string[]) => {throw new Error("removeTagsFromAsset() is not implemented in emptyAssetServicesMock.");},
   addAssetRelation: (_srcWal: WAL, _dstWal: WAL, _tags?: string[]) => {throw new Error("addAssetRelation() is not implemented in emptyAssetServicesMock.");},
   removeAssetRelation: (_relationHash: EntryHash) => {throw new Error("removeAssetRelation() is not implemented in emptyAssetServicesMock.");},
   addTagsToAssetRelation: (_relationHash: EntryHash, _tags: string[]) => {throw new Error("addTagsToAssetRelation() is not implemented in emptyAssetServicesMock.");},
   removeTagsFromAssetRelation: (_relationHash: EntryHash, _tags: string[]) => {throw new Error("removeTagsFromAssetRelation() is not implemented in emptyAssetServicesMock.");},
+  getAllAssetRelationTags: (_crossGroup?: boolean): Promise<string[]> => {throw new Error("getAllAssetRelationTags() is not implemented in emptyAssetServicesMock.");},
   assetStore: (_wal: WAL) => {throw new Error("assetStore() is not implemented in emptyAssetServicesMock.");},
 
 }

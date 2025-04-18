@@ -18,7 +18,7 @@ if [ "$hcversion" == "hc" ] || [ "$hcversion" == "" ] ; then
 fi
 branchname=hdk-${hcversion:2}
 echo Getting branch: $branchname
-profileHdkVersion=for-hdk-v0.4.0-dev.16
+profileHdkVersion=main-0.5
 #profileHdkVersion=0.400.0-rc.0
 
 echo \* Create 'submodules' folder

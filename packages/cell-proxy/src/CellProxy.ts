@@ -104,10 +104,10 @@ export class CellProxy extends CellMixin(Empty) {
   private _postCommitRelease?: MutexInterface.Releaser;
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: Signal) {
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     const zomeSignal = this._appProxy.intoZomeSignal(appSignal);
     if (!zomeSignal || zomeSignal.pulses.length == 0) {
       return;

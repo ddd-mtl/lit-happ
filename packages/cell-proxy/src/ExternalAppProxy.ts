@@ -7,9 +7,10 @@ import {
   AppClient,
   AppEvents,
   SignalCb,
-  AppCreateCloneCellRequest,
   CreateCloneCellResponse,
-  AppNetworkInfoRequest, NetworkInfoResponse,
+  DumpNetworkStatsResponse,
+  DumpNetworkMetricsRequest,
+  DumpNetworkMetricsResponse, CreateCloneCellRequest,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
@@ -49,7 +50,7 @@ export class ExternalAppProxy extends AppProxy implements AppClient {
     return this._appClient.appInfo();
   }
 
-  override async createCloneCell(request: AppCreateCloneCellRequest): Promise<CreateCloneCellResponse> {
+  override async createCloneCell(request: CreateCloneCellRequest): Promise<CreateCloneCellResponse> {
     return this._appClient.createCloneCell(request);
   }
 
@@ -61,8 +62,16 @@ export class ExternalAppProxy extends AppProxy implements AppClient {
     return this._appClient.disableCloneCell(request);
   }
 
-  override networkInfo(args: AppNetworkInfoRequest): Promise<NetworkInfoResponse> {
-    return this._appClient.networkInfo(args);
+
+  override async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
+    return this._appClient.dumpNetworkStats();
+  }
+
+  override async dumpNetworkMetrics(
+    req: DumpNetworkMetricsRequest,
+    _timeout?: number
+  ): Promise<DumpNetworkMetricsResponse> {
+    return this._appClient.dumpNetworkMetrics(req);
   }
 
 }

@@ -1,19 +1,20 @@
 import {AppInfo, AppInfoResponse, InstalledAppId} from "@holochain/client";
-import {CellInfo} from "@holochain/client/lib/api/admin/types";
+import {CellInfo, CellType} from "@holochain/client/lib/api/admin/types";
 import {AgentId, CellAddress, ConductorAppProxy, DnaId} from "@ddd-qc/cell-proxy";
 
 
 /** */
 async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
     const fakeProfilesDnaCellInfo: CellInfo = {
-        provisioned: {
+        type: CellType.Provisioned,
+        value: {
             name: "profiles",
             cell_id: new CellAddress(DnaId.empty(80), agentId).intoId(),
             dna_modifiers: {
                 network_seed: "profiles-mock-ns",
                 properties: new Uint8Array(),
-                origin_time: 1640995200000000,
-                quantum_time: {secs: 1, nanos: 0},
+                //origin_time: 1640995200000000,
+                //quantum_time: {secs: 1, nanos: 0},
             }
         }
     }
@@ -24,7 +25,8 @@ async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
         cell_info: {
             profiles: [fakeProfilesDnaCellInfo],
         },
-        status: "running",
+        status: {type: "running"},
+        installed_at: 1640995200000000,
     };
 }
 

@@ -1,7 +1,7 @@
 import {AppProxy, CellAddress, prettyDate, RingBuffer} from "@ddd-qc/cell-proxy";
-import {NetworkInfo, NetworkInfoRequest, Timestamp} from "@holochain/client";
+import {DhtArc, DumpNetworkMetricsRequest, FetchStateSummary, NetworkMetrics, Timestamp} from "@holochain/client";
 
-type NetworkInfoCb = (info:NetworkInfo) => void;
+type NetworkInfoCb = (info:NetworkMetrics) => void;
 
 
 /**
@@ -16,7 +16,7 @@ export class NetworkCaller {
 
 
   private _lastTimeQueried: Timestamp = 0;
-  private _networkInfoLogs: RingBuffer<[Timestamp, NetworkInfo]> = new RingBuffer(50);
+  private _networkMetricsLogs: RingBuffer<[Timestamp, NetworkMetrics]> = new RingBuffer(50);
 
   private _intervalId: any | undefined = undefined;
 
@@ -27,10 +27,10 @@ export class NetworkCaller {
   setCellAddr(cellAddr: CellAddress) { this.cellAddr = cellAddr};
 
   setCapacity(n: number) {
-    this._networkInfoLogs.resize(n);
+    this._networkMetricsLogs.resize(n);
   }
 
-  get networkInfoLogs(): [Timestamp, NetworkInfo][] {return this._networkInfoLogs.toArray();}
+  get networkMetricsLogs(): [Timestamp, NetworkMetrics][] {return this._networkMetricsLogs.toArray();}
 
 
   /** -- Methods -- */
@@ -48,7 +48,7 @@ export class NetworkCaller {
     }
     this._intervalId = setInterval(async () => {
       //console.log("Requesting network info...");
-      const res = await this.callNetworkInfo();
+      const res = await this.callNetworkMetrics();
       for (const callback of this._callbacks) {
         callback(res);
       }
@@ -57,7 +57,7 @@ export class NetworkCaller {
 
 
   /** */
-  addCallback(callback: (n:NetworkInfo) => void) {
+  addCallback(callback: (n: NetworkMetrics) => void) {
     this._callbacks.push(callback);
   }
 
@@ -75,102 +75,77 @@ export class NetworkCaller {
 
   /** */
   clear() {
-    this._networkInfoLogs.clear();
+    this._networkMetricsLogs.clear();
   }
 
 
   /** */
-  async callNetworkInfo(): Promise<NetworkInfo> {
+  async callNetworkMetrics(): Promise<NetworkMetrics> {
     if (!this.cellAddr) {
-      throw Promise.reject("callNetworkInfo() aborted. cellAddr not specified.");
+      throw Promise.reject("callNetworkMetrics() aborted. cellAddr not specified.");
     }
     /* Call networkInfo */
-    const response = await this.appProxy.networkInfo({
-      dnas: [this.cellAddr.dnaId.hash],
-      last_time_queried: this._lastTimeQueried,
-    } as NetworkInfoRequest);
-    if (response.length == 0) {
-      throw Promise.reject("No network info response");
+    const response = await this.appProxy.dumpNetworkMetrics({
+      dna: this.cellAddr.dnaId.hash,
+      include_dht_summary: true, // ???
+    } as DumpNetworkMetricsRequest);
+    if (!response || !response[this.cellAddr.dnaId.b64]) {
+      throw Promise.reject("No network metrics response for dna");
     }
     /* Store */
+    const dnaResp = response[this.cellAddr.dnaId.b64]!;
     this._lastTimeQueried = Date.now();
-    this._networkInfoLogs.add([this._lastTimeQueried, response[0]!]);
+    this._networkMetricsLogs.add([this._lastTimeQueried, dnaResp]);
     /** */
-    return response[0]!;
+    return dnaResp;
   }
 
 
   /** */
-  dumpNetworkInfoLogs(n?: number) {
-    console.log(`dumpNetworkInfoLogs()`, this.cellAddr);
+  dumpNetworkMetricsLogs(n?: number) {
+    console.log(`dumpNetworkMetricsLogs()`, this.cellAddr);
     if (!this.cellAddr) {
-      throw Promise.reject("dumpNetworkInfoLogs() aborted. cellAddr not specified.");
+      throw Promise.reject("dumpNetworkMetricsLogs() aborted. cellAddr not specified.");
     }
-    const nn = n? n : this._networkInfoLogs.getBufferLength();
-    let logs = this._networkInfoLogs.getLastN(nn).map(([ts, info]) => {
+    const nn = n? n : this._networkMetricsLogs.getBufferLength();
+    let logs = this._networkMetricsLogs.getLastN(nn).map(([ts, metrics]) => {
+      if (metrics.local_agents.length == 0) {
+        throw Error("No local agents found in NetworkMetrics");
+      }
+      if (metrics.local_agents.length == 0) {
+        console.warn("dumpNetworkMetricsLogs() More than one local_agent found");
+      }
+      const local_agent = metrics.local_agents[0]!;
       return {
         //ts,
         ts: prettyDate(new Date(ts)),
-        arc: info.arc_size,
-        peers: info.current_number_of_peers,
-        total_peers: info.total_network_peers,
-        rounds: info.completed_rounds_since_last_time_queried,
-        bytes: info.bytes_since_last_time_queried,
-        fetch_bytes: info.fetch_pool_info.op_bytes_to_fetch,
-        fetch_ops: info.fetch_pool_info.num_ops_to_fetch,
-        //agent: this.cellAddr!.agentId.short,
+        current_arc: arc_size(local_agent.storage_arc),
+        target_arc: arc_size(local_agent.target_arc),
+        peers: Object.keys(metrics.gossip_state_summary.peer_meta).length,
+        //total_peers: Object.keys(metrics.gossip_state_summary.peer_meta).length,
+        rounds: metrics.gossip_state_summary.accepted_rounds.length,
+        pending_requests: count_pending_requests(metrics.fetch_state_summary),
       }
     })
     console.table(logs);
   }
+}
 
 
+/** */
+function count_pending_requests(fetchSummary: FetchStateSummary): number {
+  let total = 0;
+  for (const peerUrls of Object.values(fetchSummary.pending_requests)) {
+    total += peerUrls.length;
+  }
+  return total;
+}
 
-  // /** call network Info on all cells of the Happ */
-  // async networkInfoAll(baseRoleName?: string): Promise<Record<CellIdStr, [Timestamp, NetworkInfo]>> {
-  //   console.debug(`networkInfoAll() "${baseRoleName}"`);
-  //   /** Grab cellMap */
-  //   const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
-  //   const cellMap = this.appProxy.getAppCells(hvmDef.id);
-  //   if (!cellMap) {
-  //     return Promise.reject("No cells found at given appId: " + hvmDef.id);
-  //   }
-  //   /** Get cell Ids */
-  //   let cellAddrs: CellAddress[] = [];
-  //   if (baseRoleName) {
-  //     const cfr = cellMap[baseRoleName];
-  //     if (!cfr) {
-  //       return Promise.reject("No cells found at given baseRoleName: " + baseRoleName);
-  //     }
-  //     cellAddrs = flattenCells(cfr);
-  //   } else {
-  //     for (const cells of Object.values(cellMap)) {
-  //       cellAddrs = cellAddrs.concat(flattenCells(cells))
-  //     }
-  //   }
-  //   console.debug(`networkInfoAll() cellIds`, cellAddrs.map(cellId => cellId.str));
-  //   /* Sort by agent key */
-  //   let dnaPerAgentMap: AgentIdMap<DnaId[]> = new AgentIdMap();
-  //   for (const cellAddr of cellAddrs) {
-  //     if (!dnaPerAgentMap.get(cellAddr.agentId)) {
-  //       dnaPerAgentMap.set(cellAddr.agentId, []);
-  //     }
-  //     dnaPerAgentMap.get(cellAddr.agentId)!.push(cellAddr.dnaId);
-  //   }
-  //   console.debug(`networkInfoAll() dnaMap`, dnaPerAgentMap);
-  //   /** Call NetworkInfo per AgentId */
-  //   const allNetInfos: Record<CellIdStr, [Timestamp, NetworkInfo]> = {};
-  //   for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
-  //     const netInfos = await this.appProxy.networkInfo({dnas: dnaIds.map((dna) => dna.hash)});
-  //     let i  = 0;
-  //     for (const netInfo of netInfos) {
-  //       const idStr = new CellAddress(dnaIds[i]!, agent).str;
-  //       allNetInfos[idStr] = [Date.now(), netInfo];
-  //       i += 1;
-  //     }
-  //   }
-  //   /* Done */
-  //   return allNetInfos;
-  // }
 
+/** */
+function arc_size(arc: DhtArc): number {
+  if (arc.type == "empty") {
+    return 0;
+  }
+  return arc.value[1] - arc.value[0];
 }
