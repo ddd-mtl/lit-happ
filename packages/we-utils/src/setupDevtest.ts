@@ -14,7 +14,8 @@ import {AppletViewInfo} from "./index";
 import {AppletView, RenderInfo} from "@theweave/api";
 import {AgentPubKeyMap} from "@holochain-open-dev/utils";
 import {LitElement} from "lit";
-import {CellType} from "@holochain/client/lib/api/admin/types";
+import {CellType} from "@holochain/client";
+
 
 /** */
 export class ProfilesZomeMockFix extends ProfilesZomeMock {

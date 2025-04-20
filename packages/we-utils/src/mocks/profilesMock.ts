@@ -1,5 +1,5 @@
 import {AppInfo, AppInfoResponse, InstalledAppId} from "@holochain/client";
-import {CellInfo, CellType} from "@holochain/client/lib/api/admin/types";
+import {CellInfo, CellType} from "@holochain/client";
 import {AgentId, CellAddress, ConductorAppProxy, DnaId} from "@ddd-qc/cell-proxy";
 
 

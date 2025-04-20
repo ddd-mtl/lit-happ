@@ -20,8 +20,7 @@ import {
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {AgentId} from "./hash";
-import {AppWebsocketConnectionOptions} from "@holochain/client/lib/api/app/types";
-import {AppAuthenticationToken} from "@holochain/client/lib/api/admin/types";
+import {AppWebsocketConnectionOptions, AppAuthenticationToken} from "@holochain/client";
 
 
 export interface CellCloner {
