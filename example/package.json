@@ -57,6 +57,7 @@
     "typescript": "~5.2.0"
   },
   "dependencies": {
+    "js-sha512": "~0.9.0",
     "@ddd-qc/lit-happ": "file:../",
     "@ddd-qc/profiles-dvm": "file:../",
     "@lit/context": "1.0.1",

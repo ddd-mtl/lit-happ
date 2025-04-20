@@ -40,10 +40,10 @@ export class ProfilesDvm extends DnaViewModel {
   /** */
   handleSignal(signal: Signal) {
     //console.log("profilesZvm Received Signal", signal);
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     if (appSignal.zome_name !== ProfilesZvm.DEFAULT_ZOME_NAME) {
       return;
     }

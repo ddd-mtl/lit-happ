@@ -36,10 +36,10 @@ export class NotificationsDvm extends DnaViewModel {
   /** */
   handleSignal(signal: Signal) {
     // console.log("Received Signal", signal);
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     if (appSignal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }

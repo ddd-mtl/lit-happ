@@ -8,6 +8,8 @@ import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
 import {Profile, ProfilesAltDvm} from "@ddd-qc/profiles-dvm";
 import {testHoloId} from "@ddd-qc/cell-proxy"
+import {NetworkMetrics} from "@holochain/client";
+
 
 /** Import custom elements */
 import "./elements/integer-list";
@@ -15,7 +17,6 @@ import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
-import {NetworkInfo} from "@holochain/client";
 
 
 /**
@@ -148,14 +149,14 @@ export class PlaygroundApp extends HappElement {
             this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
             if (!this.networkCaller?.isLooping()) {
                 console.log("Start loop");
-                this.networkCaller?.addCallback((info:NetworkInfo) => {console.log(info)})
+                this.networkCaller?.addCallback((info: NetworkMetrics) => {console.log(info)})
                 await this.networkCaller?.startCallLoop(100);
             } else {
                 this.networkCaller?.stopCallLoop();
                 this.networkCaller?.clearAllCallbacks();
             }
         }}>
-        <input type="button" value="Dump networkInfos" @click=${(_e:any) => {this.networkCaller?.dumpNetworkInfoLogs();}}>
+        <input type="button" value="Dump networkInfos" @click=${(_e:any) => {this.networkCaller?.dumpNetworkMetricsLogs();}}>
         <br/>
         <!-- SELECT ENTRY TYPE -->
         <div style="margin-top: 5px;">

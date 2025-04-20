@@ -33,10 +33,10 @@ export class SharedOwnershipDvm extends DnaViewModel {
   /** */
   handleSignal(signal: Signal) {
     //console.log("ProfilesAltDvm Received Signal", signal);
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     if (appSignal.zome_name !== SharedOwnershipZvm.DEFAULT_ZOME_NAME) {
       return;
     }

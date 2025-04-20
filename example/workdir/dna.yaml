@@ -2,7 +2,6 @@
 manifest_version: "1"
 name: dNamedReal
 integrity:
-  origin_time: 2022-09-25T13:55:49.200Z
   zomes:
     - name: real_integrity
       bundled: ../target/wasm32-unknown-unknown/release/real_integrity.wasm

@@ -2,7 +2,6 @@
 manifest_version: "1"
 name: dProfiles
 integrity:
-  origin_time: 2023-10-24T13:55:49.200Z
   zomes:
     - name: profiles_integrity
       bundled: ../target/wasm32-unknown-unknown/release/profiles_integrity_zome.wasm

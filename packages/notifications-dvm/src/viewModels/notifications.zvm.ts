@@ -44,10 +44,10 @@ export class NotificationsZvm extends ZomeViewModel {
   /** */
   handleSignal(signal: Signal) {
     //console.log("NotificationsZvm - Received Signal", signal);
-    if (!(SignalType.App in signal)) {
+    if (SignalType.App != signal.type) {
       return;
     }
-    const appSignal: AppSignal = signal.App;
+    const appSignal: AppSignal = signal.value;
     if (appSignal.zome_name !== NotificationsZvm.DEFAULT_ZOME_NAME) {
       return;
     }
