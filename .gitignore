@@ -1,5 +1,7 @@
 node_modules/
 dist/
 artifacts/
+example/target
+example/Cargo.lock
 .idea/
 package-lock.json
