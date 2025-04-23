@@ -14,20 +14,20 @@
     "lint": "eslint --ext .ts .",
     "build": "rm -rf dist && tsc",
     "build:watch": "tsc -w --preserveWatchOutput",
-    "build:wasm": "CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
-    "build:dna": "npm run build:wasm && hc dna pack --output=../artifacts/named_real.dna workdir && hc dna pack --output=../artifacts/named_integer.dna workdir_named_integer && npm run build:profiles",
-    "build:profiles": "hc dna pack -o ../artifacts/profiles.dna workdir_profiles",
-    "build:happ": "npm run build:dna && hc app pack --output=../artifacts/playground.happ workdir",
-    "build:happ:clone": "npm run build:dna && hc app pack --output=../artifacts/playground-clone.happ workdir_clone",
+    "build:wasm": "cd .. && CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
+    "build:dna": "npm run build:wasm && hc dna pack --output=../../artifacts/named_real.dna ../workdir && hc dna pack --output=../../artifacts/named_integer.dna ../workdir_named_integer && npm run build:profiles",
+    "build:profiles": "hc dna pack -o ../../artifacts/profiles.dna ../workdir_profiles",
+    "build:happ": "npm run build:dna && hc app pack --output=../../artifacts/playground.happ ../workdir",
+    "build:happ:clone": "npm run build:dna && hc app pack --output=../../artifacts/playground-clone.happ ../workdir_clone",
     "build-old": "rm -rf dist && tsc && cp index.html dist",
     "start": "cross-env HAPP_BUILD_MODE='Debug' HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run new-sandbox:mem\" \"sleep 5 && npm run start:ui\"",
     "start:clone": "cross-env HAPP_BUILD_MODE='Debug' HC_PORT=$(port) ADMIN_PORT=$(port) concurrently \"npm run new-sandbox:mem:clone\" \"sleep 5 && npm run start:ui\"",
-    "new-sandbox:mem": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground.happ --run=$HC_PORT -a playground network mem",
-    "new-sandbox:mem:clone": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../artifacts/playground-clone.happ --run=$HC_PORT -a playground-clone network mem",
+    "new-sandbox:mem": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../../artifacts/playground.happ --run=$HC_PORT -a playground network mem",
+    "new-sandbox:mem:clone": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$ADMIN_PORT generate ../../artifacts/playground-clone.happ --run=$HC_PORT -a playground-clone network mem",
     "start:ui": "concurrently --names tsc,dev-server \"npm run build:watch\" \"web-dev-server --config ./web-dev-server.config.mjs\"",
 
-    "launch": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground.happ -w --ui-path ./dist network mem",
-    "launch:clone": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../artifacts/playground-clone.happ -w --ui-path ./dist network mem",
+    "launch": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../../artifacts/playground.happ -w --ui-path ./dist network mem",
+    "launch:clone": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../../artifacts/playground-clone.happ -w --ui-path ./dist network mem",
 
     "dist": "npm run build && rollup -c rollup.config.js",
     "clean:hc": "hc s clean"
@@ -57,7 +57,6 @@
     "typescript": "~5.2.0"
   },
   "dependencies": {
-    "js-sha512": "~0.9.0",
     "@ddd-qc/lit-happ": "file:../",
     "@ddd-qc/profiles-dvm": "file:../",
     "@lit/context": "1.0.1",

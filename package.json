@@ -2,7 +2,7 @@
   "name": "@ddd-qc/lit-happ-root",
   "version": "0.32.0",
   "workspaces": [
-    "example",
+    "example/webapp",
     "packages/cell-proxy",
     "packages/lit-happ",
     "packages/notifications-dvm",

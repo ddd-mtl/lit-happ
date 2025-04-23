@@ -25,7 +25,7 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
     exportConditions: ['browser', HAPP_BUILD_MODE === 'Debug' ? 'development' : ''],
   },
 
-  rootDir: '../',
+  rootDir: '../../',
   appIndex: './index.html',
 
   plugins: [
