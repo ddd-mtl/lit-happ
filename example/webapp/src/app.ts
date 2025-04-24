@@ -2,13 +2,17 @@ import { html } from "lit";
 import { state } from "lit/decorators.js";
 import {
   HvmDef,
-  HappElement,
+  HappElement, BaseRoleName, CloneId, AppProxy, EntryId, DnaViewModel, HCL, DvmDef,
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
-import {Profile, ProfilesAltDvm} from "@ddd-qc/profiles-dvm";
+import {Profile, ProfilesAltDvm, ProfilesDvm} from "@ddd-qc/profiles-dvm";
 import {testHoloId} from "@ddd-qc/cell-proxy"
-import {NetworkMetrics} from "@holochain/client";
+import {
+  NetworkMetrics,
+  AdminWebsocket,
+  AppWebsocket, InstalledAppId, ZomeName,
+} from "@holochain/client";
 
 
 /** Import custom elements */
@@ -17,18 +21,124 @@ import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
+import {ContextProvider, createContext} from "@lit/context";
 
+import {AppletId, AppletView, GroupProfile, WeaveServices} from "@theweave/api";
+import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
+const weClientContext = createContext<WeaveServices>('weave_client');
 
 /**
  *
  */
 export class PlaygroundApp extends HappElement {
 
+  //@state() private _hasWeProfile = false;
+
   /** Ctor */
-  constructor() {
-    console.log("PlaygroundApp.ctor()");
-    super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
+  // @ts-ignore
+  constructor(appWs?: AppWebsocket, private _adminWs?: AdminWebsocket, readonly appId?: InstalledAppId, public _appletView?: AppletView) {
+    console.log("PlaygroundApp.ctor()", HC_ADMIN_PORT, HC_APP_PORT);
+    const adminUrl = _adminWs
+      ? undefined
+      : HC_ADMIN_PORT
+        ? new URL(`ws://localhost:${HC_ADMIN_PORT}`)
+        : undefined;
+    let appPort = HC_APP_PORT;
+    //super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
+    super(appWs ? appWs : appPort!, appId, adminUrl, 20 * 1000);
+
+    console.log("ExampleApp.HVM_DEF", PlaygroundApp.HVM_DEF);
+    // if (_canAuthorizeZfns == undefined) {
+    //   this._canAuthorizeZfns = true;
+    // }
   }
+
+
+  /** -- We-applet specifics -- */
+
+  private _weProfilesDvm?: ProfilesDvm;
+  protected _weProvider?: unknown; // FIXME type: ContextProvider<this.getContext()> ?
+
+  public appletId?: AppletId;
+  public groupProfiles?: GroupProfile[];
+  // protected _attachmentsProvider?: unknown;
+
+
+  /**  */
+  static async fromWe(
+    appWs: AppWebsocket,
+    adminWs: AdminWebsocket | undefined,
+    _canAuthorizeZfns: boolean,
+    appId: InstalledAppId,
+    profilesAppId: InstalledAppId,
+    profilesBaseRoleName: BaseRoleName,
+    profilesCloneId: CloneId | undefined,
+    profilesZomeName: ZomeName,
+    profilesProxy: AppProxy,
+    weServices: WeaveServices,
+    thisAppletHash: EntryId,
+    //showEntryOnly?: boolean,
+    appletView: AppletView,
+    groupProfiles: GroupProfile[],
+  ) : Promise<PlaygroundApp> {
+    const app = new PlaygroundApp(appWs, adminWs, appId, appletView);
+    /** Provide it as context */
+    console.log(`\t\tProviding context "${weClientContext}" | in host `, app);
+    app._weProvider = new ContextProvider(app, weClientContext, weServices);
+    app.appletId = thisAppletHash.b64;
+    app.groupProfiles = groupProfiles;
+    /** Create Profiles Dvm from provided AppProxy */
+    console.log("<example-app>.ctor()", profilesProxy);
+    await app.createWeProfilesDvm(profilesProxy, profilesAppId, profilesBaseRoleName, profilesCloneId, profilesZomeName);
+    return app;
+  }
+
+
+  /** Create a Profiles DVM out of a different happ */
+  async createWeProfilesDvm(profilesProxy: AppProxy, profilesAppId: InstalledAppId, profilesBaseRoleName: BaseRoleName,
+                            profilesCloneId: CloneId | undefined,
+                            _profilesZomeName: ZomeName): Promise<void> {
+    const profilesAppInfo = await profilesProxy.appInfo();
+    if (!profilesAppInfo) {
+      throw Promise.reject("Profiles AppInfo not found");
+    }
+    const profilesDef: DvmDef = {ctor: ProfilesDvm, baseRoleName: profilesBaseRoleName, isClonable: false};
+    const cell_infos = Object.values(profilesAppInfo.cell_info);
+    console.log("createProfilesDvm() cell_infos:", cell_infos);
+    /** Create Profiles DVM */
+      //const profilesZvmDef: ZvmDef = [ProfilesZvm, profilesZomeName];
+    const dvm: DnaViewModel = new profilesDef.ctor(this, profilesProxy, new HCL(profilesAppId, profilesBaseRoleName, profilesCloneId), false);
+    console.log("createProfilesDvm() dvm", dvm);
+    console.log("createProfilesDvm() profilesAppInfo", profilesAppInfo);
+    await this.setupWeProfilesDvm(dvm as ProfilesDvm);
+  }
+
+
+  /** */
+  async setupWeProfilesDvm(dvm: ProfilesDvm): Promise<void> {
+    this._weProfilesDvm = dvm as ProfilesDvm;
+    /** Load My profile */
+      //const maybeProfiles = await this._weProfilesDvm.profilesZvm.zomeProxy.getAgentsWithProfile();
+      //const maybeAgents = maybeProfiles.map((eh) => encodeHashToBase64(eh));
+      //console.log("maybeAgents", maybeAgents);
+    const maybeMyProfile = await this._weProfilesDvm.profilesZvm.probeProfile(dvm.profilesZvm.cell.address.agentId.b64);
+    console.log("setupWeProfilesDvm() maybeMyProfile", maybeMyProfile);
+    if (maybeMyProfile) {
+      const maybeLang = maybeMyProfile.fields['lang'];
+      if (maybeLang) {
+        console.log("Setting locale from We Profile", maybeLang);
+        //setLocale(maybeLang);
+      }
+      //this._hasWeProfile = true;
+    }
+    // else {
+    //   /** Create Guest profile */
+    //   const profile = { nickname: "guest_" + Math.floor(Math.random() * 100), fields: {}};
+    //   console.log("setupWeProfilesDvm() createMyProfile", this.filesDvm.profilesZvm.cell.agentId);
+    //   await this.filesDvm.profilesZvm.createMyProfile(profile);
+    // }
+  }
+
 
   /** HvmDef */
   static override HVM_DEF: HvmDef = {
