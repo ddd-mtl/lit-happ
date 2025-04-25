@@ -1,5 +1,5 @@
 {
-  "name": "@ddd-qc/example",
+  "name": "example",
   "version": "0.0.1",
   "description": "Example app for testing",
   "main": "./dist/index.js",

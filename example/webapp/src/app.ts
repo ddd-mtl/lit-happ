@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { state } from "lit/decorators.js";
+import {customElement, state} from "lit/decorators.js";
 import {
   HvmDef,
   HappElement, BaseRoleName, CloneId, AppProxy, EntryId, DnaViewModel, HCL, DvmDef,
@@ -27,18 +27,17 @@ import {AppletId, AppletView, GroupProfile, WeaveServices} from "@theweave/api";
 import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
 const weClientContext = createContext<WeaveServices>('weave_client');
 
-/**
- *
- */
+/** */
+@customElement("example-app")
 export class PlaygroundApp extends HappElement {
 
   //@state() private _hasWeProfile = false;
 
   /** Ctor */
   // @ts-ignore
-  constructor(appWs?: AppWebsocket, private _adminWs?: AdminWebsocket, readonly appId?: InstalledAppId, public _appletView?: AppletView) {
-    console.log("PlaygroundApp.ctor()", HC_ADMIN_PORT, HC_APP_PORT);
-    const adminUrl = _adminWs
+  constructor(appWs?: AppWebsocket, private adminWs?: AdminWebsocket, readonly appId?: InstalledAppId, public _appletView?: AppletView) {
+    console.log("PlaygroundApp.ctor()", HC_ADMIN_PORT, HC_APP_PORT, appWs, adminWs, appId);
+    const adminUrl = adminWs
       ? undefined
       : HC_ADMIN_PORT
         ? new URL(`ws://localhost:${HC_ADMIN_PORT}`)

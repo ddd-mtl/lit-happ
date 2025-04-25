@@ -13,13 +13,13 @@ import "@holochain-open-dev/profiles/dist/elements/profiles-context.js";
 import {AppletViewInfo, ProfilesApi/*, CrossViewInfo*/} from "@ddd-qc/we-utils";
 import {EntryId, ExternalAppProxy} from "@ddd-qc/cell-proxy/";
 import {AgentId, destructureCloneId, HCL} from "@ddd-qc/lit-happ";
-import {PlaygroundApp} from "@ddd-qc/example";
+import {PlaygroundApp} from "example";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 
 
 
 /** */
-export async function createFilesApplet(
+export async function createExampleApplet(
   renderInfo: RenderInfo,
   weServices: WeaveServices,
 ): Promise<PlaygroundApp> {
@@ -31,15 +31,15 @@ export async function createFilesApplet(
   const appletViewInfo = renderInfo as unknown as AppletViewInfo;
   const profilesClient = appletViewInfo.profilesClient;
 
-  console.log("createFilesApplet() client", appletViewInfo.appletClient);
-  console.log("createFilesApplet() thisAppletId", appletViewInfo.appletHash);
+  console.log("createExampleApplet() client", appletViewInfo.appletClient);
+  console.log("createExampleApplet() thisAppletId", appletViewInfo.appletHash);
 
   const mainAppInfo = await appletViewInfo.appletClient.appInfo();
   if (!mainAppInfo) {
     throw Promise.reject("No main appInfo found");
   }
   const agentId = new AgentId(mainAppInfo.agent_pub_key);
-  console.log("createFilesApplet() mainAppInfo", mainAppInfo, agentId);
+  console.log("createExampleApplet() mainAppInfo", mainAppInfo, agentId);
 
   //const showFileOnly = false; // FIXME
 
@@ -47,7 +47,7 @@ export async function createFilesApplet(
   const mainAppWs = appletViewInfo.appletClient as AppWebsocket;
   //const mainAppWs = mainAppAgentWs.appWebsocket;
   let profilesAppInfo = await profilesClient.client.appInfo();
-  console.log("createFilesApplet() profilesAppInfo", profilesAppInfo, agentId);
+  console.log("createExampleApplet() profilesAppInfo", profilesAppInfo, agentId);
   if (!profilesAppInfo) {
     throw Promise.reject("No profiles appInfo found");
   }
@@ -62,18 +62,18 @@ export async function createFilesApplet(
   /** Determine profilesCellProxy */
   const hcl = new HCL(profilesAppInfo.installed_app_id, baseRoleName, maybeCloneId);
   const profilesApi = new ProfilesApi(profilesClient);
-  console.log("createFilesApplet() profilesApi", profilesApi);
+  console.log("createExampleApplet() profilesApi", profilesApi);
   const profilesAppProxy = new ExternalAppProxy(profilesApi, 10 * 1000);
-  console.log("createFilesApplet() profilesAppProxy", profilesAppProxy);
+  console.log("createExampleApplet() profilesAppProxy", profilesAppProxy);
   await profilesAppProxy.fetchCells(profilesAppInfo.installed_app_id, baseRoleName);
   const profilesCellProxy = await profilesAppProxy.createCellProxy(hcl);
-  console.log("createFilesApplet() profilesCellProxy", profilesCellProxy);
+  console.log("createExampleApplet() profilesCellProxy", profilesCellProxy);
   /** Create FilesApp */
   const app = await PlaygroundApp.fromWe(
     mainAppWs, undefined, false, mainAppInfo.installed_app_id,
     profilesAppInfo.installed_app_id, baseRoleName, maybeCloneId, profilesClient.zomeName, profilesAppProxy,
     weServices, new EntryId(appletViewInfo.appletHash), appletViewInfo.view, appletViewInfo.groupProfiles);
-  console.log("createFilesApplet() app", app);
+  console.log("createExampleApplet() app", app);
   /** Done */
   return app;
 
