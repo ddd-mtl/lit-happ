@@ -37,13 +37,13 @@ const maybeElectronApi = 'electronBridge' in window? window.electronBridge as an
 /** Determine HappEnv */
 try {
     happEnv = process.env.HAPP_ENV as HappEnvType;
-    //console.log(`HAPP_ENV defined by process.ENV: "${happEnv}"`);
+    console.log(`[lit-happ] HAPP_ENV defined by process.ENV: "${happEnv}"`);
 } catch (e) {
     /** Looking for Electron */
     if (maybeElectronApi) {
         happEnv = HappEnvType.Electron;
         buildMode = maybeElectronApi.BUILD_MODE;
-        //console.log(`HAPP_ENV is "${HappEnvType.Electron}"`);
+        console.log(`[lit-happ] HAPP_ENV is "${HappEnvType.Electron}"`);
     } else {
         /** Looking for We */
         const isInWe = 'IN_WE' in window? window.IN_WE as boolean : false;

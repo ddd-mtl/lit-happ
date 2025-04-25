@@ -1,5 +1,5 @@
 import { html } from "lit";
-import {customElement, state} from "lit/decorators.js";
+import {state} from "lit/decorators.js";
 import {
   HvmDef,
   HappElement, BaseRoleName, CloneId, AppProxy, EntryId, DnaViewModel, HCL, DvmDef,
@@ -28,7 +28,6 @@ import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
 const weClientContext = createContext<WeaveServices>('weave_client');
 
 /** */
-@customElement("example-app")
 export class PlaygroundApp extends HappElement {
 
   //@state() private _hasWeProfile = false;
@@ -44,6 +43,7 @@ export class PlaygroundApp extends HappElement {
         : undefined;
     let appPort = HC_APP_PORT;
     //super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
+    console.log("PlaygroundApp.ctor() adminUrl", adminUrl);
     super(appWs ? appWs : appPort!, appId, adminUrl, 20 * 1000);
 
     console.log("ExampleApp.HVM_DEF", PlaygroundApp.HVM_DEF);

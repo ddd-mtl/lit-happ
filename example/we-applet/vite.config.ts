@@ -35,7 +35,7 @@ export default defineConfig({
   define: {
     '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
     'process.env.HAPP_BUILD_MODE': JSON.stringify(HAPP_BUILD_MODE),
-    'process.env.HAPP_ENV': JSON.stringify("BrowserWe"),
+    'process.env.HAPP_ENV': HAPP_BUILD_MODE == "Release"? JSON.stringify("We") : JSON.stringify("BrowserWe"),
     'process.env.WE_APPLET_VIEW': JSON.stringify(WE_APPLET_VIEW),
     "process.env.HC_APP_PORT": JSON.stringify(process.env.HC_APP_PORT),
     "process.env.HC_ADMIN_PORT": JSON.stringify(process.env.HC_ADMIN_PORT) || undefined,

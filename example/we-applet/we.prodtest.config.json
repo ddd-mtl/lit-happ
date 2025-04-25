@@ -1,0 +1,46 @@
+{
+  "groups": [
+    {
+      "name": "Cdric",
+      "networkSeed": "test",
+      "icon": {
+        "type": "filesystem",
+        "path": "example/we-applet/icon.png"
+      },
+      "creatingAgent": {
+        "agentIdx": 1,
+        "agentProfile": {
+          "nickname": "Alex",
+          "avatar": {
+            "type": "filesystem",
+            "path": "example/we-applet/icon.png"
+          }
+        }
+      },
+      "joiningAgents": [],
+      "applets": [
+        {
+          "name": "Example",
+          "instanceName": "Example",
+          "registeringAgent": 1,
+          "joiningAgents": []
+        }
+      ]
+    }
+  ],
+  "applets": [
+    {
+      "name": "Example",
+      "subtitle": "Example test app",
+      "description": "...",
+      "icon": {
+        "type": "filesystem",
+        "path": "example/we-applet/icon.png"
+      },
+      "source": {
+        "type": "filesystem",
+        "path": "artifacts/playground-we_applet.webhapp"
+      }
+    }
+  ]
+}
