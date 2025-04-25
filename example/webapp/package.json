@@ -5,38 +5,33 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "typings": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "ci:hc": "hc --version",
     "ci:tsc": "tsc --version",
     "lint": "eslint --ext .ts .",
-    "build-old0": "rm -rf dist && tsc",
-    "build:watch": "tsc -w --preserveWatchOutput",
+    "dist": "vite build",
+    "build": "vite dev --clearScreen false",
+    "build:watch": "vite build --watch",
     "build:wasm": "cd .. && CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
     "build:dna": "npm run build:wasm && hc dna pack --output=../../artifacts/named_real.dna ../workdir && hc dna pack --output=../../artifacts/named_integer.dna ../workdir_named_integer && npm run build:profiles",
     "build:profiles": "hc dna pack -o ../../artifacts/profiles.dna ../workdir_profiles",
     "build:happ": "npm run build:dna && hc app pack --output=../../artifacts/playground.happ ../workdir",
     "build:happ:clone": "npm run build:dna && hc app pack --output=../../artifacts/playground-clone.happ ../workdir_clone",
-    "build-old": "rm -rf dist && tsc && cp index.html dist",
     "start": "cross-env HAPP_BUILD_MODE='Debug' HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) concurrently \"npm run new-sandbox:mem\" \"sleep 5 && npm run start:ui\"",
     "start:clone": "cross-env HAPP_BUILD_MODE='Debug' HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) concurrently \"npm run new-sandbox:mem:clone\" \"sleep 5 && npm run start:ui\"",
     "new-sandbox:mem": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$HC_ADMIN_PORT generate ../../artifacts/playground.happ --run=$HC_APP_PORT -a playground network mem",
-    "new-sandbox:mem:clone": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$HC_ADMIN_PORT generate ../../artifacts/playground-clone.happ --run=$HC_APP_PORT -a playground-clone network mem",
-    "start:ui-old": "concurrently --names tsc,dev-server \"npm run build:watch\" \"web-dev-server --config ./web-dev-server.config.mjs\"",
-    "start:ui": "concurrently --names tsc,dev-server \"npm run build:watch\" \"vite --port $(port) --clearScreen false\"",
-    "build": "vite build",
+    "new-sandbox:mem:clone": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | hc s --piped -f=$HC_ADMIN_PORT generate ../../artifacts/playground-clone.happ --run=$HC_APP_PORT -a playground-clone network mem", "start:ui": "concurrently --names tsc,dev-server \"npm run build:watch\" \"vite --port $(port) --clearScreen false\"",
 
     "launch": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../../artifacts/playground.happ -w --ui-path ./dist network mem",
     "launch:clone": "RUST_LOG=warn echo \"pass\" | hc launch --piped ../../artifacts/playground-clone.happ -w --ui-path ./dist network mem",
 
-    "dist": "npm run build && rollup -c rollup.config.js",
     "clean:hc": "hc s clean"
   },
   "devDependencies": {
     "vite": "^4.5.2",
     "vite-plugin-checker": "^0.5.3",
+    "vite-plugin-dts": "4.5.3",
+    "vite-plugin-top-level-await": "^1.5.0",
     "bestzip": "^2.2.0",
     "concurrently": "^5.3.0",
     "cross-env": "^7.0.3",
@@ -44,7 +39,6 @@
     "exits": "^2.0.1",
     "new-port-cli": "^1.0.0",
     "path-exists-cli": "^2.0.0",
-    "rollup": "^2.56.2",
     "run-singleton-cli": "^0.0.7",
     "tslib": "^2.4.0",
     "typescript": "~5.2.0"

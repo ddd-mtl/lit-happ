@@ -2,7 +2,7 @@ import {encodeHashToBase64} from "@holochain/client";
 // @ts-ignore
 import _sodium from 'libsodium-wrappers-sumo';
 
-export declare type Dictionary<T> = {
+export declare type MyDictionary<T> = {
   [key: string]: T;
 };
 

@@ -31,7 +31,7 @@ import {
   SystemSignalProtocolVariantSelfCallEnd,
   SystemSignalProtocolVariantSelfCallStart
 } from "./zomeSignals.types";
-import {Dictionary, sha256} from "./utils";
+import {MyDictionary, sha256} from "./utils";
 import {TimeMap} from "./time-map";
 
 
@@ -93,7 +93,7 @@ export class CellProxy extends CellMixin(Empty) {
   setCanThrottle(can: boolean) {this._canThrottle = can};
 
   /** Cache */
-  private _entryDefCache?: Dictionary<EntryDef>;
+  private _entryDefCache?: MyDictionary<EntryDef>;
   private _zomeInfoCache?: ZomeInfo;
   private _dnaInfoCache?: DnaInfo;
 
@@ -345,7 +345,7 @@ export class CellProxy extends CellMixin(Empty) {
    * Calls the `entry_defs()` zome function and
    * Returns an array of all the zome's AppEntryNames and Visibility, i.e. (AppEntryName, isPublic)[]
    */
-  async callEntryDefs(zomeName: ZomeName): Promise<Dictionary<EntryDef>> {
+  async callEntryDefs(zomeName: ZomeName): Promise<MyDictionary<EntryDef>> {
     console.log("callEntryDefs()", zomeName)
     /** Return cache if any */
     if (this._entryDefCache) {
@@ -363,7 +363,7 @@ export class CellProxy extends CellMixin(Empty) {
     console.debug("getEntryDefs() for " + zomeName + " result:")
     console.debug({entryDefs});
     /** Map result */
-    let result: Dictionary<EntryDef> = {}
+    let result: MyDictionary<EntryDef> = {}
     for (const def of entryDefs.Defs) {
       let name = Object.keys(def.id)[0];
       if ("App" in def.id) {

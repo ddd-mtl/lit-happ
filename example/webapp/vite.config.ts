@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
+import dts from 'vite-plugin-dts';
+import topLevelAwait from "vite-plugin-top-level-await";
 //import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 console.log("vite: process.env.HC_APP_PORT: ", process.env.HC_APP_PORT);
@@ -7,17 +9,14 @@ console.log("vite: process.env.HAPP_BUILD_MODE: ", process.env.HAPP_BUILD_MODE);
 const HAPP_BUILD_MODE = process.env.HAPP_BUILD_MODE? process.env.HAPP_BUILD_MODE : "Release";
 
 
-console.log("vite: process.env.APPLET_VIEW: ", process.env.APPLET_VIEW);
-const APPLET_VIEW = process.env.APPLET_VIEW? process.env.APPLET_VIEW : "main";
+console.log("vite: process.env.WE_APPLET_VIEW: ", process.env.WE_APPLET_VIEW);
+const WE_APPLET_VIEW = process.env.WE_APPLET_VIEW? process.env.WE_APPLET_VIEW : "main";
+
+const DIST_FOLDER = "dist"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      // ...
-      'simple-peer': 'simple-peer/simplepeer.min.js',
-    },
-  },
+  resolve: {},
   plugins: [
     checker({
       typescript: true,
@@ -25,15 +24,29 @@ export default defineConfig({
       //   lintCommand: 'eslint --ext .ts,.html . --ignore-path .gitignore',
       // },
     }),
+    topLevelAwait({}),
+    dts(),
   ],
   define: {
     '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
     'process.env.HAPP_BUILD_MODE': JSON.stringify(HAPP_BUILD_MODE),
-    'process.env.HAPP_ENV': JSON.stringify("DevtestWe"),
-    'process.env.APPLET_VIEW': JSON.stringify(APPLET_VIEW),
+    'process.env.HAPP_ENV': JSON.stringify("Browser"),
+    'process.env.WE_APPLET_VIEW': JSON.stringify(WE_APPLET_VIEW),
     "process.env.HC_APP_PORT": JSON.stringify(process.env.HC_APP_PORT),
     "process.env.HC_ADMIN_PORT": JSON.stringify(process.env.HC_ADMIN_PORT) || undefined,
     'process.env.NO_WE': JSON.stringify(process.env.NO_WE || false),
+  },
+  build: {
+    emptyOutDir: true,
+    minify: false,
+    outDir: DIST_FOLDER,
+    rollupOptions: {
+      output: {
+        entryFileNames: "index.js",
+        //chunkFileNames: `assets/index-chunk.js`,
+        assetFileNames: "assets[extname]",
+      },
+    }
   },
   server: {
     open: true // This will open the browser automatically

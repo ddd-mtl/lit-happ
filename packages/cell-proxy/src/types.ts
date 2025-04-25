@@ -2,7 +2,7 @@ import {
   CellId,
   RoleName, ClonedCell, ProvisionedCell, ZomeName, FunctionName,
 } from "@holochain/client";
-import {Dictionary} from "./utils";
+import {MyDictionary} from "./utils";
 import {AgentId, DnaId} from "./hash";
 import {SystemSignalProtocol} from "./zomeSignals.types";
 
@@ -65,11 +65,11 @@ export type CellsForRole = {
   //baseRoleName: BaseRoleName,
   provisioned: ProvisionedCell,
   /** CloneId -> Cell */
-  clones: Dictionary<ClonedCell>,
+  clones: MyDictionary<ClonedCell>,
 }
 
 /** BaseRoleName -> RoleCells */
-export type RoleCellsMap = Dictionary<CellsForRole>;
+export type RoleCellsMap = MyDictionary<CellsForRole>;
 
 /** */
 export function flattenCells(cells: CellsForRole): CellAddress[] {

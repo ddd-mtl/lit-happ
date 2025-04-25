@@ -13,14 +13,14 @@ export const devtestNames: DevTestNames = {
 /** */
 export async function setupExampleApplet(): Promise<LitElement> {
   /** Determine appletView */
-  let APPLET_VIEW = "main";
+  let WE_APPLET_VIEW = "main";
   try {
-    APPLET_VIEW = process.env.APPLET_VIEW!;
+    WE_APPLET_VIEW = process.env.WE_APPLET_VIEW!;
     //console.log(`HAPP_ENV defined by process.ENV: "${happEnv}"`);
   } catch (e:any) {
   }
-  console.log("Example we-applet setup() APPLET_VIEW", APPLET_VIEW);
-  switch(APPLET_VIEW) {
+  console.log("Example we-applet setup() WE_APPLET_VIEW", WE_APPLET_VIEW);
+  switch(WE_APPLET_VIEW) {
     //case ThreadsEntryType.ParticipationProtocol: return setupVinesEntryView();
     //case ThreadsEntryType.ParticipationProtocol: return setupThreadsBlockView();
     case "main":

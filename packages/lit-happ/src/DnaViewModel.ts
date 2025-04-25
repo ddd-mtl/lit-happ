@@ -12,7 +12,7 @@ import {
   CellProxy,
   AppProxy,
   HCL,
-  Dictionary, CellMixin, AgentId, EntryDef, ZomeInfo, DnaInfo
+  MyDictionary, CellMixin, AgentId, EntryDef, ZomeInfo, DnaInfo
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
 
@@ -49,13 +49,13 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   /** -- Fields -- */
   protected _cellProxy: CellProxy;
   /* ZomeName -> Zvm */
-  protected _zomeViewModels: Dictionary<ZomeViewModel> = {};
+  protected _zomeViewModels: MyDictionary<ZomeViewModel> = {};
   /* ZvmCtorName -> ZomeName */
   protected _zomeNames: ZomeName[] = [];
   /* ZomeName -> (EntryName -> EntryDef) */
-  private _allEntryDefs: Dictionary<Dictionary<EntryDef>> = {};
+  private _allEntryDefs: MyDictionary<MyDictionary<EntryDef>> = {};
   /* ZomeName -> ZomeInfo */
-  private _allZomeInfo: Dictionary<ZomeInfo> = {};
+  private _allZomeInfo: MyDictionary<ZomeInfo> = {};
   private _dnaInfo: DnaInfo | undefined = undefined;
 
   /** list of "known" peers in this DNA */
@@ -99,7 +99,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   /** -- Getters -- */
 
-  get allEntryDefs(): Dictionary<Dictionary<EntryDef>> { return this._allEntryDefs }
+  get allEntryDefs(): MyDictionary<MyDictionary<EntryDef>> { return this._allEntryDefs }
 
   get dnaInfo(): DnaInfo { return this._dnaInfo! }
 
@@ -107,7 +107,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   get zomeNames(): ZomeName[] {return Object.values(this._zomeNames);}
 
-  getZomeEntryDefs(zomeName: ZomeName): Dictionary<EntryDef> {
+  getZomeEntryDefs(zomeName: ZomeName): MyDictionary<EntryDef> {
     const maybe = this._allEntryDefs[zomeName];
     if (!maybe) {
       throw Error("Unknown zome in DVM: " + zomeName + ". Available zomes: " + this.zomeNames.join(', '));

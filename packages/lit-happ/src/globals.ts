@@ -1,13 +1,15 @@
 
 /** */
 export enum HappEnvType {
-    Prod        = "Prod",        // default value
-    Devtest     = "Devtest",     // HAPP_ENV set to this by web-dev-server
-    Electron    = "Electron",    // if window.electronBridge is defined
-    DevtestWe   = "DevtestWe",   // HAPP_ENV set to this by web-dev-server
-    We          = "We",          // if window.IN_WE defined
-    DevTestHolo = "DevTestHolo", // HAPP_ENV set to this by web-dev-server
-    Holo        = "HoloProd",    // ???
+    Browser     = "Browser",   // default value
+    We          = "We",        // if window.IN_WE defined
+    BrowserWe   = "BrowserWe", // Testing we-applet in browser
+    Electron    = "Electron",  // if window.electronBridge is defined
+    Holo        = "Holo",      // ???
+}
+
+export function isHappEnv(value: any): value is HappEnvType {
+    return Object.values(HappEnvType).includes(value);
 }
 
 /** */
@@ -15,6 +17,10 @@ export enum HappBuildModeType {
     Debug   = "Debug",   // logs
     Release = "Release", // logs & optimization
     Retail  = "Retail",  // optimization (default)
+}
+
+export function isHappBuildMode(value: any): value is HappBuildModeType {
+    return Object.values(HappBuildModeType).includes(value);
 }
 
 
@@ -51,7 +57,7 @@ try {
                 happEnv = HappEnvType.Holo;
             } else {
                 /** Default to prod */
-                happEnv = HappEnvType.Prod;
+                happEnv = HappEnvType.Browser;
             }
         }
     }
@@ -65,6 +71,14 @@ if (!buildMode) {
        console.log(`[lit-happ] HAPP_BUILD_MODE not defined. Defaulting to "${HappBuildModeType.Retail}"`);
        buildMode = HappBuildModeType.Retail;
     }
+}
+
+if (!isHappBuildMode(buildMode)) {
+    console.error("[lit-happ] buildMode not valid", buildMode);
+}
+
+if (!isHappEnv(happEnv)) {
+    console.error("[lit-happ] happEnv not valid", happEnv);
 }
 
 /** export result */

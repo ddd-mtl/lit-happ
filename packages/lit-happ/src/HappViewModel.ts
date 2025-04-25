@@ -5,7 +5,7 @@ import {
   BaseRoleName, CellAddress, CellCloner,
   CloneIndex,
   createCloneName,
-  Dictionary,
+  MyDictionary,
   HCL,
 } from "@ddd-qc/cell-proxy";
 import { CellDef, DvmDef, HvmDef } from "./definitions";
@@ -24,9 +24,9 @@ export class HappViewModel {
   /** -- Fields -- */
   readonly appId: InstalledAppId;
   /** HCLString -> DnaViewModel */
-  protected _dvmMap: Dictionary<DnaViewModel> = {};
+  protected _dvmMap: MyDictionary<DnaViewModel> = {};
   /** BaseRoleName -> DvmDef */
-  protected _defMap: Dictionary<DvmDef> = {};
+  protected _defMap: MyDictionary<DvmDef> = {};
 
 
   /** -- Getters -- */
@@ -37,10 +37,10 @@ export class HappViewModel {
   }
 
   /** */
-  getCellDvms(cellId: CellAddress): Dictionary<DnaViewModel> | undefined {
+  getCellDvms(cellId: CellAddress): MyDictionary<DnaViewModel> | undefined {
     const hcls = this._appProxy.getLocations(cellId);
     if (hcls === undefined) return undefined;
-    let dict: Dictionary<DnaViewModel> = {};
+    let dict: MyDictionary<DnaViewModel> = {};
     for (const hcl of hcls) {
       const maybe = this.getDvm(hcl);
       if (maybe) {

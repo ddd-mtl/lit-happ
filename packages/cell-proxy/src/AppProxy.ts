@@ -22,7 +22,7 @@ import {
   CellsForRole,
   RoleCellsMap, AppSignalType, SystemPulse,
 } from "./types";
-import {Dictionary} from "./utils";
+import {MyDictionary} from "./utils";
 import {HCL, HCLString} from "./hcl";
 import {Cell} from "./cell";
 import {prettyDate, printAppInfo} from "./pretty";
@@ -63,17 +63,17 @@ export class AppProxy implements AppClient {
   /** Signal logs */
   private _signalLogs: SignalLog[] = [];
   /** Map cells per App: InstalledAppId -> (BaseRoleName -> CellsForRole) */
-  private _cellsByApp: Dictionary<RoleCellsMap> = {};
+  private _cellsByApp: MyDictionary<RoleCellsMap> = {};
   /** Map cell locations: CellIdStr -> HCL[] */
-  private _hclMap: Dictionary<HCL[]> = {};
+  private _hclMap: MyDictionary<HCL[]> = {};
   /** Store handlers per cell location: HCLString -> SignalCb[] */
-  private _signalHandlers: Dictionary<SignalCb[]> = {};
+  private _signalHandlers: MyDictionary<SignalCb[]> = {};
   /** Store cell proxies per cell: CellIdStr -> CellProxy */
-  private _cellProxies: Dictionary<CellProxy> = {};
+  private _cellProxies: MyDictionary<CellProxy> = {};
 
 
   /** Map HCLString: CloneId -> CloneName */
-  private _cellNames: Dictionary<string> = {} // Provisioned cell's name is its baseRoleName so no need to map them
+  private _cellNames: MyDictionary<string> = {} // Provisioned cell's name is its baseRoleName so no need to map them
 
   /** -- Getters -- */
 
@@ -251,7 +251,7 @@ export class AppProxy implements AppClient {
     }
     /** Get all cells with that baseRoleName */
     let provisioned: ProvisionedCell | undefined;
-    let clones: Dictionary<ClonedCell> = {};
+    let clones: MyDictionary<ClonedCell> = {};
     for (const [curBaseRoleName, cellInfos] of Object.entries(appInfo.cell_info)) {
       for (const cellInfo of Object.values(cellInfos)) {
         if (baseRoleName !== curBaseRoleName || CellType.Stem == cellInfo.type) {

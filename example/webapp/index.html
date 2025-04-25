@@ -19,20 +19,20 @@
       console.log("  - HC_ADMIN_PORT  :", process.env.HC_ADMIN_PORT);
       console.log("  - HAPP_BUILD_MODE:", process.env.HAPP_BUILD_MODE);
       console.log("  - HAPP_ENV       :", process.env.HAPP_ENV);
-      //window.IN_WE = true;
     </script>
     <script type="module">
       console.log("example/webapp/index.html module START");
       //import * as hcc from "@holochain/client";
       import {AdminWebsocket} from "@holochain/client";
+      import {PlaygroundApp} from "./src/app.ts";
+      import {PlaygroundCloneApp} from "./src/app-clone.ts";
+
       //console.log({AdminWebsocket});
       const adminWs = await AdminWebsocket.connect({url: `ws://localhost:${process.env.HC_ADMIN_PORT}`})
       console.log({adminWs});
 
       const apps = await adminWs.listApps({});
       console.log("Installed apps:", apps);
-
-      import {PlaygroundApp, PlaygroundCloneApp} from "./";
 
       if (apps[0].installed_app_id == "playground") {
         customElements.define("playground-app", PlaygroundApp);
