@@ -32,7 +32,7 @@
   "dependencies": {
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain/client": "=0.19.0",
-    "@msgpack/msgpack": "^2.7.2",
+    "@msgpack/msgpack": "^3.1.1",
     "lit": "3.0.2"
   },
   "engines": {

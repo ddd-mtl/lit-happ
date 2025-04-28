@@ -21,12 +21,12 @@ export async function setup(appletServices: AppletServices, createApplet: Create
 
 /** */
 export async function setupProd(appletServices: AppletServices, createApplet: CreateAppletFn): Promise<LitElement> {
-    //console.log("setup()");
+    //console.log("setupProd()");
     setBasePath('./');
     //console.log("shoelace basePath", getBasePath());
-    //console.log("WeClient.connect()...", WeClient);
+    console.log("setupProd() WeClient.connect()...");
     const weClient = await WeaveClient.connect(appletServices);
-    //console.log("weClient", weClient);
+    console.log("setupProd() weClient", weClient);
     // if (weClient.renderInfo.type != "applet-view") {
     //     console.error("Setup called for non 'applet-view' type");
     //     throw Promise.reject("Setup called for non 'applet-view' type")

@@ -132,7 +132,7 @@ export class CellProxy extends CellMixin(Empty) {
         continue;
       }
       /** Release */
-      console.debug("blockUntilPostCommit() RELEASE");
+      console.debug("blockUntilPostCommit() postCommit Lock RELEASE");
       this._postCommitRelease();
       delete this._postCommitRelease;
       delete this._postCommitReleaseEntryType;
@@ -258,6 +258,7 @@ export class CellProxy extends CellMixin(Empty) {
     } as CallZomeRequest;
     const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
     /** Acquire lock */
+    console.debug("postCommit Lock in progress...");
     try {
       this._postCommitRelease = await this._callMutex.acquire();
       this._postCommitReleaseEntryType = entryType;
@@ -266,6 +267,7 @@ export class CellProxy extends CellMixin(Empty) {
       this.logCallTimedout(log)
       return Promise.reject("Waiting for callZomeBlockPostCommit mutex timed-out");
     }
+    console.debug("postCommit Lock ACQUIRED");
     /** Execute */
     const respLog = await this.executeZomeCall(log);
     return respLog.success;
