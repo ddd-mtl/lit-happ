@@ -10,7 +10,7 @@ import {LitElement} from "lit";
 
 /** */
 export async function setup(appletServices: AppletServices, createApplet: CreateAppletFn, devtestNames: DevTestNames, createWeServicesMock?: CreateWeServicesMockFn): Promise<LitElement> {
-    //console.log("HAPP_ENV", HAPP_ENV);
+    console.log("[we-utils] setup() HAPP_ENV", HAPP_ENV);
     if (HAPP_ENV == HappEnvType.BrowserWe) {
         return setupDevtest(createApplet, devtestNames, createWeServicesMock? createWeServicesMock : createDefaultWeServicesMock);
     } else {

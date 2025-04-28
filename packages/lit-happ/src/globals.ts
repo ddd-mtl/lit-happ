@@ -92,8 +92,8 @@ if (HAPP_ELECTRON_API) {
     console.log("[lit-happ] HAPP_ELECTRON_API =", HAPP_ENV);
 }
 
-console.log("[lit-happ]     HC_APP_PORT =", process.env.HC_APP_PORT);
-console.log("[lit-happ]   HC_ADMIN_PORT =", process.env.HC_ADMIN_PORT);
+console.log("[lit-happ]      HC_APP_PORT =", process.env.HC_APP_PORT);
+console.log("[lit-happ]    HC_ADMIN_PORT =", process.env.HC_ADMIN_PORT);
 
 console.log("[lit-happ] Initializaing LIT-HAPP global consts - DONE")
 

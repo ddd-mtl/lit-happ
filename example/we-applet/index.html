@@ -19,13 +19,14 @@
   </script>
     <script type="module">
       import setupExampleApplet from "./src/index.ts";
+      import {PlaygroundApp} from "example";
+      //if (apps[0].installed_app_id == "playground") {
+        customElements.define("playground-app", PlaygroundApp);
+      //} else {
+      //  customElements.define("playground-app", PlaygroundCloneApp);
+     // }
       const happElem = await setupExampleApplet();
       document.body.append(happElem);
-      // if (apps[0].installed_app_id == "playground") {
-      //   customElements.define("playground-app", PlaygroundApp);
-      // } else {
-      //   customElements.define("playground-app", PlaygroundCloneApp);
-      // }
     </script>
   </body>
 </html>
