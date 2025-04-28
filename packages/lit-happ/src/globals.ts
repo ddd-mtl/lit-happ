@@ -1,4 +1,3 @@
-import {HC_ADMIN_PORT, HC_APP_PORT} from "example";
 
 /** */
 export enum HappEnvType {
