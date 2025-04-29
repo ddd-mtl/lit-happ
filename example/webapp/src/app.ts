@@ -23,8 +23,9 @@ import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
 import {ContextProvider, createContext} from "@lit/context";
 
-import {AppletId, AppletView, GroupProfile, WeaveServices} from "@theweave/api";
 import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
+
+import {AppletId, AppletView, GroupProfile, WeaveServices} from "@theweave/api";
 const weClientContext = createContext<WeaveServices>('weave_client');
 
 /** */
