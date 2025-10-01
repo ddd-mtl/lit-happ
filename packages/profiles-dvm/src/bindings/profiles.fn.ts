@@ -11,6 +11,7 @@ export const profilesFunctionNames: FunctionName[] = [
 	"create_profile",
 	"update_profile",
 	"search_agents",
+	"get_my_profile",
 	"get_agent_profile",
 	"get_agents_with_profile",
 ];

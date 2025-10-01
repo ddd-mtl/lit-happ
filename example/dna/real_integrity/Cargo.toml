@@ -12,4 +12,5 @@ workspace = true
 
 [dependencies]
 serde.workspace = true
+holochain_serialized_bytes.workspace = true
 hdi.workspace = true

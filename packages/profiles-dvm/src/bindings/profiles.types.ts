@@ -81,6 +81,11 @@ ValidationStatus, ValidationReceipt,
 // @ts-ignore
 import {ProfilesLinkType as LinkTypes} from "./profiles.integrity"
 
+export interface ZomeFnInput<T> {
+  input: T
+  local?: boolean
+}
+
 export type SignalVariantLinkCreated = {
   type: "LinkCreated"
   action: SignedActionHashed

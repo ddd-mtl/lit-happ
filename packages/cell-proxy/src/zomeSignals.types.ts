@@ -139,52 +139,44 @@ export enum ZomeSignalProtocolType {
 	Link = 'Link',
 	Tip = 'Tip',
 }
-export type ZomeSignalProtocolVariantSystem = {System: SystemSignalProtocol}
+export type ZomeSignalProtocolVariantSystem = {System: SystemAttestation}
 export type ZomeSignalProtocolVariantEntry = {Entry: EntryPulse}
 export type ZomeSignalProtocolVariantLink = {Link: LinkPulse}
 export type ZomeSignalProtocolVariantTip = {Tip: TipProtocol}
 export type ZomeSignalProtocol = 
  | ZomeSignalProtocolVariantSystem | ZomeSignalProtocolVariantEntry | ZomeSignalProtocolVariantLink | ZomeSignalProtocolVariantTip;
 
-/** Protocol for notifying the ViewModel (UI) of system level events */
-export type SystemSignalProtocolVariantPostCommitNewStart = {
-  type: "PostCommitNewStart"
-  app_entry_type: string
-}
-export type SystemSignalProtocolVariantPostCommitNewEnd = {
-  type: "PostCommitNewEnd"
-  app_entry_type: string
+/** Zome-agnostic attestation */
+export type SystemAttestationVariantPostCommitLink = {
+  type: "PostCommitLink"
+  link_type: number
+  is_delete: boolean
   succeeded: boolean
 }
-export type SystemSignalProtocolVariantPostCommitDeleteStart = {
-  type: "PostCommitDeleteStart"
+export type SystemAttestationVariantPostCommitEntry = {
+  type: "PostCommitEntry"
   app_entry_type: string
-}
-export type SystemSignalProtocolVariantPostCommitDeleteEnd = {
-  type: "PostCommitDeleteEnd"
-  app_entry_type: string
+  is_delete: boolean
   succeeded: boolean
 }
-export type SystemSignalProtocolVariantSelfCallStart = {
+export type SystemAttestationVariantSelfCallStart = {
   type: "SelfCallStart"
   zome_name: string
   fn_name: string
 }
-export type SystemSignalProtocolVariantSelfCallEnd = {
+export type SystemAttestationVariantSelfCallEnd = {
   type: "SelfCallEnd"
   zome_name: string
   fn_name: string
   succeeded: boolean
 }
-export type SystemSignalProtocol =
-  | SystemSignalProtocolVariantPostCommitNewStart
-  | SystemSignalProtocolVariantPostCommitNewEnd
-  | SystemSignalProtocolVariantPostCommitDeleteStart
-  | SystemSignalProtocolVariantPostCommitDeleteEnd
-  | SystemSignalProtocolVariantSelfCallStart
-  | SystemSignalProtocolVariantSelfCallEnd;
+export type SystemAttestation =
+  | SystemAttestationVariantPostCommitLink
+  | SystemAttestationVariantPostCommitEntry
+  | SystemAttestationVariantSelfCallStart
+  | SystemAttestationVariantSelfCallEnd;
 
-/** Used by UI ONLY. That's why we use B64 here. */
+/** Protocol used by UI ONLY to send data to other agents */
 export enum TipProtocolType {
 	Ping = 'Ping',
 	Pong = 'Pong',

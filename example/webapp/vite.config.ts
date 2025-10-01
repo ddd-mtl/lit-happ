@@ -49,6 +49,16 @@ export default defineConfig({
     }
   },
   server: {
-    open: true // This will open the browser automatically
+    open: true, // This will open the browser automatically
+    watch: {
+      usePolling: true,
+      ignored: [
+        '**/node_modules/**',
+        '**/.git/**',
+        '**/dist/**',
+        '**/.idea/**',
+        '**/target/**',
+      ]
+    }
   }
 });

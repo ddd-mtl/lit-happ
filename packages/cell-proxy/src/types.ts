@@ -4,7 +4,7 @@ import {
 } from "@holochain/client";
 import {MyDictionary} from "./utils";
 import {AgentId, DnaId} from "./hash";
-import {SystemSignalProtocol} from "./zomeSignals.types";
+import {SystemAttestation} from "./zomeSignals.types";
 
 
 export type AnyCell = ProvisionedCell | ClonedCell;
@@ -17,7 +17,7 @@ export enum AppSignalType  {
   Zome = "Zome",
 }
 
-export type SystemPulse = {System: SystemSignalProtocol}
+export type SystemPulse = {System: SystemAttestation}
 
 
 /** ---- */

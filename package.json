@@ -19,7 +19,7 @@
     "postinstall"           : "mkdir -p artifacts",
 
     "install:submodules"    : "bash scripts/install-submodules.sh 0.5.0",
-    "install:zits"          : "cargo install zits --version 1.16.4",
+    "install:zits"          : "cargo install zits --version 1.16.6",
 
     "build:shared"          : "bash scripts/ts-bindings.sh && npm run build -w packages/shared-ownership-dvm",
     "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
@@ -33,7 +33,7 @@
     "start:clone"           : "npm run start:clone -w example/webapp",
     "start:we"              : "npm run devtest -w example/we-applet",
 
-    "devtest"               : "npm run clean:hc && npm run build:happ && bash scripts/ts-bindings.sh && HAPP_BUILD_MODE=Debug concurrently \"npm run build:watch -w packages/cell-proxy\" \"npm run build:watch -w packages/lit-happ\" \"npm run build:watch -w packages/we-utils\" \"npm run build:watch -w packages/profiles-dvm\" \"npm run build:watch -w packages/notifications-dvm\" \"npm run build -w example/webapp\" \"npm run start\"",
+    "devtest"               : "npm run clean:hc && npm run build:happ && bash scripts/ts-bindings.sh && npm run build:libs && npm run start",
     "devtest:clone"         : "npm run build:happ && npm run build:libs && npm run build -w example/webapp && npm run start:clone",
 
     "devtest:we"            : "npm run clean:hc && npm run build:happ && bash scripts/ts-bindings.sh && HAPP_BUILD_MODE=Debug concurrently \"npm run build -w we-applet\" \"npm run start:we\"",
@@ -72,12 +72,11 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "@types/ws": "^8.5.3",
-    "gh-pages": "^3.1.0"
+    "cross-env": "^7.0.3"
   },
   "engines": {
-    "node": "^14.13.1 || >=16.0.0 || >=18.0.0",
+    "node": ">=20.0.0",
     "npm": ">=7.0.0"
   }
 }

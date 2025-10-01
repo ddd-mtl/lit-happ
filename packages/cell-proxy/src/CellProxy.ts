@@ -26,13 +26,13 @@ import {
 } from "./AppProxy";
 import {prettyDate, prettyDuration} from "./pretty";
 import {anyToB64, intoAnyId} from "./hash";
-import {
-  SystemSignalProtocolVariantPostCommitNewEnd,
-  SystemSignalProtocolVariantSelfCallEnd,
-  SystemSignalProtocolVariantSelfCallStart
-} from "./zomeSignals.types";
 import {MyDictionary, sha256} from "./utils";
 import {TimeMap} from "./time-map";
+import {
+  SystemAttestationVariantPostCommitEntry,
+  SystemAttestationVariantSelfCallEnd,
+  SystemAttestationVariantSelfCallStart
+} from "./zomeSignals.types";
 
 
 export interface RequestLog {
@@ -100,7 +100,7 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** -- Methods -- */
 
-  /** Have a PostCommitEnd release the Mutex */
+  /** Have a PostCommitEntry attestation release the Mutex */
   private _postCommitRelease?: MutexInterface.Releaser;
   private _postCommitReleaseEntryType?: string;
   protected async blockUntilPostCommit(signal: Signal) {
@@ -119,16 +119,16 @@ export class CellProxy extends CellMixin(Empty) {
     }
     for (const pulse of zomeSignal.pulses) {
       const sys = (pulse as SystemPulse).System;
-      if (sys.type !== "PostCommitNewEnd") {
+      if (sys.type !== "PostCommitEntry") {
         continue;
       }
-      const end = sys as SystemSignalProtocolVariantPostCommitNewEnd;
-      if (!end.succeeded) {
-        console.error("System call failed");
+      const pce = sys as SystemAttestationVariantPostCommitEntry;
+      if (!pce.succeeded) {
+        console.error("PostCommit attestations failed");
         this.dumpCallLogs(appSignal.zome_name);
         this.dumpSignalLogs(appSignal.zome_name);
       }
-      if (end.app_entry_type !== this._postCommitReleaseEntryType) {
+      if (pce.app_entry_type !== this._postCommitReleaseEntryType) {
         continue;
       }
       /** Release */
@@ -163,7 +163,7 @@ export class CellProxy extends CellMixin(Empty) {
         /** Release */
         this._selfCallRelease();
         delete this._selfCallRelease;
-        const end = sys as SystemSignalProtocolVariantSelfCallEnd;
+        const end = sys as SystemAttestationVariantSelfCallEnd;
         if (!end.succeeded) {
           console.error("Call to self failed.")
           this.dumpCallLogs(end.zome_name);
@@ -471,16 +471,16 @@ export class CellProxy extends CellMixin(Empty) {
       type == "System"
     });
 
-    const startCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallStart][] = [];
-    const endCalls: [Timestamp, CellIdStr, SystemSignalProtocolVariantSelfCallEnd][] = [];
+    const startCalls: [Timestamp, CellIdStr, SystemAttestationVariantSelfCallStart][] = [];
+    const endCalls: [Timestamp, CellIdStr, SystemAttestationVariantSelfCallEnd][] = [];
     sysSignals.map((log) => {
       for (const pulse of log.zomeSignal.pulses) {
       const sys = (pulse as SystemPulse).System;
         if(sys.type == "SelfCallStart") {
-          startCalls.push([log.ts, log.cellAddr.str, (sys as SystemSignalProtocolVariantSelfCallStart)]);
+          startCalls.push([log.ts, log.cellAddr.str, (sys as SystemAttestationVariantSelfCallStart)]);
         }
         if(sys.type == "SelfCallEnd") {
-          endCalls.push([log.ts, log.cellAddr.str, (sys as SystemSignalProtocolVariantSelfCallEnd)]);
+          endCalls.push([log.ts, log.cellAddr.str, (sys as SystemAttestationVariantSelfCallEnd)]);
         }
       }
     })

@@ -12,5 +12,6 @@ workspace = true
 
 [dependencies]
 serde.workspace = true
+holochain_serialized_bytes.workspace = true
 hdk.workspace = true
 integer_integrity = { path = "../integer_integrity" }
