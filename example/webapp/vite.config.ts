@@ -52,6 +52,7 @@ export default defineConfig({
     open: true, // This will open the browser automatically
     watch: {
       usePolling: true,
+      interval: 1000, // Check for changes every second
       ignored: [
         '**/node_modules/**',
         '**/.git/**',

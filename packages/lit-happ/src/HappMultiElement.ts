@@ -131,7 +131,7 @@ export class HappMultiElement extends LitElement {
     const allNetInfos: Record<CellIdStr, [Timestamp, NetworkMetrics]> = {};
     for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
       for (const dna of dnaIds) {
-        const response = await appProxy.dumpNetworkMetrics({dna: dna.hash, include_dht_summary: true});
+        const response = await appProxy.dumpNetworkMetrics({dna_hash: dna.hash, include_dht_summary: true});
         if (!response || !response[dna.b64]) {
           throw Promise.reject("No network metrics response for dna");
         }

@@ -144,8 +144,8 @@ function count_pending_requests(fetchSummary: FetchStateSummary): number {
 
 /** */
 function arc_size(arc: DhtArc): number {
-  if (arc.type == "empty") {
+  if (arc == null) {
     return 0;
   }
-  return arc.value[1] - arc.value[0];
+  return arc[1] - arc[0];
 }
