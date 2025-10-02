@@ -25,9 +25,6 @@ export default defineConfig({
   plugins: [
     checker({
       typescript: true,
-      // eslint: {
-      //   lintCommand: 'eslint --ext .ts,.html . --ignore-path .gitignore',
-      // },
     }),
     topLevelAwait({}),
     dts(),
@@ -48,7 +45,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: "index.js",
-        //chunkFileNames: `assets/index-chunk.js`,
         assetFileNames: "assets[extname]",
       },
     }

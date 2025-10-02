@@ -8,7 +8,6 @@ rm packages/cell-proxy/tsconfig.tsbuildinfo
 rm -rf packages/lit-happ/dist
 rm packages/lit-happ/tsconfig.tsbuildinfo
 # example
-rm -rf example/webapp/.rollup.cache/
 rm -rf example/webapp/out-tsc/
 rm -rf example/webapp/dist/
 rm -rf example/webapp/target/

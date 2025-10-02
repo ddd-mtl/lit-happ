@@ -36,8 +36,8 @@
     "devtest"               : "npm run clean:hc && npm run build:happ && bash scripts/ts-bindings.sh && npm run build:libs && npm run start",
     "devtest:clone"         : "npm run build:happ && npm run build:libs && npm run build -w example/webapp && npm run start:clone",
 
-    "devtest:we"            : "npm run clean:hc && npm run build:happ && bash scripts/ts-bindings.sh && HAPP_BUILD_MODE=Debug concurrently \"npm run build -w we-applet\" \"npm run start:we\"",
-    "dist:we   "            : "npm run dist -w we-applet && npm run package:we",
+    "devtest:we"            : "npm run clean:hc && npm run build:happ && bash scripts/ts-bindings.sh && npm run start:we",
+    "dist:we"               : "npm run dist -w we-applet && npm run package:we",
     "package:we"            : "rm -rf artifacts/playground-we_applet-ui.zip & cd example/we-applet/dist && rm -f *.map && bestzip ../../../artifacts/playground-we_applet-ui.zip * && cd ../../../ && hc web-app pack example/webhapp.workdir -o artifacts/playground-we_applet.webhapp",
     "prodtest:we"           : "cross-env BOOT_PORT=$(port) SIGNAL_PORT=$(port) concurrently \"npm run serve:run\" \"cross-env AGENT_NUM=1 npm run prodtest:we-launch\"",
     "prodtestfull:we"       : "npm run dist -w example/webapp && npm run dist -w we-applet && npm run prodtest:we",

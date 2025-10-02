@@ -20,9 +20,6 @@ export default defineConfig({
   plugins: [
     checker({
       typescript: true,
-      // eslint: {
-      //   lintCommand: 'eslint --ext .ts,.html . --ignore-path .gitignore',
-      // },
     }),
     topLevelAwait({}),
     dts(),
@@ -40,13 +37,6 @@ export default defineConfig({
     emptyOutDir: true,
     minify: false,
     outDir: DIST_FOLDER,
-    rollupOptions: {
-      output: {
-        entryFileNames: "index.js",
-        //chunkFileNames: `assets/index-chunk.js`,
-        assetFileNames: "assets[extname]",
-      },
-    }
   },
   server: {
     open: true, // This will open the browser automatically
