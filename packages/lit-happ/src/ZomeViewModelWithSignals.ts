@@ -16,7 +16,6 @@ import {
   AppSignalType,
   StateChange,
   TipProtocol,
-  TipProtocolVariantApp,
   TipProtocolVariantEntry,
   TipProtocolVariantLink,
   ZomeSignal,
@@ -26,7 +25,7 @@ import {
   ZomeSignalProtocolVariantLink,
   TipProtocolType,
   intoAnyId,
-  ValidatedBy, CallAppTipInput
+  ValidatedBy, SynchronizeTipInput, TipProtocolVariantAppValue, TipProtocolVariantAppCustom,
 } from "@ddd-qc/cell-proxy";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {decode} from "@msgpack/msgpack";
@@ -37,6 +36,7 @@ export interface CastLog {
   ts: Timestamp,
   tip: TipProtocol,
   peers: AgentId[],
+  response: Timestamp | undefined,
 }
 
 
@@ -48,7 +48,8 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
   private _castLogs: CastLog[] = [];
 
   /** Methods to override */
-  protected handleAppTip(_appTip: Uint8Array, _from: AgentId): ZomeSignalProtocol | undefined { return undefined;}
+  protected handleCustomTip(_customTip: Uint8Array, _from: AgentId): ZomeSignalProtocol | undefined { return undefined;}
+  protected handleValueTip(_key: string, _value: string, _from: AgentId): ZomeSignalProtocol | undefined { return undefined;}
   protected async handleEntryPulse(_pulse: EntryPulseMat, _from: AgentId): Promise<void> {}
   protected async handleLinkPulse(_pulse: LinkPulseMat, _from: AgentId): Promise<void> {}
 
@@ -124,8 +125,13 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         break;
       case "Entry": return {Entry: (tip as TipProtocolVariantEntry).Entry} as ZomeSignalProtocolVariantEntry; break;
       case "Link": return {Link: (tip as TipProtocolVariantLink).Link} as ZomeSignalProtocolVariantLink; break;
-      case "App":
-        return this.handleAppTip((tip as TipProtocolVariantApp).App, from);
+      case "AppValue":
+        const key = (tip as TipProtocolVariantAppValue).AppValue[0];
+        const value = (tip as TipProtocolVariantAppValue).AppValue[1];
+        return this.handleValueTip(key, value, from);
+        break;
+      case "AppCustom":
+        return this.handleCustomTip((tip as TipProtocolVariantAppCustom).AppCustom, from);
         break;
     }
     return undefined;
@@ -133,20 +139,32 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
-  async sendAppTip(appTip: Uint8Array, recipient: AgentId, zomeName: string): Promise<void> {
-    /** Only MainView can cast tips */
+  async synchronizeValueTip(key: string, value: string, recipient: AgentId, zomeName: string): Promise<void> {
+    /* Only MainView can cast tips */
     if (!this.isMainView) {
       return;
     }
-    console.debug(`sendAppTip() Sending AppTip to`, recipient, zomeName);
-    /** call */
-    await this.zomeProxy.call('call_app_tip', {appTip, recipient: recipient.hash, zomeName} as CallAppTipInput);
-    /** Log */
-    this._castLogs.push({ts: Date.now(), tip: {App: appTip}, peers: [recipient]});
+    console.debug(`synchronizeValueTip() Sending to`, recipient, zomeName);
+    const tip: TipProtocol = {AppValue: [key, value]};
+    const response = await this.zomeProxy.call('synchronize_tip', {tip, recipient: recipient.hash, zomeName} as SynchronizeTipInput);
+    this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response});
   }
 
 
   /** */
+  async synchronizeCustomTip(appTip: Uint8Array, recipient: AgentId, zomeName: string): Promise<void> {
+    /* Only MainView can cast tips */
+    if (!this.isMainView) {
+      return;
+    }
+    console.debug(`synchronizeCustomTip() Sending to`, recipient, zomeName);
+    const tip: TipProtocol = {AppCustom: appTip};
+    await this.zomeProxy.call('synchronize_tip', {tip,  recipient: recipient.hash, zomeName} as SynchronizeTipInput);
+    this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response: undefined});
+  }
+
+
+  /** Cast Tip to all known livePeers */
   async broadcastTip(tip: TipProtocol, agents?: Array<AgentId>): Promise<void> {
     /** Only MainView can cast tips */
     if (!this.isMainView) {
@@ -166,7 +184,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     const peers = agents.map((key) => key.hash);
     await this.zomeProxy.call('cast_tip', {tip, peers});
     /** Log */
-    this._castLogs.push({ts: Date.now(), tip, peers: agents});
+    this._castLogs.push({ts: Date.now(), tip, peers: agents, response: undefined});
   }
 
 
@@ -177,7 +195,13 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     this._castLogs.map((log) => {
       const type = Object.keys(log.tip)[0]!;
       const payload = (log.tip as any)[type];
-      appSignals.push({timestamp: prettyDate(new Date(log.ts)), type, payload, count: log.peers.length, first: log.peers[0]? log.peers[0].short : undefined });
+      appSignals.push({
+        timestamp: prettyDate(new Date(log.ts)),
+        type,
+        payload,
+        count: log.peers.length,
+        first: log.peers[0]? log.peers[0].short : undefined,
+        response: log.response });
     });
     console.table(appSignals);
   }
@@ -187,8 +211,13 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     switch (type) {
       case TipProtocolType.Ping:
       case TipProtocolType.Pong: return ["", ""]; break;
-      case TipProtocolType.App: {
-        const app = (tip as TipProtocolVariantApp).App;
+      case TipProtocolType.AppValue: {
+        const [key, value] = (tip as TipProtocolVariantAppValue).AppValue;
+        return [key, value];
+      }
+        break;
+      case TipProtocolType.AppCustom: {
+        const app = (tip as TipProtocolVariantAppCustom).AppCustom;
         return ["" + app.length, ""];
       }
       break;

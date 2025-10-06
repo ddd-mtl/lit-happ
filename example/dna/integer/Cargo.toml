@@ -14,4 +14,5 @@ workspace = true
 serde.workspace = true
 holochain_serialized_bytes.workspace = true
 hdk.workspace = true
+zome_signals.workspace = true
 integer_integrity = { path = "../integer_integrity" }

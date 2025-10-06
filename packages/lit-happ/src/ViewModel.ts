@@ -65,12 +65,12 @@ import { Mutex } from 'async-mutex';
 
   /**
    * Mutex wrapping of probeAllInner: Don't call probeAll() during a probeAll()
-   * Should not be async as we expect this to be long, so happs are expected to use signals instead if something changed.
+   * Should not be async as we expect this to be long, so happs are expected to use signals instead to transmit changes in data.
    */
   protected _probeMutex = new Mutex();
   probeAll(): void {
     // if (this._initializationState !== InitializationState.Initialized) {
-    //   console.warn("probeAll() called on unitialized ViewModel");
+    //   console.warn("probeAll() called on an uninitialized ViewModel");
     //   return;
     // }
     if (this._probeMutex.isLocked()) {

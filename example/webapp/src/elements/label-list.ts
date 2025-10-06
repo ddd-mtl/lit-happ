@@ -4,9 +4,7 @@ import {ZomeElement} from "@ddd-qc/lit-happ";
 import {customElement} from "lit/decorators.js";
 
 
-/**
- *
- */
+/** */
 @customElement("label-list")
 export class LabelList extends ZomeElement<LabelZomePerspective, LabelZvm> {
 

@@ -1,17 +1,12 @@
-mod signal_protocol;
+//mod signal_protocol;
 mod callbacks;
-pub use signal_protocol::*;
+//pub use signal_protocol::*;
 
 use hdk::prelude::*;
 use integer_integrity::*;
+use zome_signals::*;
 
-/// Zome Callback
-#[hdk_extern]
-fn init(_: ()) -> ExternResult<InitCallbackResult> {
-  Ok(InitCallbackResult::Pass)
-}
-
-
+///
 #[hdk_extern]
 fn get_integer(ah: ActionHash) -> ExternResult<u32> {
   debug!("*** get_integer() called");
@@ -42,9 +37,9 @@ fn create_integer(value: u32) -> ExternResult<ActionHash> {
   let ah = create_entry(IntegerEntry::Integer(entry))?;
   let _link_ah = create_link(agent_info()?.agent_initial_pubkey, ah.clone(), IntegerLinkType::Default, LinkTag::from(()))?;
 
-  let payload = "I like integers".to_string();
-  debug!("emit_self_signal() {:?}", payload);
-  emit_self_signal(ExampleSignalProtocol::Custom(payload))?;
+  let tip = TipProtocol::AppValue(("msg".to_string(), "I like integers".to_string()));
+  debug!("emit_zome_signal() {:?}", tip);
+  emit_zome_signal(vec![ZomeSignalProtocol::Tip(tip)])?;
   Ok(ah)
 }
 

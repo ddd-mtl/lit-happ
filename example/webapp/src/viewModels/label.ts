@@ -40,7 +40,7 @@ export class LabelZvm extends ZomeViewModel {
 
   /** -- API  -- */
 
-  /**  */
+  /** THROTTLE ON PURPOSE */
   async createLabel(value: string): Promise<EntryId> {
     const res = await this.zomeProxy.createLabel(value);
     try {

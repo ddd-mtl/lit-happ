@@ -77,17 +77,6 @@ EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
 ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
 
-export interface CallAppTipInput {
-  appTip: Uint8Array
-  recipient: AgentArray
-  zomeName: string
-}
-
-export interface CastTipInput {
-  tip: TipProtocol
-  peers: AgentArray[]
-}
-
 /** ValidationStatus */
 export enum ValidatedBy {
 	None = 'None',
@@ -146,7 +135,7 @@ export type ZomeSignalProtocolVariantTip = {Tip: TipProtocol}
 export type ZomeSignalProtocol = 
  | ZomeSignalProtocolVariantSystem | ZomeSignalProtocolVariantEntry | ZomeSignalProtocolVariantLink | ZomeSignalProtocolVariantTip;
 
-/** Zome-agnostic attestation */
+/** App-agnostic attestation */
 export type SystemAttestationVariantPostCommitLink = {
   type: "PostCommitLink"
   link_type: number
@@ -182,12 +171,25 @@ export enum TipProtocolType {
 	Pong = 'Pong',
 	Entry = 'Entry',
 	Link = 'Link',
-	App = 'App',
+	AppCustom = 'AppCustom',
+	AppValue = 'AppValue',
 }
 export type TipProtocolVariantPing = {Ping: AgentArray}
 export type TipProtocolVariantPong = {Pong: AgentArray}
 export type TipProtocolVariantEntry = {Entry: EntryPulse}
 export type TipProtocolVariantLink = {Link: LinkPulse}
-export type TipProtocolVariantApp = {App: Uint8Array}
+export type TipProtocolVariantAppCustom = {AppCustom: Uint8Array}
+export type TipProtocolVariantAppValue = {AppValue: [string, string]}
 export type TipProtocol = 
- | TipProtocolVariantPing | TipProtocolVariantPong | TipProtocolVariantEntry | TipProtocolVariantLink | TipProtocolVariantApp;
+ | TipProtocolVariantPing | TipProtocolVariantPong | TipProtocolVariantEntry | TipProtocolVariantLink | TipProtocolVariantAppCustom | TipProtocolVariantAppValue;
+
+export interface CastTipInput {
+  tip: TipProtocol
+  peers: AgentArray[]
+}
+
+export interface SynchronizeTipInput {
+  tip: TipProtocol
+  recipient: AgentArray
+  zomeName: string
+}
