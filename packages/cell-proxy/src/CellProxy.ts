@@ -456,7 +456,7 @@ export class CellProxy extends CellMixin(Empty) {
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
     }
-    console.warn(`Dumping logs for cell "${this._appProxy.getLocations(this.cell.address)}"`)
+    console.warn(`Dumping call logs for cell "${this._appProxy.getLocations(this.cell.address)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }
