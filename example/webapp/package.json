@@ -12,13 +12,6 @@
 
     "build:ui": "rm -rf dist && vite build",
 
-    "build:profiles": "../../bin/hc dna pack -o ../../artifacts/profiles.dna ../workdir_profiles",
-
-    "build:wasm": "CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
-    "build:dna": "npm run build:wasm && ../../bin/hc dna pack --output=../../artifacts/named_real.dna ../workdir && ../../bin/hc dna pack --output=../../artifacts/named_integer.dna ../workdir_named_integer && npm run build:profiles",
-    "build:happ": "npm run build:dna && ../../bin/hc app pack --output=../../artifacts/playground.happ ../workdir",
-    "build:happ:clone": "npm run build:dna && ../../bin/hc app pack --output=../../artifacts/playground-clone.happ ../workdir_clone",
-
     "start": "UI_PORT=$(port) HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) HAPP_BUILD_MODE='Debug' concurrently \"npm run new-sandbox:mem\" \"sleep 5 && npm run start:ui\"",
     "start:clone": "HAPP_BUILD_MODE='Debug' HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) concurrently \"npm run new-sandbox:mem:clone\" \"sleep 5 && npm run start:ui\"",
     "new-sandbox:mem": "RUST_LOG=trace WASM_LOG=trace echo \"pass\" | ../../bin/hc s --piped -f=$HC_ADMIN_PORT generate ../../artifacts/playground.happ --run=$HC_APP_PORT -a playground network mem",
