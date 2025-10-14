@@ -23,8 +23,13 @@ jobs:
         shell: bash
         run: |
           npm run install:submodules
-      # install hc tool
-      - name: Install zits tool
+      # install hc tools
+      - name: Install hc tools
+        shell: bash
+        run: |
+          npm run install:hc
+      # install zits
+      - name: Install zits
         shell: bash
         run: |
           npm run install:zits
