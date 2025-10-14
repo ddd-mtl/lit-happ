@@ -28,13 +28,10 @@ export function isHappBuildMode(value: any): value is HappBuildModeType {
 
 console.log("[lit-happ] Initializaing LIT-HAPP global consts", window);
 
-let buildMode: HappBuildModeType | undefined = undefined;
-let happEnv: HappEnvType;
-
-
 const maybeElectronApi = 'electronBridge' in window? window.electronBridge as any : undefined;
 
 /** Determine HappEnv */
+let happEnv: HappEnvType;
 try {
     happEnv = process.env.HAPP_ENV as HappEnvType;
     console.log(`[lit-happ] HAPP_ENV defined by process.ENV: "${happEnv}"`);
@@ -42,7 +39,6 @@ try {
     /** Looking for Electron */
     if (maybeElectronApi) {
         happEnv = HappEnvType.Electron;
-        buildMode = maybeElectronApi.BUILD_MODE;
         console.log(`[lit-happ] HAPP_ENV is "${HappEnvType.Electron}"`);
     } else {
         /** Looking for We */
@@ -64,12 +60,16 @@ try {
 }
 
 /** Determine BuildMode */
-if (!buildMode) {
+let buildMode: HappBuildModeType = HappBuildModeType.Retail;
+if (maybeElectronApi) {
+    buildMode = maybeElectronApi.BUILD_MODE;
+} else {
     try {
-       buildMode = process.env.HAPP_BUILD_MODE as HappBuildModeType;
+        if (process.env.HAPP_BUILD_MODE) {
+            buildMode = process.env.HAPP_BUILD_MODE as HappBuildModeType;
+        }
     } catch (e) {
        console.log(`[lit-happ] HAPP_BUILD_MODE not defined. Defaulting to "${HappBuildModeType.Retail}"`);
-       buildMode = HappBuildModeType.Retail;
     }
 }
 
