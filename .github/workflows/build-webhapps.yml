@@ -53,7 +53,7 @@ jobs:
       # Regroup artifacts
       - name: Regroup artifacts
         run: |
-          cp target/wasm32-unknown-unknown/release/*.wasm ./artifacts
+          cp example/target/wasm32-unknown-unknown/release/*.wasm ./artifacts
       # List uploaded files
       - name: List uploaded files
         run: ls -R
