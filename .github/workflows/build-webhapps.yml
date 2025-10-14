@@ -1,0 +1,59 @@
+name: build-webhapps
+
+on:
+  workflow_call:
+
+jobs:
+  build-webhapps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Install npm dependencies
+      - name: Install npm dependencies
+        shell: bash
+        run: |
+          npm install
+      # install rust toolchain (for building example)
+      - name: install rust toolchain
+        shell: bash
+        run: |
+          npm run install:rust
+      # Download submodules
+      - name: Download submodules
+        shell: bash
+        run: |
+          npm run install:submodules
+      # install hc tool
+      - name: Install zits tool
+        shell: bash
+        run: |
+          npm run install:zits
+      # Build example happs
+      - name: Build example happs
+        shell: bash
+        run: |
+          CARGO_NET_GIT_FETCH_WITH_CLI=true npm run build:example:happs
+      # Build packages
+      - name: Build packages
+        run: |
+          npm run build:packages
+      # Build example webapps
+      - name: Build example webapps
+        run: |
+          npm run build:ui -w example/webapp
+      # Build example we-applet
+      - name: Build example we-applet
+        run: |
+          npm run build:ui -w example/we-applet
+      # Regroup artifacts
+      - name: Regroup artifacts
+        run: |
+          cp target/wasm32-unknown-unknown/release/*.wasm ./artifacts
+      # List uploaded files
+      - name: List uploaded files
+        run: ls -R
+        working-directory: ./artifacts
+      # "upload" artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          path: artifacts
