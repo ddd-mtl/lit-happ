@@ -431,6 +431,7 @@ export class CellProxy extends CellMixin(Empty) {
   /**  */
   dumpCallLogs(zomeName?: ZomeName) {
     let result = [];
+    let call_map = new Map<string, [number, number]>(); // fn_fname, call_count, call_total_duration;
     for (const response of this._responseLog) {
       const requestLog = this._requestLog[response.requestIndex];
       if (!requestLog || (zomeName && requestLog.request.zome_name != zomeName)) {
@@ -438,7 +439,8 @@ export class CellProxy extends CellMixin(Empty) {
       }
       const startTime= prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
-      const duration = prettyDuration(new Date(response.timestamp - requestLog.requestTimestamp));
+      const duration_ts = response.timestamp - requestLog.requestTimestamp;
+      const duration = prettyDuration(new Date(duration_ts));
       let input = requestLog.request.payload;
       // if (requestLog.request.payload instanceof HoloHash) {
       //   //console.log("instanceof HoloHash", requestLog.request.payload);
@@ -455,12 +457,27 @@ export class CellProxy extends CellMixin(Empty) {
         ? { startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
         : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
+      let maybe_value = call_map.get(requestLog.request.fn_name);
+      if (!maybe_value) {
+        call_map.set(requestLog.request.fn_name, [1, duration_ts]);
+      } else {
+        call_map.set(requestLog.request.fn_name, [maybe_value[0] + 1, maybe_value[1] + duration_ts]);
+      }
     }
     console.warn(`Dumping call logs for cell "${this._appProxy.getLocations(this.cell.address)}"`)
     if (zomeName) {
       console.warn(` - For zome "${zomeName}"`);
     }
     console.table(result)
+
+    /** Print call_map as Table */
+    let summary: any[] = [];
+    for (const [fn_name, values] of call_map) {
+      const log = { fnName: fn_name, count: values[0], avgDuration: prettyDuration(new Date(values[1] / values[0])) };
+      summary.push(log);
+    }
+    summary.sort((a, b) => b.count - a.count);
+    console.table(summary);
 
     /** Parse signal self-call logs */
     //console.log(this._appProxy.signalLogs)
