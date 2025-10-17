@@ -51,7 +51,7 @@
     "dist:we"               : "npm run build:ui -w we-applet && npm run package:we",
     "package:we"            : "rm -rf artifacts/playground-we_applet-ui.zip & cd example/we-applet/dist && rm -f *.map && bestzip ../../../artifacts/playground-we_applet-ui.zip * && cd ../../../ && hc web-app pack example/webhapp.workdir -o artifacts/playground-we_applet.webhapp",
     "prodtest:we"           : "BOOT_PORT=$(port) SIGNAL_PORT=$(port) concurrently \"npm run serve:run\" \"AGENT_NUM=1 npm run prodtest:we-launch\"",
-    "prodtestfull:we"       : "npm run build:happ && npm run build:packages && npm run build:ui -w example/webapp && npm run build:ui -w we-applet && npm run prodtest:we",
+    "prodtestfull:we"       : "npm run build:happ && npm run build:packages && npm run build:ui -w example/webapp && npm run build:ui -w we-applet && npm run package:we && npm run prodtest:we",
     "prodtest:we-launch"    : "weave \"-b http://127.0.0.1:$BOOT_PORT\" \"-s ws://127.0.0.1:$SIGNAL_PORT\" --dev-config example/we-applet/we.prodtest.config.json --agent-idx $AGENT_NUM",
 
     "serve"                 : "BOOT_PORT=$(cat .hc_bootenv) SIGNAL_PORT=$(cat .hc_signalenv) npm run serve:run",
@@ -85,6 +85,7 @@
   "devDependencies": {
     "@ddd-qc/hc-prebuilt": "0.506.1",
     "@theweave/cli": "0.14.4",
+    "bestzip": "^2.2.0",
     "@types/ws": "^8.5.3"
   },
   "engines": {
