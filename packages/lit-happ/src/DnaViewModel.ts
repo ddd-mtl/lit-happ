@@ -101,6 +101,8 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   get allEntryDefs(): MyDictionary<MyDictionary<EntryDef>> { return this._allEntryDefs }
 
+  get allZomeInfo(): MyDictionary<ZomeInfo> { return this._allZomeInfo }
+
   get dnaInfo(): DnaInfo { return this._dnaInfo! }
 
   get livePeers(): AgentId[] { return this._livePeers };

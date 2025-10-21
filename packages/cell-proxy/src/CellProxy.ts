@@ -94,7 +94,7 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** Cache */
   private _entryDefCache: MyDictionary<MyDictionary<EntryDef>> = {};
-  private _zomeInfoCache?: ZomeInfo;
+  private _zomeInfoCache: MyDictionary<ZomeInfo> = {};
   private _dnaInfoCache?: DnaInfo;
 
 
@@ -382,14 +382,14 @@ export class CellProxy extends CellMixin(Empty) {
    */
   async callZomeInfo(zomeName: ZomeName): Promise<ZomeInfo> {
     //console.log("callZomeInfo()", zomeName, !!this._zomeInfoCache);
-    if (this._zomeInfoCache) {
-      return this._zomeInfoCache;
+    if (this._zomeInfoCache[zomeName]) {
+      return this._zomeInfoCache[zomeName]!;
     }
     try {
       const zome_info = await this.callZome(zomeName, "get_zome_info", null, null, 10 * 1000) as ZomeInfo;
       //console.debug("callZomeInfo() for " + zomeName + " result:")
       //console.log({zome_info})
-      this._zomeInfoCache = zome_info;
+      this._zomeInfoCache[zomeName] = zome_info;
       return zome_info;
     } catch (e) {
       console.error("Calling callZomeInfo() on " + zomeName + " failed. Make sure `get_zome_info()` is implemented in your zome code.")

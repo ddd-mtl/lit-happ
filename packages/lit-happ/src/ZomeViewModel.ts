@@ -5,7 +5,7 @@ import {
     ZomeProxyConstructor,
     CellMixin,
     SignalLog,
-    prettySignalLogs, HCL, MyDictionary, EntryDef, DnaInfo, AgentId,
+    prettySignalLogs, HCL, MyDictionary, EntryDef, DnaInfo, AgentId, ZomeInfo,
 } from "@ddd-qc/cell-proxy";
 import {ViewModel} from "./ViewModel";
 import {SignalCb, ZomeName, Signal, SignalType} from "@holochain/client";
@@ -124,6 +124,8 @@ export abstract class ZomeViewModel extends CellMixin(ViewModel) {
     get hcl(): HCL { return this._dvmParent.hcl }
 
     get allEntryDefs(): MyDictionary<MyDictionary<EntryDef>> { return this._dvmParent.allEntryDefs }
+
+    get allZomeInfo(): MyDictionary<ZomeInfo> { return this._dvmParent.allZomeInfo }
 
     get dnaInfo(): DnaInfo { return this._dvmParent.dnaInfo }
 
