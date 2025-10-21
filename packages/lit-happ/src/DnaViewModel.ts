@@ -211,11 +211,21 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   /** */
   private async queryAllDnaData(): Promise<void> {
-    /** EntryDefs */
+    /** DnaInfo */
+    const dnaInfo = await this._cellProxy.callDnaInfo(this.zomeNames[0]!);
+    this._dnaInfo = dnaInfo;
+    // /** ZomeInfo from dnaInfo */
+    // for (const zomeName of dnaInfo.zome_names) {
+    //   this._allZomeInfo[zomeName] = await this._cellProxy.callZomeInfo(zomeName);
+    // }
+    /** ZomeInfo from known Zomes */
     for (const zomeName of this.zomeNames) {
+      this._allZomeInfo[zomeName] = await this._cellProxy.callZomeInfo(zomeName);
+    }
+    /** EntryDefs */
+    for (const zomeName of Object.keys(this._allZomeInfo)) {
         try {
-          const defs = await this._cellProxy.callEntryDefs(zomeName);
-          this._allEntryDefs[zomeName] = defs;
+          this._allEntryDefs[zomeName] = await this._cellProxy.callEntryDefs(zomeName);
         } catch(e: any) {
           if (e.throttled) {
             continue;
@@ -223,14 +233,6 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
           return Promise.reject(e);
         }
     }
-    /** ZomeInfo */
-    for (const zomeName of this.zomeNames) {
-        const info = await this._cellProxy.callZomeInfo(zomeName);
-        this._allZomeInfo[zomeName] = info;
-    }
-    /** DnaInfo */
-    const info = await this._cellProxy.callDnaInfo(this.zomeNames[0]!);
-    this._dnaInfo = info;
   }
 
 
