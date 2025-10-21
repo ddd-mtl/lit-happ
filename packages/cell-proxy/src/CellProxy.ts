@@ -93,7 +93,7 @@ export class CellProxy extends CellMixin(Empty) {
   setCanThrottle(can: boolean) {this._canThrottle = can};
 
   /** Cache */
-  private _entryDefCache?: MyDictionary<EntryDef>;
+  private _entryDefCache: MyDictionary<MyDictionary<EntryDef>> = {};
   private _zomeInfoCache?: ZomeInfo;
   private _dnaInfoCache?: DnaInfo;
 
@@ -348,22 +348,21 @@ export class CellProxy extends CellMixin(Empty) {
    * Returns an array of all the zome's AppEntryNames and Visibility, i.e. (AppEntryName, isPublic)[]
    */
   async callEntryDefs(zomeName: ZomeName): Promise<MyDictionary<EntryDef>> {
-    console.log("callEntryDefs()", zomeName)
+    console.debug("callEntryDefs()", this._cell?.name, zomeName)
     /** Return cache if any */
-    if (this._entryDefCache) {
-      return this._entryDefCache;
+    if (this._entryDefCache[zomeName]) {
+      return this._entryDefCache[zomeName]!;
     }
     /** Call zome */
     let entryDefs;
     try {
-      /* Need big timeout since holochain is slow when receiving simultaneous calls from multiple happs */
+      /* Need big timeout since Holochain is slow when receiving simultaneous calls from multiple happs */
       entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 60 * 1000) as EntryDefsCallbackResult;
     } catch (e) {
     console.error(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`);
     return Promise.reject(e);
     }
-    console.debug("getEntryDefs() for " + zomeName + " result:")
-    console.debug({entryDefs});
+    console.debug("getEntryDefs() for " + zomeName + " result:", entryDefs);
     /** Map result */
     let result: MyDictionary<EntryDef> = {}
     for (const def of entryDefs.Defs) {
@@ -374,7 +373,7 @@ export class CellProxy extends CellMixin(Empty) {
       result[name!] = def;
     }
     //console.log({result})
-    this._entryDefCache = result;
+    this._entryDefCache[zomeName] = result;
     return result;
   }
 
