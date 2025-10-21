@@ -81,7 +81,8 @@ ValidationStatus, ValidationReceipt,
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {integerFunctionNames} from './integer.fn';
-import {IntegerUnitEnum, IntegerLinkType} from './integer.integrity';
+import {IntegerUnitEnum} from './integer.integrity';
+import {IntegerLinkType} from './integer.integrity';
 
 /**
  *

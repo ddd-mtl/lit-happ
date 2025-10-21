@@ -85,7 +85,8 @@ import {NotificationsLinkType as LinkTypes} from "./notifications.integrity"
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {notificationsFunctionNames} from './notifications.fn';
-import {NotificationsUnitEnum, NotificationsLinkType} from './notifications.integrity';
+
+import {NotificationsLinkType} from './notifications.integrity';
 
 /**
  *
@@ -93,7 +94,7 @@ import {NotificationsUnitEnum, NotificationsLinkType} from './notifications.inte
 export class NotificationsProxy extends ZomeProxy {
   static override readonly DEFAULT_ZOME_NAME = "notifications";
   static override readonly FN_NAMES = notificationsFunctionNames;
-  static override readonly ENTRY_TYPES = Object.values(NotificationsUnitEnum);
+  static override readonly ENTRY_TYPES = [];
   static override readonly LINK_TYPES = Object.values(NotificationsLinkType);
  
   async sendContact(contact: Contact): Promise<void> {

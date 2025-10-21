@@ -81,7 +81,8 @@ ValidationStatus, ValidationReceipt,
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {labelFunctionNames} from './label.fn';
-import {LabelUnitEnum, LabelLinkType} from './label.integrity';
+import {LabelUnitEnum} from './label.integrity';
+import {LabelLinkType} from './label.integrity';
 
 /**
  *

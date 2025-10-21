@@ -81,7 +81,8 @@ ValidationStatus, ValidationReceipt,
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {realFunctionNames} from './real.fn';
-import {RealUnitEnum, RealLinkType} from './real.integrity';
+import {RealUnitEnum} from './real.integrity';
+import {RealLinkType} from './real.integrity';
 
 /**
  *

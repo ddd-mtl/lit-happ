@@ -81,7 +81,8 @@ ValidationStatus, ValidationReceipt,
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {sharedOwnershipFunctionNames} from './sharedOwnership.fn';
-import {SharedOwnershipUnitEnum, SharedOwnershipLinkType} from './sharedOwnership.integrity';
+import {SharedOwnershipUnitEnum} from './sharedOwnership.integrity';
+import {SharedOwnershipLinkType} from './sharedOwnership.integrity';
 
 /**
  *

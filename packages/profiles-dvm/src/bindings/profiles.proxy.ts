@@ -85,7 +85,8 @@ import {ProfilesLinkType as LinkTypes} from "./profiles.integrity"
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {profilesFunctionNames} from './profiles.fn';
-import {ProfilesUnitEnum, ProfilesLinkType} from './profiles.integrity';
+import {ProfilesUnitEnum} from './profiles.integrity';
+import {ProfilesLinkType} from './profiles.integrity';
 
 /**
  *

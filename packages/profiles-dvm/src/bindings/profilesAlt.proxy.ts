@@ -81,7 +81,8 @@ ValidationStatus, ValidationReceipt,
 
 import {ZomeProxy} from '@ddd-qc/lit-happ';
 import {profilesAltFunctionNames} from './profilesAlt.fn';
-import {ProfilesAltUnitEnum, ProfilesAltLinkType} from './profilesAlt.integrity';
+import {ProfilesAltUnitEnum} from './profilesAlt.integrity';
+import {ProfilesAltLinkType} from './profilesAlt.integrity';
 
 /**
  *
