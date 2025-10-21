@@ -20,7 +20,7 @@ export class ViewCellContext extends LitElement {
     const cellName = this.cell === undefined? "undefined" : this.cell.name;
     return html`
     <div>
-        <span><b>(Cell set to: "${cellName}")</b></span>
+        <span><b>(Cell: "${cellName}")</b></span>
     </div>
     `;
   }
