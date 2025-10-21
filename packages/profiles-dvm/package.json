@@ -32,7 +32,7 @@
   "dependencies": {
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain-open-dev/elements": "=0.500.1",
-    "@holochain/client": "^0.19.1",
+    "@holochain/client": "=0.19.1",
     "@msgpack/msgpack": "^3.1.1",
     "lit": "3.0.2"
   },

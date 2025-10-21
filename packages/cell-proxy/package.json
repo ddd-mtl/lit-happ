@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/cell-proxy",
-  "version": "0.32.11",
+  "version": "0.32.12",
   "description": "Proxy classes and helpers for managing a Holochain AppWebsocket",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -28,7 +28,7 @@
     "typescript": "~5.5.4"
   },
   "dependencies": {
-    "@holochain/client": "^0.19.1",
+    "@holochain/client": "=0.19.1",
     "@bitgo/blake2b": "^3.2.4",
     "libsodium-wrappers-sumo": "^0.7.15",
     "js-base64": "^3.7.5",

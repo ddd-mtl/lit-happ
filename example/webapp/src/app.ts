@@ -1,5 +1,6 @@
 import { html } from "lit";
 import {state} from "lit/decorators.js";
+import {ContextProvider, createContext} from "@lit/context";
 import {
   HvmDef,
   HappElement, BaseRoleName, CloneId, AppProxy, EntryId, DnaViewModel, HCL, DvmDef,
@@ -21,7 +22,7 @@ import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
-import {ContextProvider, createContext} from "@lit/context";
+
 
 import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
 
@@ -251,7 +252,7 @@ export class PlaygroundApp extends HappElement {
     /** render all */
     return html`
       <div style="margin:10px;${this._initializedOnline? "" : "background:red;"}">
-        <h2>${(this.constructor as any).HVM_DEF.id} App</h2>
+        <h2>Lit-happ ${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(_e:any) => {this.appProxy.dumpSignalLogs(true)}}>
         <input type="button" value="Loop networkInfos" @click=${async (_e:any) => {
