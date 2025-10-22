@@ -63,7 +63,7 @@ fn create_real(value: f32)  -> ExternResult<EntryHash> {
 #[hdk_extern]
 fn get_my_reals(_:()) -> ExternResult<Vec<f32>> {
   debug!("*** get_my_reals() called");
-  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, RealLink::Default).unwrap().build())?;
+  let links = get_links(LinkQuery::try_new(agent_info()?.agent_initial_pubkey, RealLink::Default).unwrap(), GetStrategy::default())?;
   let labels = links.into_iter().map(|link| {
       let name = get_real(link.target.into_entry_hash().unwrap()).unwrap();
       return name;

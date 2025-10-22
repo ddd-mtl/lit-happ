@@ -69,7 +69,7 @@ fn get_my_values_local(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
 #[hdk_extern]
 fn get_my_values(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
   debug!("*** get_my_values()");
-  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default).unwrap().build())?;
+  let links = get_links(LinkQuery::try_new(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default).unwrap(), GetStrategy::default())?;
   let numbers = links.into_iter().map(|link| {
     let ah: ActionHash = link.target.into_action_hash().unwrap();
     let value = get_integer(ah.clone()).unwrap();
@@ -82,7 +82,7 @@ fn get_my_values(_:()) -> ExternResult<Vec<(ActionHash, u32)>> {
 #[hdk_extern]
 fn get_my_values_incremental(knowns: Vec<ActionHash>) -> ExternResult<Vec<(ActionHash, u32)>> {
   debug!("*** get_my_values_incremental(): knowns = {:?}", knowns);
-  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default).unwrap().build())?;
+  let links = get_links(LinkQuery::try_new(agent_info()?.agent_initial_pubkey, IntegerLinkType::Default).unwrap(), GetStrategy::default())?;
   let ahs: Vec<ActionHash> = links.into_iter()
     .map(|link| link.target.into_action_hash().unwrap())
     .filter(|item| !knowns.contains(item))

@@ -57,7 +57,7 @@ fn create_label(name: String)  -> ExternResult<EntryHash> {
 #[hdk_extern]
 fn get_my_labels(_:()) -> ExternResult<Vec<String>> {
   debug!("*** get_my_labels() called");
-  let links = get_links(GetLinksInputBuilder::try_new(agent_info()?.agent_initial_pubkey, LabelLink::Default).unwrap().build())?;
+  let links = get_links(LinkQuery::try_new(agent_info()?.agent_initial_pubkey, LabelLink::Default).unwrap(), GetStrategy::default())?;
   let labels = links.into_iter().map(|link| {
       let name = get_label(link.target.into_entry_hash().unwrap()).unwrap();
       return name;
