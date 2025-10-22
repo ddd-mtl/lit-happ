@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/shared-ownership-dvm",
-  "version": "0.32.8",
+  "version": "0.33.0",
   "description": "DnaViewModel implementation for the SharedOwnership zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",
