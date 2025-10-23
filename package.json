@@ -26,7 +26,7 @@
     "version"               : "$npm_package_config_bin/hc --version & $npm_package_config_bin/kitsune2-bootstrap-srv --version & $npm_package_config_bin/holochain --version & zits --version & lair-keystore --version & echo \"Typescript $(tsc --version)\"",
 
     "package:profiles"      : "$npm_package_config_bin/hc dna pack -o artifacts/profiles.dna example/workdir_profiles",
-    "build:wasm"            : "cd example && CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
+    "build:wasm"            : "cd example && RUSTFLAGS='--cfg getrandom_backend=\"custom\"' CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
     "build:dna"             : "npm run build:wasm && $npm_package_config_bin/hc dna pack --output=artifacts/named_real.dna example/workdir && $npm_package_config_bin/hc dna pack --output=artifacts/named_integer.dna example/workdir_named_integer && npm run package:profiles",
     "build:happ"            : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground.happ example/workdir",
     "build:happ:clone"      : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground-clone.happ example/workdir_clone",
