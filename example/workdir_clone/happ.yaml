@@ -1,5 +1,5 @@
 ---
-manifest_version: "1"
+manifest_version: "0"
 name: playground-clone
 description: Playground happ for testing lit-happ cloning features
 roles:
@@ -8,12 +8,12 @@ roles:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/named_integer.dna
+      path: ../../artifacts/named_integer.dna
       clone_limit: 10
   - name: rNamedReal
     provisioning:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/named_real.dna
+      path: ../../artifacts/named_real.dna
       clone_limit: 10

@@ -86,7 +86,7 @@ export class NetworkCaller {
     }
     /* Call networkInfo */
     const response = await this.appProxy.dumpNetworkMetrics({
-      dna: this.cellAddr.dnaId.hash,
+      dna_hash: this.cellAddr.dnaId.hash,
       include_dht_summary: true, // ???
     } as DumpNetworkMetricsRequest);
     if (!response || !response[this.cellAddr.dnaId.b64]) {

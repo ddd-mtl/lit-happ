@@ -1,5 +1,5 @@
 ---
-manifest_version: "1"
+manifest_version: "0"
 name: playground
 description: Playground happ for testing lit-happ framework
 roles:
@@ -8,26 +8,26 @@ roles:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/named_integer.dna
+      path: ../../artifacts/named_integer.dna
       clone_limit: 0
   - name: rNamedReal
     provisioning:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/named_real.dna
+      path: ../../artifacts/named_real.dna
       clone_limit: 0
   - name: rImpostor
     provisioning:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/named_real.dna
+      path: ../../artifacts/named_real.dna
       clone_limit: 0
   - name: profiles
     provisioning:
       strategy: create
       deferred: true
     dna:
-      bundled: ../../artifacts/profiles.dna
+      path: ../../artifacts/profiles.dna
       clone_limit: 0

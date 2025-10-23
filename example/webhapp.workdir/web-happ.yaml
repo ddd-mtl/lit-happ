@@ -1,7 +1,7 @@
 ---
-manifest_version: "1"
+manifest_version: "0"
 name: Lit-happ Example
 ui:
-  bundled: "../../artifacts/playground-we_applet-ui.zip"
-happ_manifest:
-  bundled: "../../artifacts/playground.happ"
+  path: "../../artifacts/playground-we_applet-ui.zip"
+happ:
+  path: "../../artifacts/playground.happ"
