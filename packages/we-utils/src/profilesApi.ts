@@ -1,22 +1,21 @@
 import {
-  AgentPubKey,
-  AppClient,
-  AppEvents,
-  AppInfoResponse,
-  SignalCb,
-  CallZomeRequest,
-  ClonedCell,
-  CreateCloneCellResponse,
-  DisableCloneCellRequest,
-  EnableCloneCellRequest,
-  InstalledAppId,
-  CreateCloneCellRequest,
-  DumpNetworkStatsResponse,
-  DumpNetworkMetricsRequest,
-  DumpNetworkMetricsResponse,
+    AgentPubKey,
+    AppClient,
+    AppEvents,
+    AppInfoResponse,
+    SignalCb,
+    CallZomeRequest,
+    ClonedCell,
+    CreateCloneCellResponse,
+    DisableCloneCellRequest,
+    EnableCloneCellRequest,
+    InstalledAppId,
+    CreateCloneCellRequest,
+    DumpNetworkStatsResponse,
+    DumpNetworkMetricsRequest,
+    DumpNetworkMetricsResponse,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
-import {ProfilesClient} from "@holochain-open-dev/profiles";
 
 
 /**
@@ -24,13 +23,20 @@ import {ProfilesClient} from "@holochain-open-dev/profiles";
  */
 export class ProfilesApi implements AppClient {
 
-  constructor(private _profilesClient: ProfilesClient/*, public appId: InstalledAppId*/) {
+  /* WARN: We don't want a dep to Profiles, so manually make sure API is in check!  */
+  constructor(private _profilesClient: any /* ProfilesClient */ ) {
+    this.appClient = _profilesClient.client;
+    // this.roleName = _profilesClient.roleName;
+    // this.zomeName = _profilesClient.zomeName;
     this.myPubKey = _profilesClient.client.myPubKey;
     this.installedAppId = _profilesClient.client.installedAppId;
   }
 
   /** -- AppClient -- */
 
+  appClient: AppClient
+  // roleName: RoleName
+  // zomeName: String
   myPubKey: AgentPubKey;
   installedAppId: InstalledAppId;
 
@@ -76,12 +82,12 @@ export class ProfilesApi implements AppClient {
     eventName: Name | readonly Name[],
     listener: SignalCb,
   ): UnsubscribeFunction {
-    return this._profilesClient.client.on(eventName, listener);
+    return this.appClient.on(eventName, listener);
   }
 
 
   async appInfo(): Promise<AppInfoResponse> {
-    const res = await this._profilesClient.client.appInfo();
+    const res = await this.appClient.appInfo();
     // if (res.installed_app_id != args.installed_app_id) {
     //   throw new Error("Unknown appId requested");
     // }
@@ -90,29 +96,29 @@ export class ProfilesApi implements AppClient {
 
   async createCloneCell(request: CreateCloneCellRequest): Promise<CreateCloneCellResponse> {
     //console.log("enableCloneCell() called:", request)
-    return this._profilesClient.client.createCloneCell(request);
+    return this.appClient.createCloneCell(request);
   }
 
   async enableCloneCell(request: EnableCloneCellRequest): Promise<ClonedCell> {
     //console.log("enableCloneCell() called:", request)
-    return this._profilesClient.client.enableCloneCell(request);
+    return this.appClient.enableCloneCell(request);
   }
 
   async disableCloneCell(request: DisableCloneCellRequest): Promise<void> {
     //console.log("disableCloneCell() called:", request)
-    return this._profilesClient.client.disableCloneCell(request);
+    return this.appClient.disableCloneCell(request);
   }
 
 
   async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
-    return this._profilesClient.client.dumpNetworkStats();
+    return this.appClient.dumpNetworkStats();
   }
 
   async dumpNetworkMetrics(
     req: DumpNetworkMetricsRequest,
     _timeout?: number
   ): Promise<DumpNetworkMetricsResponse> {
-    return this._profilesClient.client.dumpNetworkMetrics(req);
+    return this.appClient.dumpNetworkMetrics(req);
   }
 
 }

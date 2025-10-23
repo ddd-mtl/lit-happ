@@ -25,7 +25,7 @@ async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
         cell_info: {
             profiles: [fakeProfilesDnaCellInfo],
         },
-        status: {type: "running"},
+        status: {type: "enabled"},
         installed_at: 1640995200000000,
     };
 }
