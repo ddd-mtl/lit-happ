@@ -13,8 +13,8 @@
   ],
   "config"         : {
     "hc_version"  : "0.6.0-dev.28",
-    "k2_version"  : "0.1.5",
-    "zits_version": "1.17.0",
+    "k2_version"  : "0.2.17",
+    "zits_version": "1.17.1",
     "bin"         : "bin"
   },
   "scripts": {
