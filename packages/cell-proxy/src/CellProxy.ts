@@ -358,9 +358,13 @@ export class CellProxy extends CellMixin(Empty) {
     try {
       /* Need big timeout since Holochain is slow when receiving simultaneous calls from multiple happs */
       entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 60 * 1000) as EntryDefsCallbackResult;
-    } catch (e) {
-    console.error(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`);
-    return Promise.reject(e);
+    } catch (e: any) {
+      console.error(`Calling "entry_defs()" failed on zome "${zomeName}". Possibly because zome does not have any entry types defined.`);
+      if (e && e.failure && e.failure.message && e.failure.message.includes("Attempted to call a zome function that doesn't exist")) {
+          this._entryDefCache[zomeName] = {};
+          return {};
+      }
+      return Promise.reject(e);
     }
     console.debug("getEntryDefs() for " + zomeName + " result:", entryDefs);
     /** Map result */
@@ -426,6 +430,7 @@ export class CellProxy extends CellMixin(Empty) {
   //     this.dumpCallLogs(zomeName)
   //   }
   // }
+
 
   /**  */
   dumpCallLogs(zomeName?: ZomeName) {
