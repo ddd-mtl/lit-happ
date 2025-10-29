@@ -84,7 +84,7 @@
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
     "@ddd-qc/hc-prebuilt": "0.506.1",
-    "@theweave/cli": "0.14.4",
+    "@theweave/cli": "=0.15.0",
     "bestzip": "^2.2.0",
     "@types/ws": "^8.5.3"
   },
