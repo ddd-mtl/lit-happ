@@ -1,7 +1,14 @@
 node_modules/
 dist/
 artifacts/
-example/target
-example/Cargo.lock
+
+playgrounds/target
+playgrounds/Cargo.lock
+
+**/*.tsbuildinfo
+
+.vscode/
 .idea/
+
+.DS_Store
 package-lock.json

@@ -7,14 +7,14 @@ rm packages/cell-proxy/tsconfig.tsbuildinfo
 # lit-happ
 rm -rf packages/lit-happ/dist
 rm packages/lit-happ/tsconfig.tsbuildinfo
-# example
-rm -rf example/webapp/out-tsc/
-rm -rf example/webapp/dist/
-rm -rf example/webapp/target/
-rm example/webapp/.hc*
-rm example/we-applet/.hc*
-rm example/webapp/tsconfig.tsbuildinfo
-rm example/Cargo.lock
+# playgrounds
+rm -rf playgrounds/webapp/out-tsc/
+rm -rf playgrounds/webapp/dist/
+rm -rf playgrounds/webapp/target/
+rm playgrounds/webapp/.hc*
+rm playgrounds/we-applet/.hc*
+rm playgrounds/webapp/tsconfig.tsbuildinfo
+rm playgrounds/Cargo.lock
 rm artifacts/*.dna
 rm artifacts/*.happ
 

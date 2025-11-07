@@ -68,10 +68,7 @@ import {
 DhtOpHashB64, DhtOpHash,
 /** DnaFile */
 // @ts-ignore
-DnaFile,
-/** entry */
-// @ts-ignore
-EntryDefLocation, EntryDefLocationType, AppEntryDefLocation, GetOptions, GetStrategy,
+DnaFile, DnaDef,
 /** entry-details */
 // @ts-ignore
 EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
@@ -80,108 +77,16 @@ EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
 ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
 
-/** User defined external dependencies */
-// @ts-ignore
-import {NotificationsLinkType as LinkTypes} from "./notifications.integrity"
+export const AGENT_DIRECTORY_PATH = "registered_agents";
 
-export interface UpdateContactInput {
-  original_contact_hash: ActionArray
-  previous_contact_hash: ActionArray
-  updated_contact: Contact
+/** Entry types are not necessary, but it is defined because otherwise holochain will fail. */
+export enum AgentDirectoryEntryType {
+	Stub = 'Stub',
 }
+export type AgentDirectoryEntryVariantStub = {Stub: Stub}
+export type AgentDirectoryEntry = 
+ | AgentDirectoryEntryVariantStub;
 
-export interface Contact {
-  agent_pub_key: AgentArray
-  text_number?: string
-  whatsapp_number?: string
-  email_address?: string
-}
-
-export interface NotificationTip {
-  retry_count: number
-  status: string
-  message: string
-  notificants: AgentArray[]
-  contacts: Contact[]
-  extra_context: string
-  message_id: string
-  destination: string
-}
-
-export type SignalVariantLinkCreated = {
-  type: "LinkCreated"
-  action: SignedActionHashed
-  link_type: LinkTypes
-}
-export type SignalVariantLinkDeleted = {
-  type: "LinkDeleted"
-  action: SignedActionHashed
-  link_type: LinkTypes
-}
-export type SignalVariantEntryCreated = {
-  type: "EntryCreated"
-  action: SignedActionHashed
-  app_entry: EntryTypes
-}
-export type SignalVariantEntryUpdated = {
-  type: "EntryUpdated"
-  action: SignedActionHashed
-  app_entry: EntryTypes
-  original_app_entry: EntryTypes
-}
-export type SignalVariantEntryDeleted = {
-  type: "EntryDeleted"
-  action: SignedActionHashed
-  original_app_entry: EntryTypes
-}
-export type Signal =
-  | SignalVariantLinkCreated
-  | SignalVariantLinkDeleted
-  | SignalVariantEntryCreated
-  | SignalVariantEntryUpdated
-  | SignalVariantEntryDeleted;
-
-export interface AgentPubKeyWithTag {
-  agent: AgentArray
-  tag: string
-}
-
-export interface RemoveNotifierForNotificantInput {
-  base_notificant: AgentArray
-  target_notifier: AgentArray
-}
-
-export interface UpdateTwilioCredentialsInput {
-  original_twilio_credentials_hash: ActionArray
-  previous_twilio_credentials_hash: ActionArray
-  updated_twilio_credentials: TwilioCredentials
-}
-
-export interface Contact {
-  agent_pub_key: AgentArray
-  text_number?: string
-  whatsapp_number?: string
-  email_address?: string
-}
-
-export enum EntryTypesType {
-	TwilioCredentials = 'TwilioCredentials',
-	Contact = 'Contact',
-	SentNotification = 'SentNotification',
-}
-export type EntryTypes = 
- | {type: {TwilioCredentials: null}, content: TwilioCredentials}
- | {type: {Contact: null}, content: Contact}
- | {type: {SentNotification: null}, content: SentNotification}
-
-
-export interface SentNotification {
-  unique_data: string
-}
-
-export interface TwilioCredentials {
-  account_sid: string
-  auth_token: string
-  from_number_text: string
-  from_number_whatsapp: string
+/** Bogus Entry */
+export interface Stub {
 }

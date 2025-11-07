@@ -1,18 +1,18 @@
 # lit-happ
 
-A MVVM framework for building holochain apps web-UI with Lit.
+A [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) framework for building [Holochain](https://www.holochain.org/) apps with [Lit](https://lit.dev/).
 
-The framework is composed of 3 main packages:
- - [cell-proxy](packages/cell-proxy): Defines Conductor and Cell Proxy classes for using a holochain conductor.
- - [lit-happ](packages/lit-happ): The main package that defines ViewModels and base class Elements for using them in custom LitElements.
- - [we-utils](packages/we-utils): Helpers for making a Moss/Weave version of the happ made with lit-happ.
+The framework is composed of 3 packages:
+ - [@ddd-qc/cell-proxy](packages/cell-proxy): Defines *Conductor* and *Cell Proxy* classes for using a Holochain conductor.
+ - [@ddd-qc/lit-happ](packages/lit-happ): The main package that defines *ViewModels* and base class Elements for using them in custom LitElements.
+ - [@ddd-qc/we-utils](packages/we-utils): Helpers for making a [Moss](https://moss.social/) compatible version of a happ made with lit-happ.
 
  
 
-Extra packages:
-- [notifications-dvm](packages/notifications-dvm): Defines bindings and ViewModels for the [notification zome](https://github.com/holochain-open-dev/notifications)
-- [profiles-dvm](packages/notifications-dvm): Defines bindings and ViewModels for the [profiles zome](https://github.com/holochain-open-dev/profiles)
-
+The repo also provides Typescript bindings, DnaViewModels (DVMs) and web-elements for the zomes in the [ZDK](https://github.com/ddd-mtl/zdk):
+- [@ddd-qc/profiles-dvm](@ddd-qc/profiles-dvm) for the [profiles zome](https://github.com/holochain-open-dev/profiles)
+- [@ddd-qc/agent-directory](@ddd-qc/agent-directory) for the [agent_directory_zome](https://github.com/ddd-mtl/zdk/zomes/agent_directory)
+- [@ddd-qc/shared-ownership-dvm](@ddd-qc/shared-ownership-dvm)for the [shared_ownership_zome](https://github.com/ddd-mtl/zdk/zomes/shared_ownership_zome)
 
 # Playgrounds
 

@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "ci:tsc": "tsc --version",
-    "lint"  : "eslint --ext .ts .",
+    "lint"  : "eslint --ext .ts ",
     "build" : "rm -rf dist && tsc",
     "build:watch": "tsc -w --preserveWatchOutput"
   },
