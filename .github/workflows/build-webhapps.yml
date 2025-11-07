@@ -45,7 +45,7 @@ jobs:
       # Build example webapps
       - name: Build example webapps
         run: |
-          npm run build:ui -w example/webapp
+          npm run build:ui -w playgrounds/webapp
       # Build example we-applet
       - name: Build example we-applet
         run: |
