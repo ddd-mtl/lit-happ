@@ -5,7 +5,7 @@
       "networkSeed": "test",
       "icon": {
         "type": "filesystem",
-        "path": "example/we-applet/icon.png"
+        "path": "playgrounds/we-applet/icon.png"
       },
       "creatingAgent": {
         "agentIdx": 1,
@@ -13,7 +13,7 @@
           "nickname": "Alex",
           "avatar": {
             "type": "filesystem",
-            "path": "example/we-applet/icon.png"
+            "path": "playgrounds/we-applet/icon.png"
           }
         }
       },
@@ -35,7 +35,7 @@
       "description": "...",
       "icon": {
         "type": "filesystem",
-        "path": "example/we-applet/icon.png"
+        "path": "playgrounds/we-applet/icon.png"
       },
       "source": {
         "type": "filesystem",

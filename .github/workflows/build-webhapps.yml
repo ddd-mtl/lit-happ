@@ -49,11 +49,11 @@ jobs:
       # Build example we-applet
       - name: Build example we-applet
         run: |
-          npm run build:ui -w example/we-applet
+          npm run build:ui -w playgrounds/we-applet
       # Regroup artifacts
       - name: Regroup artifacts
         run: |
-          cp example/target/wasm32-unknown-unknown/release/*.wasm ./artifacts
+          cp playgrounds/target/wasm32-unknown-unknown/release/*.wasm ./artifacts
       # List uploaded files
       - name: List uploaded files
         run: ls -R
