@@ -1,5 +1,5 @@
 import {ZomeViewModel, AgentId} from "@ddd-qc/lit-happ";
-import {AgentDirectoryProxy} from "./bindings/agent_directory.proxy";
+import {AgentDirectoryProxy} from "./bindings/agentDirectory.proxy";
 
 /** Perspective */
 export interface AgentDirectoryPerspective {

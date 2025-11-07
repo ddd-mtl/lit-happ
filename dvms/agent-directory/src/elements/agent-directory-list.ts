@@ -1,7 +1,7 @@
 import {html} from "lit";
 import {state, customElement} from "lit/decorators.js";
 import {ZomeElement} from "@ddd-qc/lit-happ";
-import {AgentDirectoryPerspective, AgentDirectoryZvm} from "../agent_directory.zvm";
+import {AgentDirectoryPerspective, AgentDirectoryZvm} from "../agentDirectory.zvm";
 
 /**
  * @element agent-directory-list

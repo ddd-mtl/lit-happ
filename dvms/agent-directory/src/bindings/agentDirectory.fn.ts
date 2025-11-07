@@ -22,5 +22,5 @@ export function generateAgentDirectoryZomeFunctionsArray(zomeName: ZomeName): [Z
 }
 
 
-/** Tuple array of all zome function names with default zome name "agent_directory" */
-export const agentDirectoryZomeFunctions: [ZomeName, FunctionName][] = generateAgentDirectoryZomeFunctionsArray("agent_directory");
+/** Tuple array of all zome function names with default zome name "agentDirectory" */
+export const agentDirectoryZomeFunctions: [ZomeName, FunctionName][] = generateAgentDirectoryZomeFunctionsArray("agentDirectory");

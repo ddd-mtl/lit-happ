@@ -26,10 +26,12 @@ unused_attributes = "allow"
 [workspace.dependencies]
 holochain_serialized_bytes = "0.0.56"
 serde = { version = "=1.0.219", default-features = false }
-hdi = { version = "=0.7.0-dev.18", default-features = false }
-hdk = { version = "=0.6.0-dev.21", default-features = false }
+hdi = { version = "=0.7.0-rc.0", default-features = false }
+hdk = { version = "=0.6.0-rc.0", default-features = false }
 
-zome_signals = { git = "https://github.com/ddd-mtl/zome-signals", branch = "hdk-6.0" }
+zome_signals = { path = "../submodules/zdk/crates/zome_signals" }
+hc_zome_profiles_coordinator =  { path = "../submodules/zdk/zomes/profiles_alt_coordinator", package = "profiles_alt_coordinator" }
+hc_zome_profiles_integrity = { path = "../submodules/profiles/crates/integrity" }
 
 
 [profile.dev]

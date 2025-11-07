@@ -26,19 +26,20 @@
     "version"               : "$npm_package_config_bin/hc --version & $npm_package_config_bin/kitsune2-bootstrap-srv --version & $npm_package_config_bin/holochain --version & zits --version & lair-keystore --version & echo \"Typescript $(tsc --version)\"",
 
     "package:profiles"      : "$npm_package_config_bin/hc dna pack -o artifacts/profiles.dna playgrounds/workdir_profiles",
+
     "build:wasm"            : "cd playgrounds && RUSTFLAGS='--cfg getrandom_backend=\"custom\"' CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
     "build:dna"             : "npm run build:wasm && $npm_package_config_bin/hc dna pack --output=artifacts/named_real.dna playgrounds/workdir && $npm_package_config_bin/hc dna pack --output=artifacts/named_integer.dna playgrounds/workdir_named_integer && npm run package:profiles",
     "build:happ"            : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground.happ playgrounds/workdir",
     "build:happ:clone"      : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground-clone.happ playgrounds/workdir_clone",
 
-    "build:shared-ownership": "bash scripts/ts-bindings.sh && npm run build -w packages/shared-ownership-dvm",
-    "build:notifications"   : "bash scripts/ts-bindings.sh && npm run build -w packages/notifications-dvm",
-    "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w packages/profiles-dvm",
+    "build:shared-ownership": "bash scripts/ts-bindings.sh && npm run build -w dvms/shared-ownership",
+    "build:agent-directory" : "bash scripts/ts-bindings.sh && npm run build -w dvms/agent-directory",
+    "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w dvms/profiles",
 
     "build:example:happs"   : "npm run build:happ && npm run build:happ:clone && bash scripts/ts-bindings-example.sh",
 
     "build:cell-proxy"      : "bash scripts/ts-bindings.sh && npm run build -w packages/cell-proxy",
-    "build:packages"        : "npm run build:cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:notifications && npm run build:shared-ownership",
+    "build:packages"        : "npm run build:cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:agent-directory && npm run build:shared-ownership",
 
     "start"                 : "npm run start -w playgrounds/webapp",
     "start:clone"           : "npm run start:clone -w playgrounds/webapp",
@@ -60,10 +61,12 @@
     "publish:cell"          : "npm run build:cell-proxy && cd packages/cell-proxy && npm publish",
     "publish:lit"           : "npm run build -w packages/lit-happ && cd packages/lit-happ && npm publish",
     "publish:we"            : "npm run build -w packages/we-utils && cd packages/we-utils && npm publish",
-    "publish:profiles"      : "npm run build -w packages/profiles-dvm && cd packages/profiles-dvm && npm publish",
-    "publish:notifications" : "npm run build -w packages/notifications-dvm && cd packages/notifications-dvm && npm publish",
-    "publish:shared"        : "npm run build -w packages/shared-ownership-dvm && cd packages/shared-ownership-dvm && npm publish",
-    "publish:all"           : "npm run publish:cell && npm run publish:lit && npm run publish:we && npm run publish:profiles && npm run publish:notifications && npm run publish:shared",
+
+    "publish:agent-directory": "npm run build -w dvms/agent-directory && cd dvms/agent-directory && npm publish",
+    "publish:profiles"      : "npm run build -w dvms/profiles && cd dvms/profiles && npm publish",
+    "publish:shared"        : "npm run build -w dvms/shared-ownership && cd dvms/shared-ownership && npm publish",
+
+    "publish:all"           : "npm run publish:cell && npm run publish:lit && npm run publish:we && npm run publish:profiles && npm run publish:agent-directory && npm run publish:shared",
 
     "update-version"        : "bash scripts/update-version-number.sh $npm_package_version",
 

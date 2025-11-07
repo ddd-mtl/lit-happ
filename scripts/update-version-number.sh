@@ -19,22 +19,22 @@ OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/lit-happ/package.json | 
 echo "./packages/lit-happ/package.json $OLD_VER -> $1"
 sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/lit-happ/package.json
 
-# Change profiles-dvm/package.json
-OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/profiles-dvm/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
-echo "./packages/profiles-dvm/package.json $OLD_VER -> $1"
-sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/profiles-dvm/package.json
-
-# Change notifications-dvm/package.json
-OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/notifications-dvm/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
-echo "./packages/notifications-dvm/package.json $OLD_VER -> $1"
-sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/notifications-dvm/package.json
-
 # Change we-utils/package.json
 OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/we-utils/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
 echo "./packages/we-utils/package.json $OLD_VER -> $1"
 sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/we-utils/package.json
 
+# Change profiles-dvm/package.json
+OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/profiles/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
+echo "./dvms/profiles/package.json $OLD_VER -> $1"
+sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/profiles/package.json
+
+# Change notifications-dvm/package.json
+OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/agent-directory/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
+echo "./dvms/notifications/package.json $OLD_VER -> $1"
+sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/agent-directory/package.json
+
 # Change shared-ownership-dvm/package.json
-OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./packages/shared-ownership-dvm/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
-echo "./packages/shared-ownership-dvm/package.json $OLD_VER -> $1"
-sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./packages/shared-ownership-dvm/package.json
+OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/shared-ownership/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
+echo "./dvms/shared-ownership/package.json $OLD_VER -> $1"
+sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/shared-ownership/package.json

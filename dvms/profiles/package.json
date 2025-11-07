@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/ddd-mtl/lit-happ/issues"
   },
-  "homepage": "https://github.com/ddd-mtl/lit-happ/blob/main/packages/profiles-dvm/",
+  "homepage": "https://github.com/ddd-mtl/lit-happ/blob/main/dvms/profiles/",
   "devDependencies": {
     "@types/node": "^20.8.9",
     "tslib": "^2.4.0",

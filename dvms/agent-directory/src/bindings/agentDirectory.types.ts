@@ -68,7 +68,10 @@ import {
 DhtOpHashB64, DhtOpHash,
 /** DnaFile */
 // @ts-ignore
-DnaFile, DnaDef,
+DnaFile,
+/** entry */
+// @ts-ignore
+EntryDefLocation, EntryDefLocationType, AppEntryDefLocation, GetOptions, GetStrategy,
 /** entry-details */
 // @ts-ignore
 EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
@@ -76,8 +79,6 @@ EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
 // @ts-ignore
 ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
-
-export const AGENT_DIRECTORY_PATH = "registered_agents";
 
 /** Entry types are not necessary, but it is defined because otherwise holochain will fail. */
 export enum AgentDirectoryEntryType {
@@ -90,3 +91,5 @@ export type AgentDirectoryEntry =
 /** Bogus Entry */
 export interface Stub {
 }
+
+export const AGENT_DIRECTORY_PATH = "registered_agents";
