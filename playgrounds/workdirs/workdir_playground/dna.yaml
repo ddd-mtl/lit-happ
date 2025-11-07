@@ -4,16 +4,16 @@ name: dNamedReal
 integrity:
   zomes:
     - name: real_integrity
-      path: ../target/wasm32-unknown-unknown/release/real_integrity.wasm
+      path: ../../target/wasm32-unknown-unknown/release/real_integrity.wasm
     - name: label_integrity
-      path: ../target/wasm32-unknown-unknown/release/label_integrity.wasm
+      path: ../../target/wasm32-unknown-unknown/release/label_integrity.wasm
 coordinator:
   zomes:
     - name: zReal
-      path: ../target/wasm32-unknown-unknown/release/zReal.wasm
+      path: ../../target/wasm32-unknown-unknown/release/zReal.wasm
       dependencies:
         - name: real_integrity
     - name: zRealLabel
-      path: ../target/wasm32-unknown-unknown/release/zLabel.wasm
+      path: ../../target/wasm32-unknown-unknown/release/zLabel.wasm
       dependencies:
         - name: label_integrity

@@ -8,5 +8,5 @@ roles:
       strategy: create
       deferred: false
     dna:
-      path: ../../artifacts/tasker.dna
+      path: ../../../artifacts/tasker.dna
       clone_limit: 10

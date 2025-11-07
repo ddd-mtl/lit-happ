@@ -1,5 +1,5 @@
 [package]
-name = "agent_directory_integrity_zome"
+name = "path_explorer_zome"
 version.workspace = true
 rust-version.workspace = true
 edition.workspace = true
@@ -8,6 +8,6 @@ edition.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hdi.workspace = true
-agent_directory_integrity.workspace = true
+hdk.workspace = true
+path_explorer.workspace = true
 

@@ -6,19 +6,19 @@ integrity:
     - name: tasker_model
       path: ../../target/wasm32-unknown-unknown/release/tasker_model.wasm
     - name: agent_directory_integrity
-      path: ../../target/wasm32-unknown-unknown/release/agent_directory_integrity.wasm
+      path: ../../target/wasm32-unknown-unknown/release/agent_directory_integrity_zome.wasm
     - name: profiles_integrity
       path: ../../target/wasm32-unknown-unknown/release/profiles_integrity_zome.wasm
 coordinator:
   zomes:
     - name: zPathExplorer
-      path: ../../target/wasm32-unknown-unknown/release/path_explorer.wasm
+      path: ../../target/wasm32-unknown-unknown/release/path_explorer_zome.wasm
     - name: zTasker
       path: ../../target/wasm32-unknown-unknown/release/tasker.wasm
       dependencies:
         - name: tasker_model
     - name: zAgentDirectory
-      path: ../../target/wasm32-unknown-unknown/release/agent_directory.wasm
+      path: ../../target/wasm32-unknown-unknown/release/agent_directory_zome.wasm
       dependencies:
         - name: agent_directory_integrity
     - name: profiles

@@ -1,13 +1,13 @@
 [package]
-edition = "2021"
-name = "agent_directory"
-version = "0.0.1"
+name = "agent_directory_zome"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-
 [dependencies]
 hdk.workspace = true
-agent_directory_zome.workspace = true
+agent_directory.workspace = true
 

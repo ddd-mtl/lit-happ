@@ -4,10 +4,10 @@ name: dProfiles
 integrity:
   zomes:
     - name: profiles_integrity
-      path: ../target/wasm32-unknown-unknown/release/profiles_integrity_zome.wasm
+      path: ../../target/wasm32-unknown-unknown/release/profiles_integrity_zome.wasm
 coordinator:
   zomes:
     - name: profiles
-      path: ../target/wasm32-unknown-unknown/release/profiles_zome.wasm
+      path: ../../target/wasm32-unknown-unknown/release/profiles_zome.wasm
       dependencies:
         - name: profiles_integrity

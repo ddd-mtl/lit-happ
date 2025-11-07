@@ -9,10 +9,11 @@ members = [
   "zomes/real_integrity",
   "zomes/tasker",
   "zomes/tasker_model",
-  "zomes/agent_directory",
-  "zomes/agent_directory_integrity",
   "zomes/profiles",
   "zomes/profiles_integrity",
+  "zomes/agent_directory",
+  "zomes/agent_directory_integrity",
+  "zomes/path_explorer"
 ]
 
 [workspace.package]
@@ -37,10 +38,12 @@ zome_utils = { path = "../submodules/zdk/crates/zome_utils" }
 zome_signals = { path = "../submodules/zdk/crates/zome_signals" }
 
 hc_zome_profiles_integrity = { path = "../submodules/profiles/crates/integrity" }
-profiles_alt_coordinator   = { path = "../submodules/zdk/zomes/profiles_alt_coordinator", package = "profiles_alt_coordinator" }
+profiles_alt_coordinator   = { path = "../submodules/zdk/zomes/profiles_alt_coordinator"}
 
-agent_directory_integrity_zome = { path = "../submodules/zdk/zomes/agent_directory_integrity", package = "agent_directory_integrity" }
-agent_directory_zome           = { path = "../submodules/zdk/zomes/agent_directory", package = "agent_directory" }
+agent_directory_integrity = { path = "../submodules/zdk/zomes/agent_directory_integrity" }
+agent_directory           = { path = "../submodules/zdk/zomes/agent_directory" }
+
+path_explorer             = { path = "../submodules/zdk/zomes/path_explorer" }
 
 [profile.dev]
 lto = false

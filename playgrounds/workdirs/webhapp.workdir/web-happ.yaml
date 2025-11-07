@@ -2,6 +2,6 @@
 manifest_version: "0"
 name: Lit-happ Example
 ui:
-  path: "../../artifacts/playground-we_applet-ui.zip"
+  path: "../../../artifacts/playground-we_applet-ui.zip"
 happ:
-  path: "../../artifacts/playground.happ"
+  path: "../../../artifacts/playground.happ"

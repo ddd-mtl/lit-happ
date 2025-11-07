@@ -27,20 +27,21 @@
     "install:hc"            : "bash ./node_modules/@ddd-qc/hc-prebuilt/download-hc.sh holochain $npm_package_config_bin $npm_package_config_hc_version && bash ./node_modules/@ddd-qc/hc-prebuilt/download-hc.sh hc $npm_package_config_bin $npm_package_config_hc_version && bash ./node_modules/@ddd-qc/hc-prebuilt/download-hc.sh kitsune2-bootstrap-srv $npm_package_config_bin $npm_package_config_k2_version",
     "version"               : "$npm_package_config_bin/hc --version & $npm_package_config_bin/kitsune2-bootstrap-srv --version & $npm_package_config_bin/holochain --version & zits --version & lair-keystore --version & echo \"Typescript $(tsc --version)\"",
 
-    "package:profiles"      : "$npm_package_config_bin/hc dna pack -o artifacts/profiles.dna playgrounds/workdir_profiles",
+    "package:profiles"      : "$npm_package_config_bin/hc dna pack -o artifacts/profiles.dna playgrounds/workdirs/workdir_profiles",
 
     "build:zdk"             : "cd submodules/zdk && RUSTFLAGS='--cfg getrandom_backend=\"custom\"' CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
     "build:wasm"            : "cd playgrounds && RUSTFLAGS='--cfg getrandom_backend=\"custom\"' CARGO_TARGET_DIR=target cargo build --release --target wasm32-unknown-unknown",
-    "build:dna"             : "npm run build:wasm && $npm_package_config_bin/hc dna pack --output=artifacts/named_real.dna playgrounds/workdir && $npm_package_config_bin/hc dna pack --output=artifacts/named_integer.dna playgrounds/workdir_named_integer && npm run package:profiles",
-    "build:happ"            : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground.happ playgrounds/workdir",
-    "build:happ:clone"      : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground-clone.happ playgrounds/workdir_clone",
+    "build:dna"             : "npm run build:wasm && $npm_package_config_bin/hc dna pack --output=artifacts/named_real.dna playgrounds/workdirs/workdir_playground && $npm_package_config_bin/hc dna pack --output=artifacts/named_integer.dna playgrounds/workdirs/workdir_named_integer && $npm_package_config_bin/hc dna pack --output=artifacts/tasker.dna playgrounds/workdirs/workdir_tasker && npm run package:profiles",
+    "build:happ"            : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground.happ playgrounds/workdirs/workdir_playground",
+    "build:happ:clone"      : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/playground-clone.happ playgrounds/workdirs/workdir_clone",
+    "build:happ:tasker"     : "npm run build:dna && $npm_package_config_bin/hc app pack --output=artifacts/tasker.happ playgrounds/workdirs/workdir_tasker",
 
     "build:shared-ownership": "bash scripts/ts-bindings.sh && npm run build -w dvms/shared-ownership",
     "build:agent-directory" : "bash scripts/ts-bindings.sh && npm run build -w dvms/agent-directory",
     "build:path-explorer"   : "bash scripts/ts-bindings.sh && npm run build -w dvms/path-explorer",
     "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w dvms/profiles",
 
-    "build:example:happs"   : "npm run build:happ && npm run build:happ:clone && bash scripts/ts-bindings-example.sh",
+    "build:example:happs"   : "npm run build:happ && npm run build:happ:clone && npm run build:happ:tasker && bash scripts/ts-bindings-example.sh",
 
     "build:cell-proxy"      : "bash scripts/ts-bindings.sh && npm run build -w packages/cell-proxy",
     "build:packages"        : "npm run build:cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:agent-directory && npm run build:shared-ownership && npm run build:path-explorer",

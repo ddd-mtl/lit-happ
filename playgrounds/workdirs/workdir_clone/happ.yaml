@@ -8,12 +8,12 @@ roles:
       strategy: create
       deferred: true
     dna:
-      path: ../../artifacts/named_integer.dna
+      path: ../../../artifacts/named_integer.dna
       clone_limit: 10
   - name: rNamedReal
     provisioning:
       strategy: create
       deferred: true
     dna:
-      path: ../../artifacts/named_real.dna
+      path: ../../../artifacts/named_real.dna
       clone_limit: 10
