@@ -1,0 +1,13 @@
+[package]
+edition = "2021"
+name = "agent_directory"
+version = "0.0.1"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+
+[dependencies]
+hdk.workspace = true
+agent_directory_zome.workspace = true
+

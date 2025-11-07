@@ -1,0 +1,30 @@
+{
+  "name": "tasker",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "lint"     : "eslint --ext .ts ",
+    "tsc"      : "tsc",
+    "build"    : "rm -rf dist && vite build",
+    "start:ui" : "vite --port $UI_PORT --clearScreen false"
+  },
+  "devDependencies": {
+    "vite": "7.2.2",
+    "vite-plugin-checker": "0.11.0",
+    "vite-plugin-dts": "4.5.4",
+    "vite-plugin-top-level-await": "1.6.0",
+    "bestzip": "^2.2.0",
+    "concurrently": "^5.3.0",
+    "deepmerge": "^4.2.2",
+    "exits": "^2.0.1",
+    "new-port-cli": "^1.0.0",
+    "run-singleton-cli": "^0.0.5"
+  },
+  "dependencies": {
+    "@ddd-qc/agent-directory": "file:../../dvms/agent-directory",
+    "@ddd-qc/profiles-dvm": "file:../../dvms/profiles",
+    "@ddd-qc/path-explorer": "file:../../dvms/path-explorer"
+  }
+}

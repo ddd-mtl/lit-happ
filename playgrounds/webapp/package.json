@@ -1,7 +1,7 @@
 {
-  "name": "example",
+  "name": "Lit-happ Playground",
   "version": "0.0.1",
-  "description": "Example app for testing",
+  "description": "App for testing",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "typings": "./dist/index.d.ts",

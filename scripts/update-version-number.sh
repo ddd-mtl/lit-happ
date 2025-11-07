@@ -29,12 +29,17 @@ OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/profiles/package.json | sed 
 echo "./dvms/profiles/package.json $OLD_VER -> $1"
 sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/profiles/package.json
 
-# Change notifications-dvm/package.json
+# Change agent-directory/package.json
 OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/agent-directory/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
-echo "./dvms/notifications/package.json $OLD_VER -> $1"
+echo "./dvms/agent-directory/package.json $OLD_VER -> $1"
 sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/agent-directory/package.json
 
 # Change shared-ownership-dvm/package.json
 OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/shared-ownership/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
 echo "./dvms/shared-ownership/package.json $OLD_VER -> $1"
 sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/shared-ownership/package.json
+
+# Change path-explorer/package.json
+OLD_VER=`awk -F ":" '/"version"/ {print $2}' ./dvms/path-explorer/package.json | sed 's/"//g' | sed 's/,//g' | sed 's/ //g'`
+echo "./dvms/path-explorer/package.json $OLD_VER -> $1"
+sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$1\"/" ./dvms/path-explorer/package.json

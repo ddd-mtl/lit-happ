@@ -1,0 +1,42 @@
+{
+  "name": "@ddd-qc/path-explorer",
+  "version": "0.10.1",
+  "description": "lit-happ elements for browsing Paths & Links.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build"       : "rm -rf dist && tsc",
+    "build:watch" : "tsc --watch --preserveWatchOutput"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddd-mtl/lit-happ.git"
+  },
+  "author": "",
+  "license": "CAL-1.0",
+  "bugs": {
+    "url": "https://github.com/ddd-mtl/lit-happ/issues"
+  },
+  "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
+  "devDependencies": {
+    "@types/ws": "^8.5.3",
+    "tslib": "^2.4.0",
+    "typescript": "~5.2.0",
+    "watch-cli": "^0.2.3"
+  },
+  "dependencies": {
+    "@ddd-qc/lit-happ": "file:../lit-happ",
+    "@holochain/client": "^0.20.0-dev.2",
+    "@ui5/webcomponents": "=1.13.3",
+    "@ui5/webcomponents-fiori": "=1.13.3",
+    "@ui5/webcomponents-icons": "=1.13.3",
+    "@shoelace-style/shoelace": "2.4.0",
+    "js-base64": "^3.7.3",
+    "cqfill": "^0.6.0"
+  }
+}

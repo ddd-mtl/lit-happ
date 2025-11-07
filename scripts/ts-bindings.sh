@@ -11,3 +11,5 @@ zits --default-zome-name profiles -f "cast_tip" -f "synchronize_tip" -i submodul
 zits --default-zome-name zSharedOwnership -f "cast_tip" -f "synchronize_tip" -i submodules/zdk/zomes/shared_ownership_coordinator -i submodules/zdk/zomes/shared_ownership_integrity -o dvms/shared-ownership/src/bindings/sharedOwnership.ts
 
 zits -i submodules/zdk/zomes/agent_directory_integrity -i submodules/zdk/zomes/agent_directory -o dvms/agent-directory/src/bindings/agentDirectory.ts
+
+zits --default-zome-name zPathExplorer -d "import {ItemLink, SweepInterval, SweepResponse} from './deps.types';" -i submodules/zdk/zomes/path_explorer_types -i submodules/zdk/zomes/path_explorer -o dvms/path-explorer/src/bindings/path-explorer.ts

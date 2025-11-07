@@ -1,14 +1,18 @@
 [workspace]
 resolver = "2"
 members = [
-  "dna/integer",
-  "dna/integer_integrity",
-  "dna/label",
-  "dna/label_integrity",
-  "dna/real",
-  "dna/real_integrity",
-  "dna/profiles",
-  "dna/profiles_integrity",
+  "zomes/integer",
+  "zomes/integer_integrity",
+  "zomes/label",
+  "zomes/label_integrity",
+  "zomes/real",
+  "zomes/real_integrity",
+  "zomes/tasker",
+  "zomes/tasker_model",
+  "zomes/agent_directory",
+  "zomes/agent_directory_integrity",
+  "zomes/profiles",
+  "zomes/profiles_integrity",
 ]
 
 [workspace.package]
@@ -29,10 +33,14 @@ serde = { version = "=1.0.219", default-features = false }
 hdi = { version = "=0.7.0-rc.0", default-features = false }
 hdk = { version = "=0.6.0-rc.0", default-features = false }
 
+zome_utils = { path = "../submodules/zdk/crates/zome_utils" }
 zome_signals = { path = "../submodules/zdk/crates/zome_signals" }
-hc_zome_profiles_coordinator =  { path = "../submodules/zdk/zomes/profiles_alt_coordinator", package = "profiles_alt_coordinator" }
-hc_zome_profiles_integrity = { path = "../submodules/profiles/crates/integrity" }
 
+hc_zome_profiles_integrity = { path = "../submodules/profiles/crates/integrity" }
+profiles_alt_coordinator   = { path = "../submodules/zdk/zomes/profiles_alt_coordinator", package = "profiles_alt_coordinator" }
+
+agent_directory_integrity_zome = { path = "../submodules/zdk/zomes/agent_directory_integrity", package = "agent_directory_integrity" }
+agent_directory_zome           = { path = "../submodules/zdk/zomes/agent_directory", package = "agent_directory" }
 
 [profile.dev]
 lto = false

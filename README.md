@@ -13,10 +13,13 @@ The repo also provides Typescript bindings, DnaViewModels (DVMs) and web-element
 - [@ddd-qc/profiles-dvm](@ddd-qc/profiles-dvm) for the [profiles zome](https://github.com/holochain-open-dev/profiles)
 - [@ddd-qc/agent-directory](@ddd-qc/agent-directory) for the [agent_directory_zome](https://github.com/ddd-mtl/zdk/zomes/agent_directory)
 - [@ddd-qc/shared-ownership-dvm](@ddd-qc/shared-ownership-dvm)for the [shared_ownership_zome](https://github.com/ddd-mtl/zdk/zomes/shared_ownership_zome)
+- [@ddd-qc/path-explorer](@ddd-qc/path-explorer) for the [path_explorer zome](https://github.com/ddd-mtl/zdk/zomes/path_explorer)
 
 # Playgrounds
 
-in `/example` you can fin example happs, which have:
+in `/playgrounds` you can fin example happs
+
+## Lit-happ Playground
 
 Zomes:
  - **Integer:** Zome with just an Integer (u32) Entry type that can be created, and listed.
@@ -28,16 +31,21 @@ Dnas:
  - **NamedReal:** Real + label zomes
 
 
-### Basic example 
+### Basic Playground 
 
 Happ with two dnas in three roles
 
 `npm run devtest`
 
 
-### Cloning example
+### Clone Playground
 
 Happ with two dnas in two clonable roles
 
 `npm run devtest:clone`
 
+## Tasker
+
+A simple to-do app.
+
+FIXME

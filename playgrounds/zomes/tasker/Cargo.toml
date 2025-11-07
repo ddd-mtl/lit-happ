@@ -1,0 +1,17 @@
+[package]
+name = "tasker"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = [ "cdylib", "rlib" ]
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+hdk.workspace = true
+zome_utils.workspace = true
+
+tasker_model = {path = "../tasker_model" }

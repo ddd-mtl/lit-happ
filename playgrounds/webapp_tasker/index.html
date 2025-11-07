@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body style="margin:0px;background: #FAF1EA;height:100vh;">
+    <tasker-app></tasker-app>
+
+    <script type="module">
+      console.log("playground/webapp/index.html");
+      console.log("  HC_APP_PORT:", process.env.HC_APP_PORT);
+      console.log("HC_ADMIN_PORT:", process.env.HC_ADMIN_PORT);
+    </script>
+
+    <script type="module" src="src/index.ts"></script>
+
+  </body>
+</html>

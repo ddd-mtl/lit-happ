@@ -9,7 +9,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 hdk.workspace = true
-hc_zome_profiles_coordinator.workspace = true
-
+profiles_alt_coordinator.workspace = true
 
 

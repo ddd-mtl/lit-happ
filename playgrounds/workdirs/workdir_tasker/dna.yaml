@@ -1,0 +1,27 @@
+---
+manifest_version: "0"
+name: dTasker
+integrity:
+  zomes:
+    - name: tasker_model
+      path: ../../target/wasm32-unknown-unknown/release/tasker_model.wasm
+    - name: agent_directory_integrity
+      path: ../../target/wasm32-unknown-unknown/release/agent_directory_integrity.wasm
+    - name: profiles_integrity
+      path: ../../target/wasm32-unknown-unknown/release/profiles_integrity_zome.wasm
+coordinator:
+  zomes:
+    - name: zPathExplorer
+      path: ../../target/wasm32-unknown-unknown/release/path_explorer.wasm
+    - name: zTasker
+      path: ../../target/wasm32-unknown-unknown/release/tasker.wasm
+      dependencies:
+        - name: tasker_model
+    - name: zAgentDirectory
+      path: ../../target/wasm32-unknown-unknown/release/agent_directory.wasm
+      dependencies:
+        - name: agent_directory_integrity
+    - name: profiles
+      path: ../../target/wasm32-unknown-unknown/release/profiles_zome.wasm
+      dependencies:
+        - name: profiles_integrity
