@@ -53,7 +53,7 @@ jobs:
       # Build tasker
       - name: Build tasker
         run: |
-          npm run build:ui -w playgrounds/webapp_tasker
+          npm run build -w playgrounds/webapp_tasker
       # Regroup artifacts
       - name: Regroup artifacts
         run: |
