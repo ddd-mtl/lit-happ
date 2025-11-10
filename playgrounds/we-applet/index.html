@@ -6,27 +6,26 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <meta name="Description" content="Example we-applet" />
+    <meta name="Description" content="Lit-happ playground we-applet" />
     <!-- <link href="../node_modules/@shoelace-style/shoelace/dist/themes/light.css" rel="stylesheet"/> -->
-    <base href="." />
-    <title>Example we-applet</title>
+    <title>Lit-happ playground we-applet</title>
   </head>
 
   <body style="margin: 0px;">
-  <script type="module">
-    console.log("Example we-applet index.html START");
-    window.IN_WE = true;
-  </script>
-    <script type="module">
-      import setupExampleApplet from "./src/index.ts";
-      import {PlaygroundApp} from "example";
-      //if (apps[0].installed_app_id == "playground") {
-        customElements.define("playground-app", PlaygroundApp);
-      //} else {
-      //  customElements.define("playground-app", PlaygroundCloneApp);
-     // }
-      const happElem = await setupExampleApplet();
-      document.body.append(happElem);
-    </script>
+      <script type="module">
+        console.log("Lit-happ playground we-applet index.html START");
+        window.IN_WE = true;
+      </script>
+      <script type="module">
+          import setupExampleApplet from "./src/index.ts";
+          import {PlaygroundApp} from "playground";
+          //if (apps[0].installed_app_id == "playground") {
+            customElements.define("playground-app", PlaygroundApp);
+          //} else {
+          //  customElements.define("playground-app", PlaygroundCloneApp);
+         // }
+          const happElem = await setupExampleApplet();
+          document.body.append(happElem);
+      </script>
   </body>
 </html>

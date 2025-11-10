@@ -10,7 +10,7 @@ if [ $# != 1 ]; then
   exit 2
 fi
 
-hcversion=$1
+hcversion="${1:0:3}"
 echo for holochain version $hcversion
 if [ "$hcversion" == "hc" ] || [ "$hcversion" == "" ] ; then
   echo Missing \"hc-version\" field in \"package.json\".

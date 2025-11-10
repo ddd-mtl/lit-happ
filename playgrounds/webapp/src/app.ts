@@ -15,14 +15,12 @@ import {
   AppWebsocket, InstalledAppId, ZomeName,
 } from "@holochain/client";
 
-
 /** Import custom elements */
 import "./elements/integer-list";
 import "./elements/label-list";
 import "./elements/real-list";
 import "./elements/named-inspect";
 import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
-
 
 import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
 
@@ -48,7 +46,7 @@ export class PlaygroundApp extends HappElement {
     console.log("PlaygroundApp.ctor() adminUrl", adminUrl);
     super(appWs ? appWs : appPort!, appId, adminUrl, 20 * 1000);
 
-    console.log("ExampleApp.HVM_DEF", PlaygroundApp.HVM_DEF);
+    console.log("PlaygroundApp.HVM_DEF", PlaygroundApp.HVM_DEF);
     // if (_canAuthorizeZfns == undefined) {
     //   this._canAuthorizeZfns = true;
     // }
@@ -89,7 +87,7 @@ export class PlaygroundApp extends HappElement {
     app.appletId = thisAppletHash.b64;
     app.groupProfiles = groupProfiles;
     /** Create Profiles Dvm from provided AppProxy */
-    console.log("<example-app>.ctor()", profilesProxy);
+    console.log("<playground-app>.ctor()", profilesProxy);
     await app.createWeProfilesDvm(profilesProxy, profilesAppId, profilesBaseRoleName, profilesCloneId, profilesZomeName);
     return app;
   }

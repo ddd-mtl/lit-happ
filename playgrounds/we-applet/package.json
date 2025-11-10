@@ -7,7 +7,7 @@
     "build:ui"    : "rm -rf dist && vite build",
 
     "devtest"     : "UI_PORT=$(port) HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) HAPP_BUILD_MODE='Debug' concurrently \"npm run new-sandbox\" \"sleep 5 && npm run start:ui\"",
-    "devtest:pp"  : "HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) HAPP_BUILD_MODE='Debug' WE_APPLET_VIEW='ParticipationProtocol' concurrently \"npm run new-sandbox\" \"sleep 7 && npm run start:ui\"",
+    "devtest:pp"  : "UI_PORT=$(port) HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) HAPP_BUILD_MODE='Debug' WE_APPLET_VIEW='ParticipationProtocol' concurrently \"npm run new-sandbox\" \"sleep 7 && npm run start:ui\"",
     "new-sandbox" : "RUST_LOG=warn WASM_LOG=debug echo \"pass\" | hc s --piped -f=$HC_ADMIN_PORT generate ../../artifacts/playground.happ --run=$HC_APP_PORT -a ExampleApplet network mem",
     "start:ui"    : "vite dev --port $UI_PORT --clearScreen false"
   },
@@ -24,7 +24,6 @@
     "typescript": "~5.2.0"
   },
   "dependencies": {
-    "example": "file:../webapp",
     "@theweave/api": "=0.6.0",
     "@mdi/js": "^7.2.0"
   }

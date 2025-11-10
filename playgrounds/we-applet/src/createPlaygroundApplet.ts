@@ -13,13 +13,12 @@ import "@holochain-open-dev/profiles/dist/elements/profiles-context.js";
 import {AppletViewInfo, ProfilesApi/*, CrossViewInfo*/} from "@ddd-qc/we-utils";
 import {EntryId, ExternalAppProxy} from "@ddd-qc/cell-proxy/";
 import {AgentId, destructureCloneId, HCL} from "@ddd-qc/lit-happ";
-import {PlaygroundApp} from "example";
+import {PlaygroundApp} from "playground";
 import {ProfilesClient} from "@holochain-open-dev/profiles";
 
 
-
 /** */
-export async function createExampleApplet(
+export async function createPlaygroundApplet(
   renderInfo: RenderInfo,
   weServices: WeaveServices,
 ): Promise<PlaygroundApp> {

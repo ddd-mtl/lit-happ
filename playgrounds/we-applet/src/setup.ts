@@ -1,5 +1,5 @@
 import {createDefaultWeServicesMock, DevTestNames, setup} from "@ddd-qc/we-utils";
-import {createExampleApplet} from "./createExampleApplet";
+import {createPlaygroundApplet} from "./createPlaygroundApplet";
 import {AppletServices} from "@theweave/api";
 import {LitElement} from "lit/development";
 
@@ -38,7 +38,7 @@ async function setupExampleMainView() {
     blockTypes: {},
     search,
   };
-  return setup(appletServices, createExampleApplet, devtestNames, createDefaultWeServicesMock);
+  return setup(appletServices, createPlaygroundApplet, devtestNames, createDefaultWeServicesMock);
 }
 
 

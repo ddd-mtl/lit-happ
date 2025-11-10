@@ -17,7 +17,7 @@ The repo also provides Typescript bindings, DnaViewModels (DVMs) and web-element
 
 # Playgrounds
 
-in `/playgrounds` you can fin example happs
+in `/playgrounds` you can find example happs
 
 ## Lit-happ Playground
 

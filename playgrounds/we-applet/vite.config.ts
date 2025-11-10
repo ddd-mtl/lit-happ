@@ -19,7 +19,7 @@ const DIST_FOLDER = "dist"
 export default defineConfig({
   resolve: {
     alias: {
-      'example': path.resolve(__dirname, '../webapp/src')
+      'playground': path.resolve(__dirname, '../webapp/src')
     }
   },
   plugins: [
