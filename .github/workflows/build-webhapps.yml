@@ -50,6 +50,10 @@ jobs:
       - name: Build playground we-applet
         run: |
           npm run build:ui -w playgrounds/we-applet
+      # Build tasker
+      - name: Build tasker
+        run: |
+          npm run build:ui -w playgrounds/webapp_tasker
       # Regroup artifacts
       - name: Regroup artifacts
         run: |

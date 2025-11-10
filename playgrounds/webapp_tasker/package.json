@@ -8,6 +8,8 @@
     "lint"     : "eslint --ext .ts ",
     "tsc"      : "tsc",
     "build"    : "rm -rf dist && vite build",
+    "devtest"  : "UI_PORT=$(port) HC_APP_PORT=$(port) HC_ADMIN_PORT=$(port) HAPP_BUILD_MODE='Debug' concurrently \"npm run sandbox\" \"sleep 5 && npm run start:ui\"",
+    "sandbox"  : "RUST_LOG=warn WASM_LOG=debug echo \"pass\" | hc s --piped -f=$HC_ADMIN_PORT generate ../../artifacts/tasker.happ --run=$HC_APP_PORT -a hTasker network mem",
     "start:ui" : "vite --port $UI_PORT --clearScreen false"
   },
   "devDependencies": {

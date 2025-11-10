@@ -49,10 +49,12 @@
     "start"                 : "npm run start -w playgrounds/webapp",
     "start:clone"           : "npm run start:clone -w playgrounds/webapp",
     "start:we"              : "npm run devtest -w playgrounds/we-applet",
+    "start:tasker"          : "npm run devtest -w playgrounds/webapp_tasker",
 
     "devtest"               : "npm run clean:hc && npm run build:example:happs && npm run build:packages && npm run start",
     "devtest:clone"         : "npm run clean:hc && npm run build:example:happs && npm run build:packages && npm run start:clone",
     "devtest:we"            : "npm run clean:hc && npm run build:example:happs && npm run build:packages && npm run build:ui -w playgrounds/webapp && npm run start:we",
+    "devtest:tasker"        : "npm run clean:hc && npm run build:example:happs && npm run build:packages && npm run start:tasker",
 
     "dist:we"               : "npm run build:ui -w we-applet && npm run package:we",
     "package:we"            : "rm -rf artifacts/playground-we_applet-ui.zip & cd playgrounds/we-applet/dist && rm -f *.map && bestzip ../../../artifacts/playground-we_applet-ui.zip * && cd ../../../ && hc web-app pack playgrounds/webhapp.workdir -o artifacts/playground-we_applet.webhapp",
