@@ -156,7 +156,7 @@ export class CellProxy extends CellMixin(Empty) {
         try {
           this._callMutex.acquire().then((r) => this._selfCallRelease = r)
         } catch (e) {
-          console.error("A Zome self call is initialted during a writing zome call", e);
+          console.error("A Zome self call is initialized during a writing zome call", e);
         }
       }
       if (sys.type == "SelfCallEnd" && this._selfCallRelease) {

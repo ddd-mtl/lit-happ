@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/agent-directory",
-  "version": "0.33.2",
+  "version": "6.33.2",
   "license" : "CAL-1.0",
   "keywords": ["holochain", "zome"],
   "main": "./dist/index.js",
