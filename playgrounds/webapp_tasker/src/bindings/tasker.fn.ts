@@ -8,6 +8,9 @@ export const taskerFunctionNames: FunctionName[] = [
 	"entry_defs", 
 	"get_zome_info", 
 	"get_dna_info",
+	"get_my_agent_key_entry_hash",
+	"get_record_author_local",
+	"get_record_author_network",
 	"create_task_list",
 	"create_task_item",
 	"complete_task",
@@ -15,7 +18,6 @@ export const taskerFunctionNames: FunctionName[] = [
 	"get_task_item",
 	"get_list_items",
 	"get_all_lists",
-	"get_agent_entry_hash",
 ];
 
 

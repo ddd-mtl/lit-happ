@@ -96,6 +96,18 @@ export class TaskerProxy extends ZomeProxy {
   static override readonly ENTRY_TYPES = Object.values(TaskerUnitEnum);
   static override readonly LINK_TYPES = Object.values(TaskerLinkType);
  
+  async getMyAgentKeyEntryHash(): Promise<AnyLinkableArray> {
+    return this.call('get_my_agent_key_entry_hash', null);
+  }
+
+  async getRecordAuthorLocal(dh: AnyDhtArray): Promise<AgentArray> {
+    return this.call('get_record_author_local', dh);
+  }
+
+  async getRecordAuthorNetwork(dh: AnyDhtArray): Promise<AgentArray> {
+    return this.call('get_record_author_network', dh);
+  }
+
   async createTaskList(title: string): Promise<ActionArray> {
     return this.call('create_task_list', title);
   }
@@ -120,11 +132,7 @@ export class TaskerProxy extends ZomeProxy {
     return this.call('get_list_items', listEh);
   }
 
-  async getAllLists(): Promise<[EntryArray, TaskList][]> {
-    return this.call('get_all_lists', null);
-  }
-
-  async getAgentEntryHash(): Promise<AnyLinkableArray> {
-    return this.call('get_agent_entry_hash', null);
+  async getAllLists(strategy: GetStrategy): Promise<[EntryArray, TaskList][]> {
+    return this.call('get_all_lists', strategy);
   }
 }

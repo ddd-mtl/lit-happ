@@ -1,16 +1,16 @@
 import {
-  ActionHashB64,
-  AgentPubKeyB64,
-  decodeHashFromBase64,
-  encodeHashToBase64,
-  EntryHash,
-  EntryHashB64,
+    ActionHashB64,
+    AgentPubKeyB64,
+    decodeHashFromBase64,
+    encodeHashToBase64,
+    EntryHash,
+    EntryHashB64,
 } from "@holochain/client";
 import {TaskerProxy} from '../bindings/tasker.proxy';
 import {TaskItem} from '../bindings/tasker.types';
 import {ZomeViewModel} from "@ddd-qc/lit-happ";
 import {TaskerPerspective, TaskItemMaterialized, TaskListMaterialized} from "./tasker.perspective";
-
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /**
@@ -39,7 +39,7 @@ export class TaskerZvm extends ZomeViewModel {
 
   /** */
   async pullAllLists() {
-    const lists = await this.zomeProxy.getAllLists();
+    const lists = await this.zomeProxy.getAllLists(GetStrategy.Network);
     console.log("pullAllLists() lists:", lists);
     //console.log("pullAllLists() taskListEntryStore:", this.taskListEntryStore);
     for (const pair of lists) {
