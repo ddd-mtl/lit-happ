@@ -187,11 +187,11 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** */
-  override async initializePerspectiveOffline(): Promise<void> {
+  override async initializePerspectiveFromLocal(): Promise<void> {
     await this.queryAllDnaData();
     const all = [];
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
-      const p = zvm.initializePerspectiveOffline();
+      const p = zvm.initializePerspectiveFromLocal();
       all.push(p);
     }
     await Promise.all(all);
@@ -199,10 +199,10 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
 
   /** */
-  override async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveFromNetwork(): Promise<void> {
     const all = [];
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
-      const p = zvm.initializePerspectiveOnline();
+      const p = zvm.initializePerspectiveFromNetwork();
       all.push(p);
     }
     await Promise.all(all);

@@ -112,7 +112,7 @@ export class ProfilesAltProxy extends ZomeProxy {
     return this.call('find_profile', agentPubKey);
   }
 
-  async probeProfiles(): Promise<void> {
-    return this.callBlocking('probe_profiles', null);
+  async probeProfiles(strategy: GetStrategy): Promise<void> {
+    return this.callBlocking('probe_profiles', strategy);
   }
 }

@@ -27,13 +27,14 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  override async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveFromNetwork(): Promise<void> {
     await this.probeAllProfiles();
   }
 
   /** */
   override probeAllInner() {
-    this.probeAllProfiles();
+    this.probeAllProfiles()
+        .then((res) => console.trace("probeAllProfiles() finished: ", res.length))
   }
 
   /** -- Perspective -- */

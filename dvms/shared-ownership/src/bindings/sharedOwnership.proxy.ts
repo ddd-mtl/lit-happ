@@ -96,20 +96,20 @@ export class SharedOwnershipProxy extends ZomeProxy {
   static override readonly ENTRY_TYPES = Object.values(SharedOwnershipUnitEnum);
   static override readonly LINK_TYPES = Object.values(SharedOwnershipLinkType);
  
-  async getRecordAuthor(dh: AnyDhtArray): Promise<AgentArray> {
-    return this.call('get_record_author', dh);
-  }
-
   async publishOwnership(input: PublishOwnershipInput): Promise<[ActionArray, ActionArray]> {
     return this.callBlocking('publish_ownership', input);
   }
 
-  async probeShareds(): Promise<ActionArray[]> {
-    return this.call('probe_shareds', null);
+  async probeShareds(strategy: GetStrategy): Promise<ActionArray[]> {
+    return this.call('probe_shareds', strategy);
   }
 
-  async probeOwners(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
-    return this.call('probe_owners', sharedAh);
+  async probeOwnersNetwork(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
+    return this.call('probe_owners_network', sharedAh);
+  }
+
+  async probeOwnersLocal(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
+    return this.call('probe_owners_local', sharedAh);
   }
 
   async createSharedKey(): Promise<ActionArray> {

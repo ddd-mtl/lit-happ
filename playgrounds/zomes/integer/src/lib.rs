@@ -6,6 +6,8 @@ use hdk::prelude::*;
 use integer_integrity::*;
 use zome_signals::*;
 
+extern crate zome_core;
+
 ///
 #[hdk_extern]
 fn get_integer(ah: ActionHash) -> ExternResult<u32> {
@@ -94,16 +96,4 @@ fn get_my_values_incremental(knowns: Vec<ActionHash>) -> ExternResult<Vec<(Actio
   }).collect();
   debug!("*** get_my_values_incremental(): numbers = {:?}", numbers);
   Ok(numbers)
-}
-
-
-#[hdk_extern]
-fn get_zome_info(_:()) -> ExternResult<ZomeInfo> {
-  return zome_info();
-}
-
-
-#[hdk_extern]
-fn get_dna_info(_:()) -> ExternResult<DnaInfo> {
-  return dna_info();
 }

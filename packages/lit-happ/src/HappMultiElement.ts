@@ -48,9 +48,9 @@ export class HappMultiElement extends LitElement {
   /** */
   async hvmsConstructed(): Promise<void> {}
   /** */
-  async perspectiveInitializedOffline(): Promise<void> {}
+  async perspectiveInitializedFromLocal(): Promise<void> {}
   /** */
-  async perspectiveInitializedOnline(): Promise<void> {}
+  async perspectiveInitializedFromNetwork(): Promise<void> {}
 
   /** */
   override shouldUpdate() {
@@ -82,15 +82,15 @@ export class HappMultiElement extends LitElement {
   /** */
   async initializePerspective(): Promise<void> {
     for (const [_proxy, hvm] of this.hvms) {
-      await hvm.initializePerspectiveOffline();
+      await hvm.initializePerspectiveFromLocal();
     }
-    await this.perspectiveInitializedOffline();
+    await this.perspectiveInitializedFromLocal();
 
     // TODO move this to a later stage
     for (const [_proxy, hvm] of this.hvms) {
-      await hvm.initializePerspectiveOnline();
+      await hvm.initializePerspectiveFromLocal();
     }
-    await this.perspectiveInitializedOnline();
+    await this.perspectiveInitializedFromNetwork();
   }
 
 

@@ -1,10 +1,11 @@
 import {html} from "lit";
-import {state, customElement} from "lit/decorators.js";
+import {customElement, state} from "lit/decorators.js";
 import {ZomeElement} from "@ddd-qc/lit-happ";
 import {encodeHashToBase64} from "@holochain/client";
 import {PathExplorerZvm} from "../viewModels/path-explorer.zvm";
 import {AnyLinkableHashB64} from "../utils";
 import {TypedAnchor} from "../bindings/path-explorer.types";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 const LINK_KEYS = ['']; // FIXME Object.keys(ThreadsLinkTypeType);
 
@@ -32,14 +33,14 @@ export class PathsDashboard extends ZomeElement<unknown, PathExplorerZvm> {
   protected override async zvmUpdated(newZvm: PathExplorerZvm, _oldZvm?: PathExplorerZvm): Promise<void> {
     console.log("<paths-dashboard>.zvmUpdated()");
     this._selectedHash = '';
-    this._agentKeyEntryHash = encodeHashToBase64(await newZvm.zomeProxy.getAgentEntryHash());
+    this._agentKeyEntryHash = encodeHashToBase64(await newZvm.zomeProxy.getMyAgentKeyEntryHash());
     this._initialized = true;
   }
 
 
   /** */
   async printRootAnchors() {
-    const rootAnchors = await this._zvm.zomeProxy.getAllRootAnchors();
+    const rootAnchors = await this._zvm.zomeProxy.getAllRootAnchors(GetStrategy.Network);
     console.log({rootAnchors})
     for (const rootAnchor of rootAnchors) {
       //const str = utf32Decode(new Uint8Array(child[1]));
@@ -51,10 +52,10 @@ export class PathsDashboard extends ZomeElement<unknown, PathExplorerZvm> {
 
   /** */
   async printChildren(root_ta: TypedAnchor) {
-    const children = await this._zvm.zomeProxy.getTypedChildren(root_ta);
+    const children = await this._zvm.zomeProxy.getTypedChildrenNetwork(root_ta);
     //console.log({children})
     if (children.length == 0) {
-      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchor(root_ta.anchor);
+      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchorNetwork(root_ta.anchor);
       if (itemLinks.length > 0) {
         const tag = new TextDecoder().decode(new Uint8Array(itemLinks[0]!.tag));
         const leaf = root_ta.anchor + tag

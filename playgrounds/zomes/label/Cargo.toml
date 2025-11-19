@@ -13,4 +13,5 @@ workspace = true
 [dependencies]
 serde.workspace = true
 hdk.workspace = true
+zome_core.workspace = true
 label_integrity = { path = "../label_integrity" }

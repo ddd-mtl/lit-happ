@@ -84,6 +84,7 @@ ValidationStatus, ValidationReceipt,
 export interface PublishOwnershipInput {
   sharedAh: ActionArray
   nonAuthor?: [AgentArray, Signature]
+  getStrategy: GetStrategy
 }
 
 /**  */

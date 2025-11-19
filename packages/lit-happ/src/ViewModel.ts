@@ -56,16 +56,17 @@ import { Mutex } from 'async-mutex';
   comparable(): Object { return {} }
 
 
-  /* (optional) Set perspective with data from the source-chain only */
-  async initializePerspectiveOffline(): Promise<void> {}
-  /* (optional) Set perspective with data from the DHT */
-  async initializePerspectiveOnline(): Promise<void> {}
-  /* (optional) Lets the observer trigger probing into the network in order to get an updated perspective */
+  /* (optional) Set perspective with data from the source-chain and local dht data (if any) */
+  async initializePerspectiveFromLocal(): Promise<void> {}
+  /* (optional) Set perspective with data from the DHT network */
+  async initializePerspectiveFromNetwork(): Promise<void> {}
+  /* (optional) Lets the observer trigger probing into the network to get an updated perspective */
   protected probeAllInner(): void {};
 
   /**
    * Mutex wrapping of probeAllInner: Don't call probeAll() during a probeAll()
    * Should not be async as we expect this to be long, so happs are expected to use signals instead to transmit changes in data.
+   * Probe calls with Network strategy are expected, so try-catch is needed to handle a get failure.
    */
   protected _probeMutex = new Mutex();
   probeAll(): void {
@@ -80,7 +81,11 @@ import { Mutex } from 'async-mutex';
     this._probeMutex
       .acquire()
       .then(async (release) => {
-        this.probeAllInner();
+          try {
+              this.probeAllInner();
+          } catch (e) {
+              console.error("probeAll() failed", e);
+          }
         release();
       });
   }

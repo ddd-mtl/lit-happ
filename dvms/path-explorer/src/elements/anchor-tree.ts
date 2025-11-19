@@ -1,5 +1,5 @@
 import {html, PropertyValues, TemplateResult} from "lit";
-import {property, state, customElement} from "lit/decorators.js";
+import {customElement, property, state} from "lit/decorators.js";
 import {ScopedZomeTypes, ZomeElement} from "@ddd-qc/lit-happ";
 import {decodeHashFromBase64, encodeHashToBase64, ZomeName} from "@holochain/client";
 
@@ -18,6 +18,7 @@ import "@ui5/webcomponents/dist/features/InputSuggestions.js";
 import {PathExplorerZvm} from "../viewModels/path-explorer.zvm";
 import {TypedAnchor} from "../bindings/path-explorer.types";
 import {AnyLinkableHashB64, linkType2NamedStr} from "../utils";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 //const ZOME_LINK_NAMES = [""]; // FIXME Get Link names somehow once Holo provides an API for that ; Object.keys(ThreadsLinkTypeType);
@@ -180,10 +181,10 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     // }
     let tas: TypedAnchor[] = [];
     if (this.rootTypedAnchor) {
-        tas = await this._zvm.zomeProxy.getTypedChildren(this.rootTypedAnchor);
+        tas = await this._zvm.zomeProxy.getTypedChildrenNetwork(this.rootTypedAnchor);
     } else {
       /** AnchorTree from ROOT */
-      tas = await this._zvm.zomeProxy.getAllRootAnchors();
+      tas = await this._zvm.zomeProxy.getAllRootAnchors(GetStrategy.Network);
     }
     console.log("TypedAnchors", tas);
     this._level0 = tas.map((ta): AnchorTreeItem => {
@@ -248,7 +249,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     console.log("toggleTreeItem() currentItemTexts", currentItemTexts);
 
     /** Grab children */
-    const children_tas: TypedAnchor[] = await this._zvm.zomeProxy.getTypedChildren({anchor: ati.base, zomeIndex: ati.zomeIndex, linkIndex: ati.linkIndex});
+    const children_tas: TypedAnchor[] = await this._zvm.zomeProxy.getTypedChildrenNetwork({anchor: ati.base, zomeIndex: ati.zomeIndex, linkIndex: ati.linkIndex});
     console.log("toggleTreeItem() children_tas", children_tas);
 
     /** If it has children, then it's a non-LeafAnchor, so create a TreeItem for each child Anchor */
@@ -278,7 +279,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
       for (const item of toggledTreeItem.items) {
         itemHashs.push(item.id);
       }
-      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchor(ati.base);
+      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchorNetwork(ati.base);
       console.log({itemLinks})
       for (const itemLink of itemLinks) {
         const tag = new TextDecoder().decode(new Uint8Array(itemLink.tag));
@@ -410,7 +411,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     this._level0 = [];
     //const isHash = Base64.isValid(input.value) &&  input.value.substring(0, 3) == "uhC"
     //console.log("onWalk()", input.value, isHash)
-    const maybeTypedAnchor = await this._zvm.zomeProxy.getTypedAnchor(input.value);
+    const maybeTypedAnchor = await this._zvm.zomeProxy.getTypedAnchorNetwork(input.value);
     console.log("onWalkInput()", maybeTypedAnchor)
     if (maybeTypedAnchor[1]) {
       this.rootTypedAnchor = maybeTypedAnchor[1];

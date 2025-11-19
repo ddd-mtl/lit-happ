@@ -36,6 +36,7 @@ hdk = { version = "=0.6.0-rc.0", default-features = false }
 
 zome_utils = { path = "../submodules/zdk/crates/zome_utils" }
 zome_signals = { path = "../submodules/zdk/crates/zome_signals" }
+zome_core = { path = "../submodules/zdk/zomes/zome_core" }
 
 hc_zome_profiles_integrity = { path = "../submodules/profiles/crates/integrity" }
 profiles_alt_coordinator   = { path = "../submodules/zdk/zomes/profiles_alt_coordinator"}

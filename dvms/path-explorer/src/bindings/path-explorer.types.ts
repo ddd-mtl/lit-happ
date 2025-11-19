@@ -103,6 +103,7 @@ export interface GetItemsInput {
   anchor: string
   linkFilter: MyLinkFilter
   linkTag?: LinkTag
+  strategy: GetStrategy
 }
 
 export interface HashInfo {

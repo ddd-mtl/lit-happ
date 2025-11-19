@@ -67,7 +67,7 @@ export class DnaElement<P, DVM extends DnaViewModel> extends CellMixin(RoleMixin
 
 
   /**
-   * To be overriden by subclasses
+   * To be overridden by subclasses
    * Example: Have a subclass unsubscribe to oldDvm's zvms and subscribe to the new ones
    */
   protected async dvmUpdated(_newDvm: DVM, _oldDvm?: DVM): Promise<void> {

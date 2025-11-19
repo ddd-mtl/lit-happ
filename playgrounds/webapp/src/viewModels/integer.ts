@@ -36,7 +36,7 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  override async initializePerspectiveOffline(): Promise<void> {
+  override async initializePerspectiveFromLocal(): Promise<void> {
     try {
     const pairs = await this.zomeProxy.getMyValuesLocal();
     this._values = pairs.map(([_a, b]) => b);
@@ -46,7 +46,7 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   }
 
   /** */
-  override async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveFromNetwork(): Promise<void> {
     try {
       const pairs = await this.zomeProxy.getMyValues();
       this._values = pairs.map(([_a, b]) => b);

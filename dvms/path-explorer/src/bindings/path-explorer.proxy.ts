@@ -100,40 +100,72 @@ export class PathExplorerProxy extends ZomeProxy {
   static override readonly ENTRY_TYPES = [];
   static override readonly LINK_TYPES = [];
  
-  async getAgentEntryHash(): Promise<AnyLinkableArray> {
-    return this.call('get_agent_entry_hash', null);
+  async getMyAgentKeyEntryHash(): Promise<AnyLinkableArray> {
+    return this.call('get_my_agent_key_entry_hash', null);
   }
 
-  async getAllItemsFromAnchor(leafAnchor: string): Promise<ItemLink[]> {
-    return this.call('get_all_items_from_anchor', leafAnchor);
+  async getRecordAuthorLocal(dh: AnyDhtArray): Promise<AgentArray> {
+    return this.call('get_record_author_local', dh);
   }
 
-  async getAllItems(hash: AnyLinkableArray): Promise<ItemLink[]> {
-    return this.call('get_all_items', hash);
+  async getRecordAuthorNetwork(dh: AnyDhtArray): Promise<AgentArray> {
+    return this.call('get_record_author_network', dh);
   }
 
-  async getAllItemsFromB64(b64: string): Promise<ItemLink[]> {
-    return this.call('get_all_items_from_b64', b64);
+  async getAllItemsFromAnchorLocal(leafAnchor: string): Promise<ItemLink[]> {
+    return this.call('get_all_items_from_anchor_local', leafAnchor);
   }
 
-  async getAllRootAnchors(): Promise<TypedAnchor[]> {
-    return this.call('get_all_root_anchors', null);
+  async getAllItemsFromAnchorNetwork(leafAnchor: string): Promise<ItemLink[]> {
+    return this.call('get_all_items_from_anchor_network', leafAnchor);
+  }
+
+  async getAllItemsFromLocal(hash: AnyLinkableArray): Promise<ItemLink[]> {
+    return this.call('get_all_items_from_local', hash);
+  }
+
+  async getAllItemsFromNetwork(hash: AnyLinkableArray): Promise<ItemLink[]> {
+    return this.call('get_all_items_from_network', hash);
+  }
+
+  async getAllItemsB64FromNetwork(b64: string): Promise<ItemLink[]> {
+    return this.call('get_all_items_b64_from_network', b64);
+  }
+
+  async getAllItemsB64FromLocal(b64: string): Promise<ItemLink[]> {
+    return this.call('get_all_items_b64_from_local', b64);
+  }
+
+  async getAllRootAnchors(strategy: GetStrategy): Promise<TypedAnchor[]> {
+    return this.call('get_all_root_anchors', strategy);
   }
 
   async getItems(input: GetItemsInput): Promise<ItemLink[]> {
     return this.call('get_items', input);
   }
 
-  async getLeafs(ta: TypedAnchor): Promise<TypedAnchor[]> {
-    return this.call('get_leafs', ta);
+  async getLeafsLocal(ta: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_leafs_local', ta);
   }
 
-  async getTypedAnchor(anchor: string): Promise<[EntryHashB64, TypedAnchor | null]> {
-    return this.call('get_typed_anchor', anchor);
+  async getLeafsNetwork(ta: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_leafs_network', ta);
   }
 
-  async getTypedChildren(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
-    return this.call('get_typed_children', parentTa);
+  async getTypedAnchorNetwork(anchor: string): Promise<[EntryHashB64, TypedAnchor | null]> {
+    return this.call('get_typed_anchor_network', anchor);
+  }
+
+  async getTypedAnchorLocal(anchor: string): Promise<[EntryHashB64, TypedAnchor | null]> {
+    return this.call('get_typed_anchor_local', anchor);
+  }
+
+  async getTypedChildrenLocal(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_typed_children_local', parentTa);
+  }
+
+  async getTypedChildrenNetwork(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_typed_children_network', parentTa);
   }
 
   async inspectLink(any: AnyLinkableArray): Promise<HashInfo> {

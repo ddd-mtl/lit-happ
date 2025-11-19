@@ -1,10 +1,11 @@
 import {
-  ActionId,
-  AgentId,
-  EntryId, holoIdReviver,
-  LinkPulseMat,
-  StateChangeType,
-  ZomeViewModelWithSignals
+    ActionId,
+    AgentId,
+    EntryId,
+    holoIdReviver,
+    LinkPulseMat,
+    StateChangeType,
+    ZomeViewModelWithSignals
 } from "@ddd-qc/lit-happ";
 import {Profile} from "./bindings/profiles.types";
 import {decode} from "@msgpack/msgpack";
@@ -13,11 +14,12 @@ import {EntryPulseMat} from "@ddd-qc/lit-happ/dist/ZomeViewModelWithSignals";
 import {ProfilesLinkType} from "./bindings/profiles.integrity";
 import {ProfilesAltUnitEnum} from "./bindings/profilesAlt.integrity";
 import {
-  ProfilesAltComparable,
-  ProfilesAltPerspective,
-  ProfilesAltPerspectiveMutable,
-  ProfilesAltSnapshot
+    ProfilesAltComparable,
+    ProfilesAltPerspective,
+    ProfilesAltPerspectiveMutable,
+    ProfilesAltSnapshot
 } from "./profilesAlt.perspective";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /**
@@ -54,14 +56,14 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  override async initializePerspectiveOnline(): Promise<void> {
-    await this.probeAllProfiles();
+  override async initializePerspectiveFromNetwork(): Promise<void> {
+    await this.probeAllProfiles(GetStrategy.Network);
   }
 
 
   /** */
   override probeAllInner() {
-    this.probeAllProfiles();
+    this.probeAllProfiles(GetStrategy.Network);
   }
 
 
@@ -129,9 +131,9 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   /** -- Methods -- */
 
   /** */
-  async probeAllProfiles()/*: Promise<Record<AgentPubKeyB64, ProfileMat>>*/ {
+  async probeAllProfiles(strategy: GetStrategy)/*: Promise<Record<AgentPubKeyB64, ProfileMat>>*/ {
     try {
-      await this.zomeProxy.probeProfiles();
+      await this.zomeProxy.probeProfiles(strategy);
     } catch(e) {}
   }
 

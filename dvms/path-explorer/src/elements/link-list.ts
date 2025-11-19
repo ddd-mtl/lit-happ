@@ -40,7 +40,7 @@ export class LinkList extends ZomeElement<unknown, PathExplorerZvm> {
       return;
     }
     const baseHash = decodeHashFromBase64(this.base);
-    this._itemLinks = await this._zvm.zomeProxy.getAllItems(baseHash);
+    this._itemLinks = await this._zvm.zomeProxy.getAllItemsFromNetwork(baseHash);
   }
 
 

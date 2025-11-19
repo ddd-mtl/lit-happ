@@ -75,15 +75,15 @@ export class PlaygroundCloneApp extends HappElement {
   }
 
   /** */
-  override async perspectiveInitializedOffline(): Promise<void> {
-    console.log("perspectiveInitializedOffline()")
+  override async perspectiveInitializedFromLocal(): Promise<void> {
+    console.log("perspectiveInitializedFromLocal()")
     this._initializedOffline = true;
   }
 
 
   /** */
-  override async perspectiveInitializedOnline(): Promise<void> {
-    console.log("perspectiveInitializedOnline()")
+  override async perspectiveInitializedFromNetwork(): Promise<void> {
+    console.log("perspectiveInitializedFromNetwork()")
     this._initializedOnline = true;
   }
 

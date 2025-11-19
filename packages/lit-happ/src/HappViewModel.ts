@@ -245,17 +245,17 @@ export class HappViewModel {
 
 
   /** Can't parallelize calls since happ can have multiple roles with same dnas which can throttle entry_def calls */
-  async initializePerspectiveOffline(): Promise<void> {
+  async initializePerspectiveFromLocal(): Promise<void> {
     for (const dvm of Object.values(this._dvmMap)) {
-      await dvm.initializePerspectiveOffline();
+      await dvm.initializePerspectiveFromLocal();
     }
   }
 
   /** */
-  async initializePerspectiveOnline(): Promise<void> {
+  async initializePerspectiveFromNetwork(): Promise<void> {
     const all = [];
     for (const dvm of Object.values(this._dvmMap)) {
-      const p = dvm.initializePerspectiveOnline();
+      const p = dvm.initializePerspectiveFromNetwork();
       all.push(p);
     }
     await Promise.all(all);

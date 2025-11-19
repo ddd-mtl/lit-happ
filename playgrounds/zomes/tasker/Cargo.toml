@@ -13,5 +13,6 @@ workspace = true
 serde.workspace = true
 hdk.workspace = true
 zome_utils.workspace = true
+zome_core.workspace = true
 
 tasker_model = {path = "../tasker_model" }

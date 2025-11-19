@@ -12,6 +12,7 @@ import {
   SharedOwnershipSnapshot
 } from "./sharedOwnership.perspective";
 import {SharedOwnershipLinkType} from "./bindings/sharedOwnership.integrity";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 
@@ -25,7 +26,7 @@ export class SharedOwnershipZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  override async initializePerspectiveOffline(): Promise<void> {
+  override async initializePerspectiveFromLocal(): Promise<void> {
     const keys = await this.zomeProxy.querySharedKeys();
     for (const key of keys) {
       const keyId = new ActionId(key)
@@ -35,13 +36,13 @@ export class SharedOwnershipZvm extends ZomeViewModelWithSignals {
   }
 
   /** */
-  override async initializePerspectiveOnline(): Promise<void> {
+  override async initializePerspectiveFromNetwork(): Promise<void> {
     await this.probeAllInner();
   }
 
   /** */
   override probeAllInner() {
-    /*await*/ this.zomeProxy.probeShareds();
+    /*await*/ this.zomeProxy.probeShareds(GetStrategy.Network);
   }
 
   /* */
