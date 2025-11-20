@@ -95,6 +95,13 @@ export interface TypedAnchor {
   linkIndex: number
 }
 
+export interface GetDataTypeInput {
+  hash: AnyDhtArray
+  role?: string
+  dna?: DnaArray
+  get_strategy: GetStrategy
+}
+
 /** LinkTypes to get */
 export type MyLinkFilter = [number, number[]][];
 

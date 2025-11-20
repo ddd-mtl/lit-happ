@@ -30,9 +30,9 @@
     "typescript": "~5.2.0"
   },
   "dependencies": {
+    "@holochain/client": "^0.20.0",
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@ddd-qc/lit-happ": "file:../lit-happ",
-    "@holochain/client": "^0.20.0-dev.2",
     "@theweave/api": "=0.6.0",
     "@mdi/js": "^7.2.0"
   },

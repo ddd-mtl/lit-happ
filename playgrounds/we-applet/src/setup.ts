@@ -16,8 +16,8 @@ export async function setupExampleApplet(): Promise<LitElement> {
   let WE_APPLET_VIEW = "main";
   try {
     WE_APPLET_VIEW = process.env.WE_APPLET_VIEW!;
-    //console.log(`HAPP_ENV defined by process.ENV: "${happEnv}"`);
   } catch (e:any) {
+      console.trace(`process.env.WE_APPLET_VIEW not defined"`);
   }
   console.log("Example we-applet setup() WE_APPLET_VIEW", WE_APPLET_VIEW);
   switch(WE_APPLET_VIEW) {

@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/path-explorer",
-  "version": "1.33.2",
+  "version": "1.33.3",
   "description": "lit-happ elements for browsing Paths & Links.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -30,8 +30,8 @@
     "watch-cli": "^0.2.3"
   },
   "dependencies": {
+    "@holochain/client": "^0.20.0",
     "@ddd-qc/lit-happ": "file:../lit-happ",
-    "@holochain/client": "^0.20.0-dev.2",
     "@ui5/webcomponents": "=1.13.3",
     "@ui5/webcomponents-fiori": "=1.13.3",
     "@ui5/webcomponents-icons": "=1.13.3",

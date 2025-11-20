@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.33.2",
+  "version": "0.33.3",
   "workspaces": [
     "dvms/agent-directory",
     "dvms/path-explorer",
@@ -14,7 +14,7 @@
     "playgrounds/webapp_tasker"
   ],
   "config": {
-    "hc_version"  : "0.6.0-rc.0",
+    "hc_version"  : "0.6.0",
     "k2_version"  : "0.2.17",
     "zits_version": "1.17.1",
     "bin"         : "bin"

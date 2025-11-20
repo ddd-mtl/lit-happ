@@ -80,6 +80,13 @@ EntryDetails, RecordDetails, Details, DetailsType, EntryDhtStatus,
 ValidationStatus, ValidationReceipt,
 } from '@holochain-open-dev/core-types';
 
+export interface GetDataTypeInput {
+  hash: AnyDhtArray
+  role?: string
+  dna?: DnaArray
+  get_strategy: GetStrategy
+}
+
 export interface CreateTaskItemInput {
   title: string
   assignee: AgentArray

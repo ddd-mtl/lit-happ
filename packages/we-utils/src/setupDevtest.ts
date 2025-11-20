@@ -43,7 +43,7 @@ export async function setupDevtest(
 
     const localStorageId = names.installed_app_id + "-id";
 
-    /** Store AppletId in LocalStorage, so we can retrieve it when refereshing webpage */
+    /** Store AppletId in LocalStorage, so we can retrieve it when refreshing webpage */
     let devtestAppletId: EntryId;
     let devtestAppletIdB64 = window.localStorage[localStorageId];
     if (!devtestAppletIdB64) {
@@ -67,7 +67,6 @@ export async function setupDevtest(
     }
     const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: apps[0]!.installed_app_id});
     const token = issued.token;
-
 
     /** AppWebsocket */
     const appAgentWs = await AppWebsocket.connect( {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`), token});
