@@ -38,8 +38,8 @@ export class TaskerZvm extends ZomeViewModel {
   /** -- Methods -- */
 
   /** */
-  async pullAllLists() {
-    const lists = await this.zomeProxy.getAllLists(GetStrategy.Network);
+  async pullAllLists(strategy: GetStrategy) {
+    const lists = await this.zomeProxy.getAllLists(strategy);
     console.log("pullAllLists() lists:", lists);
     //console.log("pullAllLists() taskListEntryStore:", this.taskListEntryStore);
     for (const pair of lists) {
@@ -70,28 +70,27 @@ export class TaskerZvm extends ZomeViewModel {
       }
       this.notifySubscribers()
     })
-
-
+    /** */
     this.notifySubscribers();
   }
 
 
   /** */
-  override async probeAll() {
-    console.log("taskerViewModel.probeAll() called");
+  override async probeAll(strategy: GetStrategy) {
+    console.log("taskerViewModel.probeAll() called", strategy);
     /** Reset perspective */
     this._perspective.taskListEntries = {};
     this._perspective.taskLists = {};
     this._perspective.taskItems = {};
     this._perspective.myRoles = [];
     /** Get Lists */
-    await this.pullAllLists();
-
+    await this.pullAllLists(strategy);
+    /** */
     this.notifySubscribers()
   }
 
 
-  /** Perform methods */
+  /** -- Perform methods -- */
 
   /** */
   async createTaskItem(title: string, assignee: AgentPubKeyB64, listEh: EntryHashB64): Promise<ActionHashB64> {
@@ -101,14 +100,14 @@ export class TaskerZvm extends ZomeViewModel {
       listEh: decodeHashFromBase64(listEh),
     });
     let resb64 = encodeHashToBase64(res);
-    this.probeAll();
+    this.probeAll(GetStrategy.Local);
     return resb64;
   }
 
   /** */
   async createTaskList(title: string): Promise<ActionHashB64> {
     let newList = encodeHashToBase64(await this.zomeProxy.createTaskList(title));
-    this.pullAllLists();
+    await this.pullAllLists(GetStrategy.Local);
     return newList;
   }
 

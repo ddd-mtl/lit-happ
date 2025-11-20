@@ -1,6 +1,4 @@
-//mod signal_protocol;
 mod callbacks;
-//pub use signal_protocol::*;
 
 use hdk::prelude::*;
 use integer_integrity::*;

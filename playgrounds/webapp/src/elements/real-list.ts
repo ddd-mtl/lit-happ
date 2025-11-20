@@ -2,6 +2,7 @@ import {html} from "lit";
 import {RealZomePerspective, RealZvm} from "../viewModels/real";
 import {ZomeElement} from "@ddd-qc/lit-happ";
 import {customElement} from "lit/decorators.js";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /**
  *
@@ -15,7 +16,7 @@ export class RealList extends ZomeElement<RealZomePerspective, RealZvm> {
 
   /** */
   async onProbe(_e: any) {
-    await this._zvm.probeAll();
+    await this._zvm.probeAll(GetStrategy.Local);
   }
 
 

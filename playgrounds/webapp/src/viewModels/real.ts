@@ -2,6 +2,7 @@ import {DnaModifiersOptions, DnaViewModel, EntryId, ZomeViewModel, ZvmDef} from 
 import {Signal} from "@holochain/client";
 import { LabelZvm } from "./label";
 import {RealProxy} from "../bindings/real.proxy";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /** */
@@ -29,7 +30,7 @@ export class RealZvm extends ZomeViewModel {
   private _values: number[] = [];
 
 
-  override async probeAllInner(): Promise<void> {
+  override async probeAllInner(_strategy: GetStrategy): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     this._values = await this.zomeProxy.getMyReals();

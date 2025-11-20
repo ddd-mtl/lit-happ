@@ -1,5 +1,6 @@
 import {ZomeViewModel, AgentId} from "@ddd-qc/lit-happ";
 import {AgentDirectoryProxy} from "./bindings/agentDirectory.proxy";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /** Perspective */
 export interface AgentDirectoryPerspective {
@@ -34,14 +35,14 @@ export class AgentDirectoryZvm extends ZomeViewModel {
   }
 
   /** */
-  async probeAllInner(): Promise<void> {
-    await this.probeRegisteredAgents()
+  async probeAllInner(strategy: GetStrategy): Promise<void> {
+    await this.probeRegisteredAgents(strategy)
   }
 
   /** */
-  async probeRegisteredAgents() {
+  async probeRegisteredAgents(_strategy: GetStrategy) {
     console.log("AgentDirectoryZvm.probeRegisteredAgents()");
-    let agents = await this.zomeProxy.getRegisteredAgents();
+    let agents = await this.zomeProxy.getRegisteredAgents(/*strategy*/); // Implement strategy in getRegisteredAgents
     this._agents = agents.map((agentKey) => new AgentId(agentKey));
     this.notifySubscribers()
   }

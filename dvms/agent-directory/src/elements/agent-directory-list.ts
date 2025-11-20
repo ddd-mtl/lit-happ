@@ -2,6 +2,7 @@ import {html} from "lit";
 import {state, customElement} from "lit/decorators.js";
 import {ZomeElement} from "@ddd-qc/lit-happ";
 import {AgentDirectoryPerspective, AgentDirectoryZvm} from "../agentDirectory.zvm";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /**
  * @element agent-directory-list
@@ -29,7 +30,7 @@ export class AgentDirectoryList extends ZomeElement<AgentDirectoryPerspective, A
 
   /** */
   async refresh(_e?: any) {
-    this._zvm.probeAll();
+    this._zvm.probeAll(GetStrategy.Network);
   }
 
 

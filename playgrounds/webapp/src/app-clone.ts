@@ -19,6 +19,7 @@ import "./elements/real-list";
 import "./elements/named-inspect";
 import "./elements/real-multi-list";
 import "./elements/label-multi-list";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /**
  *
@@ -90,7 +91,7 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** */
   async onProbe(_e: any) {
-    await this.hvm.probeAll();
+    await this.hvm.probeAll(GetStrategy.Local);
   }
 
   /** */

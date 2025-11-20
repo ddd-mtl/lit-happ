@@ -2,6 +2,7 @@ import {EntryId, ResponseLog, ZomeViewModel} from "@ddd-qc/lit-happ";
 import {Signal, SignalCb} from "@holochain/client";
 import {delay} from "@ddd-qc/cell-proxy";
 import {LabelProxy} from "../bindings/label.proxy";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /**
  *
@@ -30,7 +31,7 @@ export class LabelZvm extends ZomeViewModel {
   }
 
   /** */
-  override async probeAllInner(): Promise<void> {
+  override async probeAllInner(_strategy: GetStrategy): Promise<void> {
     //let entryDefs = await this._proxy.getEntryDefs();
     //console.log({entryDefs})
     await delay(1000); // for testing probeAll mutex

@@ -7,7 +7,7 @@ import {
   CellIdStr, AgentIdMap, DnaId, CellAddress,
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
-import {/*CellDef,*/ HvmDef} from "./definitions";
+import {HvmDef} from "./definitions";
 import {
   AppWebsocket,
   InstalledAppId, NetworkMetrics,
@@ -19,7 +19,8 @@ import {NetworkCaller} from "./NetworkCaller";
 
 
 /**
- *
+ * Base class for HappMultiElements, which are LitElements that wrap multiple HappViewModel,
+ * i.e. the main WebComponent of a web-app using multiple Holochain apps.
  */
 export class HappMultiElement extends LitElement {
 
@@ -42,19 +43,8 @@ export class HappMultiElement extends LitElement {
     defaultTimeout?: number,
     ) {
     super();
-    /* await */ this.constructHvms(appInfo, adminUrl, defaultTimeout);
-  }
-
-  /** */
-  async hvmsConstructed(): Promise<void> {}
-  /** */
-  async perspectiveInitializedFromLocal(): Promise<void> {}
-  /** */
-  async perspectiveInitializedFromNetwork(): Promise<void> {}
-
-  /** */
-  override shouldUpdate() {
-    return this.hvms.length > 0;
+    this.constructHvms(appInfo, adminUrl, defaultTimeout)
+      .then(() => console.debug("HappMultiElement constructed"))
   }
 
   /** */
@@ -75,24 +65,47 @@ export class HappMultiElement extends LitElement {
     }
     this.networkCaller = new NetworkCaller(this.hvms[0]![0]); // use first appProxy
     await this.hvmsConstructed();
-    await this.initializePerspective();
+    await this.initializePerspectiveFromLocal();
   }
 
-
   /** */
-  async initializePerspective(): Promise<void> {
-    for (const [_proxy, hvm] of this.hvms) {
-      await hvm.initializePerspectiveFromLocal();
-    }
-    await this.perspectiveInitializedFromLocal();
+  async initializePerspectiveFromLocal(): Promise<void> {
+      for (const [_proxy, hvm] of this.hvms) {
+          await hvm.initializePerspectiveFromLocal();
+      }
+      await this.perspectiveInitializedFromLocal();
+  }
 
-    // TODO move this to a later stage
+  async initializePerspectiveFromNetwork(): Promise<void> {
     for (const [_proxy, hvm] of this.hvms) {
       await hvm.initializePerspectiveFromLocal();
     }
     await this.perspectiveInitializedFromNetwork();
   }
 
+    /** -- Lit lifecycle hooks -- */
+
+    /** */
+    override shouldUpdate() {
+        return this.hvms.length > 0;
+    }
+
+    override firstUpdated() {
+        this.perspectiveInitializedFromNetwork()
+            .then(() => console.debug("Finished initializing Happ perspective from Network"))
+    }
+
+    /** -- Hooks for subclasses to override -- */
+
+    /** */
+    async hvmsConstructed(): Promise<void> {}
+    /** */
+    async perspectiveInitializedFromLocal(): Promise<void> {}
+    /** */
+    async perspectiveInitializedFromNetwork(): Promise<void> {}
+
+
+  /** -- Methods -- */
 
   /** */
   async networkInfoAll(baseRoleName?: string): Promise<Record<CellIdStr, [Timestamp, NetworkMetrics]>> {

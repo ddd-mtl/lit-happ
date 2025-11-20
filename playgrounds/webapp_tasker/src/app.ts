@@ -8,6 +8,7 @@ import "@ddd-qc/path-explorer";
 import { TaskerDvm } from "./viewModel/tasker.dvm";
 import {Profile} from "@ddd-qc/profiles-dvm";
 import {MyDictionary, EntryDef} from "@ddd-qc/cell-proxy";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 
@@ -66,7 +67,6 @@ export class TaskerApp extends HappElement {
     console.log("happInitialized() dnaDef", this._dnaDef);
     /** Probe */
     this._cell = this.taskerDvm.cell;
-    this.hvm.probeAll();
 
     //this._allAppEntryTypes = await this.taskerDvm.fetchAllEntryDefs();
     //console.log("happInitialized(), _allAppEntryTypes", this._allAppEntryTypes);
@@ -86,7 +86,7 @@ export class TaskerApp extends HappElement {
   /** */
   async refresh(_e?: any) {
     console.log("tasker-app.refresh() called")
-    await this.hvm.probeAll();
+    await this.hvm.probeAll(GetStrategy.Network);
   }
 
 

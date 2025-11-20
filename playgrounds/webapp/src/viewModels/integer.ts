@@ -7,6 +7,7 @@ import {
 import {Signal, SignalCb} from "@holochain/client";
 import {LabelZvm} from "./label";
 import {IntegerProxy} from "../bindings/integer.proxy";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /** */
@@ -56,7 +57,7 @@ export class IntegerZvm extends ZomeViewModelWithSignals {
   }
 
   /** */
-  override probeAllInner(): void {
+  override probeAllInner(_strategy: GetStrategy): void {
     //let entryDefs = await this._proxy.getEntryDefs();
     const knowns = this._knowns.map((id) => id.hash);
     console.log("knowns", this._knowns, knowns);

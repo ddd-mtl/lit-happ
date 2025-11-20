@@ -54,6 +54,10 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
     return false;
   }
 
+  /** */
+  override async initializePerspectiveFromLocal(): Promise<void> {
+    await this.probeAllProfiles(GetStrategy.Local);
+  }
 
   /** */
   override async initializePerspectiveFromNetwork(): Promise<void> {
@@ -62,8 +66,8 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
 
   /** */
-  override probeAllInner() {
-    this.probeAllProfiles(GetStrategy.Network);
+  override probeAllInner(strategy: GetStrategy) {
+    this.probeAllProfiles(strategy);
   }
 
 

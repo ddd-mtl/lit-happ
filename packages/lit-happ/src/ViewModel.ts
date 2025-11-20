@@ -1,6 +1,7 @@
 import {Context, ContextProvider} from "@lit/context";
 import {ReactiveControllerHost, ReactiveElement} from "lit";
 import {SignalCb} from "@holochain/client";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 import { Mutex } from 'async-mutex';
 
@@ -21,7 +22,7 @@ import { Mutex } from 'async-mutex';
  * The ViewModel contains a perspective: All the data that a view can observe.
  * To update subscribers, it makes use of Lit's reactive properties.
  * When subscribing, a host must provide a reactive property that has the ViewModel's perspestives's type.
- * Hosts can trigger probing in order to get an updated perspective.
+ * Hosts can trigger probing to get an updated perspective.
  * The perspective can be automatically updated by internal events.
  */
  export abstract class ViewModel {
@@ -56,20 +57,22 @@ import { Mutex } from 'async-mutex';
   comparable(): Object { return {} }
 
 
-  /* (optional) Set perspective with data from the source-chain and local dht data (if any) */
+  /* (optional) Set startup perspective with local data (source-chain and local DHT cache) */
   async initializePerspectiveFromLocal(): Promise<void> {}
-  /* (optional) Set perspective with data from the DHT network */
+  /* (optional) Set startup perspective with data from the DHT network */
   async initializePerspectiveFromNetwork(): Promise<void> {}
-  /* (optional) Lets the observer trigger probing into the network to get an updated perspective */
-  protected probeAllInner(): void {};
+  /* (optional) Called by probeAll() which  */
+  protected probeAllInner(_strategy: GetStrategy): void {};
 
   /**
-   * Mutex wrapping of probeAllInner: Don't call probeAll() during a probeAll()
-   * Should not be async as we expect this to be long, so happs are expected to use signals instead to transmit changes in data.
-   * Probe calls with Network strategy are expected, so try-catch is needed to handle a get failure.
+   * Trigger probing into the network to get the latest up-to-date perspective.
+   * Mutex wrapping of probeAllInner as to not do multiple probing at the same time.
+   * CAUTION: Don't call probeAll() during a probeAll() or it will deadlock.
+   * Should not be async as we expect this to take a long time. Happs are expected to use signals instead to notify changes in data.
+   * Probe calls with Network strategy are expected, so a fail-safe try-catch is needed to handle a get() failure.
    */
   protected _probeMutex = new Mutex();
-  probeAll(): void {
+  probeAll(strategy: GetStrategy): void {
     // if (this._initializationState !== InitializationState.Initialized) {
     //   console.warn("probeAll() called on an uninitialized ViewModel");
     //   return;
@@ -82,7 +85,7 @@ import { Mutex } from 'async-mutex';
       .acquire()
       .then(async (release) => {
           try {
-              this.probeAllInner();
+              this.probeAllInner(strategy);
           } catch (e) {
               console.error("probeAll() failed", e);
           }

@@ -10,6 +10,7 @@ import {
 } from "@ddd-qc/cell-proxy";
 import { CellDef, DvmDef, HvmDef } from "./definitions";
 import { DnaViewModel } from "./DnaViewModel";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -237,9 +238,9 @@ export class HappViewModel {
 
 
   /** */
-  probeAll(): void {
+  probeAll(strategy: GetStrategy): void {
     for (const dvm of Object.values(this._dvmMap)) {
-      dvm.probeAll();
+      dvm.probeAll(strategy);
     }
   }
 

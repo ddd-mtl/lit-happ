@@ -40,7 +40,7 @@ export class PathsDashboard extends ZomeElement<unknown, PathExplorerZvm> {
 
   /** */
   async printRootAnchors() {
-    const rootAnchors = await this._zvm.zomeProxy.getAllRootAnchors(GetStrategy.Network);
+    const rootAnchors = await this._zvm.zomeProxy.getAllRootAnchors(GetStrategy.Local);
     console.log({rootAnchors})
     for (const rootAnchor of rootAnchors) {
       //const str = utf32Decode(new Uint8Array(child[1]));

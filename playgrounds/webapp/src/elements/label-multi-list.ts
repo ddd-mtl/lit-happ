@@ -3,6 +3,7 @@ import {LabelZvm} from "../viewModels/label";
 import {ZomeMultiElement} from "@ddd-qc/lit-happ";
 import {customElement} from "lit/decorators.js";
 import {TemplateResult} from "lit/development";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /**
@@ -18,7 +19,7 @@ export class LabelMultiList extends ZomeMultiElement<LabelZvm> {
 
   /** */
   async onProbe(_e: any) {
-    await this._zvms.forEach((zvm) => zvm.probeAll());
+    await this._zvms.forEach((zvm) => zvm.probeAll(GetStrategy.Local));
   }
 
 

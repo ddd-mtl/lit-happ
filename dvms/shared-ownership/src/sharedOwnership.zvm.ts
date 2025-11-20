@@ -37,12 +37,12 @@ export class SharedOwnershipZvm extends ZomeViewModelWithSignals {
 
   /** */
   override async initializePerspectiveFromNetwork(): Promise<void> {
-    await this.probeAllInner();
+    this.probeAllInner(GetStrategy.Network);
   }
 
   /** */
-  override probeAllInner() {
-    /*await*/ this.zomeProxy.probeShareds(GetStrategy.Network);
+  override probeAllInner(strategy: GetStrategy) {
+    /*await*/ this.zomeProxy.probeShareds(strategy);
   }
 
   /* */

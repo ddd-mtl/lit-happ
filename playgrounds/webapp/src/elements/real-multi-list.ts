@@ -2,6 +2,7 @@ import {html, TemplateResult} from "lit";
 import {RealZvm} from "../viewModels/real";
 import {ZomeMultiElement} from "@ddd-qc/lit-happ";
 import {customElement} from "lit/decorators.js";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /**
  *
@@ -15,7 +16,7 @@ export class RealMultiList extends ZomeMultiElement<RealZvm> {
 
   /** */
   async onProbe(_e: any) {
-    await this._zvms.forEach((zvm) => zvm.probeAll());
+    await this._zvms.forEach((zvm) => zvm.probeAll(GetStrategy.Local));
   }
 
 

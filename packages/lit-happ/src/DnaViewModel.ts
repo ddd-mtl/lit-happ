@@ -15,6 +15,7 @@ import {
   MyDictionary, CellMixin, AgentId, EntryDef, ZomeInfo, DnaInfo
 } from "@ddd-qc/cell-proxy";
 import {RoleMixin, RoleSpecific} from "./roleMixin";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 //export type IDnaViewModel = _DnaViewModel & ICellDef & typeof RoleSpecific;
@@ -173,11 +174,11 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   }
 
 
-  /** Not async on purpose as we except this to be long. Post-processing should be done via Observer pattern */
-  protected override probeAllInner(): void {
+  /** Not async on purpose as we except this to be long. Post-processing should be done via an observer pattern. */
+  protected override probeAllInner(strategy: GetStrategy): void {
     for (const [_name, zvm] of Object.entries(this._zomeViewModels)) {
       //console.log("Dvm.probeAll()", name)
-      zvm.probeAll();
+      zvm.probeAll(strategy);
     }
   }
 

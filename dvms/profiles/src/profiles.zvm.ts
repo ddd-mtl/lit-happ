@@ -3,6 +3,7 @@ import {Profile} from "./bindings/profiles.types";
 import {AgentPubKeyB64, decodeHashFromBase64, encodeHashToBase64} from "@holochain/client";
 import {ProfilesProxy} from "./bindings/profiles.proxy";
 import {decode} from "@msgpack/msgpack";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /** */
@@ -27,13 +28,18 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  override async initializePerspectiveFromNetwork(): Promise<void> {
-    await this.probeAllProfiles();
+  override async initializePerspectiveFromLocal(): Promise<void> {
+      await this.probeAllProfiles(GetStrategy.Local);
   }
 
   /** */
-  override probeAllInner() {
-    this.probeAllProfiles()
+  override async initializePerspectiveFromNetwork(): Promise<void> {
+    await this.probeAllProfiles(GetStrategy.Network);
+  }
+
+  /** */
+  override probeAllInner(strategy: GetStrategy) {
+    this.probeAllProfiles(strategy)
         .then((res) => console.trace("probeAllProfiles() finished: ", res.length))
   }
 
@@ -95,7 +101,7 @@ export class ProfilesZvm extends ZomeViewModel {
 
 
   /** */
-  async probeAllProfiles(): Promise<Record<AgentPubKeyB64, Profile>> {
+  async probeAllProfiles(_strategy: GetStrategy): Promise<Record<AgentPubKeyB64, Profile>> {
     let allAgents;
     /** Attempt a retry on fail as this can create an entry (path anchor) and generate a 'head has moved' error */
     try {

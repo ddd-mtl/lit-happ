@@ -2,6 +2,7 @@ import {html} from "lit";
 import {customElement} from "lit/decorators.js";
 import {IntegerZomePerspective, IntegerZvm} from "../viewModels/integer";
 import {ZomeElement} from "@ddd-qc/lit-happ";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 /**
  *
@@ -19,7 +20,7 @@ export class IntegerList extends ZomeElement<IntegerZomePerspective, IntegerZvm>
   /** */
   async onProbe(_e: any) {
     console.log(`\t\t <integer-list>.onProbe()`)
-    await this._zvm.probeAll();
+    await this._zvm.probeAll(GetStrategy.Local);
   }
 
 

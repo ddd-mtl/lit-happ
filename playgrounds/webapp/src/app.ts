@@ -25,6 +25,7 @@ import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
 import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
 
 import {AppletId, AppletView, GroupProfile, WeaveServices} from "@theweave/api";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 const weClientContext = createContext<WeaveServices>('weave_client');
 
 /** */
@@ -212,7 +213,7 @@ export class PlaygroundApp extends HappElement {
   async onProbe(_e: any) {
     //let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
     //console.log({entryDefs})
-    this.hvm.probeAll();
+    this.hvm.probeAll(GetStrategy.Local);
   }
 
 

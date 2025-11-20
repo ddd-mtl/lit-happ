@@ -4,6 +4,7 @@ import {AgentId, DnaElement} from "@ddd-qc/lit-happ";
 import { TaskerDvm } from "../viewModel/tasker.dvm";
 import {TaskerPerspective, TaskListMaterialized} from "../viewModel/tasker.perspective";
 import {encodeHashToBase64, EntryHashB64} from "@holochain/client";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /**
@@ -37,7 +38,7 @@ export class TaskerPage extends DnaElement<unknown, TaskerDvm> {
     }
     newDvm.taskerZvm.subscribe(this, 'taskerPerspective');
     console.log("\t Subscribed taskerZvm's roleName = ", newDvm.taskerZvm.cell.name)
-    newDvm.probeAll();
+    newDvm.probeAll(GetStrategy.Local);
     this._selectedListEh = undefined;
     //this.taskerPerspective = emptyTaskerPerspective;
     this._initialized = true;
@@ -54,7 +55,7 @@ export class TaskerPage extends DnaElement<unknown, TaskerDvm> {
   /** */
   async refresh(_e?: any) {
     //console.log("tasker-page.refresh() called")
-    await this._dvm.probeAll();
+    await this._dvm.probeAll(GetStrategy.Network);
   }
 
 
@@ -130,7 +131,7 @@ export class TaskerPage extends DnaElement<unknown, TaskerDvm> {
       }
     }
 
-    this._dvm.taskerZvm.probeAll();
+    this._dvm.taskerZvm.probeAll(GetStrategy.Local);
     //this.requestUpdate();
   }
 

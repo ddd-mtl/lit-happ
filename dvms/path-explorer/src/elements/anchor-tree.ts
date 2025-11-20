@@ -131,7 +131,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     //console.log("<anchor-tree>.shouldUpdate()", changedProperties);
     if (changedProperties.has("rootTypedAnchor")) {
       console.log("<anchor-tree>.shouldUpdate()", changedProperties);
-      this.walkRootAnchor();
+      this.walkRootAnchor(GetStrategy.Local);
     }
     return true;
   }
@@ -165,7 +165,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
 
 
   /** Set _level0 to all children of this.rootTypedAnchor */
-  async walkRootAnchor(): Promise<void> {
+  async walkRootAnchor(strategy: GetStrategy): Promise<void> {
     if (!this._zvm) {
       console.warn("walkRootAnchor() aborted. Missing _zvm.");
       return;
@@ -181,10 +181,14 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     // }
     let tas: TypedAnchor[] = [];
     if (this.rootTypedAnchor) {
-        tas = await this._zvm.zomeProxy.getTypedChildrenNetwork(this.rootTypedAnchor);
+        if (strategy == GetStrategy.Network) {
+            tas = await this._zvm.zomeProxy.getTypedChildrenNetwork(this.rootTypedAnchor);
+        } else {
+            tas = await this._zvm.zomeProxy.getTypedChildrenLocal(this.rootTypedAnchor);
+        }
     } else {
       /** AnchorTree from ROOT */
-      tas = await this._zvm.zomeProxy.getAllRootAnchors(GetStrategy.Network);
+      tas = await this._zvm.zomeProxy.getAllRootAnchors(strategy);
     }
     console.log("TypedAnchors", tas);
     this._level0 = tas.map((ta): AnchorTreeItem => {
@@ -366,7 +370,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
         <h2>
             Anchor Explorer: cell "${this.cell.name}"
             <button @click=${this.onProbeROOT}>
-                Probe ROOT
+                Probe ROOT (local)
             </button>
         </h2>
         <!--<h4>${title}</h4>-->
@@ -395,7 +399,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
   async onProbeROOT(_e: any) {
     this._level0 = [];
     this.rootTypedAnchor = undefined;
-    await this.walkRootAnchor();
+    await this.walkRootAnchor(GetStrategy.Local);
     const input = this.shadowRoot!.getElementById("rootInput") as Input;
     input.value = '';
   }
