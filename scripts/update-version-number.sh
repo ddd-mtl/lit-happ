@@ -13,7 +13,7 @@ update_package_version() {
     local new_version="$2"
 
     OLD_VER=$(awk -F ":" '/"version"/ {print $2}' "$package_path" | sed 's/"//g' | sed 's/,//g' | sed 's/ //g')
-    #echo "${package_path} ${OLD_VER} -> ${new_version}"
+    echo "${package_path} ${OLD_VER} -> ${new_version}"
     sed -i "s/\"version\": \"$OLD_VER\"/\"version\": \"$new_version\"/" "$package_path"
 }
 
