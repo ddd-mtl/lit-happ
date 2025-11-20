@@ -13,7 +13,7 @@ import {
   EnableCloneCellRequest,
   InstalledAppId,
   ProvisionedCell,
-  Timestamp, ZomeName, SignalType, DumpNetworkStatsResponse, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse,
+  Timestamp, ZomeName, SignalType, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -29,6 +29,7 @@ import {prettyDate, printAppInfo} from "./pretty";
 import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
 import {Signal} from "@holochain/client/lib/api/app/types";
+import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
 
 
 /** */
@@ -184,7 +185,7 @@ export class AppProxy implements AppClient {
     throw new Error("Method not implemented.");
   }
 
-  async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
+  async dumpNetworkStats(): Promise<AppDumpNetworkStatsResponse> {
     throw new Error("Method not implemented.");
   }
 

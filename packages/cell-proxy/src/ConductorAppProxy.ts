@@ -13,7 +13,6 @@ import {
   AdminWebsocket,
   CreateCloneCellResponse,
   EnableCloneCellResponse,
-  DumpNetworkStatsResponse,
   DumpNetworkMetricsRequest,
   DumpNetworkMetricsResponse,
 } from "@holochain/client";
@@ -21,6 +20,7 @@ import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {AgentId} from "./hash";
 import {AppWebsocketConnectionOptions, AppAuthenticationToken} from "@holochain/client";
+import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
 
 
 export interface CellCloner {
@@ -91,8 +91,8 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
   }
 
 
-  override async dumpNetworkStats(timeout?: number): Promise<DumpNetworkStatsResponse> {
-    return await this._appWs!.dumpNetworkStats(timeout);
+  override async dumpNetworkStats(): Promise<AppDumpNetworkStatsResponse> {
+    return await this._appWs!.dumpNetworkStats();
   }
 
   override async dumpNetworkMetrics(

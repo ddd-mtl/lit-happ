@@ -8,13 +8,13 @@ import {
   AppEvents,
   SignalCb,
   CreateCloneCellResponse,
-  DumpNetworkStatsResponse,
   DumpNetworkMetricsRequest,
   DumpNetworkMetricsResponse, CreateCloneCellRequest,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
 import {AgentId} from "./hash";
+import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
 
 
 /**
@@ -63,7 +63,7 @@ export class ExternalAppProxy extends AppProxy implements AppClient {
   }
 
 
-  override async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
+  override async dumpNetworkStats(): Promise<AppDumpNetworkStatsResponse> {
     return this._appClient.dumpNetworkStats();
   }
 

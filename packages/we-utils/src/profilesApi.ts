@@ -11,9 +11,9 @@ import {
     EnableCloneCellRequest,
     InstalledAppId,
     CreateCloneCellRequest,
-    DumpNetworkStatsResponse,
     DumpNetworkMetricsRequest,
     DumpNetworkMetricsResponse,
+    AppDumpNetworkStatsResponse,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 
@@ -110,7 +110,7 @@ export class ProfilesApi implements AppClient {
   }
 
 
-  async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
+  async dumpNetworkStats(): Promise<AppDumpNetworkStatsResponse> {
     return this.appClient.dumpNetworkStats();
   }
 
