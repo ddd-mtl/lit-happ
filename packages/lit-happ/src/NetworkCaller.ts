@@ -1,7 +1,8 @@
 import {AppProxy, CellAddress, prettyDate, RingBuffer} from "@ddd-qc/cell-proxy";
 import {DhtArc, DumpNetworkMetricsRequest, FetchStateSummary, NetworkMetrics, Timestamp} from "@holochain/client";
+import {TransportStats} from "@holochain/client/lib/api/admin/types";
 
-type NetworkInfoCb = (info:NetworkMetrics) => void;
+type NetworkInfoCb = (info:NetworkMetrics, m: TransportStats) => void;
 
 
 /**
@@ -17,6 +18,8 @@ export class NetworkCaller {
 
   private _lastTimeQueried: Timestamp = 0;
   private _networkMetricsLogs: RingBuffer<[Timestamp, NetworkMetrics]> = new RingBuffer(50);
+  private _networkStatsLogs: RingBuffer<[Timestamp, TransportStats]> = new RingBuffer(50);
+
 
   private _intervalId: any | undefined = undefined;
 
@@ -28,9 +31,12 @@ export class NetworkCaller {
 
   setCapacity(n: number) {
     this._networkMetricsLogs.resize(n);
+    this._networkStatsLogs.resize(n);
   }
 
   get networkMetricsLogs(): [Timestamp, NetworkMetrics][] {return this._networkMetricsLogs.toArray();}
+
+  get networkStatsLogs(): [Timestamp, TransportStats][] {return this._networkStatsLogs.toArray();}
 
 
   /** -- Methods -- */
@@ -49,15 +55,16 @@ export class NetworkCaller {
     this._intervalId = setInterval(async () => {
       //console.log("Requesting network info...");
       const res = await this.callNetworkMetrics();
+      const res2 = await this.callNetworkStats();
       for (const callback of this._callbacks) {
-        callback(res);
+        callback(res, res2);
       }
     }, interval);
   }
 
 
   /** */
-  addCallback(callback: (n: NetworkMetrics) => void) {
+  addCallback(callback: (n: NetworkMetrics, m: TransportStats) => void) {
     this._callbacks.push(callback);
   }
 
@@ -76,6 +83,7 @@ export class NetworkCaller {
   /** */
   clear() {
     this._networkMetricsLogs.clear();
+    this._networkStatsLogs.clear();
   }
 
 
@@ -85,10 +93,11 @@ export class NetworkCaller {
       throw Promise.reject("callNetworkMetrics() aborted. cellAddr not specified.");
     }
     /* Call networkInfo */
-    const response = await this.appProxy.dumpNetworkMetrics({
-      dna_hash: this.cellAddr.dnaId.hash,
-      include_dht_summary: true, // ???
-    } as DumpNetworkMetricsRequest);
+    const request: DumpNetworkMetricsRequest = {
+        dna_hash: this.cellAddr.dnaId.hash,
+        include_dht_summary: true, // ???
+    };
+    const response = await this.appProxy.dumpNetworkMetrics(request);
     if (!response || !response[this.cellAddr.dnaId.b64]) {
       throw Promise.reject("No network metrics response for dna");
     }
@@ -105,7 +114,7 @@ export class NetworkCaller {
   dumpNetworkMetricsLogs(n?: number) {
     console.log(`dumpNetworkMetricsLogs()`, this.cellAddr);
     if (!this.cellAddr) {
-      throw Promise.reject("dumpNetworkMetricsLogs() aborted. cellAddr not specified.");
+      throw Error("dumpNetworkMetricsLogs() aborted. cellAddr not specified.");
     }
     const nn = n? n : this._networkMetricsLogs.getBufferLength();
     let logs = this._networkMetricsLogs.getLastN(nn).map(([ts, metrics]) => {
@@ -129,6 +138,33 @@ export class NetworkCaller {
     })
     console.table(logs);
   }
+
+    /** */
+    async callNetworkStats(): Promise<TransportStats> {
+        const response = await this.appProxy.dumpNetworkStats();
+        if (!response) {
+            throw Promise.reject("No network stats response for dna");
+        }
+        /* Store */
+        this._networkStatsLogs.add([this._lastTimeQueried, response]);
+        /** */
+        return response;
+    }
+
+
+    /** */
+    dumpNetworkStatsLogs(n?: number) {
+        console.log(`dumpNetworkStatsLogs()`);
+        const nn = n ? n : this._networkStatsLogs.getBufferLength();
+        this._networkStatsLogs.getLastN(nn).map(([ts, stats]) => {
+            console.log(`[${prettyDate(new Date(ts))}] Backend: ${stats.backend} ; Peers: ${stats.peer_urls.length}`);
+            const logs = stats.connections.map((connection) => {
+                return connection;
+            });
+            console.table(logs);
+        });
+    }
+
 }
 
 

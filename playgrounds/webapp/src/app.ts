@@ -187,11 +187,10 @@ export class PlaygroundApp extends HappElement {
     console.log("maybeProfile", maybeMyProfile);
     // const maybeProfile = await this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId);
     // console.log("maybeProfile", maybeProfile);
-    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.address.agentId).then((maybeProfile) => {
+    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.address.agentId).then((maybeProfile: Profile | undefined) => {
       console.log("maybeProfile", maybeProfile);
       this.requestUpdate();
     })
-
   }
 
 
@@ -209,7 +208,13 @@ export class PlaygroundApp extends HappElement {
   }
 
 
-  /** */
+    override firstUpdated() {
+        super.firstUpdated();
+        this.networkCaller!.setCellAddr(this.profilesDvm.cell.address);
+    }
+
+
+    /** */
   async onProbe(_e: any) {
     //let entryDefs = await this.dummyDvm.fetchAllEntryDefs();
     //console.log({entryDefs})
@@ -266,8 +271,9 @@ export class PlaygroundApp extends HappElement {
                 this.networkCaller?.clearAllCallbacks();
             }
         }}>
-        <input type="button" value="Dump networkInfos" @click=${(_e:any) => {this.networkCaller?.dumpNetworkMetricsLogs();}}>
-        <br/>
+        <input type="button" value="Dump networkMetrics" @click=${(_e:any) => {this.networkCaller?.dumpNetworkMetricsLogs();}}>
+        <input type="button" value="Dump networkStats" @click=${(_e:any) => {this.networkCaller?.dumpNetworkStatsLogs();}}>
+          <br/>
         <!-- SELECT ENTRY TYPE -->
         <div style="margin-top: 5px;">
           <dvm-inspect .dnaViewModel=${this.integerDvm}></dvm-inspect>
