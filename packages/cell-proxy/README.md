@@ -1,9 +1,9 @@
 # cell-proxy
 
 **Compatible with:**
-- **HDK v0.4.1** & **HDI v0.5.1**
-- **@holochain/client v0.18.0**
-- 
+- **HDK v0.6.0**
+- **@holochain/client v0.20.0**
+
 Proxy classes and helpers for managing a [Holochain](https://www.npmjs.com/package/@holochain/client) AppWebsocket and calling zome functions on cells.
 The intent is to make the development of web UI of Holochain apps in javascript / typescript faster & easier by providing a straightforward API for communicating with a Conductor, and some basic logging features.
 

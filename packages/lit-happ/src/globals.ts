@@ -26,7 +26,7 @@ export function isHappBuildMode(value: any): value is HappBuildModeType {
 
 /** INIT GLOBAL CONSTS */
 
-console.log("[lit-happ] Initializaing LIT-HAPP global consts", window);
+console.log("[lit-happ] Initializing LIT-HAPP global consts", window);
 
 const maybeElectronApi = 'electronBridge' in window? window.electronBridge as any : undefined;
 
@@ -89,13 +89,10 @@ export let HAPP_ELECTRON_API = maybeElectronApi;
 console.log("[lit-happ]  HAPP_BUILD_MODE =", HAPP_BUILD_MODE)
 console.log("[lit-happ]         HAPP_ENV =", HAPP_ENV);
 if (HAPP_ELECTRON_API) {
-    console.log("[lit-happ] HAPP_ELECTRON_API =", HAPP_ENV);
+    console.log("[lit-happ] HAPP_ELECTRON_API    =", HAPP_ENV);
 }
 
-console.log("[lit-happ]      HC_APP_PORT =", process.env.HC_APP_PORT);
-console.log("[lit-happ]    HC_ADMIN_PORT =", process.env.HC_ADMIN_PORT);
-
-console.log("[lit-happ] Initializaing LIT-HAPP global consts - DONE")
+console.log("[lit-happ] Initializing LIT-HAPP global consts - DONE")
 
 
 /** Remove console.log() in PROD */

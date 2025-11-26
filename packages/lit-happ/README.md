@@ -1,9 +1,9 @@
 # lit-happ
 
 **Compatible with:**
-- **HDK v0.4.1** & **HDI v0.5.1**
-- **@holochain/client v0.18.0**
-- 
+- **HDK v0.6.0**
+- **@holochain/client v0.20.0**
+
 Builds on the [cell-proxy](https://www.npmjs.com/package/@ddd-qc/cell-proxy) package to provide a MVVM framework for building web-UI in [Lit](https://www.npmjs.com/package/lit) for [holochain](https://www.npmjs.com/package/@holochain/client) apps.
 
 

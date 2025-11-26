@@ -43,7 +43,6 @@ export class PlaygroundApp extends HappElement {
         ? new URL(`ws://localhost:${HC_ADMIN_PORT}`)
         : undefined;
     let appPort = HC_APP_PORT;
-    //super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
     console.log("PlaygroundApp.ctor() adminUrl", adminUrl);
     super(appWs ? appWs : appPort!, appId, adminUrl, 20 * 1000);
 
