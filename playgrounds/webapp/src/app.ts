@@ -8,7 +8,7 @@ import {
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
 import {Profile, ProfilesAltDvm, ProfilesDvm} from "@ddd-qc/profiles-dvm";
-import {testHoloId} from "@ddd-qc/cell-proxy"
+import {HcConnectionOptions, testHoloId} from "@ddd-qc/cell-proxy"
 import {
   NetworkMetrics,
   AdminWebsocket,
@@ -44,7 +44,10 @@ export class PlaygroundApp extends HappElement {
         : undefined;
     let appPort = HC_APP_PORT;
     console.log("PlaygroundApp.ctor() adminUrl", adminUrl);
-    super(appWs ? appWs : appPort!, appId, adminUrl, 20 * 1000);
+    const options: HcConnectionOptions = appWs
+        ? {socket: appWs, timeout: 20 * 1000}
+        : {port: appPort!, timeout: 20 * 1000, adminUrl};
+    super(options, appId);
 
     console.log("PlaygroundApp.HVM_DEF", PlaygroundApp.HVM_DEF);
     // if (_canAuthorizeZfns == undefined) {

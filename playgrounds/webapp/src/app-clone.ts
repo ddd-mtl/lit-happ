@@ -28,7 +28,7 @@ export class PlaygroundCloneApp extends HappElement {
 
   /** Ctor */
   constructor() {
-    super(Number(process.env.HC_APP_PORT), undefined,  new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`));
+    super({port: Number(process.env.HC_APP_PORT), adminUrl: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
   }
 
   /** HvmDef */

@@ -30,6 +30,21 @@ export interface CellCloner {
 }
 
 
+type HcPortOptions = {
+    port: number;
+    timeout?: number,
+    token?: number[],
+    adminUrl?: URL | undefined;
+}
+
+type HcSocketOptions = {
+    socket: AppWebsocket;
+    timeout?: number,
+}
+
+export type HcConnectionOptions = HcPortOptions | HcSocketOptions;
+
+
 /**
  * Creates, connects and holds an appWebsocket.
  * Creates and holds Cell proxies for this appWebsocket.
@@ -107,20 +122,22 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
   /** -- Creation -- */
 
   /** async Factory */
-  static async new(port_or_socket: number | AppWebsocket, appId: InstalledAppId, adminUrl?: URL, defaultTimeout?: number): Promise<ConductorAppProxy> {
-    const timeout = defaultTimeout ? defaultTimeout : 10 * 1000;
-    if (typeof port_or_socket == 'object') {
-      return  ConductorAppProxy.fromSocket(port_or_socket, timeout);
+  static async new(appId: InstalledAppId, connOptions: HcConnectionOptions): Promise<ConductorAppProxy> {
+    const timeout = connOptions.timeout ? connOptions.timeout : 10 * 1000;
+    if ('socket' in connOptions) {
+      return  ConductorAppProxy.fromSocket(connOptions.socket, timeout);
     } else {
-      let wsUrl = new URL(`ws://localhost:${port_or_socket}`);
+      let wsUrl = new URL(`ws://localhost:${connOptions.port}`);
       try {
-        let token: AppAuthenticationToken | undefined = undefined;
+        let token: AppAuthenticationToken | undefined = connOptions.token;
         let adminWs: AdminWebsocket | undefined = undefined;
-        if (adminUrl) {
-          adminWs = await AdminWebsocket.connect({url: adminUrl});
+        if (connOptions.adminUrl) {
+          adminWs = await AdminWebsocket.connect({url: connOptions.adminUrl});
           console.log({adminWs});
-          const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: appId});
-          token = issued.token;
+          if (!token) {
+              const issued = await adminWs.issueAppAuthenticationToken({installed_app_id: appId});
+              token = issued.token;
+          }
         }
         const options: AppWebsocketConnectionOptions = {
           url: wsUrl,

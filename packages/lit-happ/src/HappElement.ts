@@ -1,14 +1,13 @@
 import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
 import {
-  BaseRoleName,
-  AppProxy,
-  ConductorAppProxy,
+    BaseRoleName,
+    AppProxy,
+    ConductorAppProxy, HcConnectionOptions,
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {CellDef, HvmDef} from "./definitions";
 import {
-  AppWebsocket,
   ClonedCell,
   InstalledAppId,
 } from "@holochain/client";
@@ -35,14 +34,14 @@ export class HappElement extends LitElement {
   networkCaller?: NetworkCaller;
 
   /** Ctor */
-  protected constructor(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL, defaultTimeout?: number) {
+  protected constructor(options: HcConnectionOptions, appId?: InstalledAppId) {
     super();
-    this.constructHvm(port_or_socket, appId, adminUrl, defaultTimeout)
+    this.constructHvm(options, appId)
         .then(() => console.debug("HappElement constructed:", this.hvm.appId))
   }
 
   /** */
-  protected async constructHvm(port_or_socket: number | AppWebsocket, appId?: InstalledAppId, adminUrl?: URL, defaultTimeout?: number): Promise<void> {
+  protected async constructHvm(options: HcConnectionOptions, appId?: InstalledAppId): Promise<void> {
     const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappElement subclass " + this.constructor.name);
@@ -51,7 +50,7 @@ export class HappElement extends LitElement {
     if (appId) {
       hvmDef.id = appId;
     }
-    this.appProxy = await ConductorAppProxy.new(port_or_socket, hvmDef.id, adminUrl, defaultTimeout);
+    this.appProxy = await ConductorAppProxy.new(hvmDef.id, options);
     this.hvm = await HappViewModel.new(this, this.appProxy, hvmDef, true);
     this.networkCaller = new NetworkCaller(this.appProxy);
     /** FIXME: wait for genesis to finish first? */

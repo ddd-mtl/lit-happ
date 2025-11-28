@@ -1,15 +1,14 @@
 import {LitElement} from "lit";
 import { state } from "lit/decorators.js";
 import {
-  AppProxy,
-  ConductorAppProxy,
-  flattenCells,
-  CellIdStr, AgentIdMap, DnaId, CellAddress,
+    AppProxy,
+    ConductorAppProxy,
+    flattenCells,
+    CellIdStr, AgentIdMap, DnaId, CellAddress, HcConnectionOptions,
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {HvmDef} from "./definitions";
 import {
-  AppWebsocket,
   InstalledAppId, NetworkMetrics,
   Timestamp
 } from "@holochain/client";
@@ -37,24 +36,22 @@ export class HappMultiElement extends LitElement {
 
   /** Ctor */
   protected constructor(
-    appInfo: [number | AppWebsocket, InstalledAppId | undefined][],
+    appConnections: [HcConnectionOptions, InstalledAppId | undefined][],
     public readonly isMainView: boolean,
-    adminUrl?: URL,
-    defaultTimeout?: number,
     ) {
     super();
-    this.constructHvms(appInfo, adminUrl, defaultTimeout)
+    this.constructHvms(appConnections)
       .then(() => console.debug("HappMultiElement constructed"))
   }
 
   /** */
-  protected async constructHvms(appInfo: [number | AppWebsocket, InstalledAppId | undefined][], adminUrl?: URL, defaultTimeout?: number): Promise<void> {
+  protected async constructHvms(appConnections: [HcConnectionOptions, InstalledAppId | undefined][]): Promise<void> {
     const hvmDef = (this.constructor as typeof HappMultiElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappMultiElement subclass " + this.constructor.name);
     }
-    for (const [port_or_socket, appId] of appInfo) {
-      const appProxy = await ConductorAppProxy.new(port_or_socket, hvmDef.id, adminUrl, defaultTimeout);
+    for (const [options, appId] of appConnections) {
+      const appProxy = await ConductorAppProxy.new(hvmDef.id, options);
       if (appId) {
         /** Override appId */
         hvmDef.id = appId;

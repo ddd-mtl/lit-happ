@@ -55,7 +55,7 @@ export async function getCellInfo(client: AppClient, maybeDnaId: DnaId | undefin
 
 /** */
 export async function asCellProxy(client: AppClient, maybeDnaId: DnaId | undefined, appId: InstalledAppId, baseRoleName: BaseRoleName): Promise<CellProxy> {
-  const appProxy = await ConductorAppProxy.new(client as AppWebsocket, appId);
+  const appProxy = await ConductorAppProxy.new(appId, {socket: client as AppWebsocket});
   const cellInfo = await getCellInfo(client, maybeDnaId, baseRoleName);
   if (!cellInfo) {
     throw Promise.reject("CellInfo not found");
