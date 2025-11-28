@@ -7,7 +7,7 @@ import {
 import "@ddd-qc/path-explorer";
 import { TaskerDvm } from "./viewModel/tasker.dvm";
 import {Profile} from "@ddd-qc/profiles-dvm";
-import {MyDictionary, EntryDef} from "@ddd-qc/cell-proxy";
+import {MyDictionary, EntryDef, HcConnectionOptions} from "@ddd-qc/cell-proxy";
 import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
@@ -32,7 +32,10 @@ export class TaskerApp extends HappElement {
         : process.env.HC_ADMIN_PORT
             ? new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)
             : undefined;
-    super(appWs? appWs : appPort, appId, adminUrl, 10 * 1000);
+      const options: HcConnectionOptions = appWs
+          ? {socket: appWs, timeout: 10 * 1000}
+          : {port: appPort, timeout: 10 * 1000, adminUrl};
+    super(options, appId);
   }
 
   /** QoL */
