@@ -30,7 +30,7 @@
     "typescript": "~5.2.0"
   },
   "dependencies": {
-    "@holochain/client": "^0.20.0",
+    "@holochain/client": "=0.20.0",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain-open-dev/elements": "^0.600.0",
     "@msgpack/msgpack": "^3.1.1",

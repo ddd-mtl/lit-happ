@@ -28,7 +28,7 @@
     "typescript": "~5.5.4"
   },
   "dependencies": {
-    "@holochain/client": "^0.20.0",
+    "@holochain/client": "=0.20.0",
     "@bitgo/blake2b": "^3.2.4",
     "libsodium-wrappers-sumo": "^0.7.15",
     "js-base64": "^3.7.5",

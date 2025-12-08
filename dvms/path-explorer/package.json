@@ -30,7 +30,7 @@
     "watch-cli": "^0.2.3"
   },
   "dependencies": {
-    "@holochain/client": "^0.20.0",
+    "@holochain/client": "=0.20.0",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@ui5/webcomponents": "=1.13.3",
     "@ui5/webcomponents-fiori": "=1.13.3",
