@@ -41,7 +41,7 @@
     "build:path-explorer"   : "bash scripts/ts-bindings.sh && npm run build -w dvms/path-explorer",
     "build:profiles"        : "bash scripts/ts-bindings.sh && npm run build -w dvms/profiles",
 
-    "build:example:happs"   : "npm run build:happ && npm run build:happ:clone && npm run build:happ:tasker && bash scripts/ts-bindings-example.sh",
+    "build:example:happs"   : "npm run build:happ && npm run build:happ:clone && npm run build:happ:tasker && bash scripts/ts-bindings-example.sh && node scripts/generate-playground-version.js",
 
     "build:cell-proxy"      : "bash scripts/ts-bindings.sh && npm run build -w packages/cell-proxy",
     "build:packages"        : "npm run build:cell-proxy && npm run build -w packages/lit-happ && npm run build -w packages/we-utils && npm run build:profiles && npm run build:agent-directory && npm run build:shared-ownership && npm run build:path-explorer",

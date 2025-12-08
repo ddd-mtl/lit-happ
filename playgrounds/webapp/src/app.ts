@@ -24,6 +24,8 @@ import "@ddd-qc/profiles-dvm/dist/elements/edit-profile";
 
 import {HC_ADMIN_PORT, HC_APP_PORT} from "./globals";
 
+import * as APPV from './generated/version.js';
+
 import {AppletId, AppletView, GroupProfile, WeaveServices} from "@theweave/api";
 import {GetStrategy} from "@holochain-open-dev/core-types";
 const weClientContext = createContext<WeaveServices>('weave_client');
@@ -47,7 +49,7 @@ export class PlaygroundApp extends HappElement {
     const options: HcConnectionOptions = appWs
         ? {socket: appWs, timeout: 20 * 1000}
         : {port: appPort!, timeout: 20 * 1000, adminUrl};
-    super(options, appId);
+    super(options, APPV.HAPP_SHA256, appId);
 
     console.log("PlaygroundApp.HVM_DEF", PlaygroundApp.HVM_DEF);
     // if (_canAuthorizeZfns == undefined) {
@@ -343,7 +345,7 @@ export class PlaygroundApp extends HappElement {
                     }}
             ></profiles-edit-profile>
         </cell-context>
-        <div style="margin-top:20px;">HappShareCode: <span>${JSON.stringify(this.hvm.getHappShareCode())}</span></div>
+        <div style="margin-top:20px; padding-bottom:30px;">HappShareCode: <span>${JSON.stringify(this.hvm.getHappShareCode())}</span></div>
     `
   }
 
