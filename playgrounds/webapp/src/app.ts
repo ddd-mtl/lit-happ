@@ -213,15 +213,6 @@ export class PlaygroundApp extends HappElement {
     override firstUpdated() {
         super.firstUpdated();
         this.networkCaller!.setCellAddr(this.profilesDvm.cell.address);
-        this.hvm.getHappShareCode().then((result) => {
-                const elem = this.shadowRoot!.getElementById("happShareCode") as HTMLElement;
-                console.debug("happShareCode", result, elem);
-                if (!elem) {
-                    return;
-                }
-                elem.innerText = JSON.stringify(result);
-            }
-        );
     }
 
 
@@ -352,7 +343,7 @@ export class PlaygroundApp extends HappElement {
                     }}
             ></profiles-edit-profile>
         </cell-context>
-        <div style="margin-top:20px;">HappShareCode: <span id="happShareCode"></span></div>
+        <div style="margin-top:20px;">HappShareCode: <span>${JSON.stringify(this.hvm.getHappShareCode())}</span></div>
     `
   }
 

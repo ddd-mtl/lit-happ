@@ -13,7 +13,8 @@ import {
     EnableCloneCellRequest,
     InstalledAppId,
     ProvisionedCell,
-    Timestamp, ZomeName, SignalType, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse, CellInfo,
+    Timestamp, ZomeName, SignalType, DumpNetworkMetricsRequest,
+    DumpNetworkMetricsResponse,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -218,35 +219,33 @@ export class AppProxy implements AppClient {
 
   /** -- Methods -- */
 
-   async getHappShareCode(role?: RoleName): Promise<string | null> {
+   getHappShareCode(role?: RoleName): string | null {
       /** Must have _happSha256 */
        if (!this._happSha256) {
            return null;
        }
-      /** Must have appInfo */
-      const appInfo = await this.appInfo();
-       if (!appInfo) {
-           return null;
-       }
-      /** Must have specified role or at least one cell (to get networkSeed) */
-      let cellInfos: CellInfo[] | undefined = [];
+      /** Must have specified role or at least one cell */
+      let networkSeed: string = "";
       if (role) {
-          cellInfos = appInfo!.cell_info[role];
-          if (!cellInfos) {
-              return null;
+          try {
+              const cell = this.getCell(new HCL(this.installedAppId, role));
+              networkSeed = cell.dnaModifiers.network_seed;
+          } catch (e) {
+            return null;
           }
       } else {
-          const cellInfosArray = Object.values(appInfo.cell_info);
-          if (cellInfosArray.length == 0) {
+          const cellsMap = this.getAppCells(this.installedAppId);
+          if (!cellsMap) {
               return null;
           }
-          cellInfos = cellInfosArray[0];
-      }
-      if (!cellInfos || cellInfos!.length == 0) {
-          return null;
+          const cells = Object.values(cellsMap);
+          if (cells.length == 0) {
+              return null;
+          }
+          networkSeed = cells[0]!.provisioned.dna_modifiers.network_seed;
       }
       /** encode */
-      return encodeHappJoinCode(this._happSha256, this.installedAppId, cellInfos[0]!.value.dna_modifiers.network_seed);
+      return encodeHappJoinCode(this._happSha256, this.installedAppId, networkSeed);
    }
 
 

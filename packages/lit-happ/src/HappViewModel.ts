@@ -117,7 +117,7 @@ export class HappViewModel {
 
   /** -- Methods -- */
 
-  async getHappShareCode(role?: RoleName): Promise<string | null> {return this._appProxy.getHappShareCode(role)}
+  getHappShareCode(role?: RoleName): string | null {return this._appProxy.getHappShareCode(role)}
 
 
   async authorizeAllZomeCalls(adminWs?: AdminWebsocket): Promise<void> {
