@@ -33,8 +33,8 @@ async function generateFakeProfilesAppInfo(agentId: AgentId): Promise<AppInfo> {
 
 /** */
 export class ConductorProxyProfilesMock extends ConductorAppProxy {
-    constructor(public readonly agentId: AgentId, public readonly appId: InstalledAppId) {
-        super(10 * 1000, appId, agentId);
+    constructor(agentId: AgentId, appId: InstalledAppId) {
+        super(null, 10 * 1000, appId, agentId);
     }
 
 

@@ -1,19 +1,19 @@
 import {
-  AdminWebsocket, AgentPubKey,
-  AppClient,
-  AppEvents,
-  AppInfoResponse,
-  AppSignal,
-  SignalCb,
-  CallZomeRequest,
-  CellType,
-  ClonedCell,
-  CreateCloneCellRequest,
-  DisableCloneCellRequest,
-  EnableCloneCellRequest,
-  InstalledAppId,
-  ProvisionedCell,
-  Timestamp, ZomeName, SignalType, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse,
+    AdminWebsocket, AgentPubKey,
+    AppClient,
+    AppEvents,
+    AppInfoResponse,
+    AppSignal,
+    SignalCb,
+    CallZomeRequest,
+    CellType,
+    ClonedCell,
+    CreateCloneCellRequest,
+    DisableCloneCellRequest,
+    EnableCloneCellRequest,
+    InstalledAppId,
+    ProvisionedCell,
+    Timestamp, ZomeName, SignalType, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse, CellInfo,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -30,6 +30,8 @@ import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
 import {Signal} from "@holochain/client/lib/api/app/types";
 import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
+import {encodeHappJoinCode} from "./HappJoinCode";
+import {RoleName} from "@holochain/client/lib/types";
 
 
 /** */
@@ -57,9 +59,6 @@ export interface SignalLog {
 export class AppProxy implements AppClient {
 
   /** -- Fields -- */
-
-  public defaultTimeout: number;
-  public adminWs: AdminWebsocket | undefined = undefined;
 
   /** Signal logs */
   private _signalLogs: SignalLog[] = [];
@@ -201,18 +200,57 @@ export class AppProxy implements AppClient {
   /** -- Creation -- */
 
   /** Ctor */
-  /*protected*/ constructor(defaultTimeout: number, appId: InstalledAppId, agentId: AgentId, adminWs?: AdminWebsocket) {
-    this.defaultTimeout = defaultTimeout;
-    this.adminWs = adminWs;
+  /*protected*/ constructor(
+      protected _happSha256: string | null,
+      public readonly defaultTimeout: number,
+      appId: InstalledAppId,
+      public readonly agentId: AgentId,
+      public adminWs?: AdminWebsocket,
+      ) {
     this.installedAppId = appId;
     this.myPubKey = agentId.hash;
     /*const _unsub =*/ this.addSignalHandler((sig) => this.logSignal(sig));
   }
 
+    get happSha256(): string | null {return this._happSha256}
+    setHappSha256(sha256: string): void {this._happSha256 = sha256;
+  }
 
   /** -- Methods -- */
 
-  /** */
+   async getHappShareCode(role?: RoleName): Promise<string | null> {
+      /** Must have _happSha256 */
+       if (!this._happSha256) {
+           return null;
+       }
+      /** Must have appInfo */
+      const appInfo = await this.appInfo();
+       if (!appInfo) {
+           return null;
+       }
+      /** Must have specified role or at least one cell (to get networkSeed) */
+      let cellInfos: CellInfo[] | undefined = [];
+      if (role) {
+          cellInfos = appInfo!.cell_info[role];
+          if (!cellInfos) {
+              return null;
+          }
+      } else {
+          const cellInfosArray = Object.values(appInfo.cell_info);
+          if (cellInfosArray.length == 0) {
+              return null;
+          }
+          cellInfos = cellInfosArray[0];
+      }
+      if (!cellInfos || cellInfos!.length == 0) {
+          return null;
+      }
+      /** encode */
+      return encodeHappJoinCode(this._happSha256, this.installedAppId, cellInfos[0]!.value.dna_modifiers.network_seed);
+   }
+
+
+    /** */
   async fetchCell(appId: InstalledAppId, cellAddr: CellAddress): Promise<Cell> {
     const appInfo = await this.appInfo();
     //console.log("fetchCell", appInfo);

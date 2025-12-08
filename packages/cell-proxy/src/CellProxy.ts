@@ -100,6 +100,9 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** -- Methods -- */
 
+  async getHappShareCode(): Promise<string | null> { return this._appProxy.getHappShareCode(this.cell.baseRoleName)}
+
+
   /** Have a PostCommitEntry attestation release the Mutex */
   private _postCommitRelease?: MutexInterface.Releaser;
   private _postCommitReleaseEntryType?: string;

@@ -11,7 +11,6 @@ import {enc64} from "./hash";
 import {encodeDnaJoiningInfo} from "./dnaJoiningInfo";
 
 
-
 /**
  * Common interface between Provisioned and Cloned cells
  */
@@ -49,7 +48,7 @@ export class Cell {
   /** ex: rNamedInteger.0 */
   get cloneId(): RoleName | undefined { return (this._cell as any).clone_id }
 
-  get shareCode(): string { return encodeDnaJoiningInfo(this.address.dnaId.hash, this.name, this.dnaModifiers.network_seed) }
+  get dnaShareCode(): string { return encodeDnaJoiningInfo(this.address.dnaId.hash, this.name, this.dnaModifiers.network_seed) }
 
   /** -- Methods -- */
 

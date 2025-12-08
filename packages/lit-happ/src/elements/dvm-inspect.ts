@@ -52,7 +52,7 @@ export class DvmInspect extends LitElement {
     /** render all */
     return html`
         <span>Inspecting DNA <abbr title=${this.dnaViewModel.hcl}>${this.dnaViewModel.baseRoleName}</abbr>: </span>
-        <span><abbr title=${this.dnaViewModel.cell.shareCode}>[shareCode]</abbr></span>
+        <span><abbr title=${this.dnaViewModel.cell.dnaShareCode}>[dnaShareCode]</abbr></span>
       <select name="selectedZome" id="selectedZome" @click=${this.onZomeSelect}>
           ${zomeOptions}
       </select>

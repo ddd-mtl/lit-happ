@@ -1,15 +1,15 @@
 import {
-  AppInfoResponse,
-  CallZomeRequest,
-  DisableCloneCellRequest,
-  EnableCloneCellRequest,
-  ClonedCell,
-  AppClient,
-  AppEvents,
-  SignalCb,
-  CreateCloneCellResponse,
-  DumpNetworkMetricsRequest,
-  DumpNetworkMetricsResponse, CreateCloneCellRequest,
+    AppInfoResponse,
+    CallZomeRequest,
+    DisableCloneCellRequest,
+    EnableCloneCellRequest,
+    ClonedCell,
+    AppClient,
+    AppEvents,
+    SignalCb,
+    CreateCloneCellResponse,
+    DumpNetworkMetricsRequest,
+    DumpNetworkMetricsResponse, CreateCloneCellRequest,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
@@ -23,8 +23,8 @@ import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
 export class ExternalAppProxy extends AppProxy implements AppClient {
 
   /** Ctor */
-  /*protected*/ constructor(private _appClient: AppClient, defaultTimeout: number) {
-    super(defaultTimeout, _appClient.installedAppId, new AgentId(_appClient.myPubKey));
+  /*protected*/ constructor(private _appClient: AppClient, happSha256: string, defaultTimeout: number) {
+    super(happSha256, defaultTimeout, _appClient.installedAppId, new AgentId(_appClient.myPubKey));
   }
 
 

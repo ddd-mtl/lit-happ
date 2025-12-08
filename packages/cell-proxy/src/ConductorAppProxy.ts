@@ -56,8 +56,14 @@ export type HcConnectionOptions = HcPortOptions | HcSocketOptions;
 export class ConductorAppProxy extends AppProxy implements AppClient {
 
   /** Ctor */
-  /*protected*/ constructor(defaultTimeout: number, appId: InstalledAppId, agentId: AgentId, adminWs?: AdminWebsocket) {
-    super(defaultTimeout, appId, agentId, adminWs);
+  /*protected*/ constructor(
+        happSha256: string | null,
+        defaultTimeout: number,
+        appId: InstalledAppId,
+        agentId: AgentId,
+        adminWs?: AdminWebsocket,
+    ) {
+    super(happSha256, defaultTimeout, appId, agentId, adminWs);
   }
 
 
@@ -122,10 +128,10 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
   /** -- Creation -- */
 
   /** async Factory */
-  static async new(appId: InstalledAppId, connOptions: HcConnectionOptions): Promise<ConductorAppProxy> {
+  static async new(appId: InstalledAppId, connOptions: HcConnectionOptions, happSha256?: string): Promise<ConductorAppProxy> {
     const timeout = connOptions.timeout ? connOptions.timeout : 10 * 1000;
     if ('socket' in connOptions) {
-      return  ConductorAppProxy.fromSocket(connOptions.socket, timeout);
+      return  ConductorAppProxy.fromSocket(connOptions.socket, timeout, happSha256);
     } else {
       let wsUrl = new URL(`ws://localhost:${connOptions.port}`);
       try {
@@ -149,7 +155,7 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
         const appWs = await AppWebsocket.connect(options);
         const agentId = new AgentId(appWs.myPubKey);
         //console.log("appWs.myPubKey", appWs.myPubKey, agentId);
-        let conductor = new ConductorAppProxy(timeout, appId, agentId, adminWs);
+        let conductor = new ConductorAppProxy(happSha256?happSha256 : null, timeout, appId, agentId, adminWs);
         conductor._appWs = appWs;
         conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)});
         return conductor;
@@ -162,9 +168,9 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
 
 
   /** */
-  private static async fromSocket(appWebsocket: AppWebsocket, defaultTimeout: number): Promise<ConductorAppProxy> {
+  private static async fromSocket(appWebsocket: AppWebsocket, defaultTimeout: number, happSha256?: string): Promise<ConductorAppProxy> {
     try {
-      let conductor = new ConductorAppProxy(defaultTimeout, appWebsocket.installedAppId, new AgentId(appWebsocket.myPubKey));
+      let conductor = new ConductorAppProxy(happSha256? happSha256 : null, defaultTimeout, appWebsocket.installedAppId, new AgentId(appWebsocket.myPubKey));
       conductor._appWs = appWebsocket;
       conductor._appWs.on('signal', (sig) => {conductor.onSignal(sig)})
       return conductor;

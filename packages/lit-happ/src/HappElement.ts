@@ -34,14 +34,14 @@ export class HappElement extends LitElement {
   networkCaller?: NetworkCaller;
 
   /** Ctor */
-  protected constructor(options: HcConnectionOptions, appId?: InstalledAppId) {
+  protected constructor(options: HcConnectionOptions, happSha256?: string, appId?: InstalledAppId) {
     super();
-    this.constructHvm(options, appId)
+    this.constructHvm(options, happSha256, appId)
         .then(() => console.debug("HappElement constructed:", this.hvm.appId))
   }
 
   /** */
-  protected async constructHvm(options: HcConnectionOptions, appId?: InstalledAppId): Promise<void> {
+  protected async constructHvm(options: HcConnectionOptions, happSha256?: string, appId?: InstalledAppId): Promise<void> {
     const hvmDef = (this.constructor as typeof HappElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappElement subclass " + this.constructor.name);
@@ -50,7 +50,7 @@ export class HappElement extends LitElement {
     if (appId) {
       hvmDef.id = appId;
     }
-    this.appProxy = await ConductorAppProxy.new(hvmDef.id, options);
+    this.appProxy = await ConductorAppProxy.new(hvmDef.id, options, happSha256);
     this.hvm = await HappViewModel.new(this, this.appProxy, hvmDef, true);
     this.networkCaller = new NetworkCaller(this.appProxy);
     /** FIXME: wait for genesis to finish first? */

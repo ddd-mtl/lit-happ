@@ -11,6 +11,7 @@ import {
 import { CellDef, DvmDef, HvmDef } from "./definitions";
 import { DnaViewModel } from "./DnaViewModel";
 import {GetStrategy} from "@holochain-open-dev/core-types";
+import {RoleName} from "@holochain/client/lib/types";
 
 
 //export type HvmConstructor = {new(installedAppId: InstalledAppId): HappViewModel};
@@ -115,6 +116,9 @@ export class HappViewModel {
 
 
   /** -- Methods -- */
+
+  async getHappShareCode(role?: RoleName): Promise<string | null> {return this._appProxy.getHappShareCode(role)}
+
 
   async authorizeAllZomeCalls(adminWs?: AdminWebsocket): Promise<void> {
     if (!adminWs) {
