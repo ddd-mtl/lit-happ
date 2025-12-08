@@ -31,7 +31,7 @@ import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
 import {Signal} from "@holochain/client/lib/api/app/types";
 import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
-import {encodeHappJoinCode} from "./HappJoinCode";
+import {encodeHappJoinCode} from "./happJoinCode";
 import {RoleName} from "@holochain/client/lib/types";
 
 
