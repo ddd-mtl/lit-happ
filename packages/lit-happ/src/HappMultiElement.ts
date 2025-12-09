@@ -36,7 +36,7 @@ export class HappMultiElement extends LitElement {
 
   /** Ctor */
   protected constructor(
-    appConnections: [HcConnectionOptions, InstalledAppId | undefined][],
+    appConnections: [HcConnectionOptions, string | undefined, InstalledAppId | undefined][],
     public readonly isMainView: boolean,
     ) {
     super();
@@ -45,13 +45,13 @@ export class HappMultiElement extends LitElement {
   }
 
   /** */
-  protected async constructHvms(appConnections: [HcConnectionOptions, InstalledAppId | undefined][]): Promise<void> {
+  protected async constructHvms(appConnections: [HcConnectionOptions, happSha256: string | undefined, InstalledAppId | undefined][]): Promise<void> {
     const hvmDef = (this.constructor as typeof HappMultiElement).HVM_DEF;
     if (!hvmDef) {
       throw Error("HVM_DEF static field undefined in HappMultiElement subclass " + this.constructor.name);
     }
-    for (const [options, appId] of appConnections) {
-      const appProxy = await ConductorAppProxy.new(hvmDef.id, options);
+    for (const [options, happSha256, appId] of appConnections) {
+      const appProxy = await ConductorAppProxy.new(hvmDef.id, options, happSha256);
       if (appId) {
         /** Override appId */
         hvmDef.id = appId;
