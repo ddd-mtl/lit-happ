@@ -117,6 +117,8 @@ export class HappViewModel {
 
   /** -- Methods -- */
 
+  get happSha256(): string | null {return this._appProxy.happSha256}
+
   getHappShareCode(role?: RoleName): string | null {return this._appProxy.getHappShareCode(role)}
 
 
