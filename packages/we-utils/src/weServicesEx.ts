@@ -1,14 +1,14 @@
 import {
-  AppletId,
-  AppletInfo,
-  weaveUrlFromWal, AssetLocationAndInfo, WAL, AssetStore, AssetServices,
-  WeaveServices, PeerStatusUpdate, GroupProfile, GroupPermissionType,
-  OpenAssetMode, FrameNotification,
+    AppletId,
+    AppletInfo,
+    weaveUrlFromWal, AssetLocationAndInfo, WAL, AssetStore, AssetServices,
+    WeaveServices, PeerStatusUpdate, GroupProfile,
+    OpenAssetMode, FrameNotification, MossAccountability, AppletHash,
 } from "@theweave/api";
 import {
-  EntryHash, HoloHashB64,
-  CreateCloneCellRequest, CreateCloneCellResponse, EnableCloneCellRequest, EnableCloneCellResponse,
-  DisableCloneCellRequest,
+    EntryHash, HoloHashB64,
+    CreateCloneCellRequest, CreateCloneCellResponse, EnableCloneCellRequest, EnableCloneCellResponse,
+    DisableCloneCellRequest, AgentPubKey, DnaHash,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
@@ -176,7 +176,8 @@ export class WeServicesEx implements WeaveServices {
   async userSelectScreen(): Promise<string>  {return this._inner.userSelectScreen()}
   //async requestBind(srcWal: WAL, dstWal: WAL) {return this._inner.requestBind(srcWal, dstWal)}
   async requestClose() {return this._inner.requestClose()}
-  async myGroupPermissionType(): Promise<GroupPermissionType> {return this._inner.myGroupPermissionType()}
+  async toolInstaller(appletHash: AppletHash, groupHash?: DnaHash): Promise<AgentPubKey | undefined> {return this._inner.toolInstaller(appletHash, groupHash)}
+  async myAccountabilitiesPerGroup(): Promise<[DnaHash, MossAccountability[]][]> {return this._inner.myAccountabilitiesPerGroup()}
   async appletParticipants()/*: Promise<AgentPubKey[]>*/ {return this._inner.appletParticipants()}
 
   async sendRemoteSignal(payload: Uint8Array): Promise<void> {return this._inner.sendRemoteSignal(payload)}
