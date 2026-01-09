@@ -24,16 +24,16 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
     //console.log("setupProd()");
     setBasePath('./');
     //console.log("shoelace basePath", getBasePath());
-    console.log("setupProd() WeClient.connect()...");
+    console.debug("[we-utils] setupProd() WeaveClient.connect()...");
     const weClient = await WeaveClient.connect(appletServices);
-    console.log("setupProd() weClient", weClient);
+    console.debug("[we-utils] setupProd() WeaveClient", weClient);
     // if (weClient.renderInfo.type != "applet-view") {
     //     console.error("Setup called for non 'applet-view' type");
     //     throw Promise.reject("Setup called for non 'applet-view' type")
     // }
 
-    /** Delay because of We 'CellDisabled' bug at startup race condition */
-    await delay(1000);
+    /** Delay because of Moss 'CellDisabled' bug at startup race condition */
+    await delay(1 * 1000);
 
     //const renderInfo = weClient.renderInfo as any;
     const applet = await createApplet(weClient.renderInfo, weClient);

@@ -40,7 +40,7 @@ export class ProfilesZvm extends ZomeViewModel {
   /** */
   override probeAllInner(strategy: GetStrategy) {
     this.probeAllProfiles(strategy)
-        .then((res) => console.trace("probeAllProfiles() finished: ", res.length))
+        .then((res) => console.debug("ProfilesZvm.probeAllProfiles() finished: ", res.length))
   }
 
   /** -- Perspective -- */
@@ -133,7 +133,7 @@ export class ProfilesZvm extends ZomeViewModel {
   /** */
   async probeProfile(pubKeyB64: AgentPubKeyB64): Promise<Profile | undefined> {
     const maybeProfile = await this.zomeProxy.getAgentProfile(decodeHashFromBase64(pubKeyB64));
-    console.log("probeProfile() maybeProfile", maybeProfile);
+    console.debug("ProfilesZvm.probeProfile() maybeProfile", maybeProfile);
     if (!maybeProfile) {
       return;
     }
@@ -141,7 +141,7 @@ export class ProfilesZvm extends ZomeViewModel {
     // console.log("probeProfile() profileEntry", profileEntry);
     //const profile: Profile = decode(profileEntry.record.entry.Present.entry) as Profile;
     const profile: Profile = decode((maybeProfile.entry as any).Present.entry) as Profile;
-    console.log("probeProfile() profile", profile);
+    console.log("ProfilesZvm.probeProfile() profile", profile);
     this.storeProfile(pubKeyB64, profile);
     return profile;
   }

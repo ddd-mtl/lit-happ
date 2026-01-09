@@ -25,7 +25,6 @@ export class ProfilesZomeMockFix extends ProfilesZomeMock {
             this.myPubKey,
         ] as CellId;
     }
-
 }
 
 
@@ -36,7 +35,7 @@ export async function setupDevtest(
   createWeServicesMock: CreateWeServicesMockFn,
   appletView?: AppletView,
   ): Promise<LitElement> {
-    console.log("setupDevtest()", process.env.HAPP_BUILD_MODE, process.env.HC_APP_PORT, process.env.HC_ADMIN_PORT);
+    console.debug("[we-utils] setupDevtest()", process.env.HAPP_BUILD_MODE, process.env.HC_APP_PORT, process.env.HC_ADMIN_PORT);
 
     setBasePath('../../node_modules/@shoelace-style/shoelace/dist');
     console.log("shoelace basePath", getBasePath());
@@ -52,7 +51,7 @@ export async function setupDevtest(
     } else {
         devtestAppletId = new EntryId(devtestAppletIdB64);
     }
-    console.log("setupDevtest() devtestAppletId", devtestAppletId);
+    console.debug("[we-utils] setupDevtest() devtestAppletId", devtestAppletId);
 
     /** Create custom WeServiceMock */
     const myWeServicesMock = await createWeServicesMock(devtestAppletId);
@@ -61,7 +60,7 @@ export async function setupDevtest(
     let mainCellId: CellId | undefined = undefined;
     const adminWs = await AdminWebsocket.connect({url: new URL(`ws://localhost:${process.env.HC_ADMIN_PORT}`)});
     const apps: ListAppsResponse = await adminWs.listApps({});
-    console.log("setupDevtest() apps", apps);
+    console.debug("[we-utils] setupDevtest() apps", apps);
     if (apps.length == 0) {
         throw Promise.reject("Empty Apps list");
     }
@@ -70,9 +69,9 @@ export async function setupDevtest(
 
     /** AppWebsocket */
     const appAgentWs = await AppWebsocket.connect( {url: new URL(`ws://localhost:${process.env.HC_APP_PORT}`), token});
-    console.log("appAgentWs", appAgentWs);
+    console.debug("[we-utils] appAgentWs", appAgentWs);
     const appInfo = await appAgentWs.appInfo();
-    console.log("appInfo", appInfo);
+    console.debug("[we-utils] appInfo", appInfo);
 
     /** Authorize Zome functions */
     for (const [roleName, cells] of Object.entries(appInfo.cell_info)) {

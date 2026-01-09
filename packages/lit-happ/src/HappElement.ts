@@ -68,7 +68,7 @@ export class HappElement extends LitElement {
 
   /** */
   async initializePerspectiveFromNetwork(): Promise<void> {
-    await this.hvm.initializePerspectiveFromNetwork();
+    await this.hvm.initializePerspectiveFromLocal(); // // FIXME: Call Network once Holochain GetStrategy:Network issue is fixed.
     await this.perspectiveInitializedFromNetwork();
   }
 
@@ -79,9 +79,11 @@ export class HappElement extends LitElement {
         return !!this.hvm;
     }
 
+    /** After first render, attempt to get data from the network */
     override firstUpdated() {
-        this.perspectiveInitializedFromNetwork()
-            .then(() => console.debug("Finished initializing Happ perspective with Network data. App " + this.hvm.appId))
+        console.debug("[lit-happ] HappElement: Initializing Perspective from Network")
+        this.initializePerspectiveFromNetwork()
+            .then(() => console.debug("Finished initializing HappElement Network Perspective. App: " + this.hvm.appId))
     }
 
     /** -- Hooks for subclasses to override -- */

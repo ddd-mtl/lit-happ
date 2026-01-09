@@ -41,7 +41,7 @@ export class HappMultiElement extends LitElement {
     ) {
     super();
     this.constructHvms(appConnections)
-      .then(() => console.debug("HappMultiElement constructed"))
+      .then(() => console.debug("[lit-happ] HappMultiElement: Local Perspective initialized."))
   }
 
   /** */
@@ -62,6 +62,7 @@ export class HappMultiElement extends LitElement {
     }
     this.networkCaller = new NetworkCaller(this.hvms[0]![0]); // use first appProxy
     await this.hvmsConstructed();
+    console.debug("[lit-happ] HappMultiElement constructed. Initializing Local Perspective...")
     await this.initializePerspectiveFromLocal();
   }
 
@@ -75,7 +76,7 @@ export class HappMultiElement extends LitElement {
 
   async initializePerspectiveFromNetwork(): Promise<void> {
     for (const [_proxy, hvm] of this.hvms) {
-      await hvm.initializePerspectiveFromLocal();
+      await hvm.initializePerspectiveFromLocal(); // FIXME: Call Network once Holochain GetStrategy:Network issue is fixed.
     }
     await this.perspectiveInitializedFromNetwork();
   }
@@ -87,9 +88,11 @@ export class HappMultiElement extends LitElement {
         return this.hvms.length > 0;
     }
 
+    /** After first render, attempt to get data from the network */
     override firstUpdated() {
-        this.perspectiveInitializedFromNetwork()
-            .then(() => console.debug("Finished initializing Happ perspective from Network"))
+        console.debug("[lit-happ] HappMultiElement: Initializing Perspective from Network")
+        this.initializePerspectiveFromNetwork()
+            .then(() => console.debug("[lit-happ] HappMultiElement: Network Perspective initialized."))
     }
 
     /** -- Hooks for subclasses to override -- */

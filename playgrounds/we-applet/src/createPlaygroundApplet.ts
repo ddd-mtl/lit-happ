@@ -1,8 +1,4 @@
-import {
-  AppWebsocket,
-} from "@holochain/client";
-//import { msg } from "@lit/localize";
-
+import { AppWebsocket } from "@holochain/client";
 import {
   RenderInfo,
   WeaveServices,

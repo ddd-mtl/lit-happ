@@ -35,7 +35,7 @@ export class TaskerApp extends HappElement {
       const options: HcConnectionOptions = appWs
           ? {socket: appWs, timeout: 10 * 1000}
           : {port: appPort, timeout: 10 * 1000, adminUrl};
-    super(options, appId);
+    super(options, undefined, appId);
   }
 
   /** QoL */

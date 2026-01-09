@@ -1,9 +1,11 @@
+import {LitElement} from "lit";
+import {AppClient} from "@holochain/client";
+import {AppletServices, AssetInfo, WAL, AppletHash, RecordInfo, WeaveServices} from "@theweave/api";
 import {createDefaultWeServicesMock, DevTestNames, setup} from "@ddd-qc/we-utils";
 import {createPlaygroundApplet} from "./createPlaygroundApplet";
-import {AppletServices} from "@theweave/api";
-import {LitElement} from "lit/development";
 
 
+/** */
 export const devtestNames: DevTestNames = {
   installed_app_id: "ExampleApplet",
   provisionedRoleName: "rNamedInteger",
@@ -40,12 +42,6 @@ async function setupExampleMainView() {
   };
   return setup(appletServices, createPlaygroundApplet, devtestNames, createDefaultWeServicesMock);
 }
-
-
-import {AppClient} from "@holochain/client";
-import {AssetInfo, WAL, AppletHash} from "@theweave/api";
-import {RecordInfo} from "@theweave/api/dist/types";
-import {WeaveServices} from "@theweave/api/dist/api";
 
 /** */
 async function getAssetInfo(
