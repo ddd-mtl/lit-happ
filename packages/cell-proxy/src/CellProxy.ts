@@ -410,7 +410,7 @@ export class CellProxy extends CellMixin(Empty) {
    * Calls the `dna_info()` zome function
    */
   async callDnaInfo(zomeName: ZomeName): Promise<DnaInfo> {
-    //console.log("callDnaInfo()", zomeName);
+    console.log("callDnaInfo()", zomeName);
     if (this._dnaInfoCache) {
       return this._dnaInfoCache;
     }

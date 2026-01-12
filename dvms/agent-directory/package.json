@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "lit-analyzer": "^1.2.1",
-    "@types/libsodium-wrappers" : "~0.7.13",
+    "@types/libsodium-wrappers" : "~0.7.14",
     "watch-cli": "^0.2.3"
   },
   "dependencies": {

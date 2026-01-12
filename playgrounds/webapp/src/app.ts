@@ -212,8 +212,8 @@ export class PlaygroundApp extends HappElement {
   }
 
 
-    override firstUpdated() {
-        super.firstUpdated();
+    override firstUpdated(changedProperties: Map<string, any>) {
+        super.firstUpdated(changedProperties);
         this.networkCaller!.setCellAddr(this.profilesDvm.cell.address);
     }
 

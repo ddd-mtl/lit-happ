@@ -24,13 +24,13 @@
   },
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
-    "tslib": "^2.6.3",
-    "typescript": "~5.5.4"
+    "tslib": "^2.8",
+    "typescript": "~5.9"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.0",
+    "@holochain/client": "=0.20.2",
     "@bitgo/blake2b": "^3.2.4",
-    "libsodium-wrappers-sumo": "^0.7.15",
+    "libsodium-wrappers-sumo": "^0.8",
     "js-base64": "^3.7.5",
     "@msgpack/msgpack": "^3.1.1",
     "async-mutex": "0.5.0"

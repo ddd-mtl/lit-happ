@@ -28,11 +28,13 @@ export class HappMultiElement extends LitElement {
 
   /** Set during init triggered at ctor */
   @state() hvms: [AppProxy, HappViewModel][] = []
+  get count(): number {return this.hvms.length}
 
   /** Continually calls networkInfo for a specific cell with appProxy */
   networkCaller?: NetworkCaller;
 
-  get count(): number {return this.hvms.length}
+
+  @state() _constructed = false;
 
   /** Ctor */
   protected constructor(
@@ -41,7 +43,13 @@ export class HappMultiElement extends LitElement {
     ) {
     super();
     this.constructHvms(appConnections)
-      .then(() => console.debug("[lit-happ] HappMultiElement: Local Perspective initialized."))
+      .then(() => {
+          console.debug("[lit-happ] HappMultiElement: Local Perspective initialized.");
+          this._constructed = true;
+          console.debug("[lit-happ] HappMultiElement: Initializing Perspective from Network")
+          this.initializePerspectiveFromNetwork()
+              .then(() => console.debug("[lit-happ] HappMultiElement: Network Perspective initialized."))
+      })
   }
 
   /** */
@@ -85,15 +93,9 @@ export class HappMultiElement extends LitElement {
 
     /** */
     override shouldUpdate() {
-        return this.hvms.length > 0;
+        return this._constructed && this.hvms.length > 0;
     }
 
-    /** After first render, attempt to get data from the network */
-    override firstUpdated() {
-        console.debug("[lit-happ] HappMultiElement: Initializing Perspective from Network")
-        this.initializePerspectiveFromNetwork()
-            .then(() => console.debug("[lit-happ] HappMultiElement: Network Perspective initialized."))
-    }
 
     /** -- Hooks for subclasses to override -- */
 

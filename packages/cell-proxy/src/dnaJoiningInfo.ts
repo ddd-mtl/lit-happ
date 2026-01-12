@@ -9,8 +9,9 @@ export type DnaJoiningInfo = {
 /** Encode a dna clone description as a base64 string for easily sharing */
 export function encodeDnaJoiningInfo(originalDnaHash: Uint8Array, name: string, networkSeed: string): string {
   const info: DnaJoiningInfo = {originalDnaHash, name, networkSeed};
-  const data = Array.from(encode(info));
-  return btoa(String.fromCharCode.apply(null, data));
+  const encoded = encode(info);
+  const data = Array.from(encoded);
+  return btoa(String.fromCharCode.apply(null, data as number[]));
 }
 
 

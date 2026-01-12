@@ -15,6 +15,7 @@ export const emptyBlockAppletView: AppletView = {
     context: null,
 };
 
+
 export const emptyEntryAppletView: AssetViewInfo = {
     type: "asset",
     wal: {
@@ -28,7 +29,7 @@ export const emptyEntryAppletView: AssetViewInfo = {
     },
 };
 
-
+//console.debug("emptyEntryAppletView", emptyEntryAppletView);
 
 /**  Empty RenderInfo */
 // export const emptyAppletView: AppletViewInfo = {
@@ -46,6 +47,8 @@ export const emptyRenderInfo: RenderInfo = {
     view: emptyMainAppletView,
     // @ts-ignore
     appletClient: undefined,
+    // @ts-ignore
+    groupHash: null,
     // @ts-ignore
     profilesClient: undefined,
     // @ts-ignore

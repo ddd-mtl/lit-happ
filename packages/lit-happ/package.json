@@ -25,11 +25,11 @@
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
     "@types/node": "^20.8.9",
-    "tslib": "^2.4.0",
-    "typescript": "~5.2.0"
+    "tslib": "^2.8",
+    "typescript": "~5.9"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.0",
+    "@holochain/client": "=0.20.2",
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@lit/context": "1.0.1",
     "lit": "3.0.2",

@@ -27,7 +27,7 @@ import {GetStrategy} from "@holochain-open-dev/core-types";
  */
 export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
-  /** -- Concret -- */
+  /** -- Concrete -- */
 
   static override readonly ZOME_PROXY = ProfilesAltProxy;
   get zomeProxy(): ProfilesAltProxy {return this._zomeProxy as ProfilesAltProxy;}
@@ -37,7 +37,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   override comparable(): Object {
     const res: ProfilesAltComparable = {
       profileCount: this._perspective.profileByAgent.size,
-      profiles: Array.from(this.perspective.profiles.values()).map((pair) => pair[0]),
+      profiles: Array.from(this.perspective.profiles.values()).map((pair) => (pair as [Profile, Number])[0]),
     };
     return res;
   }
@@ -67,7 +67,8 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
 
   /** */
   override probeAllInner(strategy: GetStrategy) {
-    this.probeAllProfiles(strategy);
+    this.probeAllProfiles(strategy)
+        .then(() => console.debug("ProfilesAltZvm.probeAllProfiles() finished."))
   }
 
 
@@ -146,13 +147,13 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   async findProfile(agentId: AgentId): Promise<Profile | undefined> {
     try {
       const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
-      console.log("findProfile()", agentId, maybeProfilePair);
+      console.debug("ProfilesAltZvm.findProfile()", agentId, maybeProfilePair);
       if (!maybeProfilePair) {
         return;
       }
       return maybeProfilePair[1];
     } catch(e) {
-      return undefined;
+      //return undefined;
     }
     return undefined;
   }
@@ -196,7 +197,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
     const snapshot = JSON.parse(json, holoIdReviver) as ProfilesAltSnapshot;
     if (canPublish) {
       for (const [agentId, _profileAh, profile, _ts] of snapshot.all) {
-        console.log("ProfilesAltZvm.import() publish profile", agentId.short, profile.nickname);
+        console.debug("ProfilesAltZvm.import() publish profile", agentId.short, profile.nickname);
         const maybe = this._perspective.getProfile(agentId);
         if (maybe) {
           /*await*/ this.createProfile(profile, agentId);

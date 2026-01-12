@@ -30,7 +30,7 @@ export class TimeMap<N extends number, V> {
     sett.add(value);
     /* Remove the oldest entry (first inserted entry) */
     if (this._map.size >= this._mapSize) {
-      const oldestKey = this._map.keys().next().value;
+      const oldestKey = this._map.keys().next().value!;
       this._map.delete(oldestKey);
     }
     /* */

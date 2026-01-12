@@ -10,7 +10,8 @@ export type HappJoinCode = {
 /**  */
 export function encodeHappJoinCode(happSha256: string, happId: InstalledAppId, networkSeed: string): string {
   const code: HappJoinCode = {happSha256, happId, networkSeed};
-  const data = Array.from(encode(code));
+  const encoded = encode(code);
+  const data = Array.from(encoded) as number[];
   return btoa(String.fromCharCode.apply(null, data));
 }
 

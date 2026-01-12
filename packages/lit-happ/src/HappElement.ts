@@ -33,11 +33,19 @@ export class HappElement extends LitElement {
   /** Continually calls networkInfo for a specific cell with appProxy */
   networkCaller?: NetworkCaller;
 
+  @state() _constructed = false;
+
   /** Ctor */
   protected constructor(options: HcConnectionOptions, happSha256?: string, appId?: InstalledAppId) {
     super();
     this.constructHvm(options, happSha256, appId)
-        .then(() => console.debug("HappElement constructed:", this.hvm.appId))
+        .then(() => {
+            console.debug("[lit-happ] HappElement constructed. App: " + this.hvm.appId);
+            this._constructed = true;
+            console.debug("[lit-happ] HappElement: Initializing Perspective from Network. App: " + this.hvm.appId)
+            this.initializePerspectiveFromNetwork()
+                .then(() => console.debug("[lit-happ] HappElement: Finished initializing HappElement Network Perspective. App: " + this.hvm.appId))
+        })
   }
 
   /** */
@@ -63,7 +71,7 @@ export class HappElement extends LitElement {
   async initializePerspectiveFromLocal(): Promise<void> {
       await this.hvm.initializePerspectiveFromLocal();
       await this.perspectiveInitializedFromLocal();
-      console.debug("Finished initializing Happ perspective with Local data. App: " + this.hvm.appId);
+      console.debug("[lit-happ] HappElement: Finished initializing Happ perspective with Local data. App: " + this.hvm.appId);
   }
 
   /** */
@@ -76,15 +84,9 @@ export class HappElement extends LitElement {
 
     /** */
     override shouldUpdate() {
-        return !!this.hvm;
+        return this._constructed && !!this.hvm;
     }
 
-    /** After first render, attempt to get data from the network */
-    override firstUpdated() {
-        console.debug("[lit-happ] HappElement: Initializing Perspective from Network")
-        this.initializePerspectiveFromNetwork()
-            .then(() => console.debug("Finished initializing HappElement Network Perspective. App: " + this.hvm.appId))
-    }
 
     /** -- Hooks for subclasses to override -- */
 

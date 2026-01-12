@@ -3,12 +3,12 @@ import {decode, encode, ExtensionCodec} from "@msgpack/msgpack";
 import blake2b from "@bitgo/blake2b";
 import { Base64 } from "js-base64";
 import {
-  ActionHashB64,
-  AgentPubKeyB64,
-  EntryHashB64, HASH_TYPE_PREFIX,
-  HoloHashB64, randomByteArray,
+    ActionHashB64,
+    AgentPubKeyB64,
+    EntryHashB64, HASH_TYPE_PREFIX,
+    HoloHashB64, HoloHashType, randomByteArray,
 } from "@holochain/client";
-import {getIndexByVariant} from "./utils";
+import {getIndexByVariant, pascal} from "./utils";
 
 
 /**
@@ -71,28 +71,28 @@ export function dhtLocationFrom32(hashCore: Uint8Array): Uint8Array {
 
 /** ------------------------------------------------------------------------------------------------------------------*/
 
-export enum HoloHashType {
-  Action = "Action",
-  Agent = "Agent",
-  //DhtOp = "DhtOp",
-  Dna = "Dna",
-  Entry = "Entry",
-  External = "External",
-  Network = "Network",
-  //Warrent = "Warrent",
-  Wasm = "Wasm",
-}
+// export enum HoloHashType {
+//   Action = "Action",
+//   Agent = "Agent",
+//   //DhtOp = "DhtOp",
+//   Dna = "Dna",
+//   Entry = "Entry",
+//   External = "External",
+//   Network = "Network",
+//   //Warrent = "Warrent",
+//   Wasm = "Wasm",
+// }
 
 export const HASH_TYPE_PREFIX_B64 = {
-  Action: "uhCkk",
-  Agent: "uhCAk",
-  Dna: "uhC0k",
-  //DhtOp: "hCQk",
-  Entry: "uhCEk",
-  External: "uhC8k",
-  Network: "uhCIk",
-  //Warrent: "Warrent",
-  Wasm: "uhCok",
+  action: "uhCkk",
+  agent: "uhCAk",
+  dna: "uhC0k",
+  dhtop: "hCQk",
+  entry: "uhCEk",
+  external: "uhC8k",
+  //Network: "uhCIk",
+  warrant: "uhCwk",
+  wasm: "uhCok",
 };
 
 export function getHashType(hash: HoloHashB64): HoloHashType {
@@ -228,7 +228,7 @@ export abstract class HolochainId {
   }
 
 
-  // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit
+  // Don't autoconvert to string as this can lead to confusions. Convert to string explicitly.
   toString(): string {throw Error("Implicit conversion of HolochainId to string")}
 
   //toString(): string {return this.b64;}
@@ -243,9 +243,9 @@ export abstract class HolochainId {
 
 /** */
 function retypeHoloHashArray(core: Uint8Array, hashType: HoloHashType): Uint8Array {
-  if (hashType == HoloHashType.Network || hashType == HoloHashType.Wasm) {
-    throw Error("HoloHashType not handled");
-  }
+  // if (hashType == HoloHashType.Network || hashType == HoloHashType.Wasm) {
+  //   throw Error("HoloHashType not handled");
+  // }
   return Uint8Array.from([
     ...HASH_TYPE_PREFIX[hashType],
     ...core,
@@ -332,7 +332,7 @@ export function holoIdReviver(_key: any, value: any) {
 export const HOLOCHAIN_ID_EXT_CODEC = new ExtensionCodec();
 
 HOLOCHAIN_ID_EXT_CODEC.register({
-  type: getIndexByVariant(HoloHashType, HoloHashType.Agent),
+  type: getIndexByVariant(HoloHashType, pascal(HoloHashType.Agent)),
   encode: (object: unknown): Uint8Array | null => {
     if (object instanceof AgentId) {
       return encode(object.b64);
@@ -347,7 +347,7 @@ HOLOCHAIN_ID_EXT_CODEC.register({
 });
 
 HOLOCHAIN_ID_EXT_CODEC.register({
-  type: getIndexByVariant(HoloHashType, HoloHashType.Entry),
+  type: getIndexByVariant(HoloHashType, pascal(HoloHashType.Entry)),
   encode: (object: unknown): Uint8Array | null => {
     if (object instanceof EntryId) {
       return encode(object.b64);
@@ -363,7 +363,7 @@ HOLOCHAIN_ID_EXT_CODEC.register({
 
 
 HOLOCHAIN_ID_EXT_CODEC.register({
-  type: getIndexByVariant(HoloHashType, HoloHashType.Action),
+  type: getIndexByVariant(HoloHashType, pascal(HoloHashType.Action)),
   encode: (object: unknown): Uint8Array | null => {
     if (object instanceof ActionId) {
       return encode(object.b64);
@@ -378,7 +378,7 @@ HOLOCHAIN_ID_EXT_CODEC.register({
 });
 
 HOLOCHAIN_ID_EXT_CODEC.register({
-  type: getIndexByVariant(HoloHashType, HoloHashType.Dna),
+  type: getIndexByVariant(HoloHashType, pascal(HoloHashType.Dna)),
   encode: (object: unknown): Uint8Array | null => {
     if (object instanceof DnaId) {
       return encode(object.b64);
