@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/path-explorer",
-  "version": "1.33.4",
+  "version": "1.34.0",
   "description": "lit-happ elements for browsing Paths & Links.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
