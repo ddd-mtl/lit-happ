@@ -46,7 +46,7 @@ export class AssetServicesEx implements AssetServices {
 
   async dragAsset(wal: WAL): Promise<void> {return this._inner.dragAsset(wal)}
   async assetToPocket(wal: WAL): Promise<void> {return this._inner.assetToPocket(wal)}
-  async userSelectAsset(): Promise<WAL | undefined> {return this._inner.userSelectAsset()}
+  async userSelectAsset(from?: 'search' | 'pocket' | 'create' | 'pocket-no-create'): Promise<WAL | undefined> {return this._inner.userSelectAsset(from)}
   async userSelectAssetRelationTag(): Promise<string | undefined> {return this._inner.userSelectAssetRelationTag()}
 
   async addTagsToAsset(wal: WAL, tags: string[]): Promise<void> {return this._inner.addTagsToAsset(wal, tags)}
@@ -163,7 +163,7 @@ export class WeServicesEx implements WeaveServices {
   }
 
 
-  /** -- Passthrough  -- */
+  /** -- Passthrough -- */
   mossVersion(): string {return this._inner.mossVersion();}
   onPeerStatusUpdate(callback: (payload: PeerStatusUpdate) => any): UnsubscribeFunction {return this._inner.onPeerStatusUpdate(callback)}
   onBeforeUnload(callback: () => void): UnsubscribeFunction {return this._inner.onBeforeUnload(callback)}
