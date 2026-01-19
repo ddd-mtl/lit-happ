@@ -14,7 +14,8 @@ import {
     InstalledAppId,
     ProvisionedCell,
     Timestamp, ZomeName, SignalType, DumpNetworkMetricsRequest,
-    DumpNetworkMetricsResponse,
+    DumpNetworkMetricsResponse, MemproofMap, PeerMetaInfoRequest, PeerMetaInfoResponse, AgentInfoRequest,
+    AgentInfoResponse,
 } from "@holochain/client";
 import {UnsubscribeFunction} from "emittery";
 import {CellProxy} from "./CellProxy";
@@ -197,6 +198,23 @@ export class AppProxy implements AppClient {
   }
 
 
+  /** -- AppWebsocket specific API -- */
+
+  async agentInfo(_req: AgentInfoRequest, _timeout?: number): Promise<AgentInfoResponse> {
+      throw new Error("Method not implemented.");
+  }
+  
+  async peerMetaInfo(_req: PeerMetaInfoRequest, _timeout?: number): Promise<PeerMetaInfoResponse> {
+      throw new Error("Method not implemented.");
+  }
+
+  async provideMemproofs(_memproofs: MemproofMap) {
+      throw new Error("Method not implemented.");
+  }
+
+  async enableApp() {
+      throw new Error("Method not implemented.");
+  }  
 
   /** -- Creation -- */
 

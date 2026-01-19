@@ -1,20 +1,21 @@
 import {
-  AppInfoResponse,
-  AppWebsocket,
-  CallZomeRequest,
-  InstalledAppId,
-  CreateCloneCellRequest,
-  DisableCloneCellRequest,
-  EnableCloneCellRequest,
-  ClonedCell,
-  AppClient,
-  AppEvents,
-  SignalCb,
-  AdminWebsocket,
-  CreateCloneCellResponse,
-  EnableCloneCellResponse,
-  DumpNetworkMetricsRequest,
-  DumpNetworkMetricsResponse,
+    AppInfoResponse,
+    AppWebsocket,
+    CallZomeRequest,
+    InstalledAppId,
+    CreateCloneCellRequest,
+    DisableCloneCellRequest,
+    EnableCloneCellRequest,
+    ClonedCell,
+    AppClient,
+    AppEvents,
+    SignalCb,
+    AdminWebsocket,
+    CreateCloneCellResponse,
+    EnableCloneCellResponse,
+    DumpNetworkMetricsRequest,
+    DumpNetworkMetricsResponse, AgentInfoResponse, PeerMetaInfoResponse, PeerMetaInfoRequest, AgentInfoRequest,
+    MemproofMap,
 } from "@holochain/client";
 import { UnsubscribeFunction } from "emittery";
 import {AppProxy} from "./AppProxy";
@@ -123,6 +124,23 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
     return await this._appWs!.dumpNetworkMetrics(req, timeout);
   }
 
+  /** -- More AppWebsocket passthrough -- */
+
+  override async agentInfo(req: AgentInfoRequest, timeout?: number): Promise<AgentInfoResponse> {
+    return this._appWs!.agentInfo(req, timeout);
+  }
+
+    override async peerMetaInfo(req: PeerMetaInfoRequest, timeout?: number): Promise<PeerMetaInfoResponse> {
+    return this._appWs!.peerMetaInfo(req, timeout);
+  }
+
+    override async provideMemproofs(memproofs: MemproofMap) {
+      return this._appWs!.provideMemproofs(memproofs);
+  }
+
+  override async enableApp() {
+      return this._appWs!.enableApp();
+  }
 
 
   /** -- Creation -- */

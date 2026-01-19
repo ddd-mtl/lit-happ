@@ -1,5 +1,12 @@
-import {AppProxy, CellAddress, prettyDate, RingBuffer} from "@ddd-qc/cell-proxy";
-import {DhtArc, DumpNetworkMetricsRequest, FetchStateSummary, NetworkMetrics, Timestamp} from "@holochain/client";
+import {AgentId, AppProxy, CellAddress, prettyDate, RingBuffer} from "@ddd-qc/cell-proxy";
+import {
+    DhtArc,
+    DumpNetworkMetricsRequest,
+    FetchStateSummary,
+    hashFrom32AndType, HoloHashType,
+    NetworkMetrics,
+    Timestamp
+} from "@holochain/client";
 import {TransportStats} from "@holochain/client/lib/api/admin/types";
 
 type NetworkInfoCb = (info:NetworkMetrics, m: TransportStats) => void;
@@ -20,12 +27,15 @@ export class NetworkCaller {
   private _networkMetricsLogs: RingBuffer<[Timestamp, NetworkMetrics]> = new RingBuffer(50);
   private _networkStatsLogs: RingBuffer<[Timestamp, TransportStats]> = new RingBuffer(50);
 
-
   private _intervalId: any | undefined = undefined;
 
   private _callbacks: NetworkInfoCb[] = [];
 
-  /** -- Getters & Setters -- */
+  /** peer pub key to AgentId */
+  private _transportToAgentMap: Map<string, AgentId> = new Map();
+
+
+    /** -- Getters & Setters -- */
 
   setCellAddr(cellAddr: CellAddress) { this.cellAddr = cellAddr};
 
@@ -86,6 +96,65 @@ export class NetworkCaller {
     this._networkStatsLogs.clear();
   }
 
+
+    async peerKeyToAgentId(transportKey: string): Promise<AgentId | undefined> {
+        const maybe = this._transportToAgentMap.get(transportKey);
+        if (maybe) {
+            return maybe;
+        }
+        await this.updateTransportToAgentMap();
+        return this._transportToAgentMap.get(transportKey);
+    }
+
+
+    /** debug */
+    dumpTransportToAgentMap() {
+        this.updateTransportToAgentMap().then(() => console.table(this._transportToAgentMap));
+    }
+
+    /**
+     * Build a mapping from transport pub_key to AgentPubKey by fetching agentInfo.
+     * AgentInfo returns both the kitsune agent ID and the peer URL, allowing us to
+     * map the transport key (from URL) to the actual AgentPubKey.
+     */
+    async updateTransportToAgentMap() {
+        if (!this.cellAddr) {
+            throw Promise.reject("buildTransportToAgentMap() aborted. cellAddr not specified.");
+        }
+
+        // Fetch agentInfo for these DNAs
+        const agentInfoResponse = await this.appProxy.agentInfo({ dna_hashes: [this.cellAddr.dnaId.hash] });
+
+        for (const agentInfoItem of agentInfoResponse) {
+            try {
+                // Parse the structure: { agentInfo: "{...json...}", signature: "..." }
+                const parsed =
+                    typeof agentInfoItem === 'string' ? JSON.parse(agentInfoItem) : agentInfoItem;
+                const agentInfoData =
+                    typeof parsed.agentInfo === 'string' ? JSON.parse(parsed.agentInfo) : parsed.agentInfo;
+                const partialAgentId = agentInfoData.agent;
+                const peerUrl = agentInfoData.url;
+                if (!partialAgentId || !peerUrl) {
+                    continue;
+                }
+                // Extract transport key from the peer URL
+                const transportKey = extractTransportKeyFromUrl(peerUrl);
+                if (!transportKey) {
+                    continue;
+                }
+                // Convert partial agent ID to full AgentPubKey
+                const bytes = decodeUrlSafeBase64(partialAgentId);
+                // Convert the 32-byte core to a full agent pub key (adds type prefix and DHT location)
+                const fullAgentKey = hashFrom32AndType(bytes, HoloHashType.Agent);
+                // Update Map
+                this._transportToAgentMap.set(transportKey, new AgentId(fullAgentKey));
+
+            } catch (e) {
+                // Skip invalid entries
+            }
+        }
+    }
+  
 
   /** */
   async callNetworkMetrics(): Promise<NetworkMetrics> {
@@ -184,4 +253,53 @@ function arc_size(arc: DhtArc): number {
     return 0;
   }
   return arc[1] - arc[0];
+}
+
+
+/**
+ * Extract the transport pub_key from a peer URL.
+ * Peer URLs typically have format: wss://host/tx5-ws/sig/<transport_pub_key>
+ * The transport pub_key is the last path segment.
+ */
+function extractTransportKeyFromUrl(peerUrl: string): string | null {
+    try {
+        const urlObj = new URL(peerUrl);
+        const pathParts = urlObj.pathname.split('/').filter((p) => p.length > 0);
+        // The transport key is the last segment after /tx5-ws/sig/ or similar
+        if (pathParts.length > 0) {
+            const lastPart = pathParts[pathParts.length - 1]!;
+            // Transport keys are typically 40+ characters in URL-safe base64
+            if (lastPart.length >= 40) {
+                return lastPart;
+            }
+        }
+    } catch {
+        // If URL parsing fails, try direct string splitting
+        const parts = peerUrl.split('/');
+        const lastPart = parts[parts.length - 1];
+        if (lastPart && lastPart.length >= 40) {
+            return lastPart;
+        }
+    }
+    return null;
+}
+
+/**
+ * Decode URL-safe base64 string to Uint8Array.
+ * URL-safe base64 uses - and _ instead of + and /.
+ */
+function decodeUrlSafeBase64(urlSafeBase64: string): Uint8Array {
+    // Convert URL-safe base64 to standard base64
+    let standardBase64 = urlSafeBase64.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding if necessary
+    while (standardBase64.length % 4 !== 0) {
+        standardBase64 += '=';
+    }
+    // Decode base64 to bytes
+    const binaryString = atob(standardBase64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
 }

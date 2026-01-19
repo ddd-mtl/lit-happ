@@ -397,6 +397,7 @@ export class PlaygroundApp extends HappElement {
     } catch(e) {
       await this.profilesDvm.profilesZvm.createMyProfile(profile);
     }
+    this.networkCaller?.dumpTransportToAgentMap();
   }
 }
 
