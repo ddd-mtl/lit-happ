@@ -33,7 +33,7 @@
     "@holochain/client": "=0.20.2",
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@ddd-qc/lit-happ": "file:../lit-happ",
-    "@theweave/api": "=0.6.3",
+    "@theweave/api": "=0.6.4",
     "@mdi/js": "^7.2.0"
   },
   "engines": {
