@@ -32,8 +32,9 @@ export async function setupProd(appletServices: AppletServices, createApplet: Cr
     //     throw Promise.reject("Setup called for non 'applet-view' type")
     // }
 
-    /** Delay because of Moss 'CellDisabled' bug at startup race condition */
-    await delay(1 * 1000);
+    // /** Delay because of Moss 'CellDisabled' bug at startup race condition */
+    // console.debug("[we-utils] Force 1 second delay...");
+    // await delay(1 * 1000);
 
     //const renderInfo = weClient.renderInfo as any;
     const applet = await createApplet(weClient.renderInfo, weClient);
