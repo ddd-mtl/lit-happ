@@ -22,7 +22,7 @@ export class AgentDirectoryList extends ZomeElement<AgentDirectoryPerspective, A
   /** -- Methods -- */
 
   /** After first call to render() */
-  async firstUpdated() {
+  override async firstUpdated() {
     await this.refresh();
     this._initialized = true;
   }
@@ -35,7 +35,7 @@ export class AgentDirectoryList extends ZomeElement<AgentDirectoryPerspective, A
 
 
   /** */
-  render() {
+  override render() {
     console.debug("agent-directory-list render()");
 
     if (!this._initialized) {

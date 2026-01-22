@@ -21,9 +21,16 @@
   "devDependencies": {
     "lit-analyzer": "^1.2.1",
     "@types/libsodium-wrappers" : "~0.7.14",
-    "watch-cli": "^0.2.3"
+    "watch-cli": "^0.2.3",
+    "tslib": "^2.8",
+    "typescript": "~5.9"
   },
   "dependencies": {
+    "@holochain/client": "=0.20.2",
+    "@ddd-qc/lit-happ": "file:../lit-happ",
+    "@holochain-open-dev/core-types": "0.600.0",
+    "@lit/context": "1.0.1",
+    "lit": "3.0.2"
   },
   "type": "module",
   "publishConfig": {

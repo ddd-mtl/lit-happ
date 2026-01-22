@@ -83,6 +83,6 @@ export async function sha256(json: string): Promise<HoloHashB64> {
   const utf8 = new TextEncoder().encode(json);
   await _sodium.ready;
   const sodium = _sodium;
-  let hashArray: Uint8Array = await sodium.crypto_hash_sha256(utf8);
+  let hashArray: Uint8Array = await sodium.crypto_hash_sha256(utf8, "uint8array") as Uint8Array;
   return encodeHashToBase64(hashArray);
 }

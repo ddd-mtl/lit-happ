@@ -1,20 +1,12 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2018",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "lib": ["es2017", "dom"],
-    "strict": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "sourceMap": true,
-    "inlineSources": true,
-    "declaration": true,
     "outDir": "dist",
-    "rootDir": "./src",
+    "declarationDir": "dist",
+    "rootDir": "./src"
   },
-  "include": ["src/**/*.ts"]
+
+  "include": [
+    "src/**/*.ts"
+  ]
 }

@@ -11,7 +11,7 @@ export interface AgentDirectoryPerspective {
 export class AgentDirectoryZvm extends ZomeViewModel {
 
   /** -- ZVM Boilerplate -- */
-  static readonly ZOME_PROXY = AgentDirectoryProxy;
+  static override readonly ZOME_PROXY = AgentDirectoryProxy;
 
   get zomeProxy(): AgentDirectoryProxy {
     return this._zomeProxy as AgentDirectoryProxy;
@@ -29,13 +29,13 @@ export class AgentDirectoryZvm extends ZomeViewModel {
   }
 
   /** */
-  protected hasChanged(): boolean {
+  protected override hasChanged(): boolean {
     if (!this._previousPerspective) return true;
     return JSON.stringify(this.perspective.agents) !== JSON.stringify((this._previousPerspective as AgentDirectoryPerspective).agents)
   }
 
   /** */
-  async probeAllInner(strategy: GetStrategy): Promise<void> {
+  override async probeAllInner(strategy: GetStrategy): Promise<void> {
     await this.probeRegisteredAgents(strategy)
   }
 
