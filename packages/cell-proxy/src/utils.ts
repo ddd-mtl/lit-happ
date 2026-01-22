@@ -1,4 +1,4 @@
-import {encodeHashToBase64} from "@holochain/client";
+import {encodeHashToBase64, HoloHashB64} from "@holochain/client";
 // @ts-ignore
 import _sodium from 'libsodium-wrappers-sumo';
 
@@ -78,15 +78,11 @@ export function getIndexByVariant(enumType: Object | string[], value: string): n
 }
 
 
-
-export type HashB64 = string;
-
-
 /** Hash any data */
-export async function sha256(json: string): Promise<HashB64> {
+export async function sha256(json: string): Promise<HoloHashB64> {
   const utf8 = new TextEncoder().encode(json);
   await _sodium.ready;
   const sodium = _sodium;
-  let hashArray = await sodium.crypto_hash_sha256(utf8);
+  let hashArray: Uint8Array = await sodium.crypto_hash_sha256(utf8);
   return encodeHashToBase64(hashArray);
 }
