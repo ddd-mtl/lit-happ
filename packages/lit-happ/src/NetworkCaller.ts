@@ -28,6 +28,7 @@ export class NetworkCaller {
   private _networkStatsLogs: RingBuffer<[Timestamp, TransportStats]> = new RingBuffer(50);
 
   private _intervalId: any | undefined = undefined;
+  private _isCallRunning: boolean = false;
 
   private _callbacks: NetworkInfoCb[] = [];
 
@@ -53,21 +54,31 @@ export class NetworkCaller {
 
   /** */
   isLooping(): boolean {
-    const isUnd = this._intervalId === undefined;
-    return !isUnd;
+      return this._intervalId !== undefined;
   }
 
-  /** */
+  /** Calling twice will stop it */
   startCallLoop(interval: number) {
+    //console.debug(`startCallLoop(${interval})`);
     if (this.isLooping()) {
       this.stopCallLoop();
     }
     this._intervalId = setInterval(async () => {
-      //console.log("Requesting network info...");
-      const res = await this.callNetworkMetrics();
-      const res2 = await this.callNetworkStats();
-      for (const callback of this._callbacks) {
-        callback(res, res2);
+        // skip if previous call not done
+        if (this._isCallRunning) {
+            return;
+        }
+      this._isCallRunning = true;
+      try {
+        const res = await this.callNetworkMetrics();
+        const res2 = await this.callNetworkStats();
+        for (const callback of this._callbacks) {
+            callback(res, res2);
+        } } catch (e) {
+        console.error("Error in NetworkCaller.startCallLoop() stopping the call loop.", e);
+        this.stopCallLoop();
+      } finally {
+          this._isCallRunning = false;
       }
     }, interval);
   }
@@ -87,6 +98,7 @@ export class NetworkCaller {
   stopCallLoop() {
     clearInterval(this._intervalId);
     this._intervalId = undefined;
+    this._isCallRunning = false;
   }
 
 

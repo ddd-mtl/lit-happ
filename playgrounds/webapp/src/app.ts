@@ -263,18 +263,22 @@ export class PlaygroundApp extends HappElement {
         <h2>Lit-happ ${(this.constructor as any).HVM_DEF.id} App</h2>
         <input type="button" value="Probe hApp" @click=${this.onProbe}>
         <input type="button" value="Dump signals" @click=${(_e:any) => {this.appProxy.dumpSignalLogs(true)}}>
-        <input type="button" value="Loop networkInfos" @click=${async (_e:any) => {
-          console.log("networkInfos:", this.networkCaller?.isLooping(), this.networkCaller, this.integerDvm.cell.address)
-            this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
-            if (!this.networkCaller?.isLooping()) {
-                console.log("Start loop");
-                this.networkCaller?.addCallback((info: NetworkMetrics) => {console.log(info)})
-                await this.networkCaller?.startCallLoop(100);
-            } else {
-                this.networkCaller?.stopCallLoop();
-                this.networkCaller?.clearAllCallbacks();
-            }
-        }}>
+        <input type="button" value="Loop networkInfos" 
+               @click=${async (_e:any) => {
+                  console.log("networkInfos:", this.networkCaller?.isLooping(), this.networkCaller, this.integerDvm.cell.address)
+                    this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
+                    if (!this.networkCaller?.isLooping()) {
+                        console.log("Start loop");
+                        this.networkCaller?.addCallback((info: NetworkMetrics) => {
+                            console.log(`myNetworkCallerCallback: ${JSON.stringify(info)}`);
+                            throw new Error("Stop loop intentionally");
+                        })
+                        await this.networkCaller?.startCallLoop(100);
+                    } else {
+                        this.networkCaller?.stopCallLoop();
+                        this.networkCaller?.clearAllCallbacks();
+                    }
+                }}>
         <input type="button" value="Dump networkMetrics" @click=${(_e:any) => {this.networkCaller?.dumpNetworkMetricsLogs();}}>
         <input type="button" value="Dump networkStats" @click=${(_e:any) => {this.networkCaller?.dumpNetworkStatsLogs();}}>
           <br/>
