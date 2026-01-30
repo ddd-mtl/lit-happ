@@ -23,7 +23,7 @@ export class ProfilesAltPerspective {
 
   /** -- Extra  -- */
   /* Name -> AgentId */
-  agentByName: Record<string, Set<AgentId>> = {};
+  agentByName: Record<string, Array<AgentId>> = {};
 
 
   /** -- Getters -- */
@@ -59,13 +59,11 @@ export class ProfilesAltPerspective {
 
   /** AgentId or Name */
   getProfilesForName(nickname: string): Profile[] {
-    let profiles = new Set();
-    const maybe = this.agentByName[nickname];
-    if (!maybe) {
+    const agents = this.agentByName[nickname];
+    if (!agents) {
       return [];
     }
-    profiles = maybe;
-    return Object.values(profiles).map((profileAh) => this.profiles.get(profileAh)![0]);
+    return agents.map((agentId) => this.profiles.get(this.profileByAgent.get(agentId)!)![0]);
   }
 
 
@@ -80,16 +78,6 @@ export class ProfilesAltPerspective {
       return undefined;
     }
     return pair[1];
-  }
-
-
-  /** */
-  getAgentsForName(nickname: string): Set<AgentId> {
-    const maybe = this.agentByName[nickname];
-    if (!maybe) {
-      return new Set();
-    }
-    return maybe;
   }
 
 
@@ -126,13 +114,23 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
     this.profiles.set(profileAh, [profile, ts]);
     const agentId = this.getProfileAgent(profileAh);
     if (agentId) {
-      let maybe = this.agentByName[profile.nickname];
-      if (!maybe) {
-        maybe = new Set<AgentId>();
-      }
-      maybe.add(agentId);
-      this.agentByName[profile.nickname] = maybe;
+        this.storeAgentByName(agentId, profile.nickname);
     }
+  }
+
+  private storeAgentByName(agentId: AgentId, name: string) {
+      let maybe = this.agentByName[name];
+      if (!maybe) {
+          maybe = new Array<AgentId>();
+          maybe.push(agentId);
+      } else {
+          // check if already exists
+          const found = maybe.find(cur => cur.b64 == agentId.b64);
+          if (!found) {
+              maybe.push(agentId);
+          }
+      }
+      this.agentByName[name] = maybe;
   }
 
   /** */
@@ -142,12 +140,7 @@ export class ProfilesAltPerspectiveMutable extends ProfilesAltPerspective {
     this.profileByAgent.set(agentId, profileAh);
     const pair = this.profiles.get(profileAh);
     if (pair) {
-      let maybe = this.agentByName[pair[0].nickname];
-      if (!maybe) {
-        maybe = new Set<AgentId>();
-      }
-      maybe.add(agentId);
-      this.agentByName[pair[0].nickname] = maybe;
+        this.storeAgentByName(agentId, pair[0].nickname);
     }
   }
 
