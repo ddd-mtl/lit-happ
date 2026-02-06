@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/shared-ownership-dvm",
-  "version": "0.34.0",
+  "version": "0.34.3",
   "description": "DnaViewModel implementation for the SharedOwnership zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -30,7 +30,7 @@
     "typescript": "~5.9"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.2",
+    "@holochain/client": "=0.20.4-rc.0",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@msgpack/msgpack": "^3.1.1",
     "lit": "3.0.2"

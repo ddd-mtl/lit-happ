@@ -178,7 +178,7 @@ export class WeServicesEx implements WeaveServices {
   async requestClose() {return this._inner.requestClose()}
   async toolInstaller(appletHash: AppletHash, groupHash?: DnaHash): Promise<AgentPubKey | undefined> {return this._inner.toolInstaller(appletHash, groupHash)}
   async myAccountabilitiesPerGroup(): Promise<[DnaHash, MossAccountability[]][]> {return this._inner.myAccountabilitiesPerGroup()}
-  async appletParticipants()/*: Promise<AgentPubKey[]>*/ {return this._inner.appletParticipants()}
+  async appletParticipants(): Promise<AgentPubKey[]> {return this._inner.appletParticipants()}
 
   async sendRemoteSignal(payload: Uint8Array): Promise<void> {return this._inner.sendRemoteSignal(payload)}
   onRemoteSignal(callback: (payload: Uint8Array) => any): UnsubscribeFunction  {return this._inner.onRemoteSignal(callback)}
