@@ -10,8 +10,8 @@ import {
   WAL
 } from "@theweave/api";
 import {mdiFileExcelOutline} from "@mdi/js";
-import {intoHrl, wrapPathInSvg} from "../utils";
 import {ActionId, DnaId, EntryId, intoDhtId} from "@ddd-qc/cell-proxy";
+import {intoHrl, wrapPathInSvg} from "../utils";
 
 
 /** Build fake AttachmentTypes */

@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/we-utils",
-  "version": "0.34.4",
+  "version": "0.34.5",
   "description": "Helpers for creating we-applets out of HappElements from lit-happ",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@holochain/client": "=0.20.4-rc.0",
+    "@holochain-open-dev/profiles": "=0.601.2",
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@theweave/api": "=0.6.5",

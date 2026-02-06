@@ -1,6 +1,6 @@
 import {RenderInfo,  AppletView} from "@theweave/api";
-import {AssetViewInfo, intoHrl} from "../index";
 import {DnaId, EntryId} from "@ddd-qc/cell-proxy";
+import {AssetViewInfo, intoHrl} from "../index";
 
 
 /** Empty AppletViews */

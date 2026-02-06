@@ -1,3 +1,4 @@
+import {UnsubscribeFunction} from "emittery";
 import {
     AppletId,
     AppletInfo,
@@ -10,7 +11,6 @@ import {
     CreateCloneCellRequest, CreateCloneCellResponse, EnableCloneCellRequest, EnableCloneCellResponse,
     DisableCloneCellRequest, AgentPubKey, DnaHash,
 } from "@holochain/client";
-import {UnsubscribeFunction} from "emittery";
 import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
 
 

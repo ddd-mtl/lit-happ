@@ -1,11 +1,10 @@
-import {AppletServices, WeaveClient} from "@theweave/api";
+import {LitElement} from "lit";
 import {setBasePath} from '@shoelace-style/shoelace/dist/utilities/base-path.js';
+import {AppletServices, WeaveClient} from "@theweave/api";
 import {HAPP_ENV, HappEnvType} from "@ddd-qc/lit-happ";
 import {setupDevtest} from "./setupDevtest";
 import {createDefaultWeServicesMock} from "./mocks/weServicesMock";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
-import {LitElement} from "lit";
-
 
 
 /** */

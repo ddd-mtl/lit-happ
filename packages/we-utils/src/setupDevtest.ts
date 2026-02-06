@@ -1,20 +1,18 @@
+import {LitElement} from "lit";
+import { setBasePath, getBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import {
   AdminWebsocket,
   Record,
   AppWebsocket,
-  ListAppsResponse, CellId, ProvisionedCell,
+  ListAppsResponse, CellId, ProvisionedCell, CellType, AgentPubKeyMap,
 } from "@holochain/client";
 import { ProfilesClient } from '@holochain-open-dev/profiles';
 import { ProfilesZomeMock } from "@holochain-open-dev/profiles/dist/mocks.js";
-import { setBasePath, getBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
+import {AppletView, RenderInfo} from "@theweave/api";
 import {DnaId, EntryId} from "@ddd-qc/lit-happ";
 import {CreateAppletFn, CreateWeServicesMockFn, DevTestNames} from "./types";
 import {emptyRenderInfo} from "./mocks/renderInfoMock";
 import {AppletViewInfo} from "./index";
-import {AppletView, RenderInfo} from "@theweave/api";
-import {AgentPubKeyMap} from "@holochain-open-dev/utils";
-import {LitElement} from "lit";
-import {CellType} from "@holochain/client";
 
 
 /** */
