@@ -187,4 +187,7 @@ export class WeServicesEx implements WeaveServices {
   async enableCloneCell(req: EnableCloneCellRequest): Promise<EnableCloneCellResponse>  {return this._inner.enableCloneCell(req)}
   async disableCloneCell(req: DisableCloneCellRequest): Promise<void>  {return this._inner.disableCloneCell(req)}
 
+  getLocale(): string {return this._inner.getLocale()}
+  onLocaleChange(callback: (locale: string) => any): UnsubscribeFunction {return this._inner.onLocaleChange(callback)}
+
 }

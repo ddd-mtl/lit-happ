@@ -71,6 +71,8 @@ export const emptyWeServicesMock: WeaveServices = {
   enableCloneCell: (_req: EnableCloneCellRequest) => {throw new Error("enableCloneCell() is not implemented on WeServicesMock.");},
   disableCloneCell: (_req: DisableCloneCellRequest) => {throw new Error("disableCloneCell() is not implemented on WeServicesMock.");},
 
+  getLocale: () => {throw new Error("getLocale() is not implemented on WeServicesMock.");},
+  onLocaleChange: (_callback: (locale: string) => any) => {throw new Error("onLocaleChange() is not implemented on WeServicesMock.");},
 };
 
 
