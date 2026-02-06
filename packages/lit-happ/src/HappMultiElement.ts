@@ -83,9 +83,9 @@ export class HappMultiElement extends LitElement {
   }
 
   async initializePerspectiveFromNetwork(): Promise<void> {
-    for (const [_proxy, hvm] of this.hvms) {
-      await hvm.initializePerspectiveFromLocal(); // FIXME: Call Network once Holochain GetStrategy:Network issue is fixed.
-    }
+    // for (const [_proxy, hvm] of this.hvms) {
+    //   await hvm.initializePerspectiveFromNetwork(); // FIXME: Call Network once Holochain GetStrategy:Network issue is fixed.
+    // }
     await this.perspectiveInitializedFromNetwork();
   }
 

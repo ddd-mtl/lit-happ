@@ -76,7 +76,7 @@ export class HappElement extends LitElement {
 
   /** */
   async initializePerspectiveFromNetwork(): Promise<void> {
-    await this.hvm.initializePerspectiveFromLocal(); // // FIXME: Call Network once Holochain GetStrategy:Network issue is fixed.
+    //await this.hvm.initializePerspectiveFromNetwork(); // // FIXME: Call Network once Holochain GetStrategy:Network issue is fixed.
     await this.perspectiveInitializedFromNetwork();
   }
 
