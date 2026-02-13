@@ -167,7 +167,7 @@ export class WeServicesEx implements WeaveServices {
   mossVersion(): string {return this._inner.mossVersion();}
   onPeerStatusUpdate(callback: (payload: PeerStatusUpdate) => any): UnsubscribeFunction {return this._inner.onPeerStatusUpdate(callback)}
   onBeforeUnload(callback: () => void): UnsubscribeFunction {return this._inner.onBeforeUnload(callback)}
-  async openAppletMain(appletHash: EntryHash): Promise<void> {return this._inner.openAppletMain(appletHash)}
+  async openAppletMain(appletHash: EntryHash, wal?: WAL): Promise<void> {return this._inner.openAppletMain(appletHash, wal)}
   async openAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void> {return this._inner.openAppletBlock(appletHash, block, context)}
   async openCrossGroupMain(appletBundleId: string): Promise<void>  {return this._inner.openCrossGroupMain(appletBundleId)}
   async openCrossGroupBlock(appletBundleId: string, block: string, context: any): Promise<void>  {return this._inner.openCrossGroupBlock(appletBundleId, block, context)}

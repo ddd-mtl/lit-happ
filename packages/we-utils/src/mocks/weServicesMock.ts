@@ -38,7 +38,7 @@ export const emptyWeServicesMock: WeaveServices = {
   mossVersion: (): string => {throw new Error("mossVersion() is not implemented on WeServicesMock."); },
   onPeerStatusUpdate: (_callback: (payload: PeerStatusUpdate) => any) => {console.warn("onPeerStatusUpdate() is not implemented on WeServicesMock."); return () => {}},
   onBeforeUnload: (_callback: () => void) => {console.warn("onBeforeUnload() is not implemented on WeServicesMock."); return () => {}},
-  openAppletMain: (_appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
+  openAppletMain: (_appletHash: EntryHash, _wal?: WAL): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
   openAppletBlock: (_appletHash: EntryHash, _block: string, _context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
   openCrossGroupMain: (_appletBundleId: string): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
   openCrossGroupBlock: (_appletBundleId: string, _block: string, _context: any): Promise<void> => {throw new Error("openCrossAppletBlock() is not implemented on WeServicesMock.");},
