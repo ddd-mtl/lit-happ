@@ -14,17 +14,6 @@ import {ActionId, DnaId, EntryId, intoDhtId} from "@ddd-qc/cell-proxy";
 import {intoHrl, wrapPathInSvg} from "../utils";
 
 
-/** Build fake AttachmentTypes */
-// const fakeNoteType = {
-//   label: "FakeNote",
-//   icon_src: wrapPathInSvg(mdiFileExcelOutline),
-//   //create: (attachToHrl: Hrl): Promise<HrlWithContext> => {return {hrl: attachToHrl, context: {}}},
-//   create: (hrlc: HrlWithContext): Promise<HrlWithContext> => {return Promise.reject("Create not implemented in Fake Attachment Type")},
-// }
-// const fakeAttachmentTypes: Map<AppletHash, Record<AttachmentName, AttachmentType>> = new Map();
-// fakeAttachmentTypes.set(await fakeDnaHash(), {FakeNote: fakeNoteType})
-
-
 /** */
 export const emptyAssetServicesMock: AssetServices = {
   assetInfo: (_wal: WAL): Promise<AssetLocationAndInfo | undefined> => {throw new Error("assetInfo() is not implemented in emptyAssetServicesMock.");},
@@ -46,11 +35,9 @@ export const emptyAssetServicesMock: AssetServices = {
 /** */
 export const emptyWeServicesMock: WeaveServices = {
   assets: emptyAssetServicesMock,
-  //attachmentTypes: new HoloHashMap<AppletHash, Record<AttachmentName, AttachmentType>>(),
-  //attachmentTypes: fakeAttachmentTypes,
   mossVersion: (): string => {throw new Error("mossVersion() is not implemented on WeServicesMock."); },
-  onPeerStatusUpdate: (_callback: (payload: PeerStatusUpdate) => any) => {throw new Error("onPeerStatusUpdate() is not implemented on WeServicesMock."); },
-  onBeforeUnload: (_callback: () => void) => {console.warn("onBeforeUnload() is not implemented on WeServicesMock."); const noop = () => {};  return noop},
+  onPeerStatusUpdate: (_callback: (payload: PeerStatusUpdate) => any) => {console.warn("onPeerStatusUpdate() is not implemented on WeServicesMock."); return () => {}},
+  onBeforeUnload: (_callback: () => void) => {console.warn("onBeforeUnload() is not implemented on WeServicesMock."); return () => {}},
   openAppletMain: (_appletHash: EntryHash): Promise<void> => {throw new Error("openAppletMain() is not implemented on WeServicesMock.");},
   openAppletBlock: (_appletHash: EntryHash, _block: string, _context: any): Promise<void> => {throw new Error("openAppletBlock() is not implemented on WeServicesMock.");},
   openCrossGroupMain: (_appletBundleId: string): Promise<void> => {throw new Error("openCrossAppletMain() is not implemented on WeServicesMock.");},
@@ -66,13 +53,13 @@ export const emptyWeServicesMock: WeaveServices = {
   myAccountabilitiesPerGroup: () => {throw new Error("myAccountabilitiesPerGroup() is not implemented on WeServicesMock.");},
   appletParticipants() {throw new Error("appletParticipants() is not implemented on WeServicesMock.");},
   sendRemoteSignal: (_payload: Uint8Array) => {throw new Error("sendRemoteSignal() is not implemented on WeServicesMock.");},
-  onRemoteSignal: (_callback: (payload: Uint8Array) => any) => {throw new Error("onRemoteSignal() is not implemented on WeServicesMock.");},
+  onRemoteSignal: (_callback: (payload: Uint8Array) => any) => {console.warn("onRemoteSignal() is not implemented on WeServicesMock."); return () => {}},
   createCloneCell: (_req: CreateCloneCellRequest, _publicToGroupMembers: boolean) => {throw new Error("createCloneCell() is not implemented on WeServicesMock.");},
   enableCloneCell: (_req: EnableCloneCellRequest) => {throw new Error("enableCloneCell() is not implemented on WeServicesMock.");},
   disableCloneCell: (_req: DisableCloneCellRequest) => {throw new Error("disableCloneCell() is not implemented on WeServicesMock.");},
 
-  getLocale: () => {throw new Error("getLocale() is not implemented on WeServicesMock.");},
-  onLocaleChange: (_callback: (locale: string) => any) => {throw new Error("onLocaleChange() is not implemented on WeServicesMock.");},
+  getLocale: () => {console.warn("getLocale() is not implemented on WeServicesMock."); return 'en';},
+  onLocaleChange: (_callback: (locale: string) => any) => {console.warn("onLocaleChange() is not implemented on WeServicesMock."); return () => {}},
 };
 
 
@@ -80,12 +67,13 @@ var _mockClipboard: any = undefined;
 
 /** Create default WeServices Mock */
 export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Promise<WeaveServices> {
-  console.log("createDefaultWeServicesMock() devtestAppletId", devtestAppletId);
+  console.debug("createDefaultWeServicesMock() devtestAppletId", devtestAppletId);
   const weServicesMock = emptyWeServicesMock;
+
   /** Implement appletInfo */
   weServicesMock.appletInfo = async (appletHash) => {
     const appletId = new EntryId(appletHash);
-    console.log("DefaultWeServicesMock.appletInfo()", appletId, devtestAppletId);
+    console.debug("DefaultWeServicesMock.appletInfo()", appletId, devtestAppletId);
     if (appletId.b64 == devtestAppletId.b64) {
       return {
         appletBundleId: ActionId.empty(87).b64,
@@ -96,14 +84,15 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
     }
     return {
       appletBundleId: ActionId.empty(87).b64,
-      appletName: "MockApplet: " + appletId,
+      appletName: "MockApplet: " + appletId.b64,
       appletIcon: "",
       groupsHashes: [DnaId.empty(71).hash],
     } as AppletInfo;
   };
+
   /** Implement entryInfo */
   weServicesMock.assets.assetInfo = async (wal) => {
-    console.log("DefaultWeServicesMock.assetInfo()", wal);
+    console.debug("DefaultWeServicesMock.assetInfo()", wal);
     return {
       appletHash: devtestAppletId.hash,
       assetInfo: {
@@ -112,6 +101,7 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
       }
     } as AssetLocationAndInfo;
   }
+
   /** Implement userSelectHrl */
   weServicesMock.assets.userSelectAsset = async () => {
     if (_mockClipboard) {
@@ -124,27 +114,32 @@ export async function createDefaultWeServicesMock(devtestAppletId: EntryId): Pro
       context: null,
     } as WAL;
   }
+
   /** Implement groupProfile */
   weServicesMock.groupProfile = async (_groupId) => {
     return {
-      name: "FakeGroupeName",
+      name: "FakeGroupName",
       logo_src: "",
     }
   }
+
   /** Implement openHrl */
   weServicesMock.openAsset = async (hrlc: WAL): Promise<void> => {
     alert("Mock weServices.openHrl() for hrl: " + weaveUrlFromWal({hrl:hrlc.hrl}) + "\n\n see console for context");
     console.log("weServicesMock.openHrl() context:", hrlc.context);
   }
+
   /** Implement notifyWe */
   weServicesMock.notifyFrame = async (notifications: Array<FrameNotification>): Promise<any> => {
     alert(`Mock weServices.notifyWe(${notifications.length})\n\n see console for details`);
     console.log("weServicesMock.notifyWe() notifications:", notifications);
   }
+
   /** Implement hrlToClipboard */
   weServicesMock.assets.assetToPocket = async (wal: WAL): Promise<void> => {
     _mockClipboard = wal;
   }
+
   /** Done */
   return weServicesMock;
 }

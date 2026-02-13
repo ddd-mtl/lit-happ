@@ -125,7 +125,7 @@ export class CellAddress {
     return [this.dnaId.hash, this.agentId.hash];
   }
 
-  // Don't autoconvert to string as this can lead to confusions. Have convert to string be explicit
+  // Don't auto-convert to string as this can lead to confusions. Have the conversion to string be explicit.
   toString(): string {throw Error("Implicit conversion of HolochainId to string")}
 
 
