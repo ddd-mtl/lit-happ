@@ -95,10 +95,12 @@ export class NamedRealCloneDvm extends DnaViewModel {
 
   readonly signalHandler = this.handleRealSignal;
 
-  /** QoL Helpers */
+  override get livePeers() {return []};
+
+
+    /** QoL Helpers */
   get realZvm(): RealZvm { return this.getZomeViewModel(RealZvm.DEFAULT_ZOME_NAME) as RealZvm }
   get labelZvm(): LabelZvm { return this.getZomeViewModel("zRealLabel") as LabelZvm }
-
 
   /** -- ViewModel Interface -- */
 

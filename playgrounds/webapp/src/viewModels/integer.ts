@@ -116,6 +116,7 @@ export class NamedIntegerDvm extends DnaViewModel {
 
   get perspective(): number {return 4242}
 
+  override get livePeers() {return []};
 
   /** Methods */
 

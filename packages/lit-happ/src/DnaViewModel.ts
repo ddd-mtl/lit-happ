@@ -59,9 +59,6 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
   private _allZomeInfo: MyDictionary<ZomeInfo> = {};
   private _dnaInfo: DnaInfo | undefined = undefined;
 
-  /** list of "known" peers in this DNA */
-  protected _livePeers: AgentId[] = [];
-
   public readonly hcl: HCL;
 
 
@@ -106,7 +103,7 @@ export abstract class DnaViewModel extends CellMixin(RoleMixin(ViewModel)) imple
 
   get dnaInfo(): DnaInfo { return this._dnaInfo! }
 
-  get livePeers(): AgentId[] { return this._livePeers };
+  get livePeers(): AgentId[] { console.warn(" get livePeers() is missing an implementation in a concrete DnaViewModel."); return [];};
 
   get zomeNames(): ZomeName[] {return Object.values(this._zomeNames);}
 
