@@ -199,17 +199,15 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
       for (const [agentId, _profileAh, profile, _ts] of snapshot.all) {
         console.debug("ProfilesAltZvm.import() publish profile", agentId.short, profile.nickname);
         profile.fields["imported"] = "true";
-        try {
-            const maybe = this._perspective.getProfile(agentId);
-            if (maybe) {
-                /*await*/ this.createProfile(profile, agentId);
-            } else {
-                if (maybe != profile) {
-                    this.updateProfile(profile, agentId);
-                }
+        const maybe = this._perspective.getProfile(agentId);
+        if (!maybe) {
+            this.createProfile(profile, agentId)
+                .catch((e) => console.error("ProfilesAltZvm.import()", e))
+        } else {
+            if (maybe != profile) {
+                this.updateProfile(profile, agentId)
+                    .catch((e) => console.error("ProfilesAltZvm.import()", e))
             }
-        } catch (e) {
-            console.error("ProfilesAltZvm.import()", e);
         }
       }
       return;
