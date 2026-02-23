@@ -95,7 +95,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         all.push(this.handleEntryPulse(entryPulseMat, from));
         /** If new entry from this agent, broadcast to peers as tip */
           if (entryPulseMat.isNew && this.cell.address.agentId.equals(from) && entryPulseMat.visibility == "Public") {
-            all.push(this.broadcastTip({Entry: pulse.Entry as EntryPulse}));
+            this.broadcastTip({Entry: pulse.Entry as EntryPulse});
           }
         continue;
       }
@@ -104,7 +104,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
         all.push(this.handleLinkPulse(linkPulseMat, from));
         /** If new Link from this agent, broadcast to peers as tip */
         if (linkPulseMat.isNew && this.cell.address.agentId.equals(from)) {
-          all.push(this.broadcastTip({Link: pulse.Link as LinkPulse}));
+          this.broadcastTip({Link: pulse.Link as LinkPulse});
         }
         continue;
       }
@@ -139,33 +139,35 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
-  async synchronizeValueTip(key: string, value: string, recipient: AgentId, zomeName: string): Promise<void> {
+  synchronizeValueTip(key: string, value: string, recipient: AgentId, zomeName: string): void {
     /* Only MainView can cast tips */
     if (!this.isMainView) {
       return;
     }
     console.debug(`synchronizeValueTip() Sending to`, recipient, zomeName);
     const tip: TipProtocol = {AppValue: [key, value]};
-    const response = await this.zomeProxy.call('synchronize_tip', {tip, recipient: recipient.hash, zomeName} as SynchronizeTipInput);
-    this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response});
+    this.zomeProxy.call('synchronize_tip', {tip, recipient: recipient.hash, zomeName} as SynchronizeTipInput)
+        .then((response) => this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response}))
+        .catch((e) => {console.warn("zome call to synchronize_tip() failed: ", e)})
   }
 
 
   /** */
-  async synchronizeCustomTip(appTip: Uint8Array, recipient: AgentId, zomeName: string): Promise<void> {
+  synchronizeCustomTip(appTip: Uint8Array, recipient: AgentId, zomeName: string): void {
     /* Only MainView can cast tips */
     if (!this.isMainView) {
       return;
     }
     console.debug(`synchronizeCustomTip() Sending to`, recipient, zomeName);
     const tip: TipProtocol = {AppCustom: appTip};
-    await this.zomeProxy.call('synchronize_tip', {tip,  recipient: recipient.hash, zomeName} as SynchronizeTipInput);
-    this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response: undefined});
+    this.zomeProxy.call('synchronize_tip', {tip,  recipient: recipient.hash, zomeName} as SynchronizeTipInput)
+      .then((response) => this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response}))
+      .catch((e) => {console.warn("zome call to synchronize_tip() failed: ", e)})
   }
 
 
   /** Cast Tip to all known livePeers */
-  async broadcastTip(tip: TipProtocol, agents?: Array<AgentId>): Promise<void> {
+  broadcastTip(tip: TipProtocol, agents?: Array<AgentId>): void {
     /** Only MainView can cast tips */
     if (!this.isMainView) {
       return;
@@ -182,9 +184,9 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     }
     /** Broadcast */
     const peers = agents.map((key) => key.hash);
-    await this.zomeProxy.call('cast_tip', {tip, peers});
-    /** Log */
-    this._castLogs.push({ts: Date.now(), tip, peers: agents, response: undefined});
+    this.zomeProxy.call('cast_tip', {tip, peers})
+        .then(() => this._castLogs.push({ts: Date.now(), tip, peers: agents, response: undefined}))
+        .catch((e) => {console.warn("zome call to cast_tip() failed: ", e)})
   }
 
 
