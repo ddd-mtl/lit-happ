@@ -100,7 +100,8 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
       case ProfilesLinkType.PathToAgent: {
         const agentEh = new EntryId(pulse.target.b64);
         const agentId = AgentId.from(agentEh);
-        if (pulse.state != StateChangeType.Delete) {
+        const maybeProfile = this.perspective.profileByAgent.get(agentId);
+        if (!maybeProfile && pulse.state != StateChangeType.Delete) {
             await this.findProfile(agentId);
         }
       }

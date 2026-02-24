@@ -188,13 +188,12 @@ export class PlaygroundApp extends HappElement {
     console.log("hvmConstructed()", this.profilesDvm.cell.address.agentId);
     //await this.profilesDvm.profilesZvm.createMyProfile({nickname: "Camille", fields: {}});
     const maybeMyProfile = await this.profilesDvm.profilesZvm.getMyProfile();
-    console.log("maybeProfile", maybeMyProfile);
-    // const maybeProfile = await this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.agentId);
-    // console.log("maybeProfile", maybeProfile);
-    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.address.agentId).then((maybeProfile: Profile | undefined) => {
-      console.log("maybeProfile", maybeProfile);
-      this.requestUpdate();
-    })
+    console.log("maybeMyProfile 1", maybeMyProfile);
+    this.profilesDvm.profilesZvm.findProfile(this.profilesDvm.cell.address.agentId)
+        .then((maybeProfile: Profile | undefined) => {
+          console.log("maybeMyProfile 2", maybeProfile);
+          this.requestUpdate();
+        });
   }
 
 
