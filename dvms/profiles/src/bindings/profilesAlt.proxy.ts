@@ -104,12 +104,16 @@ export class ProfilesAltProxy extends ZomeProxy {
     return this.callBlocking('update_profile', pair);
   }
 
-  async searchAgents(nicknameFilter: string): Promise<AgentArray[]> {
-    return this.call('search_agents', nicknameFilter);
+  async searchAgentsNetwork(nicknameFilter: string): Promise<AgentArray[]> {
+    return this.call('search_agents_network', nicknameFilter);
   }
 
-  async findProfile(agentPubKey: AgentArray): Promise<[ActionArray, Profile] | null> {
-    return this.call('find_profile', agentPubKey);
+  async findProfileNetwork(agentPubKey: AgentArray): Promise<[ActionArray, Profile] | null> {
+    return this.call('find_profile_network', agentPubKey);
+  }
+
+  async findProfileLocal(agentPubKey: AgentArray): Promise<[ActionArray, Profile] | null> {
+    return this.call('find_profile_local', agentPubKey);
   }
 
   async probeProfiles(strategy: GetStrategy): Promise<void> {

@@ -1,5 +1,5 @@
 import {html, PropertyValues, TemplateResult} from "lit";
-import {property, state, customElement} from "lit/decorators.js";
+import {customElement, property, state} from "lit/decorators.js";
 import {ScopedZomeTypes, ZomeElement} from "@ddd-qc/lit-happ";
 import {AnyDhtHashB64, decodeHashFromBase64, encodeHashToBase64, ZomeName} from "@holochain/client";
 import {ItemLink} from '../bindings/deps.types';
@@ -9,6 +9,7 @@ import BusyIndicator from "@ui5/webcomponents/dist/BusyIndicator";
 
 import {PathExplorerZvm} from "../viewModels/path-explorer.zvm";
 import {linkType2NamedStr, utf32Decode} from "../utils";
+import {GetStrategy} from "@holochain-open-dev/core-types";
 
 
 /**
@@ -122,7 +123,7 @@ export class LinkList extends ZomeElement<unknown, PathExplorerZvm> {
 
 
     /** Grab Link Info */
-    const linkInfo = await this._zvm.zomeProxy.inspectLink(decodeHashFromBase64(toggledTreeItem.id));
+    const linkInfo = await this._zvm.zomeProxy.inspectLink({lh: decodeHashFromBase64(toggledTreeItem.id), strategy: GetStrategy.Network});
     console.log("toggleTreeItem() linkInfo", linkInfo);
 
     var newItem = document.createElement("ui5-tree-item") as TreeItem;

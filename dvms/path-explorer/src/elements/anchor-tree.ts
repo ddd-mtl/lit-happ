@@ -304,7 +304,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
         newItem.level = ati.level + 1;
 
         /** Grab Link Info */
-        const linkInfo = await this._zvm.zomeProxy.inspectLink(decodeHashFromBase64(hash));
+        const linkInfo = await this._zvm.zomeProxy.inspectLink({lh: decodeHashFromBase64(hash), strategy: GetStrategy.Network});
         console.log("toggleTreeItem() linkInfo", linkInfo);
 
         var infoItem = document.createElement("ui5-tree-item") as TreeItem;

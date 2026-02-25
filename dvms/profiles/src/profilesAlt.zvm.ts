@@ -147,7 +147,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   /** */
   async findProfile(agentId: AgentId): Promise<Profile | undefined> {
     try {
-      const maybeProfilePair = await this.zomeProxy.findProfile(agentId.hash);
+      const maybeProfilePair = await this.zomeProxy.findProfileNetwork(agentId.hash);
       console.debug("ProfilesAltZvm.findProfile()", agentId, maybeProfilePair);
       if (!maybeProfilePair) {
         return;
