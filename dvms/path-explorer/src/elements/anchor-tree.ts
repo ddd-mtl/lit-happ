@@ -182,9 +182,9 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     let tas: TypedAnchor[] = [];
     if (this.rootTypedAnchor) {
         if (strategy == GetStrategy.Network) {
-            tas = await this._zvm.zomeProxy.getTypedChildrenNetwork(this.rootTypedAnchor);
+            tas = await this._zvm.zomeProxy.getTypedChildrenFromNetwork(this.rootTypedAnchor);
         } else {
-            tas = await this._zvm.zomeProxy.getTypedChildrenLocal(this.rootTypedAnchor);
+            tas = await this._zvm.zomeProxy.getTypedChildrenFromLocal(this.rootTypedAnchor);
         }
     } else {
       /** AnchorTree from ROOT */
@@ -253,7 +253,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
     console.log("toggleTreeItem() currentItemTexts", currentItemTexts);
 
     /** Grab children */
-    const children_tas: TypedAnchor[] = await this._zvm.zomeProxy.getTypedChildrenNetwork({anchor: ati.base, zomeIndex: ati.zomeIndex, linkIndex: ati.linkIndex});
+    const children_tas: TypedAnchor[] = await this._zvm.zomeProxy.getTypedChildrenFromLocal({anchor: ati.base, zomeIndex: ati.zomeIndex, linkIndex: ati.linkIndex});
     console.log("toggleTreeItem() children_tas", children_tas);
 
     /** If it has children, then it's a non-LeafAnchor, so create a TreeItem for each child Anchor */
@@ -283,7 +283,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
       for (const item of toggledTreeItem.items) {
         itemHashs.push(item.id);
       }
-      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchorNetwork(ati.base);
+      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchorFromLocal(ati.base);
       console.log({itemLinks})
       for (const itemLink of itemLinks) {
         const tag = new TextDecoder().decode(new Uint8Array(itemLink.tag));

@@ -52,10 +52,10 @@ export class PathsDashboard extends ZomeElement<unknown, PathExplorerZvm> {
 
   /** */
   async printChildren(root_ta: TypedAnchor) {
-    const children = await this._zvm.zomeProxy.getTypedChildrenNetwork(root_ta);
+    const children = await this._zvm.zomeProxy.getTypedChildrenFromLocal(root_ta);
     //console.log({children})
     if (children.length == 0) {
-      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchorNetwork(root_ta.anchor);
+      const itemLinks = await this._zvm.zomeProxy.getAllItemsFromAnchorFromLocal(root_ta.anchor);
       if (itemLinks.length > 0) {
         const tag = new TextDecoder().decode(new Uint8Array(itemLinks[0]!.tag));
         const leaf = root_ta.anchor + tag
