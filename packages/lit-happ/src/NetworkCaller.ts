@@ -71,6 +71,9 @@ export class NetworkCaller {
     if (this.isLooping()) {
       this.stopCallLoop();
     }
+    if (interval <= 1000) {
+        throw Error(`Loop interval is too short: ${interval}`);
+    }
     this._callTimeout = interval - 100;
     this._intervalId = setInterval(async () => {
         // skip if previous call not done
