@@ -86,8 +86,7 @@ export class NetworkCaller {
         const stats = await this.callNetworkStats();
         this.callRegisteredCallbacks({metrics, stats, error: undefined});
       } catch (e) {
-        console.error("Error in NetworkCaller.startCallLoop() stopping the call loop.", e);
-        this.stopCallLoop();
+        console.error("Error when calling Network Metrics & Stats.", e);
         this.callRegisteredCallbacks({error: e, metrics: undefined, stats: undefined});
       } finally {
           this._isCallRunning = false;
@@ -120,6 +119,7 @@ export class NetworkCaller {
 
   /** */
   stopCallLoop() {
+    console.log("NetworkCaller.stopCallLoop()");
     clearInterval(this._intervalId);
     this._intervalId = undefined;
     this._isCallRunning = false;

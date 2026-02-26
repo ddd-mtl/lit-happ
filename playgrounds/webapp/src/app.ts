@@ -229,8 +229,10 @@ export class PlaygroundApp extends HappElement {
     label.innerText = JSON.stringify(e.detail);
   }
 
+    private _errorCount = 0;
 
-  /** */
+
+    /** */
   override render() {
     const myProfile = this.profilesDvm.profilesZvm.getMyProfile();
     console.log("<playground-app> render()", myProfile, this.hvm);
@@ -265,11 +267,20 @@ export class PlaygroundApp extends HappElement {
                     this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
                     if (!this.networkCaller?.isLooping()) {
                         console.log("Start loop");
+                        this._errorCount = 0;
                         this.networkCaller?.addCallback((resp: NetworkInfoResponse) => {
-                            console.log(`myNetworkCallerCallback: ${JSON.stringify(resp)}`);
-                            throw new Error("Stop loop intentionally");
+                            console.log(`myNetworkCallerCallback ${this._errorCount}: ${JSON.stringify(resp)}`);
+                            if (resp.error != undefined) {
+                                this._errorCount += 1;
+                                if (this._errorCount > 5) {
+                                    this.networkCaller?.stopCallLoop();
+                                }
+                            } else {
+                                this._errorCount = 0;
+                            }
+                            throw new Error("Throw error intentionally for testing robustness");
                         })
-                        await this.networkCaller?.startCallLoop(100);
+                        await this.networkCaller?.startCallLoop(2000);
                     } else {
                         this.networkCaller?.stopCallLoop();
                         this.networkCaller?.clearAllCallbacks();
