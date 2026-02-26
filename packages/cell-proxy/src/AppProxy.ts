@@ -186,7 +186,7 @@ export class AppProxy implements AppClient {
     throw new Error("Method not implemented.");
   }
 
-  async dumpNetworkStats(): Promise<AppDumpNetworkStatsResponse> {
+  async dumpNetworkStats(_timeout?: number): Promise<AppDumpNetworkStatsResponse> {
     throw new Error("Method not implemented.");
   }
 

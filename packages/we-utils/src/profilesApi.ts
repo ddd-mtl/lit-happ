@@ -116,7 +116,6 @@ export class ProfilesApi implements AppClient {
 
   async dumpNetworkMetrics(
     req: DumpNetworkMetricsRequest,
-    _timeout?: number
   ): Promise<DumpNetworkMetricsResponse> {
     return this.appClient.dumpNetworkMetrics(req);
   }

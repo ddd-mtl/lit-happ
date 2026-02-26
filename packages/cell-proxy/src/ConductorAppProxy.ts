@@ -113,8 +113,8 @@ export class ConductorAppProxy extends AppProxy implements AppClient {
   }
 
 
-  override async dumpNetworkStats(): Promise<AppDumpNetworkStatsResponse> {
-    return await this._appWs!.dumpNetworkStats();
+  override async dumpNetworkStats(timeout?: number): Promise<AppDumpNetworkStatsResponse> {
+    return await this._appWs!.dumpNetworkStats(timeout);
   }
 
   override async dumpNetworkMetrics(

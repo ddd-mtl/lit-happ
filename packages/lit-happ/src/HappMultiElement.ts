@@ -3,15 +3,13 @@ import { state } from "lit/decorators.js";
 import {
     AppProxy,
     ConductorAppProxy,
-    flattenCells,
-    CellIdStr, AgentIdMap, DnaId, CellAddress, HcConnectionOptions,
+    HcConnectionOptions,
 } from "@ddd-qc/cell-proxy";
 import {HappViewModel} from "./HappViewModel";
 import {HvmDef} from "./definitions";
 import {
-  InstalledAppId, NetworkMetrics,
-  Timestamp
-} from "@holochain/client";
+  InstalledAppId,
+  } from "@holochain/client";
 // @ts-ignore
 import * as net from "net";
 import {NetworkCaller} from "./NetworkCaller";
@@ -105,57 +103,5 @@ export class HappMultiElement extends LitElement {
     async perspectiveInitializedFromLocal(): Promise<void> {}
     /** */
     async perspectiveInitializedFromNetwork(): Promise<void> {}
-
-
-  /** -- Methods -- */
-
-  /** */
-  async networkInfoAll(baseRoleName?: string): Promise<Record<CellIdStr, [Timestamp, NetworkMetrics]>> {
-    //console.debug(`networkInfoAll() "${baseRoleName}"`);
-    /** Grab cellMap */
-    const hvmDef = (this.constructor as typeof HappMultiElement).HVM_DEF;
-    const appProxy = this.hvms[0]![0];
-    const cellMap = appProxy.getAppCells(hvmDef.id);
-    if (!cellMap) {
-      return Promise.reject("No cells found at given appId: " + hvmDef.id);
-    }
-    /** Get cell Ids */
-    let cellAddrs: CellAddress[] = [];
-    if (baseRoleName) {
-      const cfr = cellMap[baseRoleName];
-      if (!cfr) {
-        return Promise.reject("No cells found at given baseRoleName: " + baseRoleName);
-      }
-      cellAddrs = flattenCells(cfr);
-    } else {
-      for (const cells of Object.values(cellMap)) {
-        cellAddrs = cellAddrs.concat(flattenCells(cells))
-      }
-    }
-    //console.debug(`networkInfoAll() cellIds`, cellAddrs.map(cellId => cellId.str));
-    /* Sort by agent key */
-    let dnaPerAgentMap: AgentIdMap<DnaId[]> = new AgentIdMap();
-    for (const cellAddr of cellAddrs) {
-      if (!dnaPerAgentMap.get(cellAddr.agentId)) {
-        dnaPerAgentMap.set(cellAddr.agentId, []);
-      }
-      dnaPerAgentMap.get(cellAddr.agentId)!.push(cellAddr.dnaId);
-    }
-    //console.debug(`networkInfoAll() dnaMap`, dnaPerAgentMap);
-    /** Call NetworkInfo per AgentId */
-    const allNetInfos: Record<CellIdStr, [Timestamp, NetworkMetrics]> = {};
-    for (const [agent, dnaIds] of dnaPerAgentMap.entries()) {
-      for (const dna of dnaIds) {
-        const response = await appProxy.dumpNetworkMetrics({dna_hash: dna.hash, include_dht_summary: true});
-        if (!response || !response[dna.b64]) {
-          throw Promise.reject("No network metrics response for dna");
-        }
-        const idStr = new CellAddress(dna, agent).str;
-        allNetInfos[idStr] = [Date.now(), response[dna.b64]!];
-      }
-    }
-    /* Done */
-    return allNetInfos;
-  }
 
 }

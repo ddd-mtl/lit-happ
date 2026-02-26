@@ -178,7 +178,7 @@ export class NetworkCaller {
         dna_hash: this.cellAddr.dnaId.hash,
         include_dht_summary: true, // ???
     };
-    const response = await this.appProxy.dumpNetworkMetrics(request);
+    const response = await this.appProxy.dumpNetworkMetrics(request, 10 * 1000);
     if (!response || !response[this.cellAddr.dnaId.b64]) {
       throw Promise.reject("No network metrics response for dna");
     }
@@ -222,7 +222,7 @@ export class NetworkCaller {
 
     /** */
     async callNetworkStats(): Promise<TransportStats> {
-        const response = await this.appProxy.dumpNetworkStats();
+        const response = await this.appProxy.dumpNetworkStats(10 * 1000);
         if (!response) {
             throw Promise.reject("No network stats response for dna");
         }
