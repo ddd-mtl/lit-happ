@@ -9,7 +9,14 @@ import {
 } from "@holochain/client";
 import {TransportStats} from "@holochain/client/lib/api/admin/types";
 
-type NetworkInfoCb = (info:NetworkMetrics, m: TransportStats) => void;
+
+export type NetworkInfoResponse = {
+  error: any,
+  metrics: NetworkMetrics | undefined,
+  stats: TransportStats | undefined,
+};
+
+export type NetworkInfoCb = (r: NetworkInfoResponse) => void;
 
 
 /**
@@ -58,11 +65,13 @@ export class NetworkCaller {
   }
 
   /** Calling twice will stop it */
+  private _callTimeout: number = 30 * 1000;
   startCallLoop(interval: number) {
     //console.debug(`startCallLoop(${interval})`);
     if (this.isLooping()) {
       this.stopCallLoop();
     }
+    this._callTimeout = interval - 100;
     this._intervalId = setInterval(async () => {
         // skip if previous call not done
         if (this._isCallRunning) {
@@ -70,13 +79,13 @@ export class NetworkCaller {
         }
       this._isCallRunning = true;
       try {
-        const res = await this.callNetworkMetrics();
-        const res2 = await this.callNetworkStats();
-        for (const callback of this._callbacks) {
-            callback(res, res2);
-        } } catch (e) {
+        const metrics = await this.callNetworkMetrics();
+        const stats = await this.callNetworkStats();
+        this.callRegisteredCallbacks({metrics, stats, error: undefined});
+      } catch (e) {
         console.error("Error in NetworkCaller.startCallLoop() stopping the call loop.", e);
         this.stopCallLoop();
+        this.callRegisteredCallbacks({error: e, metrics: undefined, stats: undefined});
       } finally {
           this._isCallRunning = false;
       }
@@ -85,7 +94,19 @@ export class NetworkCaller {
 
 
   /** */
-  addCallback(callback: (n: NetworkMetrics, m: TransportStats) => void) {
+  private callRegisteredCallbacks(resp: NetworkInfoResponse) {
+      for (const cb of this._callbacks) {
+          try {
+              cb(resp);
+          } catch (e) {
+              console.error("Error in NetworkCaller callback", e);
+          }
+      }
+  }
+
+
+  /** */
+  addCallback(callback: NetworkInfoCb) {
     this._callbacks.push(callback);
   }
 
@@ -178,7 +199,7 @@ export class NetworkCaller {
         dna_hash: this.cellAddr.dnaId.hash,
         include_dht_summary: true, // ???
     };
-    const response = await this.appProxy.dumpNetworkMetrics(request, 10 * 1000);
+    const response = await this.appProxy.dumpNetworkMetrics(request, this._callTimeout);
     if (!response || !response[this.cellAddr.dnaId.b64]) {
       throw Promise.reject("No network metrics response for dna");
     }
@@ -222,7 +243,7 @@ export class NetworkCaller {
 
     /** */
     async callNetworkStats(): Promise<TransportStats> {
-        const response = await this.appProxy.dumpNetworkStats(10 * 1000);
+        const response = await this.appProxy.dumpNetworkStats(this._callTimeout);
         if (!response) {
             throw Promise.reject("No network stats response for dna");
         }

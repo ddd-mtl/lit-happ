@@ -2,15 +2,14 @@ import { html } from "lit";
 import {state} from "lit/decorators.js";
 import {ContextProvider, createContext} from "@lit/context";
 import {
-  HvmDef,
-  HappElement, BaseRoleName, CloneId, AppProxy, EntryId, DnaViewModel, HCL, DvmDef,
+    HvmDef,
+    HappElement, BaseRoleName, CloneId, AppProxy, EntryId, DnaViewModel, HCL, DvmDef, NetworkInfoResponse,
 } from "@ddd-qc/lit-happ";
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
 import {Profile, ProfilesAltDvm, ProfilesDvm} from "@ddd-qc/profiles-dvm";
 import {HcConnectionOptions, testHoloId} from "@ddd-qc/cell-proxy"
 import {
-  NetworkMetrics,
   AdminWebsocket,
   AppWebsocket, InstalledAppId, ZomeName,
 } from "@holochain/client";
@@ -32,8 +31,6 @@ const weClientContext = createContext<WeaveServices>('weave_client');
 
 /** */
 export class PlaygroundApp extends HappElement {
-
-  //@state() private _hasWeProfile = false;
 
   /** Ctor */
   // @ts-ignore
@@ -268,8 +265,8 @@ export class PlaygroundApp extends HappElement {
                     this.networkCaller?.setCellAddr(this.integerDvm.cell.address)
                     if (!this.networkCaller?.isLooping()) {
                         console.log("Start loop");
-                        this.networkCaller?.addCallback((info: NetworkMetrics) => {
-                            console.log(`myNetworkCallerCallback: ${JSON.stringify(info)}`);
+                        this.networkCaller?.addCallback((resp: NetworkInfoResponse) => {
+                            console.log(`myNetworkCallerCallback: ${JSON.stringify(resp)}`);
                             throw new Error("Stop loop intentionally");
                         })
                         await this.networkCaller?.startCallLoop(100);
