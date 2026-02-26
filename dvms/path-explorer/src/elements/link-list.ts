@@ -41,7 +41,7 @@ export class LinkList extends ZomeElement<unknown, PathExplorerZvm> {
       return;
     }
     const baseHash = decodeHashFromBase64(this.base);
-    this._itemLinks = await this._zvm.zomeProxy.getAllItemsFromNetwork(baseHash);
+    this._itemLinks = await this._zvm.zomeProxy.getAllItemsFromLocal(baseHash);
   }
 
 
@@ -123,7 +123,7 @@ export class LinkList extends ZomeElement<unknown, PathExplorerZvm> {
 
 
     /** Grab Link Info */
-    const linkInfo = await this._zvm.zomeProxy.inspectLink({lh: decodeHashFromBase64(toggledTreeItem.id), strategy: GetStrategy.Network});
+    const linkInfo = await this._zvm.zomeProxy.inspectLink({lh: decodeHashFromBase64(toggledTreeItem.id), strategy: GetStrategy.Local}); // FIXME GetStrategy
     console.log("toggleTreeItem() linkInfo", linkInfo);
 
     var newItem = document.createElement("ui5-tree-item") as TreeItem;

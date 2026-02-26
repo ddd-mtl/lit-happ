@@ -104,12 +104,12 @@ export class SharedOwnershipProxy extends ZomeProxy {
     return this.call('probe_shareds', strategy);
   }
 
-  async probeOwnersNetwork(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
-    return this.call('probe_owners_network', sharedAh);
+  async probeOwnersFromNetwork(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
+    return this.call('probe_owners_from_network', sharedAh);
   }
 
-  async probeOwnersLocal(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
-    return this.call('probe_owners_local', sharedAh);
+  async probeOwnersFromLocal(sharedAh: ActionArray): Promise<[AgentArray, ActionArray][]> {
+    return this.call('probe_owners_from_local', sharedAh);
   }
 
   async createSharedKey(): Promise<ActionArray> {

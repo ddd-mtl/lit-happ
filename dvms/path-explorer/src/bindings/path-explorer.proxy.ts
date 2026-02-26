@@ -132,12 +132,12 @@ export class PathExplorerProxy extends ZomeProxy {
     return this.call('get_data_type', input);
   }
 
-  async getAllItemsFromAnchorLocal(leafAnchor: string): Promise<ItemLink[]> {
-    return this.call('get_all_items_from_anchor_local', leafAnchor);
+  async getAllItemsFromAnchorFromLocal(leafAnchor: string): Promise<ItemLink[]> {
+    return this.call('get_all_items_from_anchor_from_local', leafAnchor);
   }
 
-  async getAllItemsFromAnchorNetwork(leafAnchor: string): Promise<ItemLink[]> {
-    return this.call('get_all_items_from_anchor_network', leafAnchor);
+  async getAllItemsFromAnchorFromNetwork(leafAnchor: string): Promise<ItemLink[]> {
+    return this.call('get_all_items_from_anchor_from_network', leafAnchor);
   }
 
   async getAllItemsFromLocal(hash: AnyLinkableArray): Promise<ItemLink[]> {
@@ -164,12 +164,12 @@ export class PathExplorerProxy extends ZomeProxy {
     return this.call('get_items', input);
   }
 
-  async getLeafsLocal(ta: TypedAnchor): Promise<TypedAnchor[]> {
-    return this.call('get_leafs_local', ta);
+  async getLeafsFromLocal(ta: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_leafs_from_local', ta);
   }
 
-  async getLeafsNetwork(ta: TypedAnchor): Promise<TypedAnchor[]> {
-    return this.call('get_leafs_network', ta);
+  async getLeafsFromNetwork(ta: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_leafs_from_network', ta);
   }
 
   async getTypedAnchorNetwork(anchor: string): Promise<[EntryHashB64, TypedAnchor | null]> {
@@ -180,12 +180,12 @@ export class PathExplorerProxy extends ZomeProxy {
     return this.call('get_typed_anchor_local', anchor);
   }
 
-  async getTypedChildrenLocal(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
-    return this.call('get_typed_children_local', parentTa);
+  async getTypedChildrenFromLocal(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_typed_children_from_local', parentTa);
   }
 
-  async getTypedChildrenNetwork(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
-    return this.call('get_typed_children_network', parentTa);
+  async getTypedChildrenFromNetwork(parentTa: TypedAnchor): Promise<TypedAnchor[]> {
+    return this.call('get_typed_children_from_network', parentTa);
   }
 
   async inspectLink(input: GetLhInput): Promise<HashInfo> {
