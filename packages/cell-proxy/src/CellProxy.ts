@@ -71,8 +71,8 @@ export class CellProxy extends CellMixin(Empty) {
     super();
     this._cell = cell;
     console.log(`CellProxy.ctor`, cell);
-    this.defaultTimeout = defaultTimeout ? defaultTimeout : 10 * 1000;
-    this._callMutex = withTimeout(new Mutex(), this.defaultTimeout);
+    this.defaultTimeoutMs = defaultTimeout ? defaultTimeout : 10 * 1000;
+    this._callMutex = withTimeout(new Mutex(), this.defaultTimeoutMs);
 
     ///*const _unsub =*/ this.addSignalHandler((sig) => this.blockSelfCall(sig));
     /*const _unsub =*/ this.addSignalHandler((sig) => this.blockUntilPostCommit(sig));
@@ -80,7 +80,7 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** -- Fields -- */
 
-  defaultTimeout: number;
+  defaultTimeoutMs: number;
   protected _callMutex: MutexInterface;
 
   /** append only logs */
@@ -253,7 +253,7 @@ export class CellProxy extends CellMixin(Empty) {
    */
   async callZomeBlockPostCommit(entryType: string, zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     /** Create RequestLog */
-    timeout = timeout? timeout : this.defaultTimeout;
+    timeout = timeout? timeout : this.defaultTimeoutMs;
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
@@ -283,7 +283,7 @@ export class CellProxy extends CellMixin(Empty) {
    */
   async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     /** Create RequestLog */
-    timeout = timeout? timeout : this.defaultTimeout;
+    timeout = timeout? timeout : this.defaultTimeoutMs;
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
@@ -316,15 +316,15 @@ export class CellProxy extends CellMixin(Empty) {
 
 
   /** On success returns the data returned by the zome function */
-  async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
+  async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeoutMs?: number): Promise<unknown> {
     /** Create RequestLog */
-    timeout = timeout? timeout : this.defaultTimeout;
+    timeoutMs = timeoutMs? timeoutMs : this.defaultTimeoutMs;
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
+    const log = { request: req, timeout: timeoutMs, requestTimestamp: Date.now() } as RequestLog;
     /** Wait for lock */
     try {
       await this._callMutex.waitForUnlock();

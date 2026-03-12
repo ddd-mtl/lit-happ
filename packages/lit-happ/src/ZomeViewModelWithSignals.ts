@@ -144,7 +144,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     if (!this.isMainView) {
       return;
     }
-    console.debug(`synchronizeValueTip() Sending to`, recipient, zomeName);
+      console.debug(`synchronizeValueTip() Sending to ${recipient.b64} for zome ${zomeName}`);
     const tip: TipProtocol = {AppValue: [key, value]};
     this.zomeProxy.call('synchronize_tip', {tip, recipient: recipient.hash, zomeName} as SynchronizeTipInput)
         .then((response) => this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response}))
@@ -158,7 +158,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
     if (!this.isMainView) {
       return;
     }
-    console.debug(`synchronizeCustomTip() Sending to`, recipient, zomeName);
+    console.debug(`synchronizeCustomTip() Sending to ${recipient.b64} for zome ${zomeName}`);
     const tip: TipProtocol = {AppCustom: appTip};
     this.zomeProxy.call('synchronize_tip', {tip,  recipient: recipient.hash, zomeName} as SynchronizeTipInput)
       .then((response) => this._castLogs.push({ts: Date.now(), tip, peers: [recipient], response}))
@@ -167,26 +167,25 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** Cast Tip to all known livePeers */
-  broadcastTip(tip: TipProtocol, agents?: Array<AgentId>): void {
+  broadcastTip(tip: TipProtocol, agents?: Array<AgentId>, timeoutMs?: number): void {
     /** Only MainView can cast tips */
     if (!this.isMainView) {
       return;
     }
-    agents = agents? agents : this._dvmParent.livePeers;
+    agents = agents ?? this._dvmParent.livePeers;
     /** Skip if no recipients or sending to self only */
     const filtered = agents.filter((key) => key.b64 != this.cell.address.agentId.b64);
-    const tipType = Object.keys(tip)[0];
-    console.debug(`broadcastTip() Sending Tip "${tipType}" to`, filtered, this.cell.address.agentId.short);
     //if (!agents || agents.length == 1 && agents[0] === this._cellProxy.cell.agentPubKey) {
     if (!filtered || filtered.length == 0) {
       console.debug("broadcastTip() aborted: No recipients")
       return;
     }
     /** Broadcast */
+    console.debug(`broadcastTip() ${this.cell.address.agentId.short} sending Tip "${Object.keys(tip)[0]}" to agents ${filtered}`);
     const peers = agents.map((key) => key.hash);
-    this.zomeProxy.call('cast_tip', {tip, peers})
+    this.zomeProxy.call('cast_tip', {tip, peers}, undefined, timeoutMs ?? 10 * 1000)
         .then(() => this._castLogs.push({ts: Date.now(), tip, peers: agents, response: undefined}))
-        .catch((e) => {console.warn("zome call to cast_tip() failed: ", e)})
+        .catch((e) => {console.warn("broadcastTip() zome call to cast_tip() failed: ", e)})
   }
 
 
