@@ -87,10 +87,11 @@ export class CellProxy extends CellMixin(Empty) {
   private _requestLog: RequestLog[] = []
   private _responseLog: ResponseLog[] = []
 
-  /** Throttle: Don't allow exact same call within 100ms */
-  private _reqThrottle = new TimeMap(100, 10);
-  private _canThrottle: boolean = true;
-  setCanThrottle(can: boolean) {this._canThrottle = can};
+  /** Throttle: Don't allow the exact same call within 200ms or if the first identical call hasn't returned yet */
+  private _reqLive = new Set<string>();
+  private _reqThrottle = new TimeMap(200, 10);
+  private _canThrottleSpam: boolean = true;
+  setCanThrottleSpam(can: boolean) {this._canThrottleSpam = can};
 
   /** Cache */
   private _entryDefCache: MyDictionary<MyDictionary<EntryDef>> = {};
@@ -207,28 +208,41 @@ export class CellProxy extends CellMixin(Empty) {
     //console.log("executeZomeCall()", reqLog.request.zome_name, reqLog.request.fn_name);
     reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
-    /** Throttle */
-    if (this._canThrottle) {
-      const reqHash = await sha256(JSON.stringify(reqLog.request));
+    /** Check if the same call is already in progress */
+    const reqHash = await sha256(JSON.stringify(reqLog.request));
+    if (this._reqLive.has(reqHash)) {
+      console.warn(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
+      return {
+        requestIndex,
+        timestamp: reqLog.executionTimestamp,
+        failure: "Throttled: " + reqLog.request.fn_name + "()",
+        throttled: true
+      };
+    }
+    /** Throttle Spam */
+    if (this._canThrottleSpam) {
       if (this._reqThrottle.has(reqHash)) {
-        console.warn(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
+        console.warn(`THROTTLING SPAM ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
         return {
           requestIndex,
           timestamp: reqLog.executionTimestamp,
-          failure: "Throttled: " + reqLog.request.fn_name + "()",
+          failure: "Throttled spam: " + reqLog.request.fn_name + "()",
           throttled: true
         };
       }
       this._reqThrottle.add(reqHash);
     }
     /** */
+    this._reqLive.add(reqHash);
     this._requestLog.push(reqLog);
     try {
       const response = await this._appProxy.callZome(reqLog.request, reqLog.timeout);
+      this._reqLive.delete(reqHash);
       const respLog = { requestIndex, success: response, timestamp: Date.now() };
       this._responseLog.push(respLog);
       return respLog;
     } catch (e) {
+      this._reqLive.delete(reqHash);
       const respLog = { requestIndex, failure: e, timestamp: Date.now() }
       this._responseLog.push(respLog);
       return respLog;
@@ -236,8 +250,8 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
 
-  /** Pass call request to conductor proxy and log it */
-  logCallTimedout(reqLog: RequestLog): ResponseLog {
+  /** Pass the call request to conductor proxy and log it */
+  logCallTimedOut(reqLog: RequestLog): ResponseLog {
     reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
     this._requestLog.push(reqLog);
@@ -267,7 +281,7 @@ export class CellProxy extends CellMixin(Empty) {
       this._postCommitReleaseEntryType = entryType;
     } catch(e) {
       console.warn("Waiting for callZomeBlockPostCommit mutex timed-out", e);
-      this.logCallTimedout(log)
+      this.logCallTimedOut(log)
       return Promise.reject("Waiting for callZomeBlockPostCommit mutex timed-out");
     }
     console.debug("postCommit Lock ACQUIRED");
@@ -297,7 +311,7 @@ export class CellProxy extends CellMixin(Empty) {
       release = await this._callMutex.acquire();
     } catch(e) {
       console.warn("Waiting for callZomeBlocking mutex timed-out", e);
-      this.logCallTimedout(log)
+      this.logCallTimedOut(log)
       return Promise.reject("Waiting for callZomeBlocking mutex timed-out");
     }
     /** Execute */
@@ -330,7 +344,7 @@ export class CellProxy extends CellMixin(Empty) {
       await this._callMutex.waitForUnlock();
     } catch(e) {
       console.warn("Waiting for callZome mutex timed-out", e);
-      this.logCallTimedout(log);
+      this.logCallTimedOut(log);
       return Promise.reject("Waiting for callZome mutex timed-out");
     }
     /** Execute & return response */
