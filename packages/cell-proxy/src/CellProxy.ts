@@ -90,8 +90,8 @@ export class CellProxy extends CellMixin(Empty) {
   /** Throttle: Don't allow the exact same call within 200ms or if the first identical call hasn't returned yet */
   private _reqLive = new Set<string>();
   private _reqThrottle = new TimeMap(200, 10);
-  private _canThrottleSpam: boolean = true;
-  setCanThrottleSpam(can: boolean) {this._canThrottleSpam = can};
+  private _canThrottle: boolean = true;
+  setCanThrottle(can: boolean) {this._canThrottle = can};
 
   /** Cache */
   private _entryDefCache: MyDictionary<MyDictionary<EntryDef>> = {};
@@ -203,31 +203,22 @@ export class CellProxy extends CellMixin(Empty) {
   }
 
 
-  /** Pass call request to conductor proxy and log it */
+  /** Pass the call request to the conductor proxy and log it */
   private async executeZomeCall(reqLog: RequestLog): Promise<ResponseLog> {
     //console.log("executeZomeCall()", reqLog.request.zome_name, reqLog.request.fn_name);
     reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
-    /** Check if the same call is already in progress */
+    /** Throttle */
     const reqHash = await sha256(JSON.stringify(reqLog.request));
-    if (this._reqLive.has(reqHash)) {
-      console.warn(`THROTTLING ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
-      return {
-        requestIndex,
-        timestamp: reqLog.executionTimestamp,
-        failure: "Throttled: " + reqLog.request.fn_name + "()",
-        throttled: true
-      };
-    }
-    /** Throttle Spam */
-    if (this._canThrottleSpam) {
-      if (this._reqThrottle.has(reqHash)) {
-        console.warn(`THROTTLING SPAM ${reqLog.request.zome_name}::${reqLog.request.fn_name}()`, reqLog.executionTimestamp);
+    if (this._canThrottle) {
+      const isSpam = this._reqThrottle.has(reqHash);
+      if (isSpam && this._reqLive.has(reqHash)) {
+        console.warn(`THROTTLING ${isSpam? "SPAM" : "LIVE"} ${reqLog.request.zome_name}::${reqLog.request.fn_name}() ${reqLog.executionTimestamp}`);
         return {
           requestIndex,
           timestamp: reqLog.executionTimestamp,
           failure: "Throttled spam: " + reqLog.request.fn_name + "()",
-          throttled: true
+          throttled: true,
         };
       }
       this._reqThrottle.add(reqHash);
