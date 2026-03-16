@@ -188,7 +188,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
       return;
     }
     /** Broadcast */
-    console.debug(`broadcastTip() ${this.cell.address.agentId.short} sending Tip "${Object.keys(tip)[0]}" to agents ${filtered}`);
+    console.debug(`broadcastTip() ${this.cell.address.agentId.short} sending Tip "${Object.keys(tip)[0]}" to agents ${filtered.map((key) => key.b64)}`);
     const peers = agents.map((key) => key.hash);
     this.zomeProxy.call('cast_tip', {tip, peers}, undefined, timeoutMs ?? 10 * 1000)
         .then(() => this._castLogs.push({ts: Date.now(), tip, peers: agents, response: undefined}))
