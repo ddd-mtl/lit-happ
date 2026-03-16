@@ -25,7 +25,7 @@ import {
   ZomeSignalProtocolVariantLink,
   TipProtocolType,
   intoAnyId,
-  ValidatedBy, SynchronizeTipInput, TipProtocolVariantAppValue, TipProtocolVariantAppCustom,
+  ValidatedBy, SynchronizeTipInput, TipProtocolVariantAppValue, TipProtocolVariantAppCustom, sha256,
 } from "@ddd-qc/cell-proxy";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {decode} from "@msgpack/msgpack";
@@ -78,10 +78,17 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
+  private _knownPulses: Set<string> = new Set();
   private async handleSignal(signal: ZomeSignal): Promise<void> {
     const from = new AgentId(signal.from);
     let all = [];
     for (let pulse of signal.pulses) {
+      /** Skip duplicate pulse */
+      const pulseHash = await sha256(JSON.stringify(pulse));
+      if (this._knownPulses.has(pulseHash)) {
+        continue;
+      }
+      this._knownPulses.add(pulseHash);
       /** -- Handle Signal according to type -- */
       /** Change tip to Entry or Link signal */
       if (ZomeSignalProtocolType.Tip in pulse) {
@@ -93,7 +100,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
       if (ZomeSignalProtocolType.Entry in pulse) {
         const entryPulseMat = materializeEntryPulse(pulse.Entry as EntryPulse, (this.constructor as typeof ZomeViewModel).ENTRY_TYPES);
         all.push(this.handleEntryPulse(entryPulseMat, from));
-        /** If new entry from this agent, broadcast to peers as tip */
+        /** If the new entry is from this agent, broadcast to peers as a tip */
           if (entryPulseMat.isNew && this.cell.address.agentId.equals(from) && entryPulseMat.visibility == "Public") {
             this.broadcastTip({Entry: pulse.Entry as EntryPulse});
           }
@@ -102,7 +109,7 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
       if (ZomeSignalProtocolType.Link in pulse) {
         const linkPulseMat = materializeLinkPulse(pulse.Link as LinkPulse, (this.constructor as typeof ZomeViewModel).LINK_TYPES);
         all.push(this.handleLinkPulse(linkPulseMat, from));
-        /** If new Link from this agent, broadcast to peers as tip */
+        /** If the new Link is from this agent, broadcast to peers as a tip */
         if (linkPulseMat.isNew && this.cell.address.agentId.equals(from)) {
           this.broadcastTip({Link: pulse.Link as LinkPulse});
         }

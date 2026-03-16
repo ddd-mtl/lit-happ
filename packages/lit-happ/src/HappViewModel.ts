@@ -251,7 +251,7 @@ export class HappViewModel {
   }
 
 
-  /** Can't parallelize calls since happ can have multiple roles with same dnas which can throttle entry_def calls */
+  /** Can't parallelize calls since happ can have multiple roles with the same dnas which can throttle entry_def calls */
   async initializePerspectiveFromLocal(): Promise<void> {
     for (const dvm of Object.values(this._dvmMap)) {
       await dvm.initializePerspectiveFromLocal();

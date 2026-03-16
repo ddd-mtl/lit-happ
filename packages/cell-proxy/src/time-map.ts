@@ -37,7 +37,7 @@ export class TimeMap<N extends number, V> {
     this._map.set(bucket, sett);
   }
 
-
+  /** Already has value if it's found in the current or previous time bucket */
   has(value: V): boolean {
     const bucket = this.getNowKey();
     const maybe = this._map.get(bucket);

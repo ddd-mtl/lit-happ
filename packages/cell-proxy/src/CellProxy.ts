@@ -212,8 +212,8 @@ export class CellProxy extends CellMixin(Empty) {
     const reqHash = await sha256(JSON.stringify(reqLog.request));
     if (this._canThrottle) {
       const isSpam = this._reqThrottle.has(reqHash);
-      if (isSpam && this._reqLive.has(reqHash)) {
-        console.warn(`THROTTLING ${isSpam? "SPAM" : "LIVE"} ${reqLog.request.zome_name}::${reqLog.request.fn_name}() ${reqLog.executionTimestamp}`);
+      if (isSpam || this._reqLive.has(reqHash)) {
+        console.warn(`THROTTLING ${isSpam? "SPAM" : "LIVE"} ${reqLog.request.zome_name}::${reqLog.request.fn_name}() ${prettyDate(new Date(reqLog.executionTimestamp))}`);
         return {
           requestIndex,
           timestamp: reqLog.executionTimestamp,
