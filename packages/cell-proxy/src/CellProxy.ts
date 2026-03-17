@@ -247,6 +247,7 @@ export class CellProxy extends CellMixin(Empty) {
   /** Pass the call request to conductor proxy and log it */
   logCallTimedOut(reqLog: RequestLog): ResponseLog {
     const requestIndex = this._requestLog.length;
+    reqLog.executionTimestamp = -1;
     this._requestLog.push(reqLog);
     const respLog = { requestIndex, failure: "Waiting for Mutex timed-out", timestamp: Date.now() }
     this._responseLog.push(respLog);
@@ -451,7 +452,7 @@ export class CellProxy extends CellMixin(Empty) {
     let requestTable = [];
     for (const request of this._requestLog) {
       const waitTime = prettyDuration(new Date(request.executionTimestamp - request.requestTimestamp));
-      const log =  { timestamp: prettyDate(new Date(request.executionTimestamp)), reqHash: request.reqHash.slice(0,8), fn: request.request.fn_name, timeout: request.timeout, waitTime }
+      const log =  { timestamp: prettyDate(new Date(request.executionTimestamp)), reqHash: request.reqHash.slice(0,12), fn: request.request.fn_name, timeout: request.timeout, waitTime }
         requestTable.push(log);
     }
     console.warn(`Dumping call request logs for cell "${this._appProxy.getLocations(this.cell.address)}" for zome "${zomeName}"`)
@@ -481,8 +482,8 @@ export class CellProxy extends CellMixin(Empty) {
       //const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName
-        ? { reqIndex: response.requestIndex, startTime, reqHash: requestLog.reqHash.slice(0, 8), fnName: requestLog.request.fn_name, input, output, duration, waitTime }
-        : { reqIndex: response.requestIndex, startTime, reqHash: requestLog.reqHash.slice(0, 8), zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        ? { reqIndex: response.requestIndex, reqHash: requestLog.reqHash.slice(0, 12), startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        : { reqIndex: response.requestIndex, reqHash: requestLog.reqHash.slice(0, 12), startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
       let maybe_value = call_map.get(requestLog.request.fn_name);
       if (!maybe_value) {
