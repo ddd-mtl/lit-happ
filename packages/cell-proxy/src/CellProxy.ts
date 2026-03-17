@@ -37,6 +37,7 @@ import {
 
 export interface RequestLog {
   request: CallZomeRequest,
+  reqHash: string,
   timeout: number,
   requestTimestamp: number,
   executionTimestamp: number,
@@ -208,11 +209,12 @@ export class CellProxy extends CellMixin(Empty) {
     //console.log("executeZomeCall()", reqLog.request.zome_name, reqLog.request.fn_name);
     reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
+    this._requestLog.push(reqLog);
     /** Throttle */
-    const reqHash = await sha256(JSON.stringify(reqLog.request));
+    let respLog: ResponseLog | undefined = undefined;
     if (this._canThrottle) {
-      const isSpam = this._reqThrottle.has(reqHash);
-      if (isSpam || this._reqLive.has(reqHash)) {
+      const isSpam = this._reqThrottle.has(reqLog.reqHash);
+      if (isSpam || this._reqLive.has(reqLog.reqHash)) {
         console.warn(`THROTTLING ${isSpam? "SPAM" : "LIVE"} ${reqLog.request.zome_name}::${reqLog.request.fn_name}() ${prettyDate(new Date(reqLog.executionTimestamp))}`);
         return {
           requestIndex,
@@ -221,29 +223,29 @@ export class CellProxy extends CellMixin(Empty) {
           throttled: true,
         };
       }
-      this._reqThrottle.add(reqHash);
+      this._reqThrottle.add(reqLog.reqHash);
     }
     /** */
-    this._reqLive.add(reqHash);
-    this._requestLog.push(reqLog);
+    this._reqLive.add(reqLog.reqHash);
     try {
       const response = await this._appProxy.callZome(reqLog.request, reqLog.timeout);
-      this._reqLive.delete(reqHash);
-      const respLog = { requestIndex, success: response, timestamp: Date.now() };
-      this._responseLog.push(respLog);
-      return respLog;
+      this._reqLive.delete(reqLog.reqHash);
+      respLog = { requestIndex, success: response, timestamp: Date.now() };
     } catch (e) {
-      this._reqLive.delete(reqHash);
-      const respLog = { requestIndex, failure: e, timestamp: Date.now() }
+      this._reqLive.delete(reqLog.reqHash);
+      respLog = {requestIndex, failure: e, timestamp: Date.now()}
+    } finally {
+      if (!respLog) {
+        respLog = {requestIndex, failure: "No response", timestamp: Date.now()}
+      }
       this._responseLog.push(respLog);
-      return respLog;
     }
-  }
+    return respLog;
+}
 
 
   /** Pass the call request to conductor proxy and log it */
   logCallTimedOut(reqLog: RequestLog): ResponseLog {
-    reqLog.executionTimestamp = Date.now();
     const requestIndex = this._requestLog.length;
     this._requestLog.push(reqLog);
     const respLog = { requestIndex, failure: "Waiting for Mutex timed-out", timestamp: Date.now() }
@@ -254,17 +256,19 @@ export class CellProxy extends CellMixin(Empty) {
 
   /**
    * callZome() with Mutex (for calls that writes to source-chain)
+   * Waits for the postCommit lock to be released.
    * TODO: Implement call queue instead of mutex?
    */
   async callZomeBlockPostCommit(entryType: string, zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     /** Create RequestLog */
-    timeout = timeout? timeout : this.defaultTimeoutMs;
+    timeout = timeout ?? this.defaultTimeoutMs;
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
+    const reqHash = await sha256(JSON.stringify(req));
+    const log: RequestLog = { request: req, reqHash, timeout, requestTimestamp: Date.now(), executionTimestamp: 0 };
     /** Acquire lock */
     console.debug("postCommit Lock in progress...");
     try {
@@ -288,14 +292,14 @@ export class CellProxy extends CellMixin(Empty) {
    */
   async callZomeBlocking(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeout?: number): Promise<unknown> {
     /** Create RequestLog */
-    timeout = timeout? timeout : this.defaultTimeoutMs;
+    timeout = timeout ?? this.defaultTimeoutMs;
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const log = { request: req, timeout, requestTimestamp: Date.now() } as RequestLog;
-
+    const reqHash = await sha256(JSON.stringify(req));
+    const log: RequestLog = { request: req, reqHash, timeout, requestTimestamp: Date.now(), executionTimestamp: 0 };
     /** Acquire lock */
     let release;
     try {
@@ -323,13 +327,14 @@ export class CellProxy extends CellMixin(Empty) {
   /** On success returns the data returned by the zome function */
   async callZome(zome_name: ZomeName, fn_name: string, payload: any, cap_secret: CapSecret | null, timeoutMs?: number): Promise<unknown> {
     /** Create RequestLog */
-    timeoutMs = timeoutMs? timeoutMs : this.defaultTimeoutMs;
+    timeoutMs = timeoutMs ?? this.defaultTimeoutMs;
     const req = {
       cap_secret, zome_name, fn_name, payload,
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const log = { request: req, timeout: timeoutMs, requestTimestamp: Date.now() } as RequestLog;
+    const reqHash = await sha256(JSON.stringify(req));
+    const log: RequestLog = { request: req, reqHash, timeout: timeoutMs, requestTimestamp: Date.now(), executionTimestamp: 0 };
     /** Wait for lock */
     try {
       await this._callMutex.waitForUnlock();
@@ -364,7 +369,7 @@ export class CellProxy extends CellMixin(Empty) {
     /** Call zome */
     let entryDefs;
     try {
-      /* Need big timeout since Holochain is slow when receiving simultaneous calls from multiple happs */
+      /* Need a big timeout since Holochain is slow when receiving simultaneous calls from multiple happs */
       entryDefs = await this.callZome(zomeName, "entry_defs", null, null, 60 * 1000) as EntryDefsCallbackResult;
     } catch (e: any) {
       if (e && e.failure && e.failure.message && e.failure.message.includes("Attempted to call a zome function that doesn't exist")) {
@@ -440,9 +445,18 @@ export class CellProxy extends CellMixin(Empty) {
   //   }
   // }
 
-
   /**  */
   dumpCallLogs(zomeName?: ZomeName) {
+    /** Print requests as Table */
+    let requestTable = [];
+    for (const request of this._requestLog) {
+      const waitTime = prettyDuration(new Date(request.executionTimestamp - request.requestTimestamp));
+      const log =  { timestamp: prettyDate(new Date(request.executionTimestamp)), reqHash: request.reqHash.slice(0,8), fn: request.request.fn_name, timeout: request.timeout, waitTime }
+        requestTable.push(log);
+    }
+    console.warn(`Dumping call request logs for cell "${this._appProxy.getLocations(this.cell.address)}" for zome "${zomeName}"`)
+    console.table(requestTable)
+    /** Print response logs as Table */
     let result = [];
     let call_map = new Map<string, [number, number]>(); // fn_fname, call_count, call_total_duration;
     for (const response of this._responseLog) {
@@ -450,7 +464,7 @@ export class CellProxy extends CellMixin(Empty) {
       if (!requestLog || (zomeName && requestLog.request.zome_name != zomeName)) {
         continue;
       }
-      const startTime= prettyDate(new Date(requestLog.requestTimestamp));
+      const startTime = prettyDate(new Date(requestLog.requestTimestamp));
       const waitTime = prettyDuration(new Date(requestLog.executionTimestamp - requestLog.requestTimestamp));
       const duration_ts = response.timestamp - requestLog.requestTimestamp;
       const duration = prettyDuration(new Date(duration_ts));
@@ -467,8 +481,8 @@ export class CellProxy extends CellMixin(Empty) {
       //const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName
-        ? { startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
-        : { startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        ? { reqIndex: response.requestIndex, startTime, reqHash: requestLog.reqHash.slice(0, 8), fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        : { reqIndex: response.requestIndex, startTime, reqHash: requestLog.reqHash.slice(0, 8), zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
       let maybe_value = call_map.get(requestLog.request.fn_name);
       if (!maybe_value) {
@@ -477,10 +491,7 @@ export class CellProxy extends CellMixin(Empty) {
         call_map.set(requestLog.request.fn_name, [maybe_value[0] + 1, maybe_value[1] + duration_ts]);
       }
     }
-    console.warn(`Dumping call logs for cell "${this._appProxy.getLocations(this.cell.address)}"`)
-    if (zomeName) {
-      console.warn(` - For zome "${zomeName}"`);
-    }
+    console.warn(`Dumping call response logs for cell "${this._appProxy.getLocations(this.cell.address)}"  for zome "${zomeName}"`)
     console.table(result)
 
     /** Print call_map as Table */
@@ -490,6 +501,7 @@ export class CellProxy extends CellMixin(Empty) {
       summary.push(log);
     }
     summary.sort((a, b) => b.count - a.count);
+    console.warn(`Dumping call map for cell "${this._appProxy.getLocations(this.cell.address)}" for zome "${zomeName}"`)
     console.table(summary);
 
     /** Parse signal self-call logs */
