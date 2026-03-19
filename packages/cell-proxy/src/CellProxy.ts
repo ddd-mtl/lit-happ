@@ -102,7 +102,7 @@ export class CellProxy extends CellMixin(Empty) {
 
   /** -- Methods -- */
 
-  getHappShareCode(): string | null { return this._appProxy.getHappShareCode(this.cell.baseRoleName)}
+  getHappShareCode(customName?: string): string | null { return this._appProxy.getHappShareCode(this.cell.baseRoleName, customName)}
 
 
   /** Have a PostCommitEntry attestation release the Mutex */

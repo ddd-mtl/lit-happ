@@ -119,7 +119,7 @@ export class HappViewModel {
 
   get happSha256(): string | null {return this._appProxy.happSha256}
 
-  getHappShareCode(role?: RoleName): string | null {return this._appProxy.getHappShareCode(role)}
+  getHappShareCode(role?: RoleName, customName?: string): string | null {return this._appProxy.getHappShareCode(role, customName)}
 
 
   async authorizeAllZomeCalls(adminWs?: AdminWebsocket): Promise<void> {

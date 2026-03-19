@@ -8,7 +8,7 @@ import {
 import { NamedIntegerDvm } from "./viewModels/integer";
 import { NamedRealDvm } from "./viewModels/real";
 import {Profile, ProfilesAltDvm, ProfilesDvm} from "@ddd-qc/profiles-dvm";
-import {HcConnectionOptions, testHoloId} from "@ddd-qc/cell-proxy"
+import {decodeHappJoinInfo, HcConnectionOptions, testHoloId} from "@ddd-qc/cell-proxy"
 import {
   AdminWebsocket,
   AppWebsocket, InstalledAppId, ZomeName,
@@ -356,7 +356,10 @@ export class PlaygroundApp extends HappElement {
                     }}
             ></profiles-edit-profile>
         </cell-context>
-        <div style="margin-top:20px; padding-bottom:30px;">HappShareCode: <span>${JSON.stringify(this.hvm.getHappShareCode())}</span></div>
+        <div style="margin-top:20px; padding-bottom:30px;">
+            <span>HappShareCode:</span> <span>${decodeHappJoinInfo(this.hvm.getHappShareCode(undefined, "test-app")!).customName}</span>
+            <span>${this.hvm.getHappShareCode(undefined, "test-app")}</span>
+        </div>
     `
   }
 

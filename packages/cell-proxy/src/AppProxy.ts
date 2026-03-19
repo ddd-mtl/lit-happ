@@ -32,7 +32,7 @@ import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
 import {Signal} from "@holochain/client/lib/api/app/types";
 import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
-import {encodeHappJoinCode} from "./happJoinCode";
+import {encodeHappJoinInfo} from "./happJoinInfo";
 import {RoleName} from "@holochain/client/lib/types";
 
 
@@ -237,12 +237,12 @@ export class AppProxy implements AppClient {
 
   /** -- Methods -- */
 
-   getHappShareCode(role?: RoleName): string | null {
+  getHappShareCode(role?: RoleName, customName?: string): string | null {
       /** Must have _happSha256 */
        if (!this._happSha256) {
            return null;
        }
-      /** Must have specified role or at least one cell */
+      /** Must have a specified role or at least one cell */
       let networkSeed: string = "";
       if (role) {
           try {
@@ -263,7 +263,7 @@ export class AppProxy implements AppClient {
           networkSeed = cells[0]!.provisioned.dna_modifiers.network_seed;
       }
       /** encode */
-      return encodeHappJoinCode(this._happSha256, this.installedAppId, networkSeed);
+      return encodeHappJoinInfo(this._happSha256, this.installedAppId, networkSeed, [], customName);
    }
 
 

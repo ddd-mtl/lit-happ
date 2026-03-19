@@ -4,7 +4,7 @@ export * from "./CellProxy";
 export * from "./ConductorAppProxy";
 export * from "./dnaJoiningInfo";
 export * from "./ExternalAppProxy";
-export * from "./happJoinCode";
+export * from "./happJoinInfo";
 export * from "./ZomeProxy";
 export * from "./utils";
 export * from "./ringBuffer";
