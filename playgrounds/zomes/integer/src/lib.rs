@@ -39,6 +39,8 @@ fn create_integer(value: u32) -> ExternResult<ActionHash> {
 
   let tip = TipProtocol::AppValue(("msg".to_string(), "I like integers".to_string()));
   debug!("emit_zome_signal() {:?}", tip);
+  emit_zome_signal(vec![ZomeSignalProtocol::Tip(tip.clone())])?;
+  // twice for testing pulse throttling
   emit_zome_signal(vec![ZomeSignalProtocol::Tip(tip)])?;
   Ok(ah)
 }

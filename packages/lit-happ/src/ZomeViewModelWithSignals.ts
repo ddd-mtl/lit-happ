@@ -25,7 +25,8 @@ import {
   ZomeSignalProtocolVariantLink,
   TipProtocolType,
   intoAnyId,
-  ValidatedBy, SynchronizeTipInput, TipProtocolVariantAppValue, TipProtocolVariantAppCustom, sha256,
+  ValidatedBy, SynchronizeTipInput, TipProtocolVariantAppValue, TipProtocolVariantAppCustom,
+  h64,
 } from "@ddd-qc/cell-proxy";
 import {ZomeViewModel} from "./ZomeViewModel";
 import {decode} from "@msgpack/msgpack";
@@ -78,14 +79,15 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
 
 
   /** */
-  private _knownPulses: Set<string> = new Set();
+  private _knownPulses: Set<BigInt> = new Set();
   private async handleSignal(signal: ZomeSignal): Promise<void> {
     const from = new AgentId(signal.from);
     let all = [];
     for (let pulse of signal.pulses) {
       /** Skip duplicate pulse */
-      const pulseHash = await sha256(JSON.stringify(pulse));
+      const pulseHash = h64(JSON.stringify(pulse));
       if (this._knownPulses.has(pulseHash)) {
+        console.debug("handleSignal() Skipping duplicate pulse", pulseHash);
         continue;
       }
       this._knownPulses.add(pulseHash);

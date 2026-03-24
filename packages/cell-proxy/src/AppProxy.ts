@@ -232,8 +232,7 @@ export class AppProxy implements AppClient {
   }
 
     get happSha256(): string | null {return this._happSha256}
-    setHappSha256(sha256: string): void {this._happSha256 = sha256;
-  }
+    setHappSha256(sha256: string): void {this._happSha256 = sha256;}
 
   /** -- Methods -- */
 

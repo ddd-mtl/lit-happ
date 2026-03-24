@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/cell-proxy",
-  "version": "0.34.7",
+  "version": "0.34.9",
   "description": "Proxy classes and helpers for managing a Holochain AppWebsocket",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -30,6 +30,7 @@
   "dependencies": {
     "@holochain/client": "=0.20.4-rc.0",
     "@bitgo/blake2b": "^3.2.4",
+    "xxhash-wasm": "^1.1.0",
     "libsodium-wrappers-sumo": "^0.8",
     "js-base64": "^3.7.5",
     "@msgpack/msgpack": "^3.1.1",

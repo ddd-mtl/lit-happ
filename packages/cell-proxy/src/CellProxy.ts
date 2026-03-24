@@ -26,7 +26,7 @@ import {
 } from "./AppProxy";
 import {prettyDate, prettyDuration} from "./pretty";
 import {anyToB64, intoAnyId} from "./hash";
-import {MyDictionary, sha256} from "./utils";
+import {MyDictionary} from "./utils";
 import {TimeMap} from "./time-map";
 import {
   SystemAttestationVariantPostCommitEntry,
@@ -34,10 +34,14 @@ import {
   SystemAttestationVariantSelfCallStart
 } from "./zomeSignals.types";
 
+import xxhash from "xxhash-wasm";
+
+const { h64 } = await xxhash();
+export { h64 };
 
 export interface RequestLog {
   request: CallZomeRequest,
-  reqHash: string,
+  reqHash: BigInt,
   timeout: number,
   requestTimestamp: number,
   executionTimestamp: number,
@@ -89,7 +93,7 @@ export class CellProxy extends CellMixin(Empty) {
   private _responseLog: ResponseLog[] = []
 
   /** Throttle: Don't allow the exact same call within 200ms or if the first identical call hasn't returned yet */
-  private _reqLive = new Set<string>();
+  private _reqLive = new Set<BigInt>();
   private _reqThrottle = new TimeMap(200, 10);
   private _canThrottle: boolean = true;
   setCanThrottle(can: boolean) {this._canThrottle = can};
@@ -268,7 +272,7 @@ export class CellProxy extends CellMixin(Empty) {
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const reqHash = await sha256(JSON.stringify(req));
+    const reqHash = h64(JSON.stringify(req));
     const log: RequestLog = { request: req, reqHash, timeout, requestTimestamp: Date.now(), executionTimestamp: 0 };
     /** Acquire lock */
     console.debug("postCommit Lock in progress...");
@@ -299,7 +303,7 @@ export class CellProxy extends CellMixin(Empty) {
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const reqHash = await sha256(JSON.stringify(req));
+    const reqHash = h64(JSON.stringify(req));
     const log: RequestLog = { request: req, reqHash, timeout, requestTimestamp: Date.now(), executionTimestamp: 0 };
     /** Acquire lock */
     let release;
@@ -334,7 +338,7 @@ export class CellProxy extends CellMixin(Empty) {
       cell_id: this.cell.address.intoId(),
       provenance: this.cell.address.agentId.hash,
     } as CallZomeRequest;
-    const reqHash = await sha256(JSON.stringify(req));
+    const reqHash = h64(JSON.stringify(req));
     const log: RequestLog = { request: req, reqHash, timeout: timeoutMs, requestTimestamp: Date.now(), executionTimestamp: 0 };
     /** Wait for lock */
     try {
@@ -452,8 +456,14 @@ export class CellProxy extends CellMixin(Empty) {
     let requestTable = [];
     for (const request of this._requestLog) {
       const waitTime = prettyDuration(new Date(request.executionTimestamp - request.requestTimestamp));
-      const log =  { timestamp: prettyDate(new Date(request.executionTimestamp)), reqHash: request.reqHash.slice(0,12), fn: request.request.fn_name, timeout: request.timeout, waitTime }
-        requestTable.push(log);
+      const log = {
+        timestamp: prettyDate(new Date(request.executionTimestamp)),
+        reqHash: request.reqHash,
+        fn: request.request.fn_name,
+        timeout: request.timeout,
+        waitTime,
+      }
+      requestTable.push(log);
     }
     console.warn(`Dumping call request logs for cell "${this._appProxy.getLocations(this.cell.address)}" for zome "${zomeName}"`)
     console.table(requestTable)
@@ -482,8 +492,8 @@ export class CellProxy extends CellMixin(Empty) {
       //const input = requestLog.request.payload instanceof Uint8Array ? enc64(requestLog.request.payload) : requestLog.request.payload;
       const output = anyToB64(response.failure ? response.failure : response.success);
       const log = zomeName
-        ? { reqIndex: response.requestIndex, reqHash: requestLog.reqHash.slice(0, 12), startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
-        : { reqIndex: response.requestIndex, reqHash: requestLog.reqHash.slice(0, 12), startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        ? { reqIndex: response.requestIndex, reqHash: requestLog.reqHash, startTime, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
+        : { reqIndex: response.requestIndex, reqHash: requestLog.reqHash, startTime, zomeName: requestLog.request.zome_name, fnName: requestLog.request.fn_name, input, output, duration, waitTime }
       result.push(log);
       let maybe_value = call_map.get(requestLog.request.fn_name);
       if (!maybe_value) {
