@@ -20,5 +20,6 @@ export function encodeHappJoinInfo(happSha256: string, happId: InstalledAppId, n
 
 /** */
 export function decodeHappJoinInfo(shareCode: string): HappJoinInfo {
+  if (!shareCode || shareCode.length < 1) throw Error("decodeHappJoinInfo() invalid shareCode");
   return decode(new Uint8Array(atob(shareCode).split("").map((c) => c.charCodeAt(0)))) as HappJoinInfo;
 }
