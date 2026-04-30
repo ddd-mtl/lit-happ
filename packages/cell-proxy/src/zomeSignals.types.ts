@@ -84,10 +84,11 @@ ValidationStatus, ValidationReceipt,
 export enum ValidatedBy {
 	None = 'None',
 	Me = 'Me',
+	Peer = 'Peer',
 	Network = 'Network',
 }
 
-/** Bool: True if state change just happened (real-time) */
+/** Bool: True if state change just happened (e.g. real-time) */
 export enum StateChangeType {
 	Create = 'Create',
 	Update = 'Update',

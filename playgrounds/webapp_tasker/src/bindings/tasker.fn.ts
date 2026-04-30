@@ -16,6 +16,7 @@ export const taskerFunctionNames: FunctionName[] = [
 	"get_ah_from_local",
 	"get_ah_from_network",
 	"get_data_type",
+	"get_my_receipts",
 	"create_task_list",
 	"create_task_item",
 	"complete_task",

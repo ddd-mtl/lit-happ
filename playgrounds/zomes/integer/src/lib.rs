@@ -22,7 +22,7 @@ fn get_integer(ah: ActionHash) -> ExternResult<u32> {
 
 
 #[hdk_extern]
-#[feature(zits_blocking = "Integer")]
+#[feature(zits_blocking_Integer)]
 fn create_blocking_integer(value: u32) -> ExternResult<ActionHash> {
   return create_integer(value);
 }

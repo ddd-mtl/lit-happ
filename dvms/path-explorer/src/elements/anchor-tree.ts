@@ -356,7 +356,6 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
   /** */
   override render() {
     //console.log("<anchor-tree>.render()", this.root);
-
     let title = "Viewing ROOT";
     if (this.rootTypedAnchor) {
       if (typeof this.rootTypedAnchor == 'string') {
@@ -364,7 +363,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
       } else {
         title = `Viewing "${this.rootTypedAnchor.anchor}"`
       }
-    };
+    }
     /** render all */
     return html`
         <h2>

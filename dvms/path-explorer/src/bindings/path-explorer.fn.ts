@@ -16,6 +16,7 @@ export const pathExplorerFunctionNames: FunctionName[] = [
 	"get_ah_from_local",
 	"get_ah_from_network",
 	"get_data_type",
+	"get_my_receipts",
 	"get_all_items_from_anchor_from_local",
 	"get_all_items_from_anchor_from_network",
 	"get_all_items_from_local",
