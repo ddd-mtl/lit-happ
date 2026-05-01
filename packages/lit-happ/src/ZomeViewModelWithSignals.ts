@@ -267,11 +267,15 @@ export abstract class ZomeViewModelWithSignals extends ZomeViewModel {
           if (ZomeSignalProtocolType.Entry in pulse) {
             const entryPulse = materializeEntryPulse(pulse.Entry, Object.values(this.zomeProxy.entryTypes));
             const typedEntry = decode(entryPulse.bytes);
-            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Entry, state: prettyState(pulse.Entry.state), type: entryPulse.entryType, payload: anyToB64(typedEntry), ah_base: entryPulse.ah.short, eh_target: entryPulse.eh.short});
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Entry, state: prettyState(pulse.Entry.state), type: entryPulse.entryType, validation: entryPulse.validatedBy,
+              payload: anyToB64(typedEntry),
+              ah_base: entryPulse.ah.short, eh_target: entryPulse.eh.short});
           }
           if (ZomeSignalProtocolType.Link in pulse) {
             const linkPulse = materializeLinkPulse(pulse.Link, Object.values(this.zomeProxy.linkTypes));
-            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Link, state: prettyState(pulse.Link.state), type: linkPulse.link_type, payload: linkPulse.tag, ah_base: linkPulse.base.print(), eh_target: linkPulse.target.print()});
+            appSignals.push({timestamp, from, pulse: ZomeSignalProtocolType.Link, state: prettyState(pulse.Link.state), type: linkPulse.link_type, payload: linkPulse.tag,
+              ah_base: linkPulse.base.print(), eh_target: linkPulse.target.print(), validation: linkPulse.validatedBy,
+            });
           }
         }
       });
