@@ -64,12 +64,12 @@ export class NetworkCaller {
       return this._intervalId !== undefined;
   }
 
-  /** Calling twice will stop it */
+  /** */
   private _callTimeout: number = 30 * 1000;
   startCallLoop(interval: number) {
     //console.debug(`startCallLoop(${interval})`);
     if (this.isLooping()) {
-      this.stopCallLoop();
+      return;
     }
     if (interval <= 1000) {
         throw Error(`Loop interval is too short: ${interval}`);
