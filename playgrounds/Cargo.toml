@@ -29,10 +29,10 @@ non_snake_case = "allow"
 unused_attributes = "allow"
 
 [workspace.dependencies]
-holochain_serialized_bytes = "0.0.56"
-serde = { version = "=1.0.219", default-features = false }
-hdi = { version = "=0.7.0", default-features = false }
-hdk = { version = "=0.6.0", default-features = false }
+holochain_serialized_bytes = "0.0.57"
+serde = { version = "=1.0.228", default-features = false }
+hdi = { version = "=0.7.1", default-features = false }
+hdk = { version = "=0.6.1", default-features = false }
 
 zome_utils = { path = "../submodules/zdk/crates/zome_utils" }
 zome_signals = { path = "../submodules/zdk/crates/zome_signals" }

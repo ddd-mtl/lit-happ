@@ -304,7 +304,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
         newItem.level = ati.level + 1;
 
         /** Grab Link Info */
-        const linkInfo = await this._zvm.zomeProxy.inspectLink({lh: decodeHashFromBase64(hash), strategy: GetStrategy.Local}); // FIXME GetStrategy
+        const linkInfo = await this._zvm.zomeProxy.inspectLinkableHash({lh: decodeHashFromBase64(hash), strategy: GetStrategy.Local}); // FIXME GetStrategy
         console.log("toggleTreeItem() linkInfo", linkInfo);
 
         var infoItem = document.createElement("ui5-tree-item") as TreeItem;
@@ -317,7 +317,7 @@ export class AnchorTree extends ZomeElement<unknown, PathExplorerZvm> {
             infoItem.text = "Error: " + e;
           }
         } else {
-          infoItem.text = "Type: " + linkInfo.info;
+          infoItem.text = "Type: " + linkInfo.entryType;
         }
         infoItem.additionalText = linkInfo.linkType;
         infoItem.id = "info_" + hash;

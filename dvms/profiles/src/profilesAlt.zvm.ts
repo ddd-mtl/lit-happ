@@ -37,7 +37,7 @@ export class ProfilesAltZvm extends ZomeViewModelWithSignals {
   override comparable(): Object {
     const res: ProfilesAltComparable = {
       profileCount: this._perspective.profileByAgent.size,
-      profiles: Array.from(this.perspective.profiles.values()).map((pair) => (pair as [Profile, Number])[0]),
+      profiles: Array.from(this._perspective.profiles.values()).map((pair) => (pair as [Profile, Number])[0]),
     };
     return res;
   }

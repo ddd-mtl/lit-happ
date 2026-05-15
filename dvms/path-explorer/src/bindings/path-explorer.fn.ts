@@ -31,7 +31,7 @@ export const pathExplorerFunctionNames: FunctionName[] = [
 	"get_typed_anchor_local",
 	"get_typed_children_from_local",
 	"get_typed_children_from_network",
-	"inspect_link",
+	"inspect_linkable_hash",
 ];
 
 

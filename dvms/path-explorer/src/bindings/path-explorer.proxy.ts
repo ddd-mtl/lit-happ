@@ -192,7 +192,7 @@ export class PathExplorerProxy extends ZomeProxy {
     return this.call('get_typed_children_from_network', parentTa);
   }
 
-  async inspectLink(input: GetLhInput): Promise<HashInfo> {
-    return this.call('inspect_link', input);
+  async inspectLinkableHash(input: GetLhInput): Promise<HashInfo> {
+    return this.call('inspect_linkable_hash', input);
   }
 }

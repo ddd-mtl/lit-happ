@@ -86,7 +86,7 @@ import {ItemLink, SweepInterval, SweepResponse} from './deps.types';
 
 /**
  * Struct for holding an easily exportable typed Anchor.
- * A Typed Anchor is an Anchor with LinkType associated with it.
+ * A Typed Anchor is an Anchor with a LinkType associated with it.
  */
 export interface TypedAnchor {
   anchor: string
@@ -199,7 +199,7 @@ export interface GetItemsInput {
 
 export interface HashInfo {
   linkType: string
-  info: string
+  entryType: string
   author: string
   maybeEntryDef?: AppEntryDef
 }

@@ -14,8 +14,8 @@
     "playgrounds/webapp_tasker"
   ],
   "config": {
-    "hc_version"  : "0.6.1-rc.0",
-    "zits_version": "1.17.1",
+    "hc_version"  : "0.6.1",
+    "zits_version": "1.17.2",
     "bin"         : "bin"
   },
   "scripts": {
