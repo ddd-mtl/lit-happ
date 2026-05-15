@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.34.3",
+  "version": "0.35.0",
   "workspaces": [
     "dvms/agent-directory",
     "dvms/path-explorer",

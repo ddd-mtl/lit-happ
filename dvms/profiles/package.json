@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/profiles-dvm",
-  "version": "0.34.8",
+  "version": "0.35.0",
   "description": "DnaViewModel implementation for the Profiles zome.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -30,7 +30,7 @@
     "typescript": "~5.9.0"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.4-rc.0",
+    "@holochain/client": "=0.20.4",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain-open-dev/elements": "^0.601.0",
     "@msgpack/msgpack": "^3.1.1",

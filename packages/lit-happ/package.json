@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ",
-  "version": "0.34.13",
+  "version": "0.35.0",
   "description": "MVVM Framework for holochain apps using Lit",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -29,7 +29,7 @@
     "typescript": "~5.9"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.4-rc.0",
+    "@holochain/client": "=0.20.4",
     "@ddd-qc/cell-proxy": "file:../cell-proxy",
     "@lit/context": "1.0.1",
     "lit": "3.0.2",

@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/agent-directory",
-  "version": "6.34.3",
+  "version": "6.35.0",
   "license" : "CAL-1.0",
   "keywords": ["holochain", "zome"],
   "main": "./dist/index.js",
@@ -26,7 +26,7 @@
     "typescript": "~5.9"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.4-rc.0",
+    "@holochain/client": "=0.20.4",
     "@ddd-qc/lit-happ": "file:../lit-happ",
     "@holochain-open-dev/core-types": "0.601.0",
     "@lit/context": "1.0.1",
