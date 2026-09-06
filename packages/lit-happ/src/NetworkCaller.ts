@@ -250,10 +250,12 @@ export class NetworkCaller {
         if (!response) {
             throw Promise.reject("No network stats response for dna");
         }
+        /* In client 0.21 the connection data moved under `transport_stats` */
+        const stats = response.transport_stats;
         /* Store */
-        this._networkStatsLogs.add([this._lastTimeQueried, response]);
+        this._networkStatsLogs.add([this._lastTimeQueried, stats]);
         /** */
-        return response;
+        return stats;
     }
 
 

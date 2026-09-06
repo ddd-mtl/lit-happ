@@ -31,7 +31,7 @@ import {prettyDate, printAppInfo} from "./pretty";
 import {AgentId, enc64} from "./hash";
 import {ZomeSignal} from "./zomeSignals.types";
 import {Signal} from "@holochain/client/lib/api/app/types";
-import {AppDumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
+import {DumpNetworkStatsResponse} from "@holochain/client/lib/api/admin";
 import {encodeHappJoinInfo} from "./happJoinInfo";
 import {RoleName} from "@holochain/client/lib/types";
 
@@ -186,7 +186,7 @@ export class AppProxy implements AppClient {
     throw new Error("Method not implemented.");
   }
 
-  async dumpNetworkStats(_timeout?: number): Promise<AppDumpNetworkStatsResponse> {
+  async dumpNetworkStats(_timeout?: number): Promise<DumpNetworkStatsResponse> {
     throw new Error("Method not implemented.");
   }
 

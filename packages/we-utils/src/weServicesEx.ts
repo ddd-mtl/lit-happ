@@ -9,7 +9,7 @@ import {
 import {
     EntryHash, HoloHashB64,
     CreateCloneCellRequest, CreateCloneCellResponse, EnableCloneCellRequest, EnableCloneCellResponse,
-    DisableCloneCellRequest, AgentPubKey, DnaHash,
+    DisableCloneCellRequest, AgentPubKey, DnaHash, TransportStats,
 } from "@holochain/client";
 import {DnaId, DnaIdMap, EntryId, EntryIdMap} from "@ddd-qc/cell-proxy";
 
@@ -167,6 +167,8 @@ export class WeServicesEx implements WeaveServices {
   mossVersion(): string {return this._inner.mossVersion();}
   onPeerStatusUpdate(callback: (payload: PeerStatusUpdate) => any): UnsubscribeFunction {return this._inner.onPeerStatusUpdate(callback)}
   onBeforeUnload(callback: () => void): UnsubscribeFunction {return this._inner.onBeforeUnload(callback)}
+  onNetworkStatsUpdate(callback: (payload: TransportStats) => any): UnsubscribeFunction {return this._inner.onNetworkStatsUpdate(callback)}
+  bootstrapUrls(groupHash?: DnaHash): string[] {return this._inner.bootstrapUrls(groupHash)}
   async openAppletMain(appletHash: EntryHash, wal?: WAL): Promise<void> {return this._inner.openAppletMain(appletHash, wal)}
   async openAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void> {return this._inner.openAppletBlock(appletHash, block, context)}
   async openCrossGroupMain(appletBundleId: string): Promise<void>  {return this._inner.openCrossGroupMain(appletBundleId)}

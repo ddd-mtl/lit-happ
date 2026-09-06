@@ -26,9 +26,9 @@
     "typescript": "~5.9"
   },
   "dependencies": {
-    "@holochain/client": "=0.20.4",
+    "@holochain/client": "^0.21.0",
     "@ddd-qc/lit-happ": "file:../lit-happ",
-    "@holochain-open-dev/core-types": "0.601.0",
+    "@holochain-open-dev/core-types": "^0.700.0",
     "@lit/context": "1.0.1",
     "lit": "3.0.2"
   },
