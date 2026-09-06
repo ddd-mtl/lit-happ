@@ -170,9 +170,7 @@ export class WeServicesEx implements WeaveServices {
   onNetworkStatsUpdate(callback: (payload: TransportStats) => any): UnsubscribeFunction {return this._inner.onNetworkStatsUpdate(callback)}
   bootstrapUrls(groupHash?: DnaHash): string[] {return this._inner.bootstrapUrls(groupHash)}
   async openAppletMain(appletHash: EntryHash, wal?: WAL): Promise<void> {return this._inner.openAppletMain(appletHash, wal)}
-  async openAppletBlock(appletHash: EntryHash, block: string, context: any): Promise<void> {return this._inner.openAppletBlock(appletHash, block, context)}
   async openCrossGroupMain(appletBundleId: string): Promise<void>  {return this._inner.openCrossGroupMain(appletBundleId)}
-  async openCrossGroupBlock(appletBundleId: string, block: string, context: any): Promise<void>  {return this._inner.openCrossGroupBlock(appletBundleId, block, context)}
   async openAsset(wal: WAL, mode?: OpenAssetMode): Promise<void> {return this._inner.openAsset(wal, mode)}
   async notifyFrame(notifications: Array<FrameNotification>): Promise<any>  {return this._inner.notifyFrame(notifications)}
   async userSelectScreen(): Promise<string>  {return this._inner.userSelectScreen()}

@@ -9,11 +9,8 @@ export const emptyMainAppletView: AppletView = {
 };
 
 
-export const emptyBlockAppletView: AppletView = {
-    type: "block",
-    block: "",
-    context: null,
-};
+// Weave dropped block views: AppletView in @theweave/api 0.7.0-dev.3 is only
+// 'main' | 'asset' | 'creatable'. emptyBlockAppletView removed.
 
 
 export const emptyEntryAppletView: AssetViewInfo = {

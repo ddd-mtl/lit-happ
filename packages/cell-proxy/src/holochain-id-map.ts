@@ -67,7 +67,12 @@ export class HolochainIdMap<K extends HolochainId, V> implements Map<K, V> {
     return this._map.size;
   }
 
-  [Symbol.iterator](): IterableIterator<[K, V]> {
+  // No explicit return type: entries() already yields the right iterator, and
+  // annotating it as IterableIterator breaks against TS libs that include
+  // lib.esnext.disposable (where Map declares MapIterator, which additionally
+  // requires [Symbol.dispose]). @theweave/cli 0.16.0-dev.5 drags that lib in
+  // via a hoisted @types/node 26.
+  [Symbol.iterator]() {
     return this.entries();
   }
 

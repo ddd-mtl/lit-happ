@@ -95,7 +95,7 @@ export async function setupDevtest(
     //console.log("mock agentId", mockProfilesZome.myPubKey);
     //mockProfilesZome.myPubKey = mainCellId[1];
     //console.log("mock agentId", encodeHashToBase64(mockProfilesZome.myPubKey));
-    mockProfilesZome.create_profile({nickname: "Alex", fields: {lang:"en"}})
+    mockProfilesZome.create_profile({input: {nickname: "Alex", fields: {lang:"en"}}})
     const mockAppInfo = await mockProfilesZome.appInfo();
     console.log("setupDevtest() mockAppInfo", mockAppInfo);
 

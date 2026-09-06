@@ -1,6 +1,6 @@
 {
   "name": "@ddd-qc/lit-happ-root",
-  "version": "0.35.0",
+  "version": "0.36.0",
   "workspaces": [
     "dvms/agent-directory",
     "dvms/path-explorer",
@@ -80,7 +80,7 @@
   "homepage": "https://github.com/ddd-mtl/lit-happ#readme",
   "devDependencies": {
     "@ddd-qc/hc-prebuilt": "0.601.0",
-    "@theweave/cli": "0.16.0-dev.3",
+    "@theweave/cli": "0.16.0-dev.5",
     "bestzip": "^2.2.0",
     "@types/ws": "^8.5.3"
   },
