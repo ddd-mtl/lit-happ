@@ -100,12 +100,12 @@ export class ProfilesProxy extends ZomeProxy {
   static override readonly ENTRY_TYPES = Object.values(ProfilesUnitEnum);
   static override readonly LINK_TYPES = Object.values(ProfilesLinkType);
  
-  async createProfile(profile: Profile): Promise<HcRecord> {
-    return this.call('create_profile', profile);
+  async createProfile(input: Profile): Promise<HcRecord> {
+    return this.call('create_profile', input);
   }
 
-  async updateProfile(profile: Profile): Promise<HcRecord> {
-    return this.call('update_profile', profile);
+  async updateProfile(input: Profile): Promise<HcRecord> {
+    return this.call('update_profile', input);
   }
 
   async searchAgents(nicknameFilter: string): Promise<AgentArray[]> {

@@ -37,7 +37,6 @@ async function setupExampleMainView() {
     creatables: {},
     getAssetInfo,
     //bindAsset,//: async (a, b, c, d) => {},
-    blockTypes: {},
     search,
   };
   return setup(appletServices, createPlaygroundApplet, devtestNames, createDefaultWeServicesMock);
