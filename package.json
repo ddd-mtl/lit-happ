@@ -90,6 +90,7 @@
   },
   "overrides": {
     "@holochain/client": "^0.21.0",
-    "@holochain-open-dev/core-types": "^0.700.0"
+    "@holochain-open-dev/core-types": "^0.700.0",
+    "@swc/core": "~1.15.47"
   }
 }
