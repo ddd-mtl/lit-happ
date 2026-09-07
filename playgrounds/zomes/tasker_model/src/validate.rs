@@ -6,18 +6,19 @@ use hdi::prelude::*;
 pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
    //debug!("*** membranes.validate() op = {:?}", op);
    match op {
-      Op::StoreRecord ( _ ) => Ok(ValidateCallbackResult::Valid),
-      Op::StoreEntry(storeEntry) => {
-         let actual_action = storeEntry.action.hashed.into_inner().0;
-         return validate_entry(storeEntry.entry, Some(actual_action.entry_type()));
+      Op::CreateRecord ( _ ) => Ok(ValidateCallbackResult::Valid),
+      Op::CreateEntry(create_entry) => {
+         let entry = create_entry.entry;
+         let actual_action = create_entry.action.hashed.into_inner().0;
+         return validate_entry(entry, actual_action.entry_type());
       },
-      Op::RegisterCreateLink(reg_create_link) => {
-         return validate_create_link(reg_create_link.create_link);
+      Op::CreateLink(create_link_op) => {
+         return validate_create_link(create_link_op.create_link);
       },
-      Op::RegisterDeleteLink (_)=> Ok(ValidateCallbackResult::Invalid("Deleting links isn't allowed".to_string())),
-      Op::RegisterUpdate { .. } => Ok(ValidateCallbackResult::Valid),
-      Op::RegisterDelete { .. } => Ok(ValidateCallbackResult::Invalid("Deleting entries isn't allowed".to_string())),
-      Op::RegisterAgentActivity { .. } => Ok(ValidateCallbackResult::Valid),
+      Op::DeleteLink (_)=> Ok(ValidateCallbackResult::Invalid("Deleting links isn't allowed".to_string())),
+      Op::Update ( _ ) => Ok(ValidateCallbackResult::Valid),
+      Op::Delete ( _ ) => Ok(ValidateCallbackResult::Invalid("Deleting entries isn't allowed".to_string())),
+      Op::AgentActivity ( _ ) => Ok(ValidateCallbackResult::Valid),
    }
 }
 
@@ -58,10 +59,13 @@ pub(crate) fn validate_app_entry(entry_def_index: EntryDefIndex, _entry: Entry)
 
 
 /// Validation sub callback
-pub fn validate_create_link(signed_create_link: SignedHashed<CreateLink>)
+pub fn validate_create_link(signed_create_link: SignedHashed<Action>)
    -> ExternResult<ValidateCallbackResult>
 {
-   let create_link = signed_create_link.hashed.into_inner().0;
+   let action = signed_create_link.hashed.into_inner().0;
+   let ActionData::CreateLink(create_link) = action.data else {
+      return Ok(ValidateCallbackResult::Invalid("Expected a CreateLink action".to_string()));
+   };
    let tag_str = String::from_utf8_lossy(&create_link.tag.0);
    debug!("*** `validate_create_link({:?})` called | {:?}:{}", create_link, create_link.link_type, tag_str);
 
