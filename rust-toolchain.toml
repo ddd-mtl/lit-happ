@@ -1,0 +1,13 @@
+[toolchain]
+# Pinned deliberately. This repo has no flake.nix, so without this CI uses whatever
+# rustc the GitHub runner ships that week, and the playground zomes link against
+# whatever wasm-ld comes with it.
+#
+# Two independent constraints:
+#   - holochain_zome_types 0.7.0 uses floor_char_boundary, stabilised in Rust 1.91,
+#     so anything older cannot build Holochain 0.7 at all (1.90 verified failing).
+#   - the runner's floating stable failed to link the playground zomes with
+#     `undefined symbol: __hc__must_get_entry_1` and friends, on a build where
+#     hdi 0.8.0 / hdk 0.7.0 were themselves correct. 1.93.0 builds all 13 wasms.
+channel = "1.93.0"
+targets = ["wasm32-unknown-unknown"]
